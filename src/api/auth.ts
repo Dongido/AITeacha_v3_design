@@ -1,8 +1,12 @@
 import apiClient from "../lib/apiClient";
 
 export interface LoginResponse {
-  accessToken: string;
-  refreshToken: string;
+  status: string;
+  message: string;
+  data: {
+    accessToken: string;
+    refreshToken: string;
+  };
 }
 
 export interface SignupResponse {
@@ -30,7 +34,8 @@ export const registerUser = async (
   email: string,
   firstname: string,
   lastname: string,
-  password: string
+  password: string,
+  role_id: number
 ): Promise<SignupResponse> => {
   try {
     const response = await apiClient.post<SignupResponse>("auth/register", {
@@ -38,6 +43,7 @@ export const registerUser = async (
       firstname,
       lastname,
       password,
+      role_id,
     });
     if (response.status === 201) {
       return response.data;

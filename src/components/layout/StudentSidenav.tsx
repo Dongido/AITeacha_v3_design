@@ -17,7 +17,6 @@ interface RoutePage {
   icon: React.ReactNode;
   name: string;
   path: string;
-  adminOnly?: boolean;
 }
 
 interface Route {
@@ -34,20 +33,16 @@ interface SidenavProps {
 
 type SidenavType = "dark" | "white" | "transparent";
 
-export function Sidenav({ brandName = "AI-Teacha", routes }: SidenavProps) {
+export function StudentSidenav({
+  brandName = "AI-Teacha",
+  routes,
+}: SidenavProps) {
   const { controller, dispatch } = useMaterialTailwindController();
   const { sidenavColor, sidenavType, openSidenav } = controller as {
     sidenavColor: string;
     sidenavType: SidenavType;
     openSidenav: boolean;
   };
-
-  // Retrieve the user role from localStorage
-  const userDetails = JSON.parse(
-    localStorage.getItem("ai-teacha-user") || "{}"
-  );
-  console.log(userDetails.package);
-  const isAdmin = userDetails.role === 1;
 
   const sidenavTypes: Record<SidenavType, string> = {
     dark: "bg-gradient-to-br from-gray-800 to-gray-900",
@@ -83,6 +78,7 @@ export function Sidenav({ brandName = "AI-Teacha", routes }: SidenavProps) {
     >
       <div className="relative">
         <Link to={"/"}>
+          {" "}
           <div className="flex items-center justify-center py-6 px-8">
             {brandImg && (
               <img src={brandImg} alt="Brand Logo" className="h-8 w-8 mr-2" />
@@ -101,7 +97,6 @@ export function Sidenav({ brandName = "AI-Teacha", routes }: SidenavProps) {
         </Button>
       </div>
 
-      {/* Routes Section */}
       <div className="m-4 overflow-y-auto max-h-[calc(100vh-220px)]">
         {routes.map(({ layout, title, pages }, key) => (
           <ul key={key} className="mb-4 flex flex-col gap-1">
@@ -116,40 +111,37 @@ export function Sidenav({ brandName = "AI-Teacha", routes }: SidenavProps) {
                 </Text>
               </li>
             )}
-            {pages.map(({ icon, name, path, adminOnly }) => {
-              if (adminOnly && !isAdmin) return null;
-              return (
-                <li key={name}>
-                  <NavLink to={`/${layout}${path}`}>
-                    {({ isActive }) => (
-                      <Button
-                        variant={isActive ? "gradient" : "ghost"}
-                        color={
-                          isActive
-                            ? sidenavColor
-                            : sidenavType === "dark"
-                            ? "white"
-                            : "blue-gray"
-                        }
-                        className="w-full px-4 capitalize rounded-full hover:bg-[#d2a9f3] hover:text-white"
-                      >
-                        <div className="flex items-center gap-2">
-                          <span className="w-6 flex items-center justify-center">
-                            {icon}
-                          </span>
-                          <Text
-                            color="inherit"
-                            className="font-medium w-40 capitalize text-left"
-                          >
-                            {name}
-                          </Text>
-                        </div>
-                      </Button>
-                    )}
-                  </NavLink>
-                </li>
-              );
-            })}
+            {pages.map(({ icon, name, path }) => (
+              <li key={name}>
+                <NavLink to={`/${layout}${path}`}>
+                  {({ isActive }) => (
+                    <Button
+                      variant={isActive ? "gradient" : "ghost"}
+                      color={
+                        isActive
+                          ? sidenavColor
+                          : sidenavType === "dark"
+                          ? "white"
+                          : "blue-gray"
+                      }
+                      className="w-full px-4 capitalize rounded-full hover:bg-[#d2a9f3] hover:text-white"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="w-6 flex items-center justify-center">
+                          {icon}
+                        </span>
+                        <Text
+                          color="inherit"
+                          className="font-medium w-40 capitalize text-left"
+                        >
+                          {name}
+                        </Text>
+                      </div>
+                    </Button>
+                  )}
+                </NavLink>
+              </li>
+            ))}
           </ul>
         ))}
       </div>
@@ -158,17 +150,10 @@ export function Sidenav({ brandName = "AI-Teacha", routes }: SidenavProps) {
         <Button
           variant="ghost"
           color={sidenavColor}
-          className="w-full rounded-full flex items-center justify-center gap-2"
+          className="w-full rounded-full flex items-center  justify-center gap-2"
         >
           <LifebuoyIcon className="h-5 w-5" />
           <span>Support</span>
-        </Button>
-        <Button
-          variant="outlined"
-          color="blue-gray"
-          className="w-full mb-2 bg-gray-200 rounded-full hover:bg-gray-400"
-        >
-          Current Plan: {userDetails.package}
         </Button>
 
         <Button
@@ -184,6 +169,6 @@ export function Sidenav({ brandName = "AI-Teacha", routes }: SidenavProps) {
   );
 }
 
-Sidenav.displayName = "/src/widgets/layout/Sidenav.tsx";
+StudentSidenav.displayName = "/src/widgets/layout/Sidenav.tsx";
 
-export default Sidenav;
+export default StudentSidenav;

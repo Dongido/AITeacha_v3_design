@@ -15,8 +15,8 @@ import {
   joinClassroom,
   checkIfStudentInClassroom,
   addStudentToClassroom,
-  ClassroomData,
 } from "../../../api/classrooms";
+import { ClassroomData } from "../../../api/interface";
 import { Link } from "react-router-dom";
 const JoinClassroom = () => {
   const { id: joinCode } = useParams<{ id: string }>();
@@ -51,6 +51,10 @@ const JoinClassroom = () => {
     fetchClassroom();
   }, [joinCode]);
 
+  const userDetails = JSON.parse(
+    localStorage.getItem("ai-teacha-user") || "{}"
+  );
+
   const handleJoinClassroom = async () => {
     if (classroom) {
       setIsJoining(true);
@@ -69,10 +73,17 @@ const JoinClassroom = () => {
         setToastVariant("default");
         setShowToast(true);
 
-        setTimeout(
-          () => navigate(`/dashboard/classrooms/details/${classroom.id}`),
-          2000
-        );
+        if (userDetails) {
+          if (userDetails.role === 3) {
+            setTimeout(() => {
+              navigate(`/student/class/class-details/${classroom.id}`);
+            }, 2000);
+          } else {
+            setTimeout(() => {
+              navigate(`/dashboard/classrooms/class-details/${classroom.id}`);
+            }, 2000);
+          }
+        }
       } catch (error: any) {
         setToastMessage(error.message || "Failed to join the classroom.");
         setToastVariant("destructive");
@@ -82,6 +93,10 @@ const JoinClassroom = () => {
       }
     }
   };
+  const navigateToClassroom =
+    userDetails.role === 3
+      ? `/student/class/class-details/${classroom?.id}`
+      : `/dashboard/classrooms/class-details/${classroom?.id}`;
 
   if (loading) {
     return <p>Loading classroom...</p>;
@@ -113,12 +128,12 @@ const JoinClassroom = () => {
               : classroom.description || "Join this exciting classroom!"}
           </p>
           {isInClassroom ? (
-            <Link to={"/dashboad/classrooms"}>
+            <Link to={navigateToClassroom}>
               <Button
                 variant={"gradient"}
                 className="flex items-center justify-center text-white font-semibold py-3 px-6 rounded-full text-lg"
               >
-                view classrooms
+                view classroom
               </Button>
             </Link>
           ) : (

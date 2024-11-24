@@ -109,35 +109,47 @@ const ClassroomDetail = () => {
             <p className="text-lg mt-1">{classroom?.classroom_description}</p>
             <p className="text-lg">Status: {classroom?.status}</p>
 
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-center mt-2 justify-between sm:space-x-4">
               <button
                 onClick={() =>
                   navigate(
                     `/dashboard/classrooms/${classroom?.classroom_id}/students`
                   )
                 }
-                className="mt-4 flex hover:bg-gray-200 items-center bg-white text-[#5C3CBB] font-semibold py-2 px-4 rounded-full text-sm"
+                className="mt- sm:mt-0 flex hover:bg-gray-200 items-center bg-white text-[#5C3CBB] font-semibold py-2 px-4 rounded-full text-sm"
               >
                 View Students
                 <ArrowRightIcon className="h-5 w-5 ml-2" />
               </button>
-              <div className="flex items-center">
+
+              <div className="mt-4 sm:mt-0 flex flex-row items-center">
+                {/* Hide join URL on smaller screens */}
                 <span
-                  className="text-xl font-medium mr-2 cursor-pointer"
+                  className="hidden sm:inline text-sm sm:text-xl font-medium mr-2 cursor-pointer"
                   onClick={handleCopyLink}
                 >
-                  Join url:{" "}
-                  <span className="text-md">
+                  <span className="text-md sm:text-md">
                     {classroom?.join_url || "Link not available"}
                   </span>
                 </span>
-                <ClipboardIcon
-                  className="h-5 w-5 cursor-pointer hover:text-gray-300"
+
+                {/* Copy URL button visible only on small screens */}
+                <button
+                  className="inline sm:hidden bg-white text-[#5C3CBB] font-semibold py-2 px-4 rounded-full text-sm"
                   onClick={handleCopyLink}
-                />
-                {copied && (
-                  <CheckIcon className="h-5 w-5 ml-2 text-green-400" />
-                )}
+                >
+                  Copy Join URL
+                </button>
+
+                <div className="flex items-center mt-2 sm:mt-0">
+                  <ClipboardIcon
+                    className="h-5 w-5 cursor-pointer hover:text-gray-300"
+                    onClick={handleCopyLink}
+                  />
+                  {copied && (
+                    <CheckIcon className="h-5 w-5 ml-2 text-green-400" />
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -173,7 +185,8 @@ const ClassroomDetail = () => {
                       {tool.tool_name}
                     </h3>
                     <p className="text-gray-700 text-sm">
-                      {tool.customized_description || tool.tool_description}
+                      {tool.tool_description.charAt(0).toUpperCase() +
+                        tool.tool_description.slice(1)}
                     </p>
                   </div>
                 </Link>

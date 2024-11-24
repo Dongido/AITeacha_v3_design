@@ -23,3 +23,14 @@ export const fetchUserDetails = async (userId: number): Promise<User> => {
     );
   }
 };
+
+export const updateUserRole = async (roleId: number): Promise<void> => {
+  try {
+    const response = await apiClient.put(`profile/changeuserrole/${roleId}`);
+    console.log("User role updated successfully:", response.data);
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data || "Failed to update user role. Please try again."
+    );
+  }
+};

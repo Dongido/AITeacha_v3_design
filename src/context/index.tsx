@@ -6,7 +6,6 @@ import React, {
   Dispatch,
 } from "react";
 
-// Define the state interface
 interface State {
   openSidenav: boolean;
   sidenavColor: string;
@@ -16,7 +15,6 @@ interface State {
   openConfigurator: boolean;
 }
 
-// Define action types
 interface Action {
   type:
     | "OPEN_SIDENAV"
@@ -34,7 +32,6 @@ interface MaterialTailwindContextType {
   dispatch: Dispatch<Action>;
 }
 
-// Initial state
 const initialState: State = {
   openSidenav: false,
   sidenavColor: "dark",
@@ -44,12 +41,10 @@ const initialState: State = {
   openConfigurator: false,
 };
 
-// Create the context
 export const MaterialTailwind =
   createContext<MaterialTailwindContextType | null>(null);
 MaterialTailwind.displayName = "MaterialTailwindContext";
 
-// Reducer function to handle state changes
 export function reducer(state: State, action: Action): State {
   switch (action.type) {
     case "OPEN_SIDENAV":
@@ -93,7 +88,6 @@ export function MaterialTailwindControllerProvider({
   );
 }
 
-// Custom hook with debugging log
 export function useMaterialTailwindController(): MaterialTailwindContextType {
   const context = useContext(MaterialTailwind);
   if (!context) {
@@ -105,7 +99,6 @@ export function useMaterialTailwindController(): MaterialTailwindContextType {
   return context;
 }
 
-// Export action creators
 export const setOpenSidenav = (dispatch: Dispatch<Action>, value: boolean) =>
   dispatch({ type: "OPEN_SIDENAV", value });
 export const setSidenavType = (dispatch: Dispatch<Action>, value: string) =>

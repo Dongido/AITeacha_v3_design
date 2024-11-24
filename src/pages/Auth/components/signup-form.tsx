@@ -75,19 +75,30 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true);
+
+    const storedRole = localStorage.getItem("selectedRole");
+
+    let role_id: number | 4 = 4;
+    if (storedRole === "student") {
+      role_id = 3;
+    } else if (storedRole === "teacher" || storedRole === "lecturer") {
+      role_id = 2;
+    }
+
     try {
       const res: SignupResponse = await registerUser(
         data.email,
         data.firstName,
         data.lastName,
-        data.password
+        data.password,
+        role_id
       );
       setToastMessage(res.message || "Signup successful! Redirecting...");
       setToastVariant("default");
       setToastOpen(true);
       setTimeout(() => {
         navigate("/auth/login");
-      }, 1000);
+      }, 1500);
     } catch (error: any) {
       setToastMessage(error.message || "Oops! Something went wrong.");
       setToastVariant("destructive");

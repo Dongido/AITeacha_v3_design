@@ -73,18 +73,24 @@ const Home = () => {
 
           <div className="mt-8 flex justify-center">
             <div className="flex gap-4 overflow-x-auto">
-              <button className="flex items-center gap-2 bg-purple-200 text-purple-800 rounded-full py-2 px-4 whitespace-nowrap">
-                <FaMagic className="h-5 w-5" />
-                history
-              </button>
-              <button className="flex items-center gap-2 bg-blue-200 text-blue-800 rounded-full py-2 px-4 whitespace-nowrap">
-                <FaDraftingCompass className="h-5 w-5" />
-                Chatbot
-              </button>
-              <button className="flex items-center gap-2 bg-yellow-200 text-yellow-800 rounded-full py-2 px-4 whitespace-nowrap">
-                <BiImageAdd className="h-5 w-5" />
-                text to speech
-              </button>
+              <Link to={"/dashboard/history"}>
+                <button className="flex items-center gap-2 bg-purple-200 text-purple-800 rounded-full py-2 px-4 whitespace-nowrap">
+                  <FaMagic className="h-5 w-5" />
+                  history
+                </button>
+              </Link>
+              <Link to={"/dashboard/chats"}>
+                <button className="flex items-center gap-2 bg-blue-200 text-blue-800 rounded-full py-2 px-4 whitespace-nowrap">
+                  <FaDraftingCompass className="h-5 w-5" />
+                  Chatbot
+                </button>
+              </Link>
+              <Link to={"/dashboard/classrooms"}>
+                <button className="flex items-center gap-2 bg-yellow-200 text-yellow-800 rounded-full py-2 px-4 whitespace-nowrap">
+                  <BiImageAdd className="h-5 w-5" />
+                  classrooms
+                </button>
+              </Link>
             </div>
           </div>
 
@@ -114,15 +120,28 @@ const Home = () => {
                     className="flex items-center border border-gray-300 px-4 py-3 rounded-3xl bg-white hover:bg-gray-50 cursor-pointer transition duration-500 ease-in-out transform hover:scale-105"
                   >
                     <div className="text-primary text-2xl mr-4">
-                      <FaHeart className="text-purple-500" />
+                      {tool.thumbnail ? (
+                        <img
+                          src={
+                            tool.thumbnail.startsWith("http")
+                              ? tool.thumbnail
+                              : `https://${tool.thumbnail}`
+                          }
+                          alt={tool.name || "Tool Thumbnail"}
+                          className="w-8 h-8 object-cover" // Adjust size and styling as needed
+                        />
+                      ) : (
+                        <FaHeart className="text-purple-500" />
+                      )}
                     </div>
 
                     <div className="text-left">
                       <h3 className="text-base capitalize font-semibold text-gray-900">
-                        {tool.name}
+                        {tool.name === "math calculator" ? "Solver" : tool.name}
                       </h3>
                       <p className="text-gray-700 text-sm">
-                        {tool.description}
+                        {tool.description.charAt(0).toUpperCase() +
+                          tool.description.slice(1)}
                       </p>
                     </div>
                   </Link>

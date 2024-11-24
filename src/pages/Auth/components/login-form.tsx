@@ -69,21 +69,24 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
     setIsLoading(true);
     try {
       const res: LoginResponse = await loginUser(data.email, data.password);
-      if (res.accessToken) {
-        const decodedToken = jwtDecode(res.accessToken) as DecodedToken;
+      if (res.data.accessToken) {
+        const decodedToken = jwtDecode(res.data.accessToken) as DecodedToken;
         console.log(decodedToken);
-        Cookies.set("at-accessToken", res.accessToken, { expires: 7 });
-        Cookies.set("at-refreshToken", res.refreshToken, { expires: 7 });
+        Cookies.set("at-accessToken", res.data.accessToken, { expires: 7 });
+        Cookies.set("at-refreshToken", res.data.refreshToken, { expires: 7 });
+
         const userDetails = {
           id: decodedToken.id,
           email: decodedToken.uemail,
           role: decodedToken.role,
+          package: decodedToken.package,
+          firstname: decodedToken.firstname,
         };
         localStorage.setItem("ai-teacha-user", JSON.stringify(userDetails));
 
         dispatch(
           setAuthData({
-            token: res.accessToken,
+            token: res.data.accessToken,
             user: {
               id: decodedToken.id,
               email: decodedToken.uemail,
@@ -91,13 +94,20 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
             },
           })
         );
+
         setToastMessage("Login successful!");
         setToastVariant("default");
 
         const redirectPath = localStorage.getItem("redirectPath");
         console.log("Redirect path after login:", redirectPath);
 
-        if (redirectPath) {
+        if (decodedToken.role === 3) {
+          navigate("/student/home");
+        } else if (decodedToken.role === 2) {
+          navigate("/dashboard/home");
+        } else if (decodedToken.role === 4) {
+          navigate("/auth/onboarding");
+        } else if (redirectPath) {
           localStorage.removeItem("redirectPath");
           navigate(redirectPath);
         } else {

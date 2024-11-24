@@ -71,14 +71,15 @@ const toolSchema = z.object({
 const formSchema = z.object({
   user_id: z.number(),
   name: z.string().min(1, { message: "Classroom name is required" }),
-  description: z.string().optional(),
+  description: z.string().min(1, { message: "Description is required" }),
   grade: z.string(),
   status: z.string(),
   number_of_students: z
     .number({ required_error: "Number of students is required" })
     .min(1, { message: "Number of students must be at least 1" }),
   tools: z.array(toolSchema).optional(),
-  allowScope: z.boolean().optional(),
+  scope_restriction: z.boolean(),
+  resources: z.array(z.instanceof(File)).optional(),
 });
 
 const CreateOrEditClassroom: React.FC<CreateOrEditClassroomProps> = ({
@@ -96,6 +97,7 @@ const CreateOrEditClassroom: React.FC<CreateOrEditClassroomProps> = ({
     "default"
   );
   const [currentStep, setCurrentStep] = useState(1);
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
 
   const storedUser = JSON.parse(localStorage.getItem("ai-teacha-user") || "{}");
   const userId = storedUser.id;
@@ -110,12 +112,12 @@ const CreateOrEditClassroom: React.FC<CreateOrEditClassroomProps> = ({
       status: "active",
       number_of_students: 1,
       tools: [],
-
-      allowScope: false,
+      resources: [],
+      scope_restriction: true,
     },
   });
 
-  const { handleSubmit, control } = formMethods;
+  const { handleSubmit, control, setValue } = formMethods;
 
   useEffect(() => {
     if (tools.length === 0) {
@@ -150,10 +152,11 @@ const CreateOrEditClassroom: React.FC<CreateOrEditClassroomProps> = ({
         customized_description: tool.customized_description || null,
         additional_instruction: tool.additional_instruction || null,
       })),
+
+      resources: uploadedFiles,
     };
 
     try {
-      console.log(classroomData);
       await dispatch(createClassroomThunk(classroomData)).unwrap();
       setToastMessage("Classroom created successfully!");
       setToastVariant("default");
@@ -168,7 +171,26 @@ const CreateOrEditClassroom: React.FC<CreateOrEditClassroomProps> = ({
     }
   };
 
-  const nextStep = handleSubmit(() => setCurrentStep(2));
+  const selectedClassroom = useSelector(
+    (state: RootState) => state.classrooms.selectedClassroom
+  );
+
+  useEffect(() => {
+    if (isEdit && selectedClassroom) {
+      setValue("name", selectedClassroom.classroom_name);
+      setValue("description", selectedClassroom.classroom_description || "");
+      setValue("grade", selectedClassroom.grade);
+      setValue("status", selectedClassroom.status);
+      setValue("number_of_students", selectedClassroom.number_of_students);
+      // setSelectedTools(selectedClassroom.tools || []);
+      setUploadedFiles(selectedClassroom.resources || []);
+    }
+  }, [isEdit, selectedClassroom, setValue]);
+
+  const nextStep = handleSubmit((data) => {
+    setCurrentStep(2);
+  });
+
   const previousStep = () => setCurrentStep(1);
 
   return (
@@ -232,7 +254,9 @@ const CreateOrEditClassroom: React.FC<CreateOrEditClassroomProps> = ({
                 />
                 <FormItem>
                   <FormLabel>Upload </FormLabel>
-                  <FileUpload />
+                  <FileUpload
+                    onFilesChange={(files: File[]) => setUploadedFiles(files)}
+                  />
                 </FormItem>
 
                 <FormField
@@ -244,13 +268,13 @@ const CreateOrEditClassroom: React.FC<CreateOrEditClassroomProps> = ({
                       <FormControl>
                         <TextArea placeholder="Enter description" {...field} />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-red-300" />
                     </FormItem>
                   )}
                 />
                 <FormField
                   control={control}
-                  name="allowScope"
+                  name="scope_restriction"
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
@@ -258,10 +282,10 @@ const CreateOrEditClassroom: React.FC<CreateOrEditClassroomProps> = ({
                           <Checkbox
                             checked={field.value}
                             onCheckedChange={field.onChange}
-                            name="allowScope"
+                            name="scope_restriction"
                           />
                           <FormLabel>
-                            Allow student to stay within the scope
+                            Limit student to stay within the scope
                           </FormLabel>
                         </div>
                       </FormControl>

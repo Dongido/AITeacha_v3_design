@@ -6,7 +6,7 @@ export interface Tool {
   description: string;
   service_id: string;
   prompt: string | null;
-  thumbnail: string | null;
+  thumbnail: string;
   assign_to: string;
   slug: string;
   is_customizable: number;
@@ -31,7 +31,7 @@ export const fetchTools = async (): Promise<Tool[]> => {
 };
 
 export interface SubmitToolData {
-  userId: number;
+  user_id: number;
   serviceId: string;
   title?: string;
   subject?: string;

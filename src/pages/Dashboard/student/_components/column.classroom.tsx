@@ -1,8 +1,7 @@
-import { Classroom } from "../../../../api/interface";
+import { Classroom } from "../../../../api/studentclassroom";
 import { createColumnHelper } from "@tanstack/react-table";
 import Header from "../../../../components/table/TableHeaderItem";
 import Actions from "../../../../components/table/TableActions";
-import DeleteClassroomDialog from "./DeleteClassroomDialogue";
 import { StatusType } from "../../../../lib/constants";
 import Status from "../../_components/Status";
 import { useRef } from "react";
@@ -16,8 +15,8 @@ export const classroomColumns = [
     sortingFn: "text",
     cell: (info) => {
       const classroom = info.row.original;
-      const classroomThumbnail = classroom.classroom_thumbnail;
-      const classroomName = classroom.classroom_name;
+      const classroomThumbnail = classroom.thumbnail;
+      const classroomName = classroom.name;
       const displayText = classroomName.charAt(0).toUpperCase();
 
       return classroomThumbnail ? (
@@ -33,14 +32,14 @@ export const classroomColumns = [
       );
     },
   }),
-  classroomColumnHelper.accessor("classroom_name", {
+  classroomColumnHelper.accessor("name", {
     header: ({ column }) => <Header title="Classroom Name" column={column} />,
     sortingFn: "text",
     cell: (info) => (
       <span className="capitalize whitespace-nowrap">{info.getValue()}</span>
     ),
   }),
-  classroomColumnHelper.accessor("classroom_description", {
+  classroomColumnHelper.accessor("description", {
     header: ({ column }) => <Header title="Description" column={column} />,
     sortingFn: "text",
     cell: (info) => (
@@ -63,18 +62,6 @@ export const classroomColumns = [
       return <Status value={val} />;
     },
   }),
-  classroomColumnHelper.accessor("number_of_students_joined", {
-    header: ({ column }) => <Header title="Students Joined" column={column} />,
-    sortingFn: "text",
-    cell: (info) => {
-      const studentsJoined = info.getValue();
-      return (
-        <span className="whitespace-nowrap">
-          {studentsJoined !== null ? studentsJoined : "No students joined"}
-        </span>
-      );
-    },
-  }),
 
   classroomColumnHelper.accessor("join_url", {
     header: ({ column }) => <Header title="Actions" column={column} />,
@@ -82,29 +69,21 @@ export const classroomColumns = [
     cell: (info) => {
       const navigate = useNavigate();
       const classroomId = info.row.original.classroom_id;
+      const userDetails = JSON.parse(
+        localStorage.getItem("ai-teacha-user") || "{}"
+      );
 
-      // Set up a ref to the delete dialog for this row
-      const deleteDialogRef = useRef<{ openDialog: () => void }>(null);
-
+      const getRedirectPath = () => {
+        if (userDetails.role === 2) {
+          return `/dashboard/classrooms/class-details/${classroomId}`;
+        } else if (userDetails.role === 3) {
+          return `/student/class/class-details/${classroomId}`;
+        }
+        return `/dashboard/classrooms/class-details/${classroomId}`;
+      };
       return (
         <div className="flex items-center gap-2">
-          <Actions
-            viewLink={`/dashboard/classrooms/details/${classroomId}`}
-            editLink={`/dashboard/classrooms/edit/${classroomId}`}
-            deleteFunction={async () => {
-              deleteDialogRef.current?.openDialog();
-              return Promise.resolve();
-            }}
-            editFunction={async () => console.log("edited")}
-          />
-
-          <DeleteClassroomDialog
-            ref={deleteDialogRef}
-            classroomId={classroomId}
-            onSuccess={() => {
-              // Refresh or handle success state after deletion
-            }}
-          />
+          <Actions viewLink={getRedirectPath()} />
         </div>
       );
     },

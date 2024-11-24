@@ -19,7 +19,7 @@ const CTA: React.FC = () => {
             </p>
             <div className="mt-4">
               <Link
-                to={"/auth/sign-up"}
+                to={"/auth/onboarding"}
                 className="inline-flex py-2 px-4 text-white text-sm font-medium bg-primary duration-150 hover:bg-gray-700 active:bg-gray-900 rounded-full hover:shadow-none"
               >
                 Get started
@@ -68,7 +68,7 @@ const CTA: React.FC = () => {
               <div className="text-center lg:text-right">
                 <Link
                   className="font-semibold rounded-full mx-auto inline-flex items-center justify-center bg-white py-4 px-9 hover:bg-opacity-90"
-                  to={"/auth/sign-up"}
+                  to={"/auth/onboarding"}
                 >
                   Join AI Teacha
                 </Link>

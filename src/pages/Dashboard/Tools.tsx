@@ -41,14 +41,27 @@ const Tools = () => {
               className="flex items-center border border-gray-300 px-4 py-3 rounded-3xl bg-white hover:bg-gray-50 cursor-pointer transition duration-500 ease-in-out transform hover:scale-105"
             >
               <div className="text-primary text-2xl mr-4">
-                <FaHeart className="text-purple-500" />
+                {tool.thumbnail ? (
+                  <img
+                    src={
+                      tool.thumbnail.startsWith("http")
+                        ? tool.thumbnail
+                        : `https://${tool.thumbnail}`
+                    }
+                    alt={tool.name || "Tool Thumbnail"}
+                    className="w-8 h-8 object-cover"
+                  />
+                ) : (
+                  <FaHeart className="text-purple-500" />
+                )}
               </div>
 
               <div className="text-left">
                 <h3 className="text-base capitalize font-semibold text-gray-900">
-                  {tool.name}
+                  {tool.name === "math calculator" ? "Solver" : tool.name}
                 </h3>
-                <p className="text-gray-700 text-sm">{tool.description}</p>
+                {tool.description.charAt(0).toUpperCase() +
+                  tool.description.slice(1)}
               </div>
             </Link>
           ))}

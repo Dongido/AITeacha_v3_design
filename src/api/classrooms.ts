@@ -1,37 +1,5 @@
 import apiClient from "../lib/apiClient";
-
-export interface Tool {
-  tool_id: number;
-  tool_name: string;
-  service_id: string;
-  assign_to: string;
-  slug: string;
-  customized_name: string | null;
-  customized_description: string | null;
-  additional_instruction: string | null;
-  tool_description: string;
-  tool_thumbnail: string | null;
-}
-
-export interface Classroom {
-  classroom_id: number;
-  classroom_name: string;
-  classroom_description: string;
-  grade: string;
-  status: string;
-  number_of_students: number;
-  number_of_students_joined: number;
-  classroom_thumbnail: string | null;
-  join_url: string;
-  join_code: string;
-  tools: Tool[];
-}
-export interface ClassroomData {
-  id: number;
-  name: string;
-  description: string;
-  thumbnail: string | null;
-}
+import { Classroom, ClassroomData, Student } from "./interface";
 
 export const fetchClassroomsByUser = async (): Promise<Classroom[]> => {
   try {
@@ -86,14 +54,21 @@ interface CreateClassroomData {
 }
 
 export const createClassroom = async (
-  data: CreateClassroomData
+  data: any,
+  contentType: string = "multipart/form-data"
 ): Promise<Classroom> => {
+  console.log("Using Content-Type:", contentType);
+  console.log(data);
   try {
     const response = await apiClient.post<{
       status: string;
       message: string;
       data: Classroom;
-    }>("/classroom", data);
+    }>("/classroom", data, {
+      headers: {
+        "Content-Type": contentType,
+      },
+    });
 
     if (response.status !== 201) {
       throw new Error("Failed to create classroom.");
@@ -216,6 +191,87 @@ export const addStudentToClassroom = async (
     throw new Error(
       error.response?.data ||
         "Failed to add student to the classroom. Please try again."
+    );
+  }
+};
+export const fetchStudentsInClassroom = async (
+  classroomId: number
+): Promise<any[]> => {
+  try {
+    const response = await apiClient.get<{
+      status: string;
+      message: string;
+      data: any[];
+    }>(`/classroom/students/${classroomId}`, {});
+
+    if (response.status !== 200) {
+      throw new Error("Failed to fetch students.");
+    }
+
+    return response.data.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data || "Failed to fetch students. Please try again."
+    );
+  }
+};
+
+export const removeStudentFromClassroom = async (
+  classroom_id: number,
+  student_id: number
+): Promise<void> => {
+  try {
+    await apiClient.delete(`/classroom/delete/student`, {
+      data: {
+        classroom_id,
+        student_id,
+      },
+    });
+  } catch (error) {
+    throw new Error(
+      `Error removing student ${student_id} from classroom ${classroom_id}`
+    );
+  }
+};
+
+export const fetchClassroomTools = async (
+  classroomId: number
+): Promise<any[]> => {
+  try {
+    const response = await apiClient.get<{
+      status: string;
+      message: string;
+      data: any[];
+    }>(`/classroom/tools/${classroomId}`);
+
+    if (response.status !== 200) {
+      throw new Error("Failed to fetch classroom tools.");
+    }
+
+    return response.data.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data ||
+        "Failed to fetch classroom tools. Please try again."
+    );
+  }
+};
+
+export const fetchStudentAnalytics = async (
+  classroomId: number,
+  studentId: number,
+  tools: any[]
+): Promise<any> => {
+  try {
+    const response = await apiClient.post("/assistant/student/analytics", {
+      classroomId,
+      studentId,
+      tools,
+    });
+    return response.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data?.message || "Failed to fetch student analytics."
     );
   }
 };

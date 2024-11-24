@@ -1,19 +1,25 @@
 import React, { useState, useRef } from "react";
 import { Button } from "./Button";
 
-const FileUpload: React.FC = () => {
+interface FileUploadProps {
+  onFilesChange: (files: File[]) => void;
+}
+
+const FileUpload: React.FC<FileUploadProps> = ({ onFilesChange }) => {
   const [files, setFiles] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(e.target.files || []);
-    setFiles((prevFiles) => [...prevFiles, ...selectedFiles]);
+    const updatedFiles = [...files, ...selectedFiles];
+    setFiles(updatedFiles);
 
     const newPreviewUrls = selectedFiles.map((file) =>
       URL.createObjectURL(file)
     );
     setPreviewUrls((prevUrls) => [...prevUrls, ...newPreviewUrls]);
+    onFilesChange(updatedFiles);
 
     console.log(
       "Files selected:",
@@ -22,8 +28,14 @@ const FileUpload: React.FC = () => {
   };
 
   const handleRemoveFile = (index: number) => {
-    setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
-    setPreviewUrls((prevUrls) => prevUrls.filter((_, i) => i !== index));
+    const updatedFiles = files.filter((_, i) => i !== index);
+    const updatedUrls = previewUrls.filter((_, i) => i !== index);
+
+    setFiles(updatedFiles);
+    setPreviewUrls(updatedUrls);
+
+    onFilesChange(updatedFiles);
+
     console.log("File removed at index:", index);
   };
 

@@ -26,4 +26,6 @@ export interface DecodedToken {
   role: number;
   iat: number;
   exp: number;
+  package: string;
+  firstname: string;
 }

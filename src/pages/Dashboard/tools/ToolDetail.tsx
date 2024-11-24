@@ -49,6 +49,7 @@ const ToolDetail = () => {
     grade: "University",
   });
   const [responseMessage, setResponseMessage] = useState<any | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | "">("");
   const [countries, setCountries] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showToast, setShowToast] = useState(false);
@@ -138,7 +139,7 @@ const ToolDetail = () => {
     }
 
     const data: SubmitToolData = {
-      userId: user_Id,
+      user_id: user_Id,
       serviceId: tool.service_id,
       ...formData,
     };
@@ -152,8 +153,12 @@ const ToolDetail = () => {
     try {
       const response = await submitToolData(data);
       const plainTextResponse = await markdownToPlainText(response.data.data);
-      console.log(plainTextResponse);
+      console.log(response);
       setResponseMessage(plainTextResponse);
+      const imageUrl = plainTextResponse;
+      const quotedImageUrl = `"${imageUrl}"`;
+      setImageUrl(quotedImageUrl);
+      console.log(quotedImageUrl);
       setToastMessage("Submission successful!");
       setToastVariant("default");
     } catch (error: any) {
@@ -196,7 +201,9 @@ const ToolDetail = () => {
         <div className="flex flex-col lg:flex-row lg:space-x-8">
           <div className="lg:w-1/2">
             <div className="flex gap-3 mb-4">
-              <h2 className="text-2xl font-bold ">{tool.name}</h2>
+              <h2 className="text-2xl font-bold capitalize">
+                {tool.name === "math calculator" ? "Solver" : tool.name}
+              </h2>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -252,17 +259,55 @@ const ToolDetail = () => {
                         </Select>
                       </div>
                     )}
-                  {field !== "grade" && field !== "country" && (
+                  {field === "subject" && (
                     <div>
-                      <Label>{field}</Label>
-                      <Input
-                        type="text"
-                        name={field}
-                        value={formData[field]}
-                        onChange={handleInputChange}
-                      />
+                      <Label>Subject</Label>
+                      {tool.service_id === "math calculator" ? (
+                        <Select
+                          onValueChange={(value) =>
+                            setFormData((prevData) => ({
+                              ...prevData,
+                              subject: value,
+                            }))
+                          }
+                          defaultValue="Maths"
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select subject" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {["Maths", "Physics", "Chemistry"].map(
+                              (subject) => (
+                                <SelectItem key={subject} value={subject}>
+                                  {subject}
+                                </SelectItem>
+                              )
+                            )}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <Input
+                          type="text"
+                          name="subject"
+                          value={formData.subject || ""}
+                          onChange={handleInputChange}
+                        />
+                      )}
                     </div>
                   )}
+                  {field !== "grade" &&
+                    field !== "country" &&
+                    field !== "subject" && (
+                      <div>
+                        <Label>{field}</Label>
+                        <Input
+                          type="text"
+                          name={field}
+                          value={formData[field]}
+                          onChange={handleInputChange}
+                        />
+                      </div>
+                    )}
                 </div>
               ))}
               <Button
@@ -278,12 +323,26 @@ const ToolDetail = () => {
 
           <div className="lg:w-1/2 mt-8 lg:mt-0">
             <h3 className="text-xl font-bold mb-4">Submission Response</h3>
-            <TextArea
-              readOnly
-              value={responseMessage || "No response yet."}
-              className="w-full p-3 border border-gray-300 rounded-md resize-none"
-              style={{ height: "400px" }}
-            />
+            {tool.service_id === "image creator" && responseMessage ? (
+              <div className="flex py-2 bg-white border border-gray-300 rounded-md  justify-center items-center">
+                <img
+                  src={imageUrl}
+                  alt="Generated Content"
+                  className="max-w-full h-auto border border-gray-300 rounded-md"
+                  onError={(e) => {
+                    e.currentTarget.src =
+                      "https://via.placeholder.com/400?text=Image+Unavailable";
+                  }}
+                />
+              </div>
+            ) : (
+              <TextArea
+                readOnly
+                value={responseMessage || "No response yet."}
+                className="w-full p-3 border border-gray-300 rounded-md resize-none"
+                style={{ height: "400px" }}
+              />
+            )}
           </div>
         </div>
 

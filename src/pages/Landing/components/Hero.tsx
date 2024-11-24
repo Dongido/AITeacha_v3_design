@@ -67,7 +67,7 @@ const Hero = () => {
         </p>
         <div className="flex flex-col items-center mb-6 lg:mb-12">
           <Link
-            to="/auth/sign-up"
+            to="/auth/onboarding"
             className="inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center text-white rounded-full bg-primary focus:ring-4 focus:ring-primary-300 dark:focus:ring-primary-900"
           >
             Get started for free

@@ -36,6 +36,9 @@ export function DashboardNavbar() {
 
   const handleLogout = () => {
     Cookies.remove("at-accessToken");
+    Cookies.remove("at-refreshToken");
+    localStorage.removeItem("ai-teacha-user");
+    localStorage.removeItem("redirectPath");
     navigate("/auth/login");
   };
 

@@ -7,7 +7,7 @@ interface Tool {
   description: string;
   service_id: string;
   prompt: string | null;
-  thumbnail: string | null;
+  thumbnail: string;
   assign_to: string;
   slug: string;
   is_customizable: number;
