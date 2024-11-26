@@ -27,6 +27,8 @@ import {
 } from "../../../components/ui/Toast";
 import NotFound from "./NotFound";
 import LoadingToolDetails from "./Loading";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const gradeOptions = [
   "Pre School",
@@ -36,6 +38,22 @@ const gradeOptions = [
   ...Array.from({ length: 12 }, (_, i) => `Grade ${i + 1}`),
   "University",
 ];
+
+const activityList = [
+  { label: "Quizzes", value: "Quizzes" },
+  { label: "Crossword Puzzles", value: "Crossword Puzzles" },
+  { label: "Word Searches", value: "Word Searches" },
+  { label: "Matching Games", value: "Matching Games" },
+];
+interface FormField {
+  name: string;
+  label: string;
+  value?: string;
+}
+
+interface FormLabels {
+  [key: string]: string; // Keys are field names, and values are the labels
+}
 
 const ToolDetail = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -48,6 +66,8 @@ const ToolDetail = () => {
   const [formData, setFormData] = useState<{ [key: string]: any }>({
     grade: "University",
   });
+  const [formFields, setFormFields] = useState<FormField[]>([]);
+  const [formLabels, setFormLabels] = useState<{ [key: string]: string }>({});
   const [responseMessage, setResponseMessage] = useState<any | null>(null);
   const [imageUrl, setImageUrl] = useState<string | "">("");
   const [countries, setCountries] = useState<string[]>([]);
@@ -75,10 +95,38 @@ const ToolDetail = () => {
       setTool(selectedTool);
 
       if (selectedTool?.req_param) {
+        const reqParam = JSON.parse(selectedTool.req_param);
+        const label = JSON.parse(selectedTool.label);
         try {
           const initialFields = JSON.parse(selectedTool.req_param);
+          const reqParam = JSON.parse(selectedTool.req_param);
+          const label = JSON.parse(selectedTool.label);
           delete initialFields.serviceId;
           setFormData({ ...initialFields, grade: "University" });
+          if (selectedTool.label) {
+            const parsedLabels = JSON.parse(selectedTool.label);
+            setFormLabels(parsedLabels);
+
+            const updatedLabels = Object.keys(parsedLabels).reduce(
+              (acc: FormLabels, key: string) => {
+                const labelValue = parsedLabels[key] || key;
+                const formattedKey = key.replace(/\s+/g, "");
+                acc[formattedKey] = labelValue;
+                return acc;
+              },
+              {}
+            );
+
+            const fields = Object.keys(reqParam).map((key) => ({
+              name: key,
+              label: updatedLabels[key] || "",
+            }));
+
+            setFormFields(fields);
+            console.log(fields);
+            console.log(reqParam);
+            console.log(updatedLabels);
+          }
         } catch (error) {
           console.error("Failed to parse req_param:", error);
         }
@@ -132,7 +180,7 @@ const ToolDetail = () => {
     const user_Id = user?.id;
 
     if (!user_Id || !tool?.service_id) {
-      setToastMessage("Missing required data. Ensure user is logged in.");
+      setToastMessage("Service_id is missing from tool");
       setToastVariant("destructive");
       setShowToast(true);
       return;
@@ -156,7 +204,7 @@ const ToolDetail = () => {
       console.log(response);
       setResponseMessage(plainTextResponse);
       const imageUrl = plainTextResponse;
-      const quotedImageUrl = `"${imageUrl}"`;
+      const quotedImageUrl = `${imageUrl}`;
       setImageUrl(quotedImageUrl);
       console.log(quotedImageUrl);
       setToastMessage("Submission successful!");
@@ -170,6 +218,12 @@ const ToolDetail = () => {
       setIsSubmitting(false);
       setShowToast(true);
     }
+  };
+  const splitCompoundWord = (word: string): string => {
+    return word
+      .replace(/([a-z])([A-Z])/g, "$1 $2")
+      .replace(/([A-Z])([A-Z][a-z])/g, "$1 $2")
+      .replace(/^./, (match) => match.toUpperCase());
   };
 
   if (loading || loadingTool) {
@@ -216,29 +270,30 @@ const ToolDetail = () => {
             <p className="mb-6">{tool.description}</p>
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              {Object.keys(formData).map((field) => (
-                <div key={field}>
-                  {field === "grade" && tool.req_param?.includes("grade") && (
-                    <div>
-                      <Label>Grade</Label>
-                      <Select
-                        onValueChange={handleGradeChange}
-                        defaultValue="University"
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select grade" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {gradeOptions.map((grade) => (
-                            <SelectItem key={grade} value={grade}>
-                              {grade}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  )}
-                  {field === "country" &&
+              {formFields.map((field) => (
+                <div key={field.name}>
+                  {field.name === "grade" &&
+                    tool.req_param?.includes("grade") && (
+                      <div>
+                        <Label>Grade</Label>
+                        <Select
+                          onValueChange={handleGradeChange}
+                          defaultValue="University"
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select grade" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {gradeOptions.map((grade) => (
+                              <SelectItem key={grade} value={grade}>
+                                {grade}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+                  {field.name === "country" &&
                     tool.req_param?.includes("country") && (
                       <div>
                         <Label>Country</Label>
@@ -259,7 +314,7 @@ const ToolDetail = () => {
                         </Select>
                       </div>
                     )}
-                  {field === "subject" && (
+                  {field.name === "subject" && (
                     <div>
                       <Label>Subject</Label>
                       {tool.service_id === "math calculator" ? (
@@ -295,15 +350,46 @@ const ToolDetail = () => {
                       )}
                     </div>
                   )}
-                  {field !== "grade" &&
-                    field !== "country" &&
-                    field !== "subject" && (
+                  {field.name === "activitytype" && (
+                    <div>
+                      <Label>Activity Type</Label>
+                      <Select
+                        onValueChange={(value) =>
+                          setFormData((prevData) => ({
+                            ...prevData,
+                            activityType: value,
+                          }))
+                        }
+                        defaultValue={formData.activityType || ""}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select activity type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {activityList.map((activity) => (
+                            <SelectItem
+                              key={activity.value}
+                              value={activity.value}
+                            >
+                              {activity.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+
+                  {field.name !== "grade" &&
+                    field.name !== "country" &&
+                    field.name !== "activitytype" &&
+                    field.name !== "subject" && (
                       <div>
-                        <Label>{field}</Label>
+                        <label className="capitalize">{field.label}</label>
+
                         <Input
                           type="text"
-                          name={field}
-                          value={formData[field]}
+                          name={field.name}
+                          value={formData[field.name] || ""}
                           onChange={handleInputChange}
                         />
                       </div>
@@ -324,16 +410,22 @@ const ToolDetail = () => {
           <div className="lg:w-1/2 mt-8 lg:mt-0">
             <h3 className="text-xl font-bold mb-4">Submission Response</h3>
             {tool.service_id === "image creator" && responseMessage ? (
-              <div className="flex py-2 bg-white border border-gray-300 rounded-md  justify-center items-center">
-                <img
-                  src={imageUrl}
-                  alt="Generated Content"
-                  className="max-w-full h-auto border border-gray-300 rounded-md"
-                  onError={(e) => {
-                    e.currentTarget.src =
-                      "https://via.placeholder.com/400?text=Image+Unavailable";
-                  }}
-                />
+              <div className="flex p-2 bg-white border border-gray-300 rounded-md  justify-center items-center">
+                <>
+                  <img
+                    src={responseMessage}
+                    alt="Generated Content"
+                    className="max-w-full h-auto border border-gray-300 rounded-md"
+                    onError={(e) => {
+                      e.currentTarget.src =
+                        "https://via.placeholder.com/400?text=Image+Unavailable";
+                    }}
+                  />
+                  {/* <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      children={responseMessage}
+                    /> */}
+                </>
               </div>
             ) : (
               <TextArea

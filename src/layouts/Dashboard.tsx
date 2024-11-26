@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import { Cog6ToothIcon } from "@heroicons/react/24/solid";
 import {
@@ -15,6 +16,7 @@ import { RouteConfig } from "../interfaces";
 export function Dashboard() {
   const { controller, dispatch } = useMaterialTailwindController();
   const { sidenavType } = controller;
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
     <div className="min-h-screen bg-[#F1F1F1]">
@@ -23,8 +25,13 @@ export function Dashboard() {
         brandImg={
           sidenavType === "dark" ? "/img/logo-ct.png" : "/img/logo-ct-dark.png"
         }
+        onToggle={(collapsed) => setIsCollapsed(collapsed)}
       />
-      <div className="p-4 xl:ml-80">
+      <div
+        className={`p-4 transition-all duration-300 ${
+          isCollapsed ? "xl:ml-20" : "xl:ml-72"
+        }`}
+      >
         <DashboardNavbar />
         <Configurator />
         {/* <span className="fixed bottom-8 right-8 z-40 cursor-pointer">

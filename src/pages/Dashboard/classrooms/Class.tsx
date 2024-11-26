@@ -17,11 +17,14 @@ const Classrooms = () => {
     (state: RootState) => state.classrooms
   );
 
+  // useEffect(() => {
+  //   if (classrooms.length === 0) {
+  //     dispatch(loadClassrooms());
+  //   }
+  // }, [dispatch, classrooms.length]);
   useEffect(() => {
-    if (classrooms.length === 0) {
-      dispatch(loadClassrooms());
-    }
-  }, [dispatch, classrooms.length]);
+    dispatch(loadClassrooms());
+  }, [dispatch]);
   const navigate = useNavigate();
 
   const handleRowClick = (classroom: Classroom) => {

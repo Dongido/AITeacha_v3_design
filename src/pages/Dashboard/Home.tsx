@@ -128,10 +128,10 @@ const Home = () => {
                               : `https://${tool.thumbnail}`
                           }
                           alt={tool.name || "Tool Thumbnail"}
-                          className="w-8 h-8 object-cover" // Adjust size and styling as needed
+                          className="w-16 h-16 object-cover rounded-lg"
                         />
                       ) : (
-                        <FaHeart className="text-purple-500" />
+                        <FaHeart className="text-purple-500 w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center" />
                       )}
                     </div>
 

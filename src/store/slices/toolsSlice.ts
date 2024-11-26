@@ -12,6 +12,7 @@ interface Tool {
   slug: string;
   is_customizable: number;
   req_param: string;
+  label: string;
   created_at: string;
   updated_at: string;
 }

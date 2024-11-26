@@ -4,7 +4,7 @@ import { TextArea } from "../../components/ui/TextArea";
 import { marked } from "marked";
 import { motion } from "framer-motion";
 import { sendChatMessage } from "../../api/chat";
-
+import greyImg from "../../assets/img/greyimg.avif";
 const Chat = () => {
   const [inputText, setInputText] = useState("");
   const [messages, setMessages] = useState<
@@ -104,9 +104,18 @@ const Chat = () => {
           <div ref={messagesEndRef} />
         </div>
 
-        <div className="fixed bottom-0 left-0 w-full bg-white p-2 border-t lg:flex lg:w-[calc(100%-18rem)] lg:ml-[18rem] flex-col lg:flex-row">
-          <div className="flex justify-between items-center w-full">
-            <div className="relative flex items-center w-full">
+        <div className="fixed bottom-0 left-0 w-full bg-white  border-t lg:flex lg:w-[calc(100%-5rem)] lg:ml-[5rem] flex-col lg:flex-row">
+          <div className="flex justify-between items-center gap-24 w-full">
+            <div
+              className="w-64 h-20 bg-cover bg-center relative hidden lg:block"
+              style={{ backgroundImage: `url(${greyImg})` }}
+            >
+              <span className="absolute inset-0 flex items-center text-sm italic justify-center text-white text-lg font-bold bg-black bg-opacity-20">
+                Powered By <span className="text-lg ml-1"> Zyra</span>
+              </span>
+            </div>
+
+            <div className="relative p-2 lg:-ml-24 flex items-center w-full">
               <TextArea
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}

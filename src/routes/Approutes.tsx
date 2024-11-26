@@ -8,6 +8,7 @@ import {
   BellIcon,
   AcademicCapIcon,
   GlobeAltIcon,
+  DocumentIcon,
   DocumentTextIcon,
   UsersIcon,
   WrenchScrewdriverIcon,
@@ -22,6 +23,7 @@ import Upgrade from "../pages/Dashboard/Upgrade";
 import WorkHistory from "../pages/Dashboard/WorkHistory";
 import AdminTools from "../pages/Dashboard/AdminTools";
 import Report from "../pages/Dashboard/Report";
+import Assignment from "../pages/Dashboard/Assignment";
 
 import Classrooms from "../pages/Dashboard/classrooms/Class";
 import ClassroomDetail from "../pages/Dashboard/classrooms/ClassroomDetail";
@@ -79,6 +81,12 @@ export const routes = [
         element: <Chat />,
       },
       {
+        icon: <DocumentTextIcon {...icon} />,
+        name: "assignment",
+        path: "/assignment",
+        element: <Assignment />,
+      },
+      {
         icon: <BellIcon {...icon} />,
         name: "notifications",
         path: "/notifications",
@@ -93,7 +101,7 @@ export const routes = [
       },
       {
         icon: <DocumentTextIcon {...icon} />,
-        name: "report and asignment",
+        name: "report",
         path: "/report",
         element: <Report />,
       },

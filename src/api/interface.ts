@@ -5,6 +5,7 @@ export interface Tool {
   assign_to: string;
   slug: string;
   customized_name: string | null;
+  label: string;
   customized_description: string | null;
   additional_instruction: string | null;
   tool_description: string;
@@ -23,6 +24,7 @@ export interface Classroom {
   classroom_thumbnail: string | null;
   join_url: string;
   join_code: string;
+  author: string;
   tools: Tool[];
   resources: any[];
 }
