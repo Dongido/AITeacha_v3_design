@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import brandImg from "../../../logo.png";
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const location = useLocation(); // Get the current location
 
   useEffect(() => {
     const handleScroll = () => {
@@ -18,12 +19,12 @@ const Header = () => {
   }, []);
 
   const navLinks = [
-    { name: "Home", href: "/", current: true },
-    { name: "Pricing", href: "#" },
-    { name: "Features", href: "#" },
-    { name: "FAQs", href: "#" },
-    { name: "Blogs", href: "#" },
-    { name: "Contact", href: "#" },
+    { name: "Home", href: "/" },
+    { name: "Pioneer", href: "/pioneer" },
+    { name: "Features", href: "/features" },
+    { name: "FAQs", href: "/faqs" },
+    { name: "Blogs", href: "/blogs" },
+    { name: "Contact", href: "/contact" },
   ];
 
   return (
@@ -91,11 +92,13 @@ const Header = () => {
                   <Link
                     to={link.href}
                     className={`block py-2 pr-2 pl-2 ${
-                      link.current
+                      location.pathname === link.href
                         ? "text-primary lg:bg-transparent"
                         : "text-gray-700"
                     } lg:p-2`}
-                    aria-current={link.current ? "page" : undefined}
+                    aria-current={
+                      location.pathname === link.href ? "page" : undefined
+                    }
                   >
                     {link.name}
                   </Link>

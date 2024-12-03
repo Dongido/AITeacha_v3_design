@@ -26,7 +26,7 @@ export const loginUser = async (
     });
     return response.data;
   } catch (error: any) {
-    throw new Error(error.response?.data || "Login failed. Please try again.");
+    return error.response?.data || "Login failed. Please try again.";
   }
 };
 
@@ -52,5 +52,71 @@ export const registerUser = async (
     }
   } catch (error: any) {
     throw new Error(error.response?.data || "Signup failed. Please try again.");
+  }
+};
+
+export const verifyEmail = async (email: string, code: string) => {
+  try {
+    const response = await apiClient.put("/auth/verify/email", {
+      email,
+      code,
+    });
+    return response.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data || "Verification failed. Please try again."
+    );
+  }
+};
+export const sendCode = async (email: string) => {
+  try {
+    const response = await apiClient.put("/auth/send/verificationcode", {
+      email,
+    });
+    return response.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data || "Verification failed. Please try again."
+    );
+  }
+};
+export const requestPasswordReset = async (email: string): Promise<void> => {
+  try {
+    await apiClient.post("/auth/password/check", { email });
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data?.message ||
+        "Failed to send reset link. Please try again."
+    );
+  }
+};
+
+export const verifyResetToken = async (
+  email: string,
+  token: string
+): Promise<void> => {
+  try {
+    await apiClient.post("/auth/password/verifytoken", { email, token });
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data?.message || "Token verification failed."
+    );
+  }
+};
+
+export const resetPassword = async (
+  email: string,
+  newPassword: string
+): Promise<any> => {
+  try {
+    await apiClient.put("/auth/password/reset", {
+      email,
+      password: newPassword,
+    });
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data?.message ||
+        "Failed to reset password. Please try again."
+    );
   }
 };

@@ -17,7 +17,9 @@
 .swiper-rtl .swiper-button-next:after {
   content: "" !important;
 }
-
+.markdown {
+  height: 400px;
+}
 .swiper-button-next:after,
 .swiper-rtl .swiper-button-prev:after {
   content: "" !important;

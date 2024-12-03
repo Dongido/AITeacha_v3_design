@@ -16,6 +16,7 @@ import { marked } from "marked";
 import Drawer from "react-modern-drawer";
 import "react-modern-drawer/dist/index.css";
 import greyImg from "../../../assets/img/greyimg.avif";
+
 const Classroom = () => {
   const [inputText, setInputText] = useState("");
   const [selectedTool, setSelectedTool] = useState<string | null>(null);
@@ -84,6 +85,7 @@ const Classroom = () => {
           classroom_id: classroom?.classroom_id || 0,
           classname: classroom?.classroom_name || "",
           description: classroom?.classroom_description || "",
+          scope_restriction: classroom?.scope_restriction || true,
           grade: classroom?.grade || "",
           student_message: inputText,
           content_from: "classroom_tools",
@@ -97,6 +99,7 @@ const Classroom = () => {
       : {
           classroom_id: classroom?.classroom_id || 0,
           classname: classroom?.classroom_name || "",
+          scope_restriction: classroom?.scope_restriction || true,
           description: classroom?.classroom_description || "",
           grade: classroom?.grade || "",
           student_message: inputText,
@@ -222,7 +225,7 @@ const Classroom = () => {
               {tools.map((tool) => (
                 <li
                   key={tool.tool_id}
-                  className={`border cursor-pointer px-4 py-3 rounded-lg ${
+                  className={`capitalize border cursor-pointer px-4 py-3 rounded-lg ${
                     selectedTool === tool.tool_name
                       ? "bg-primary text-white"
                       : ""
@@ -296,7 +299,7 @@ const Classroom = () => {
             {tools.map((tool) => (
               <li
                 key={tool.tool_id}
-                className={`cursor-pointer px-4 py-2 rounded-lg ${
+                className={`capitalize cursor-pointer px-4 py-2 rounded-lg ${
                   selectedTool === tool.tool_name ? "bg-primary text-white" : ""
                 }`}
                 onClick={() => setSelectedTool(tool.tool_name)}

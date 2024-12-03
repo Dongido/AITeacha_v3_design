@@ -34,9 +34,6 @@ export function DashboardNavbar() {
   const navigate = useNavigate();
   const [layout, page] = pathname.split("/").filter((el) => el !== "");
 
-  console.log(page);
-  const pageName = page === undefined ? "dashboard" : page;
-
   const handleLogout = () => {
     Cookies.remove("at-accessToken");
     Cookies.remove("at-refreshToken");
@@ -57,7 +54,7 @@ export function DashboardNavbar() {
       <div className="flex flex-col-reverse justify-between gap-6 md:flex-row md:items-center">
         <div className="capitalize px-4">
           <Text variant="large" color="blue-gray">
-            {pageName}
+            {page}
           </Text>
         </div>
         <div className="flex items-center gap-0">
@@ -77,7 +74,7 @@ export function DashboardNavbar() {
           >
             <Bars3Icon strokeWidth={3} className="h-6 w-6 text-blue-gray-500" />
           </Button>
-          <Link to="/dashboard/profile">
+          <Link to="/student/profile">
             <Button variant="text" color="blue-gray" className="grid">
               <UserCircleIcon className="h-5 w-5 text-blue-gray-500" />
             </Button>

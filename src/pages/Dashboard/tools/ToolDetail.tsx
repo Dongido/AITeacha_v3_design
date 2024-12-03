@@ -8,7 +8,11 @@ import { Input } from "../../../components/ui/Input";
 import { Label } from "../../../components/ui/Label";
 import { Button } from "../../../components/ui/Button";
 import { Undo2 } from "lucide-react";
-import { submitToolData, SubmitToolData } from "../../../api/tools";
+import {
+  submitToolData,
+  saveResource,
+  SubmitToolData,
+} from "../../../api/tools";
 import { marked } from "marked";
 import {
   Select,
@@ -29,6 +33,8 @@ import NotFound from "./NotFound";
 import LoadingToolDetails from "./Loading";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { jsPDF } from "jspdf";
+import { Country } from "country-state-city";
 
 const gradeOptions = [
   "Pre School",
@@ -69,9 +75,14 @@ const ToolDetail = () => {
   const [formFields, setFormFields] = useState<FormField[]>([]);
   const [formLabels, setFormLabels] = useState<{ [key: string]: string }>({});
   const [responseMessage, setResponseMessage] = useState<any | null>(null);
+  const [tunedResponseMessage, setTunedResponseMessage] = useState<any | null>(
+    null
+  );
   const [imageUrl, setImageUrl] = useState<string | "">("");
   const [countries, setCountries] = useState<string[]>([]);
+  const [selectedCountry, setSelectedCountry] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [toastVariant, setToastVariant] = useState<"default" | "destructive">(
@@ -88,6 +99,13 @@ const ToolDetail = () => {
 
     fetchData();
   }, [dispatch, tools.length]);
+
+  useEffect(() => {
+    const countryList = Country.getAllCountries().map(
+      (country) => country.name
+    );
+    setCountries(countryList);
+  }, []);
 
   useEffect(() => {
     if (!loadingTool) {
@@ -119,7 +137,7 @@ const ToolDetail = () => {
 
             const fields = Object.keys(reqParam).map((key) => ({
               name: key,
-              label: updatedLabels[key] || "",
+              label: updatedLabels[key] || key,
             }));
 
             setFormFields(fields);
@@ -133,22 +151,6 @@ const ToolDetail = () => {
       }
     }
   }, [slug, tools, loadingTool]);
-
-  useEffect(() => {
-    const fetchCountries = async () => {
-      try {
-        const response = await fetch("https://restcountries.com/v3.1/all");
-        const data = await response.json();
-        const countryNames = data
-          .map((country: any) => country.name.common)
-          .sort();
-        setCountries(countryNames);
-      } catch (error) {
-        console.error("Failed to fetch countries:", error);
-      }
-    };
-    fetchCountries();
-  }, []);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -167,10 +169,11 @@ const ToolDetail = () => {
     }));
   };
 
-  const handleCountryChange = (value: string) => {
+  const handleCountryChange = (countryName: string) => {
+    setSelectedCountry(countryName);
     setFormData((prevData) => ({
       ...prevData,
-      country: value,
+      country: countryName,
     }));
   };
 
@@ -201,8 +204,9 @@ const ToolDetail = () => {
     try {
       const response = await submitToolData(data);
       const plainTextResponse = await markdownToPlainText(response.data.data);
-      console.log(response);
-      setResponseMessage(plainTextResponse);
+
+      setResponseMessage(response.data.data);
+      setTunedResponseMessage(plainTextResponse);
       const imageUrl = plainTextResponse;
       const quotedImageUrl = `${imageUrl}`;
       setImageUrl(quotedImageUrl);
@@ -217,6 +221,33 @@ const ToolDetail = () => {
     } finally {
       setIsSubmitting(false);
       setShowToast(true);
+    }
+  };
+  const handleSave = async () => {
+    setSaving(true);
+    const currentDate = new Date().toLocaleDateString();
+
+    const prompt_q =
+      formData.title ||
+      formData.description ||
+      formData.topic ||
+      `${tool.name} ${currentDate}`;
+
+    const data = {
+      category: tool.name,
+      prompt_q,
+      returned_answer: responseMessage,
+    };
+    try {
+      await saveResource(data);
+      setToastMessage("Submission successful!");
+      setToastVariant("default");
+    } catch (error: any) {
+      setToastMessage("Failed to submit tool data.");
+      setToastVariant("destructive");
+    } finally {
+      setShowToast(true);
+      setSaving(false);
     }
   };
   const splitCompoundWord = (word: string): string => {
@@ -297,17 +328,14 @@ const ToolDetail = () => {
                     tool.req_param?.includes("country") && (
                       <div>
                         <Label>Country</Label>
-                        <Select
-                          onValueChange={handleCountryChange}
-                          defaultValue="Nigeria"
-                        >
+                        <Select onValueChange={handleCountryChange}>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select country" />
+                            <SelectValue placeholder="Select Country" />
                           </SelectTrigger>
                           <SelectContent>
-                            {countries.map((country) => (
-                              <SelectItem key={country} value={country}>
-                                {country}
+                            {countries.map((countryName) => (
+                              <SelectItem key={countryName} value={countryName}>
+                                {countryName}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -384,7 +412,9 @@ const ToolDetail = () => {
                     field.name !== "activitytype" &&
                     field.name !== "subject" && (
                       <div>
-                        <label className="capitalize">{field.label}</label>
+                        <label className="capitalize">
+                          {splitCompoundWord(field.label)}
+                        </label>
 
                         <Input
                           type="text"
@@ -410,8 +440,8 @@ const ToolDetail = () => {
           <div className="lg:w-1/2 mt-8 lg:mt-0">
             <h3 className="text-xl font-bold mb-4">Submission Response</h3>
             {tool.service_id === "image creator" && responseMessage ? (
-              <div className="flex p-2 bg-white border border-gray-300 rounded-md  justify-center items-center">
-                <>
+              <>
+                <div className="p-2 bg-white border border-gray-300 rounded-md">
                   <img
                     src={responseMessage}
                     alt="Generated Content"
@@ -421,19 +451,72 @@ const ToolDetail = () => {
                         "https://via.placeholder.com/400?text=Image+Unavailable";
                     }}
                   />
-                  {/* <ReactMarkdown
-                      remarkPlugins={[remarkGfm]}
-                      children={responseMessage}
-                    /> */}
-                </>
-              </div>
+                </div>
+                <div className="mt-4">
+                  <button
+                    onClick={() => {
+                      const link = document.createElement("a");
+                      link.href = responseMessage;
+                      link.download = "generated_image.png";
+                      link.click();
+                    }}
+                    className="bg-blue-500 text-white py-2 px-4 rounded-md mr-4"
+                  >
+                    Download Image
+                  </button>
+                </div>
+              </>
             ) : (
-              <TextArea
-                readOnly
-                value={responseMessage || "No response yet."}
-                className="w-full p-3 border border-gray-300 rounded-md resize-none"
-                style={{ height: "400px" }}
-              />
+              <>
+                {/* <TextArea
+                  readOnly
+                  value={responseMessage || "No response yet."}
+                  className="w-full p-3 border border-gray-300 rounded-md resize-none"
+                  
+                /> */}
+                <ReactMarkdown
+                  className="w-full p-3 border border-gray-300 bg-white rounded-md resize-none markdown overflow-auto max-h-96"
+                  remarkPlugins={[remarkGfm]}
+                >
+                  {responseMessage || "No response yet."}
+                </ReactMarkdown>
+                {responseMessage && (
+                  <div className="flex gap-4 mt-4">
+                    {/* <button
+                      onClick={() => {
+                        const blob = new Blob([responseMessage], {
+                          type: "text/plain;charset=utf-8",
+                        });
+                        const link = document.createElement("a");
+                        link.href = URL.createObjectURL(blob);
+                        link.download = "response.txt";
+                        link.click();
+                      }}
+                      className="bg-green-500 text-white py-2 px-4 rounded-md"
+                    >
+                      Download as .txt
+                    </button> */}
+                    <button
+                      onClick={() => {
+                        const doc = new jsPDF();
+                        doc.text(responseMessage, 10, 10);
+                        doc.save("response.pdf");
+                      }}
+                      className="bg-black text-white py-2 px-4 rounded-md"
+                    >
+                      Download as PDF
+                    </button>
+                    <Button
+                      onClick={handleSave}
+                      variant={"gradient"}
+                      disabled={saving}
+                      className="px-4 rounded-md"
+                    >
+                      {saving ? "Saving..." : "Save to history"}
+                    </Button>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>

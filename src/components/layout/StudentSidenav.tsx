@@ -4,6 +4,8 @@ import {
   XMarkIcon,
   LifebuoyIcon,
   Cog6ToothIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
 } from "@heroicons/react/24/outline";
 import {
   useMaterialTailwindController,
@@ -17,6 +19,7 @@ interface RoutePage {
   icon: React.ReactNode;
   name: string;
   path: string;
+  adminOnly?: boolean;
 }
 
 interface Route {
@@ -29,13 +32,15 @@ interface SidenavProps {
   brandImg?: string;
   brandName?: string;
   routes: Route[];
+  onToggle?: (collapsed: boolean) => void;
 }
 
 type SidenavType = "dark" | "white" | "transparent";
 
-export function StudentSidenav({
+export function Sidenav({
   brandName = "AI-Teacha",
   routes,
+  onToggle,
 }: SidenavProps) {
   const { controller, dispatch } = useMaterialTailwindController();
   const { sidenavColor, sidenavType, openSidenav } = controller as {
@@ -43,6 +48,14 @@ export function StudentSidenav({
     sidenavType: SidenavType;
     openSidenav: boolean;
   };
+
+  const userDetails = JSON.parse(
+    localStorage.getItem("ai-teacha-user") || "{}"
+  );
+  console.log(userDetails.package);
+  const isAdmin = userDetails.role === 1;
+
+  const [isCollapsed, setIsCollapsed] = React.useState(false);
 
   const sidenavTypes: Record<SidenavType, string> = {
     dark: "bg-gradient-to-br from-gray-800 to-gray-900",
@@ -52,42 +65,48 @@ export function StudentSidenav({
 
   const sidenavRef = React.useRef<HTMLDivElement>(null);
 
-  React.useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        sidenavRef.current &&
-        !sidenavRef.current.contains(event.target as Node) &&
-        openSidenav
-      ) {
-        setOpenSidenav(dispatch, false);
-      }
+  const handleToggle = () => {
+    const newCollapsedState = !isCollapsed;
+    setIsCollapsed(newCollapsedState);
+    if (onToggle) {
+      onToggle(newCollapsedState);
     }
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [dispatch, openSidenav]);
+  };
 
   return (
     <aside
       ref={sidenavRef}
       className={`${sidenavTypes[sidenavType]} ${
         openSidenav ? "translate-x-0" : "-translate-x-80"
-      } fixed inset-0 z-50 h-[calc(100vh)] w-72 transition-transform duration-300 xl:translate-x-0`}
+      } fixed inset-0 z-50 h-[calc(100vh)] ${
+        isCollapsed ? "w-20" : "w-72"
+      } transition-transform duration-300 xl:translate-x-0`}
     >
-      <div className="relative">
+      <div className="relative flex items-center justify-between p-4">
         <Link to={"/"}>
-          {" "}
-          <div className="flex items-center justify-center py-6 px-8">
-            {brandImg && (
+          <div className="flex items-center">
+            {brandImg && !isCollapsed && (
               <img src={brandImg} alt="Brand Logo" className="h-8 w-8 mr-2" />
             )}
-            <Text variant="large" className="text-center text-black">
-              {brandName}
-            </Text>
+            {!isCollapsed && (
+              <Text variant="large" className="text-center text-black">
+                {brandName}
+              </Text>
+            )}
           </div>
         </Link>
+        <Button
+          variant={"default"}
+          className="p-2 rounded-full xl:inline-block hidden"
+          onClick={handleToggle}
+        >
+          {isCollapsed ? (
+            <ChevronRightIcon className="h-5 w-5 text-gray-700" />
+          ) : (
+            <ChevronLeftIcon className="h-5 w-5 text-gray-700" />
+          )}
+        </Button>
+
         <Button
           variant={"default"}
           className="absolute right-0 top-0 p-2 rounded-br-none rounded-tl-none xl:hidden"
@@ -97,10 +116,17 @@ export function StudentSidenav({
         </Button>
       </div>
 
-      <div className="m-4 overflow-y-auto max-h-[calc(100vh-220px)]">
+      {/* Routes Section */}
+      <div
+        className={`m-4 overflow-y-auto ${
+          isCollapsed
+            ? "max-h-[calc(100vh-140px)]"
+            : "max-h-[calc(100vh-220px)]"
+        }`}
+      >
         {routes.map(({ layout, title, pages }, key) => (
           <ul key={key} className="mb-4 flex flex-col gap-1">
-            {title && (
+            {title && !isCollapsed && (
               <li className="mx-3.5 mt-4 mb-2">
                 <Text
                   variant="small"
@@ -111,64 +137,74 @@ export function StudentSidenav({
                 </Text>
               </li>
             )}
-            {pages.map(({ icon, name, path }) => (
-              <li key={name}>
-                <NavLink to={`/${layout}${path}`}>
-                  {({ isActive }) => (
-                    <Button
-                      variant={isActive ? "gradient" : "ghost"}
-                      color={
-                        isActive
-                          ? sidenavColor
-                          : sidenavType === "dark"
-                          ? "white"
-                          : "blue-gray"
-                      }
-                      className="w-full px-4 capitalize rounded-full hover:bg-[#d2a9f3] hover:text-white"
-                    >
-                      <div className="flex items-center gap-2">
-                        <span className="w-6 flex items-center justify-center">
-                          {icon}
-                        </span>
-                        <Text
-                          color="inherit"
-                          className="font-medium w-40 capitalize text-left"
-                        >
-                          {name}
-                        </Text>
-                      </div>
-                    </Button>
-                  )}
-                </NavLink>
-              </li>
-            ))}
+            {pages.map(({ icon, name, path, adminOnly }) => {
+              if (adminOnly && !isAdmin) return null;
+              return (
+                <li key={name}>
+                  <NavLink to={`/${layout}${path}`}>
+                    {({ isActive }) => (
+                      <Button
+                        variant={isActive ? "gradient" : "ghost"}
+                        color={
+                          isActive
+                            ? sidenavColor
+                            : sidenavType === "dark"
+                            ? "white"
+                            : "blue-gray"
+                        }
+                        className={`w-full px-4 capitalize rounded-full ${
+                          isCollapsed ? "justify-center" : "flex items-center"
+                        } hover:bg-[#d2a9f3] hover:text-white`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="w-6 flex items-center justify-center">
+                            {icon}
+                          </span>
+                          {!isCollapsed && (
+                            <Text
+                              color="inherit"
+                              className="font-medium w-40 capitalize text-left"
+                            >
+                              {name}
+                            </Text>
+                          )}
+                        </div>
+                      </Button>
+                    )}
+                  </NavLink>
+                </li>
+              );
+            })}
           </ul>
         ))}
       </div>
 
-      <div className="absolute bottom-4 left-4 right-4">
-        <Button
-          variant="ghost"
-          color={sidenavColor}
-          className="w-full rounded-full flex items-center  justify-center gap-2"
-        >
-          <LifebuoyIcon className="h-5 w-5" />
-          <span>Support</span>
-        </Button>
+      {/* Bottom Actions */}
+      {!isCollapsed && (
+        <div className="absolute bottom-4 bg-white left-4 right-4">
+          <Button
+            variant="ghost"
+            color={sidenavColor}
+            className="w-full rounded-full flex items-center justify-center gap-2"
+          >
+            <LifebuoyIcon className="h-5 w-5" />
+            <span>Support</span>
+          </Button>
 
-        <Button
-          variant="black"
-          color={sidenavColor}
-          className="w-full rounded-full flex items-center justify-center gap-2"
-        >
-          <Cog6ToothIcon className="h-5 w-5" />
-          <span>Account Settings</span>
-        </Button>
-      </div>
+          <Button
+            variant="black"
+            color={sidenavColor}
+            className="w-full rounded-full flex items-center justify-center gap-2"
+          >
+            <Cog6ToothIcon className="h-5 w-5" />
+            <span>Account Settings</span>
+          </Button>
+        </div>
+      )}
     </aside>
   );
 }
 
-StudentSidenav.displayName = "/src/widgets/layout/Sidenav.tsx";
+Sidenav.displayName = "/src/widgets/layout/Sidenav.tsx";
 
-export default StudentSidenav;
+export default Sidenav;

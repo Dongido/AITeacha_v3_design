@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Routes, Route } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import { Cog6ToothIcon } from "@heroicons/react/24/solid";
 import {
   Sidenav,
@@ -14,9 +14,27 @@ import { useMaterialTailwindController, setOpenConfigurator } from "../context";
 import { RouteConfig } from "../interfaces";
 
 export function Dashboard() {
+  const navigate = useNavigate();
   const { controller, dispatch } = useMaterialTailwindController();
   const { sidenavType } = controller;
   const [isCollapsed, setIsCollapsed] = useState(false);
+
+  const [userDetails, setUserDetails] = useState<any>(null);
+  const [isEmailVerified, setIsEmailVerified] = useState<number>(0);
+
+  useEffect(() => {
+    const userDetailsFromStorage = localStorage.getItem("ai-teacha-user");
+
+    if (userDetailsFromStorage) {
+      const parsedDetails = JSON.parse(userDetailsFromStorage);
+      setUserDetails(parsedDetails);
+      setIsEmailVerified(parsedDetails.is_email_verified);
+    }
+  }, []);
+
+  const handleVerifyEmail = () => {
+    navigate("/dashboard/verify-email");
+  };
 
   return (
     <div className="min-h-screen bg-[#F1F1F1]">
@@ -33,6 +51,18 @@ export function Dashboard() {
         }`}
       >
         <DashboardNavbar />
+        {userDetails && isEmailVerified === 0 && (
+          <div className="bg-yellow-200 mt-3 text-black p-4 rounded-md flex justify-between items-center">
+            <span>Your email is not verified. Please verify your email.</span>
+            <button
+              onClick={handleVerifyEmail}
+              className="text-primary hover:underline"
+            >
+              Verify Email
+            </button>
+          </div>
+        )}
+
         <Configurator />
         {/* <span className="fixed bottom-8 right-8 z-40 cursor-pointer">
           <Cog6ToothIcon

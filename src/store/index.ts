@@ -3,6 +3,10 @@ import authReducer from "./slices/authSlice";
 import toolsReducer from "./slices/toolsSlice";
 import classroomsReducer from "./slices/classroomSlice";
 import studentClassroomsReducer from "./slices/studentClassroomSlice";
+import profileReducer from "./slices/profileSlice";
+import resourcesReducer from "./slices/resourcesSlice";
+import assignmentsReducer from "./slices/assignmentSlice";
+import notificationsReducer from "./slices/notificationsSlice";
 
 const store = configureStore({
   reducer: {
@@ -10,6 +14,10 @@ const store = configureStore({
     tools: toolsReducer,
     classrooms: classroomsReducer,
     studentClassrooms: studentClassroomsReducer,
+    profile: profileReducer,
+    resources: resourcesReducer,
+    assignments: assignmentsReducer,
+    notifications: notificationsReducer,
   },
 });
 

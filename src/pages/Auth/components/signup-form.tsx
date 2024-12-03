@@ -95,9 +95,11 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
       );
       setToastMessage(res.message || "Signup successful! Redirecting...");
       setToastVariant("default");
+      localStorage.setItem("userEmail", data.email);
+
       setToastOpen(true);
       setTimeout(() => {
-        navigate("/auth/login");
+        navigate("/auth/verify-email");
       }, 1500);
     } catch (error: any) {
       setToastMessage(error.message || "Oops! Something went wrong.");

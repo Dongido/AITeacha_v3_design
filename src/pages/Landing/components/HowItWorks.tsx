@@ -44,9 +44,9 @@ const HowItWorks: React.FC = () => {
           <div className="w-12 h-12 flex items-center justify-center bg-white text-black rounded-full text-xl font-bold">
             4
           </div>
-          <h3 className="text-xl font-semibold">Get Started</h3>
+          <h3 className="text-xl font-semibold">Engage Students</h3>
           <p className="text-gray-100 text-center max-w-xs">
-            Begin using AI Teacha to simplify your teaching tasks.
+            Create classrooms and engage Students with AI Teacha
           </p>
         </div>
       </div>

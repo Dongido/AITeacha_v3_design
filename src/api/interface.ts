@@ -21,6 +21,7 @@ export interface Classroom {
   class_intro: string;
   number_of_students: number;
   number_of_students_joined: number;
+  scope_restriction: boolean;
   classroom_thumbnail: string | null;
   join_url: string;
   join_code: string;
@@ -44,4 +45,26 @@ export interface Student {
   firstname: string;
   lastname: string;
   classroom_id: number;
+}
+export interface Assignment {
+  assignment_id: number;
+  assignment_name: string;
+  assignment_description: string;
+  grade: string;
+  status: string;
+  assignment_intro: string;
+  number_of_students: number;
+  number_of_students_completed: number;
+  assignment_thumbnail: string | null;
+  submit_url: string;
+  submission_code: string;
+  author: string;
+}
+
+export interface AssignmentData {
+  id: number;
+  assignmentTitle: string;
+  content: string;
+  submissionDate: string;
+  studentId: number;
 }

@@ -48,6 +48,63 @@ export interface SubmitToolData {
   keywords?: string;
 }
 
+export interface SaveResourceData {
+  category: string;
+  prompt_q: string;
+  returned_answer: string;
+}
+
+export interface Resource {
+  id: string;
+  user_id: string;
+  returned_answer: string;
+  category: string;
+  prompt: string;
+  created_at: string;
+}
+
+export const saveResource = async (data: SaveResourceData) => {
+  try {
+    const response = await apiClient.post("/ai/save/resources", data);
+    return response;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data || "Failed to save resource. Please try again."
+    );
+  }
+};
+
+export const getUserResources = async (): Promise<any[]> => {
+  try {
+    const response = await apiClient.get<{
+      status: string;
+      message: string;
+      data: any[];
+    }>("/ai/user/resources");
+    return response.data.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data ||
+        "Failed to fetch user resources. Please try again."
+    );
+  }
+};
+
+export const getUserResourceById = async (id: string): Promise<any> => {
+  try {
+    const response = await apiClient.get<{
+      status: string;
+      message: string;
+      data: any;
+    }>(`/ai/user/resource/${id}`);
+    return response.data.data[0];
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data || "Failed to fetch the resource. Please try again."
+    );
+  }
+};
+
 export const submitToolData = async (data: SubmitToolData) => {
   try {
     const response = await apiClient.post("/ai/teacher", data);

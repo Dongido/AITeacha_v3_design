@@ -69,7 +69,8 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
     setIsLoading(true);
     try {
       const res: LoginResponse = await loginUser(data.email, data.password);
-      if (res.data.accessToken) {
+      console.log(res);
+      if (res?.data?.accessToken) {
         const decodedToken = jwtDecode(res.data.accessToken) as DecodedToken;
         console.log(decodedToken);
         Cookies.set("at-accessToken", res.data.accessToken, { expires: 7 });
@@ -81,6 +82,7 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
           role: decodedToken.role,
           package: decodedToken.package,
           firstname: decodedToken.firstname,
+          is_email_verified: decodedToken.is_email_verified,
         };
         localStorage.setItem("ai-teacha-user", JSON.stringify(userDetails));
 
@@ -111,13 +113,14 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
           localStorage.removeItem("redirectPath");
           navigate(redirectPath);
         } else {
-          navigate("/dashboard/home");
+          navigate("/dashboard");
         }
-      } else {
-        setToastMessage("Login failed. Please check your credentials.");
+      } else if (res.status == "error") {
+        setToastMessage(res.message);
         setToastVariant("destructive");
       }
     } catch (error: any) {
+      console.log(error);
       setToastMessage(error.message || "Oops! Something went wrong.");
       setToastVariant("destructive");
     } finally {
@@ -176,7 +179,7 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
                   </Label>
                 </div>
                 <Link
-                  to="/recover-password"
+                  to="/auth/reset-password"
                   className="text-sm font-medium text-primary"
                 >
                   Forgot Password?

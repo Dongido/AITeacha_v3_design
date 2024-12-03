@@ -40,7 +40,7 @@ export default function BaseTable({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
-  const [pageSize, setPageSize] = useState<number>(7);
+  const [pageSize, setPageSize] = useState<number>(10);
 
   const table = useReactTable({
     data,

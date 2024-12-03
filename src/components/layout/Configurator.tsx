@@ -64,7 +64,7 @@ export function Configurator() {
       <div className="flex items-start justify-between px-6 pt-8 pb-6">
         <div>
           <Text className="font-normal text-blue-gray-600">
-            Profile Settings.
+            Account Settings.
           </Text>
         </div>
         <Button

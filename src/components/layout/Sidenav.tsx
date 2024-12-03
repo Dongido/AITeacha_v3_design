@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import {
   XMarkIcon,
   LifebuoyIcon,
@@ -139,6 +139,9 @@ export function Sidenav({
             )}
             {pages.map(({ icon, name, path, adminOnly }) => {
               if (adminOnly && !isAdmin) return null;
+              const fullPath = `/${layout}${path}`; // Construct the full path for comparison
+              const basePath = `/${layout}`; // Base path (e.g., /dashboard)
+
               return (
                 <li key={name}>
                   <NavLink to={`/${layout}${path}`}>
@@ -179,7 +182,6 @@ export function Sidenav({
         ))}
       </div>
 
-      {/* Bottom Actions */}
       {!isCollapsed && (
         <div className="absolute bottom-4 bg-white left-4 right-4">
           <Button

@@ -23,7 +23,10 @@ import Upgrade from "../pages/Dashboard/Upgrade";
 import WorkHistory from "../pages/Dashboard/WorkHistory";
 import AdminTools from "../pages/Dashboard/AdminTools";
 import Report from "../pages/Dashboard/Report";
-import Assignment from "../pages/Dashboard/Assignment";
+import Assignment from "../pages/Dashboard/assignment/Assignment";
+import Profile from "../pages/Dashboard/Profile";
+import HistoryDetail from "../pages/Dashboard/History";
+import CreateOrEditAssignment from "../pages/Dashboard/assignment/CreateOrEditAssignment";
 
 import Classrooms from "../pages/Dashboard/classrooms/Class";
 import ClassroomDetail from "../pages/Dashboard/classrooms/ClassroomDetail";
@@ -35,12 +38,16 @@ import History from "../pages/Dashboard/student/History";
 import Classes from "../pages/Dashboard/student/Classes";
 import Classroom from "../pages/Dashboard/student/Classroom";
 import Analytics from "../pages/Dashboard/classrooms/Analytics";
+import VerifyEmail from "../pages/Dashboard/VerifyEmail";
 
 import Login from "../pages/Auth/Login";
 import SignUp from "../pages/Auth/Signup";
+import VerifyForm from "../pages/Auth/VerifyForm";
+import ResetForm from "../pages/Auth/ResetForm";
 import JoinClassroom from "../pages/Dashboard/classrooms/JoinClassroom";
 import ToolDetail from "../pages/Dashboard/tools/ToolDetail";
 import Onboard from "../pages/Auth/Onboard";
+
 const icon = {
   className: "w-5 h-5 text-inherit",
 };
@@ -134,6 +141,12 @@ export const Paramroutes = [
         element: <Classes />,
       },
       {
+        icon: <GlobeAltIcon {...icon} />,
+        name: "history",
+        path: "/history/:id",
+        element: <HistoryDetail />,
+      },
+      {
         icon: <AcademicCapIcon {...icon} />,
         name: "classrooms",
         path: "/classrooms/details/:id",
@@ -157,11 +170,24 @@ export const Paramroutes = [
         path: "/classrooms/create",
         element: <CreateOrEditClassroom isEdit={false} />,
       },
+
       {
         icon: <AcademicCapIcon {...icon} />,
         name: "classrooms",
-        path: "/classrooms/edit/:id",
-        element: <CreateOrEditClassroom isEdit={true} />,
+        path: "/classrooms/class-details/:id",
+        element: <Classroom />,
+      },
+      {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "assignments",
+        path: "/assignments/create",
+        element: <CreateOrEditAssignment isEdit={false} />,
+      },
+      {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "assignments",
+        path: "//assignments/edit/:id",
+        element: <CreateOrEditAssignment isEdit={true} />,
       },
       {
         icon: <AcademicCapIcon {...icon} />,
@@ -187,6 +213,18 @@ export const Paramroutes = [
         name: "Tool Detail",
         path: "/tools/:slug",
         element: <ToolDetail />,
+      },
+      {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "profile",
+        path: "/profile",
+        element: <Profile />,
+      },
+      {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "dashboard",
+        path: "/verify-email",
+        element: <VerifyEmail />,
       },
     ],
   },
@@ -228,6 +266,12 @@ export const StudentParamroutes = [
         path: "/class/class-details/:id",
         element: <Classroom />,
       },
+      {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "profile",
+        path: "/profile",
+        element: <Profile />,
+      },
     ],
   },
 ];
@@ -253,6 +297,18 @@ export const Authroutes = [
         name: "sign-up",
         path: "/sign-up",
         element: <SignUp />,
+      },
+      {
+        icon: <RectangleStackIcon {...icon} />,
+        name: "verify-email",
+        path: "/verify-email",
+        element: <VerifyForm />,
+      },
+      {
+        icon: <RectangleStackIcon {...icon} />,
+        name: "reset-password",
+        path: "/reset-password",
+        element: <ResetForm />,
       },
     ],
   },

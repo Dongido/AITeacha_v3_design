@@ -48,7 +48,7 @@ const Footer: React.FC = () => {
         </span>
         <div className="flex mt-4 space-x-6 sm:justify-center sm:mt-0">
           <a
-            href="#"
+            href="https://linkedin.com/in/aiteacha"
             className="text-gray-500 hover:text-gray-900 dark:hover:text-white"
           >
             <svg
@@ -65,7 +65,7 @@ const Footer: React.FC = () => {
             </svg>
           </a>
           <a
-            href="#"
+            href="https://facebook.com/@aiteacha"
             className="text-gray-500 hover:text-gray-900 dark:hover:text-white"
           >
             <svg
@@ -82,7 +82,7 @@ const Footer: React.FC = () => {
             </svg>
           </a>
           <a
-            href="#"
+            href="https://youtube.com/"
             className="text-gray-500 hover:text-gray-900 dark:hover:text-white"
           >
             <svg
@@ -99,7 +99,7 @@ const Footer: React.FC = () => {
             </svg>
           </a>
           <a
-            href="#"
+            href="https://instagram.com/aiteachaonline"
             className="text-gray-500 hover:text-gray-900 dark:hover:text-white"
           >
             <svg
@@ -120,7 +120,7 @@ const Footer: React.FC = () => {
             </svg>
           </a>
           <a
-            href="#"
+            href="https://twitter.com/@aiteacha"
             className="text-gray-500 hover:text-gray-900 dark:hover:text-white"
           >
             <svg

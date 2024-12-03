@@ -28,4 +28,5 @@ export interface DecodedToken {
   exp: number;
   package: string;
   firstname: string;
+  is_email_verified: number;
 }
