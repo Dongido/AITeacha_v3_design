@@ -27,7 +27,7 @@ export function StudentDashboard() {
   }, []);
 
   const handleVerifyEmail = () => {
-    navigate("/dashboard/verify-email");
+    navigate("/student/verify-email");
   };
 
   return (

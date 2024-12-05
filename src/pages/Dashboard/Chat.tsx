@@ -70,7 +70,7 @@ const Chat = () => {
   return (
     <div className="mt-4">
       <div className="flex flex-col h-[75vh] pt-4 pb-8">
-        <div className="flex-grow overflow-y-auto h-[200px] bg-gray-50 rounded-lg border border-gray-300 shadow-inner p-4">
+        <div className="flex-grow overflow-y-auto h-[200px] mt-0 sm:mt-12 bg-gray-50 rounded-lg border border-gray-300 shadow-inner p-4">
           {messages.length === 0 ? (
             <div className="text-center text-gray-800 italic">
               Hi👋, welcome to the{" "}

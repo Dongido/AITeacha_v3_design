@@ -24,6 +24,9 @@
 .swiper-rtl .swiper-button-prev:after {
   content: "" !important;
 }
+html {
+  scroll-behavior: smooth;
+}
 
 .swiper-button-next svg,
 .swiper-button-prev svg {

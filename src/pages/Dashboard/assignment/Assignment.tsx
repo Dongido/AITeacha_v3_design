@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { loadAssignments } from "../../../store/slices/assignmentSlice";
 import { RootState, AppDispatch } from "../../../store";
@@ -25,9 +25,26 @@ const Assignment = () => {
   const handleLaunchNewAssignment = () => {
     navigate("/dashboard/assignments/create");
   };
+  const [userDetails, setUserDetails] = useState<any>(null);
+  const [isEmailVerified, setIsEmailVerified] = useState<number>(0);
+
+  useEffect(() => {
+    const userDetailsFromStorage = localStorage.getItem("ai-teacha-user");
+
+    if (userDetailsFromStorage) {
+      const parsedDetails = JSON.parse(userDetailsFromStorage);
+      setUserDetails(parsedDetails);
+      setIsEmailVerified(parsedDetails.is_email_verified);
+    }
+  }, []);
 
   return (
-    <div className="mt-12">
+    <div className="mt-4">
+      {userDetails && isEmailVerified === 1 && (
+        <div className="bg-yellow-100 mt-3 mb-4 text-black p-4 rounded-md flex justify-center items-center">
+          <span className="text-center">Teachers Are Heroes🎉</span>
+        </div>
+      )}
       <div className="flex w-full mt-12 mb-6 items-center justify-between flex-col sm:flex-row">
         <h2 className="text-2xl font-bold text-gray-900 sm:mb-0 mb-4">
           Your Assignments

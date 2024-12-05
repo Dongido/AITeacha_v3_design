@@ -23,9 +23,26 @@ const Home = () => {
       dispatch(loadTools());
     }
   }, [dispatch, tools.length]);
+  const [userDetails, setUserDetails] = useState<any>(null);
+  const [isEmailVerified, setIsEmailVerified] = useState<number>(0);
+
+  useEffect(() => {
+    const userDetailsFromStorage = localStorage.getItem("ai-teacha-user");
+
+    if (userDetailsFromStorage) {
+      const parsedDetails = JSON.parse(userDetailsFromStorage);
+      setUserDetails(parsedDetails);
+      setIsEmailVerified(parsedDetails.is_email_verified);
+    }
+  }, []);
 
   return (
-    <div className="mt-12 ">
+    <div className="mt-4 ">
+      {userDetails && isEmailVerified === 1 && (
+        <div className="bg-yellow-100 mt-3 mb-4 text-black p-4 rounded-md flex justify-center items-center">
+          <span className="text-center">Teachers Are Heroes🎉</span>
+        </div>
+      )}
       {loading ? (
         <div className="space-y-4">
           <Skeleton className="h-64 w-full mx-auto rounded-lg" />

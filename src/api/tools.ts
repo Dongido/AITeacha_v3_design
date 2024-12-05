@@ -31,6 +31,21 @@ export const fetchTools = async (): Promise<Tool[]> => {
   }
 };
 
+export const fetchStudentTools = async (): Promise<Tool[]> => {
+  try {
+    const response = await apiClient.get<{
+      status: string;
+      message: string;
+      data: Tool[];
+    }>("/tools/students/use");
+    return response.data.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data || "Failed to fetch student tools. Please try again."
+    );
+  }
+};
+
 export interface SubmitToolData {
   user_id: number;
   serviceId: string;

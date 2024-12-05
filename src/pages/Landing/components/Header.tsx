@@ -1,31 +1,63 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import brandImg from "../../../logo.png";
+import Cookies from "js-cookie";
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const location = useLocation(); // Get the current location
+  const [activeSection, setActiveSection] = useState<string | null>(null);
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 0);
     };
-
     window.addEventListener("scroll", handleScroll);
+
+    const sections = document.querySelectorAll("section");
+    const observerOptions = {
+      root: null,
+      rootMargin: "0px",
+      threshold: 0.3,
+    };
+
+    const observerCallback = (entries: IntersectionObserverEntry[]) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setActiveSection(entry.target.id);
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(
+      observerCallback,
+      observerOptions
+    );
+    sections.forEach((section) => observer.observe(section));
+
     return () => {
       window.removeEventListener("scroll", handleScroll);
+      sections.forEach((section) => observer.unobserve(section));
     };
   }, []);
 
-  const navLinks = [
-    { name: "Home", href: "/" },
-    { name: "Pioneer", href: "/pioneer" },
-    { name: "Features", href: "/features" },
-    { name: "FAQs", href: "/faqs" },
-    { name: "Blogs", href: "/blogs" },
-    { name: "Contact", href: "/contact" },
-  ];
+  const token = Cookies.get("at-accessToken");
+  const scrollToSectionOnHome = (id: string) => {
+    if (window.location.pathname === "/") {
+      const section = document.getElementById(id);
+      if (section) {
+        section.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  };
+
+  useEffect(() => {
+    const hash = window.location.hash.replace("#", "");
+    if (hash) {
+      setTimeout(() => scrollToSectionOnHome(hash), 100);
+    }
+  }, [location]);
 
   return (
     <header
@@ -46,18 +78,29 @@ const Header = () => {
             </span>
           </Link>
           <div className="flex items-center lg:order-2">
-            <Link
-              to="/auth/login"
-              className="text-gray-800 dark:text-white hover:bg-gray-50 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800"
-            >
-              Log in
-            </Link>
-            <Link
-              to="/auth/onboarding"
-              className="text-white bg-primary focus:ring-4 focus:ring-primary-300 font-medium rounded-full text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800"
-            >
-              Get started
-            </Link>
+            {token ? (
+              <Link
+                to="/dashboard/home"
+                className="text-white bg-primary focus:ring-4 focus:ring-primary-300 font-medium rounded-full text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800"
+              >
+                Go to Dashboard
+              </Link>
+            ) : (
+              <>
+                <Link
+                  to="/auth/login"
+                  className="text-gray-800 dark:text-white hover:bg-gray-50 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800"
+                >
+                  Log in
+                </Link>
+                <Link
+                  to="/auth/onboarding"
+                  className="text-white bg-primary focus:ring-4 focus:ring-primary-300 font-medium rounded-full text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800"
+                >
+                  Get started
+                </Link>
+              </>
+            )}
             <button
               onClick={() => setMenuOpen(!menuOpen)}
               type="button"
@@ -87,23 +130,85 @@ const Header = () => {
             id="mobile-menu-2"
           >
             <ul className="flex flex-col mt-4 font-medium lg:flex-row lg:space-x-8 lg:mt-0">
-              {navLinks.map((link, index) => (
-                <li key={index}>
-                  <Link
-                    to={link.href}
-                    className={`block py-2 pr-2 pl-2 ${
-                      location.pathname === link.href
-                        ? "text-primary lg:bg-transparent"
-                        : "text-gray-700"
-                    } lg:p-2`}
-                    aria-current={
-                      location.pathname === link.href ? "page" : undefined
-                    }
-                  >
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
+              <li>
+                <Link
+                  to="/"
+                  className={`block py-2 pr-2 pl-2 lg:p-2 ${
+                    location.pathname === "/" && !location.hash
+                      ? "text-primary"
+                      : "text-gray-700"
+                  }`}
+                >
+                  Home
+                </Link>
+              </li>
+
+              <li>
+                <Link
+                  to="/#features"
+                  className={`block py-2 pr-2 pl-2 lg:p-2 ${
+                    location.hash === "#features"
+                      ? "text-primary"
+                      : "text-gray-700"
+                  }`}
+                  onClick={() =>
+                    setTimeout(() => scrollToSectionOnHome("features"), 50)
+                  }
+                >
+                  Features
+                </Link>
+              </li>
+
+              <li>
+                <Link
+                  to="/#faqs"
+                  className={`block py-2 pr-2 pl-2 lg:p-2 ${
+                    location.hash === "#faqs" ? "text-primary" : "text-gray-700"
+                  }`}
+                  onClick={() =>
+                    setTimeout(() => scrollToSectionOnHome("faqs"), 50)
+                  }
+                >
+                  FAQs
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/pricing"
+                  className={`block py-2 pr-2 pl-2 lg:p-2 ${
+                    location.pathname === "/pricing"
+                      ? "text-primary"
+                      : "text-gray-700"
+                  }`}
+                >
+                  Pricing
+                </Link>
+              </li>
+
+              <li>
+                <Link
+                  to="/blogs"
+                  className={`block py-2 pr-2 pl-2 lg:p-2 ${
+                    location.pathname === "/blogs"
+                      ? "text-primary"
+                      : "text-gray-700"
+                  }`}
+                >
+                  Blogs
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/contact"
+                  className={`block py-2 pr-2 pl-2 lg:p-2 ${
+                    location.pathname === "/contact"
+                      ? "text-primary"
+                      : "text-gray-700"
+                  }`}
+                >
+                  Contact Us
+                </Link>
+              </li>
             </ul>
           </div>
         </div>

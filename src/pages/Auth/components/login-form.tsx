@@ -83,6 +83,7 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
           package: decodedToken.package,
           firstname: decodedToken.firstname,
           is_email_verified: decodedToken.is_email_verified,
+          imageurl: decodedToken.imageurl,
         };
         localStorage.setItem("ai-teacha-user", JSON.stringify(userDetails));
 

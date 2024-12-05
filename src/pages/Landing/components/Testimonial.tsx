@@ -4,7 +4,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.css";
 import SwiperCore from "swiper";
 import { Navigation, Pagination, Autoplay, A11y } from "swiper/modules";
-// Install Swiper modules
+
 SwiperCore.use([Navigation, Pagination, Autoplay, A11y]);
 
 type Testimonial = {

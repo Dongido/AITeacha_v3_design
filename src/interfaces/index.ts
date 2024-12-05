@@ -29,4 +29,5 @@ export interface DecodedToken {
   package: string;
   firstname: string;
   is_email_verified: number;
+  imageurl: string;
 }

@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import { Input } from "../ui/Input";
 import {
@@ -30,6 +31,22 @@ export function DashboardNavbar() {
     fixedNavbar: boolean;
     openSidenav: boolean;
   };
+
+  const [userImage, setUserImage] = useState<string>("");
+
+  useEffect(() => {
+    const userDetails = JSON.parse(
+      localStorage.getItem("ai-teacha-user") || "{}"
+    );
+    const imageUrl = userDetails.imageurl
+      ? userDetails.imageurl.startsWith("http")
+        ? userDetails.imageurl
+        : `https://${userDetails.imageurl}`
+      : "https://img.freepik.com/premium-photo/cool-asian-head-logo_925613-50527.jpg?w=360";
+
+    setUserImage(imageUrl);
+  }, []);
+
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const [layout, page] = pathname.split("/").filter((el) => el !== "");
@@ -75,8 +92,12 @@ export function DashboardNavbar() {
             <Bars3Icon strokeWidth={3} className="h-6 w-6 text-blue-gray-500" />
           </Button>
           <Link to="/student/profile">
-            <Button variant="text" color="blue-gray" className="grid">
-              <UserCircleIcon className="h-5 w-5 text-blue-gray-500" />
+            <Button variant="text" color="blue-gray" className="grid mb-2">
+              <img
+                src={userImage}
+                alt="Profile"
+                className="h-8 w-8 rounded-full object-cover border border-gray-300"
+              />
             </Button>
           </Link>
 

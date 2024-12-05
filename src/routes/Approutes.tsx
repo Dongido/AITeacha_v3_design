@@ -27,7 +27,7 @@ import Assignment from "../pages/Dashboard/assignment/Assignment";
 import Profile from "../pages/Dashboard/Profile";
 import HistoryDetail from "../pages/Dashboard/History";
 import CreateOrEditAssignment from "../pages/Dashboard/assignment/CreateOrEditAssignment";
-
+import StudentToolDetail from "../pages/Dashboard/tools/StudentToolDetail";
 import Classrooms from "../pages/Dashboard/classrooms/Class";
 import ClassroomDetail from "../pages/Dashboard/classrooms/ClassroomDetail";
 import CreateOrEditClassroom from "../pages/Dashboard/classrooms/CreateOrEditClassroom";
@@ -215,6 +215,12 @@ export const Paramroutes = [
         element: <ToolDetail />,
       },
       {
+        icon: <WrenchIcon {...icon} />,
+        name: "Tool Detail",
+        path: "/student/tools/:slug",
+        element: <StudentToolDetail />,
+      },
+      {
         icon: <AcademicCapIcon {...icon} />,
         name: "profile",
         path: "/profile",
@@ -222,7 +228,7 @@ export const Paramroutes = [
       },
       {
         icon: <AcademicCapIcon {...icon} />,
-        name: "dashboard",
+        name: "verify",
         path: "/verify-email",
         element: <VerifyEmail />,
       },
@@ -246,7 +252,6 @@ export const Studentroutes = [
         path: "/class",
         element: <Classes />,
       },
-
       {
         icon: <GlobeAltIcon {...icon} />,
         name: "work history",
@@ -271,6 +276,12 @@ export const StudentParamroutes = [
         name: "profile",
         path: "/profile",
         element: <Profile />,
+      },
+      {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "verify",
+        path: "/verify-email",
+        element: <VerifyEmail />,
       },
     ],
   },

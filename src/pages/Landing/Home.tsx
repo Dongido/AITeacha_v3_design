@@ -53,7 +53,9 @@ const Home: React.FC = () => {
       <div className="flex flex-col items-center justify-center">
         <HowItWorks />
         <AnimatedSection delay={0.4}>
-          <WhatSetsUsApart />
+          <section id="features">
+            <WhatSetsUsApart />
+          </section>
         </AnimatedSection>
         <AnimatedSection delay={0.6}>
           <ToolboxPage />
@@ -63,7 +65,9 @@ const Home: React.FC = () => {
         </AnimatedSection>
         <TestimonialSlider testimonials={testimonials} />
         <AnimatedSection delay={1.2}>
-          <FaqsSection />
+          <section id="faqs">
+            <FaqsSection />
+          </section>
         </AnimatedSection>
         <Footer />
       </div>

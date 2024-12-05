@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useForm, FormProvider } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { loadTools } from "../../../store/slices/toolsSlice";
+import { loadStudentTools } from "../../../store/slices/toolsSlice";
 import { RootState, AppDispatch } from "../../../store";
 import { Button } from "../../../components/ui/Button";
 import {
@@ -88,7 +88,9 @@ const CreateOrEditClassroom: React.FC<CreateOrEditClassroomProps> = ({
   const navigate = useNavigate();
   const { id } = useParams<{ id?: string }>();
   const dispatch = useDispatch<AppDispatch>();
-  const { tools, loading } = useSelector((state: RootState) => state.tools);
+  const { studentTools, studentLoading, studentError } = useSelector(
+    (state: RootState) => state.tools
+  );
   const [selectedTools, setSelectedTools] = useState<ToolData[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [toastOpen, setToastOpen] = useState(false);
@@ -120,10 +122,10 @@ const CreateOrEditClassroom: React.FC<CreateOrEditClassroomProps> = ({
   const { handleSubmit, control, setValue } = formMethods;
 
   useEffect(() => {
-    if (tools.length === 0) {
-      dispatch(loadTools());
+    if (studentTools.length === 0) {
+      dispatch(loadStudentTools());
     }
-  }, [dispatch, tools.length]);
+  }, [dispatch, studentTools.length]);
 
   const handleToolSelect = (tool: ToolData) => {
     const isSelected = selectedTools.find((t) => t.id === tool.id);
@@ -370,10 +372,10 @@ const CreateOrEditClassroom: React.FC<CreateOrEditClassroomProps> = ({
                   Select Tools Needed
                 </h2>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 mt-4">
-                  {loading ? (
+                  {studentLoading ? (
                     <p>Loading tools...</p>
                   ) : (
-                    tools.map((tool) => {
+                    studentTools.map((tool) => {
                       const isSelected = selectedTools.find(
                         (t) => t.id === tool.id
                       );

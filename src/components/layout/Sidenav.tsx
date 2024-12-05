@@ -139,12 +139,18 @@ export function Sidenav({
             )}
             {pages.map(({ icon, name, path, adminOnly }) => {
               if (adminOnly && !isAdmin) return null;
-              const fullPath = `/${layout}${path}`; // Construct the full path for comparison
-              const basePath = `/${layout}`; // Base path (e.g., /dashboard)
-
+              const fullPath = `/${layout}${path}`;
+              const basePath = `/${layout}`;
               return (
                 <li key={name}>
-                  <NavLink to={`/${layout}${path}`}>
+                  <NavLink
+                    to={`/${layout}${path}`}
+                    onClick={() => {
+                      if (window.innerWidth < 1280) {
+                        setOpenSidenav(dispatch, false);
+                      }
+                    }}
+                  >
                     {({ isActive }) => (
                       <Button
                         variant={isActive ? "gradient" : "ghost"}

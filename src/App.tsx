@@ -8,12 +8,43 @@ import { ProtectedRoute } from "./ProtectedRoute";
 import { PublicRoute } from "./PublicRoute";
 import Home from "./pages/Landing/Home";
 import Pioneers from "./pages/Landing/Pioneers";
-
+import Blog from "./pages/Landing/Blog";
+import Contact from "./pages/Landing/Contact";
+import Pricing from "./pages/Landing/Pricing";
+import About from "./pages/Landing/About";
+import Terms from "./pages/Landing/Terms";
+import Privacy from "./pages/Landing/Privacy";
+import LevelUp from "./pages/Landing/BlogPages/LevelUp";
+import AiRole from "./pages/Landing/BlogPages/AIRole";
+import AITransformation from "./pages/Landing/BlogPages/AITransformation";
+import AIEducation from "./pages/Landing/BlogPages/AIEducation";
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/pioneer" element={<Pioneers />} />
+      <Route path="/blogs" element={<Blog />} />
+      <Route path="/contact" element={<Contact />} />
+      <Route path="/pricing" element={<Pricing />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/terms-of-service" element={<Terms />} />
+      <Route path="/privacy-policy" element={<Privacy />} />
+      <Route
+        path="/blogs/level-up-your-teaching-introducing-the-ai-teacher-certification-course"
+        element={<LevelUp />}
+      />
+      <Route
+        path="/blogs/the-role-of-ai-natural-language-processors"
+        element={<AiRole />}
+      />
+      <Route
+        path="/blogs/artificial-intelligence-transforming-education"
+        element={<AITransformation />}
+      />
+      <Route
+        path="/blogs/is-it-really-safe-to-use-ai-in-education"
+        element={<AIEducation />}
+      />
 
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard/*" element={<Dashboard />} />

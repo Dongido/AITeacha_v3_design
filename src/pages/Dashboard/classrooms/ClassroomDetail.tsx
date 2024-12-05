@@ -46,9 +46,26 @@ const ClassroomDetail = () => {
       })
       .catch((error) => console.error("Failed to copy link:", error));
   };
+  const [userDetails, setUserDetails] = useState<any>(null);
+  const [isEmailVerified, setIsEmailVerified] = useState<number>(0);
+
+  useEffect(() => {
+    const userDetailsFromStorage = localStorage.getItem("ai-teacha-user");
+
+    if (userDetailsFromStorage) {
+      const parsedDetails = JSON.parse(userDetailsFromStorage);
+      setUserDetails(parsedDetails);
+      setIsEmailVerified(parsedDetails.is_email_verified);
+    }
+  }, []);
 
   return (
-    <div className="mt-12">
+    <div className="mt-4">
+      {userDetails && isEmailVerified === 1 && (
+        <div className="bg-yellow-100 mt-3 mb-4 text-black p-4 rounded-md flex justify-center items-center">
+          <span className="text-center">Teachers Are Heroes🎉</span>
+        </div>
+      )}
       <div className="flex w-full mt-12 mb-6 items-center justify-between">
         <Button
           className="flex items-center bg-white rounded-md text-black w-fit h-full mr-2 gap-3 py-2"
@@ -122,7 +139,7 @@ const ClassroomDetail = () => {
                 <ArrowRightIcon className="h-5 w-5 ml-2" />
               </button>
 
-              <div className="mt-4 sm:mt-0 flex flex-row items-center">
+              <div className="mt-4 sm:mt-0 flex flex-col items-center">
                 {/* Hide join URL on smaller screens */}
                 <span
                   className="hidden sm:inline text-sm sm:text-xl font-medium mr-2 cursor-pointer"
@@ -143,7 +160,7 @@ const ClassroomDetail = () => {
 
                 <div className="flex items-center mt-2 sm:mt-0">
                   <ClipboardIcon
-                    className="h-5 w-5 cursor-pointer hover:text-gray-300"
+                    className="inline sm:hidden h-5 w-5 cursor-pointer hover:text-gray-300"
                     onClick={handleCopyLink}
                   />
                   {copied && (

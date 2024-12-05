@@ -124,6 +124,12 @@ const Upgrade: React.FC = () => {
           <h3 className="text-lg font-semibold mb-4">Pro Plan</h3>
           <p className="text-2xl font-bold mb-2">
             ₦{prices.pro[billingCycle].toLocaleString()}
+            {billingCycle === "yearly" && (
+              <span className="font-medium text-sm text-gray-700">
+                {" "}
+                ₦4,585 monthly
+              </span>
+            )}
           </p>
           <ul className="list-disc pl-5 space-y-2 mb-6 flex-grow">
             <li>Unlimited use</li>
@@ -154,6 +160,12 @@ const Upgrade: React.FC = () => {
           <h3 className="text-lg font-semibold mb-4">Premium Plan</h3>
           <p className="text-2xl font-bold mb-2">
             ₦{prices.premium[billingCycle].toLocaleString()}
+            {billingCycle === "yearly" && (
+              <span className="font-medium text-sm text-gray-700">
+                {" "}
+                ₦20,385 monthly
+              </span>
+            )}
           </p>
           <ul className="list-disc pl-5 space-y-2 mb-6 flex-grow">
             <li>Unlimited use</li>

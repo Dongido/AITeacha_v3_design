@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { loadUserResources } from "../../store/slices/resourcesSlice";
 import { Skeleton } from "../../components/ui/Skeleton";
@@ -13,9 +13,25 @@ const WorkHistory = () => {
   useEffect(() => {
     dispatch(loadUserResources());
   }, [dispatch]);
+  const [userDetails, setUserDetails] = useState<any>(null);
+  const [isEmailVerified, setIsEmailVerified] = useState<number>(0);
 
+  useEffect(() => {
+    const userDetailsFromStorage = localStorage.getItem("ai-teacha-user");
+
+    if (userDetailsFromStorage) {
+      const parsedDetails = JSON.parse(userDetailsFromStorage);
+      setUserDetails(parsedDetails);
+      setIsEmailVerified(parsedDetails.is_email_verified);
+    }
+  }, []);
   return (
-    <div className="mt-8">
+    <div className="mt-4">
+      {userDetails && isEmailVerified === 1 && (
+        <div className="bg-yellow-100 mt-3 mb-4 text-black p-4 rounded-md flex justify-center items-center">
+          <span className="text-center">Teachers Are Heroes🎉</span>
+        </div>
+      )}
       <h2 className="text-lg font-bold mb-4">Work History</h2>
       {loading ? (
         <div className="overflow-x-auto">

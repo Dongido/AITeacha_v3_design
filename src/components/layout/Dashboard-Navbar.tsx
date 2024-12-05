@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import { Input } from "../ui/Input";
 import {
@@ -30,11 +31,26 @@ export function DashboardNavbar() {
     fixedNavbar: boolean;
     openSidenav: boolean;
   };
+
+  const [userImage, setUserImage] = useState<string>("");
+
+  useEffect(() => {
+    const userDetails = JSON.parse(
+      localStorage.getItem("ai-teacha-user") || "{}"
+    );
+    const imageUrl = userDetails.imageurl
+      ? userDetails.imageurl.startsWith("http")
+        ? userDetails.imageurl
+        : `https://${userDetails.imageurl}`
+      : "https://img.freepik.com/premium-photo/cool-asian-head-logo_925613-50527.jpg?w=360";
+
+    setUserImage(imageUrl);
+  }, []);
+
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const [layout, page] = pathname.split("/").filter((el) => el !== "");
 
-  console.log(page);
   const pageName = page === undefined ? "dashboard" : page;
 
   const handleLogout = () => {
@@ -55,13 +71,14 @@ export function DashboardNavbar() {
       }`}
     >
       <div className="flex flex-col-reverse justify-between gap-6 md:flex-row md:items-center">
-        <div className="capitalize px-4">
+        <div className="capitalize px-4 hidden md:block">
           <Text variant="large" color="blue-gray">
             {pageName}
           </Text>
         </div>
+
         <div className="flex items-center gap-0">
-          <div className="mr-auto sm:ml-6 md:mr-4 sm:mr-0 md:w-56">
+          <div className="mr-auto sm:ml-6 md:mr-4 sm:mr-0 md:w-56 hidden md:block">
             <Input
               placeholder="Search for anything.."
               type="search"
@@ -78,8 +95,12 @@ export function DashboardNavbar() {
             <Bars3Icon strokeWidth={3} className="h-6 w-6 text-blue-gray-500" />
           </Button>
           <Link to="/dashboard/profile">
-            <Button variant="text" color="blue-gray" className="grid">
-              <UserCircleIcon className="h-5 w-5 text-blue-gray-500" />
+            <Button variant="text" color="blue-gray" className="grid mb-2">
+              <img
+                src={userImage}
+                alt="Profile"
+                className="h-8 w-8 rounded-full object-cover border border-gray-300"
+              />
             </Button>
           </Link>
 

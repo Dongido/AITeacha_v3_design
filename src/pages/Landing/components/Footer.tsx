@@ -1,13 +1,14 @@
 import React from "react";
 import brandImg from "../../../logo.png";
+import { Link } from "react-router-dom";
 const Footer: React.FC = () => {
   const footerLinks = [
-    { name: "About", href: "#" },
-    { name: "Contact us", href: "#" },
-    { name: "Pricing", href: "#" },
-    { name: "Blog", href: "#" },
-    { name: "Terms", href: "#" },
-    { name: "Privacy & Policy", href: "#" },
+    { name: "About", href: "/about" },
+    { name: "Contact us", href: "/contact" },
+    { name: "Pricing", href: "/pricing" },
+    { name: "Blog", href: "/blogs" },
+    { name: "Terms", href: "/terms-of-service" },
+    { name: "Privacy & Policy", href: "/privacy-policy" },
   ];
 
   return (
@@ -31,9 +32,9 @@ const Footer: React.FC = () => {
         <ul className="flex flex-wrap justify-center items-center mb-6 text-gray-300">
           {footerLinks.map((link, index) => (
             <li key={index}>
-              <a href={link.href} className="mr-4 hover:underline md:mr-6">
+              <Link to={link.href} className="mr-4 hover:underline md:mr-6">
                 {link.name}
-              </a>
+              </Link>
             </li>
           ))}
         </ul>
