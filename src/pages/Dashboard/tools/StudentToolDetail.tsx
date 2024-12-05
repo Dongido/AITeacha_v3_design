@@ -12,6 +12,7 @@ import {
   submitToolData,
   saveResource,
   SubmitToolData,
+  submitStudentToolData,
 } from "../../../api/tools";
 import { marked } from "marked";
 import {
@@ -210,6 +211,7 @@ const StudentToolDetail = () => {
 
     const data: SubmitToolData = {
       user_id: user_Id,
+      initial: true,
       serviceId: tool.service_id,
       ...formData,
     };
@@ -221,7 +223,7 @@ const StudentToolDetail = () => {
 
     setIsSubmitting(true);
     try {
-      const response = await submitToolData(data);
+      const response = await submitStudentToolData(data);
       const plainTextResponse = await markdownToPlainText(response.data.data);
 
       setResponseMessage(response.data.data);
@@ -254,12 +256,40 @@ const StudentToolDetail = () => {
       ...prevMessages,
       { type: "bot", text: "Generating response..." },
     ]);
+    const user = JSON.parse(localStorage.getItem("ai-teacha-user") || "{}");
+    const user_Id = user?.id;
 
-    //   const response = await sendRequest(currentMessage);
-    // setMessages((prevMessages) => [
-    //   ...prevMessages.slice(0, prevMessages.length - 1),
-    //   { type: "bot", text: response },
-    // ]);
+    const messageData: SubmitToolData = {
+      description: currentMessage,
+      user_id: user_Id,
+      initial: false,
+      serviceId: tool.service_id,
+    };
+    const markdownToPlainText = async (markdown: string): Promise<string> => {
+      const html = await marked(markdown);
+      return html.replace(/<[^>]*>?/gm, "");
+    };
+
+    try {
+      const response = await submitStudentToolData(messageData);
+
+      const plainTextResponse = await markdownToPlainText(response.data.data);
+      setMessages((prevMessages) => [
+        ...prevMessages.slice(0, prevMessages.length - 1),
+        { type: "bot", text: plainTextResponse },
+      ]);
+    } catch (error: any) {
+      // setResponseMessage(error.message || "Failed to submit tool data.");
+      // setToastMessage("Failed to submit tool data.");
+      // setToastVariant("destructive");
+      setMessages((prevMessages) => [
+        ...prevMessages.slice(0, prevMessages.length - 1),
+        { type: "bot", text: error },
+      ]);
+    } finally {
+      setIsSubmitting(false);
+      setShowToast(true);
+    }
 
     setCurrentMessage("");
   };

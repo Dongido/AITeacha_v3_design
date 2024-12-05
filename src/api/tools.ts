@@ -54,6 +54,7 @@ export interface SubmitToolData {
   grade?: string;
   country?: string;
   description?: string;
+  initial?: boolean;
   objective?: string;
   topic?: string;
   noOfQuestions?: number;
@@ -128,5 +129,14 @@ export const submitToolData = async (data: SubmitToolData) => {
     throw new Error(
       error.response?.data || "Failed to submit tool data. Please try again."
     );
+  }
+};
+export const submitStudentToolData = async (data: SubmitToolData) => {
+  try {
+    const response = await apiClient.post("/ai/learner", data);
+    return response;
+  } catch (error: any) {
+    console.log(error);
+    return error.response || "Network Error";
   }
 };
