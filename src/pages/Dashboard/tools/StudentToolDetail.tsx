@@ -212,6 +212,8 @@ const StudentToolDetail = () => {
     const data: SubmitToolData = {
       user_id: user_Id,
       initial: true,
+      prompt: tool.prompt,
+      purpose: tool.purpose,
       serviceId: tool.service_id,
       ...formData,
     };
@@ -263,6 +265,8 @@ const StudentToolDetail = () => {
       description: currentMessage,
       user_id: user_Id,
       initial: false,
+      prompt: tool.prompt,
+      purpose: tool.purpose,
       serviceId: tool.service_id,
     };
     const markdownToPlainText = async (markdown: string): Promise<string> => {

@@ -60,6 +60,8 @@ export interface SubmitToolData {
   noOfQuestions?: number;
   ageGroup?: string;
   theme?: string;
+  purpose?: string;
+  prompt?: string;
   numberOfVerse?: number;
   keywords?: string;
 }
