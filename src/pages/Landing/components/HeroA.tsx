@@ -10,10 +10,11 @@ import icedt from "../../../assets/img/icedt-removebg-preview.png";
 import nvidia from "../../../assets/img/NVIDIA_logo.svg.png";
 
 export default () => {
-  const [text, setText] = useState("10x Your Teaching Goals with");
+  const [text, setText] = useState(
+    "Customizable, effortless lesson plans with"
+  );
 
   const texts = [
-    "10x Your Teaching Goals with",
     "Customizable, effortless lesson plans with",
     "Tailored, standards-aligned curriculum with",
     "Generate streamlined student assessments with",
@@ -55,10 +56,10 @@ export default () => {
         <div className="relative space-y-5 max-w-4xl mx-auto text-center">
           <a
             href="#"
-            className="inline-flex justify-between items-center py-1 px-3   text-sm text-primary bg-gray-50 rounded-full dark:text-white border border-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+            className="inline-flex justify-between items-center py-2 px-3   text-sm text-primary bg-gray-50 rounded-full dark:text-white border border-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
             role="alert"
           >
-            <span className="text-sm font-medium">❤️ Teachers are Heroes</span>
+            <span className="text-lg font-medium">❤️ Teachers are Heroes</span>
           </a>
           <div className="text-center">
             <motion.h2
