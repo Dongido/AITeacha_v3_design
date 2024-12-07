@@ -121,8 +121,8 @@ const FaqsSection: React.FC = () => {
   return (
     <section className="leading-relaxed max-w-screen-xl mt-12 mx-auto px-4 md:px-8">
       <div className="space-y-2 text-center">
-        <h3 className="text-primary font-semibold">More About Us</h3>
-        <h1 className="text-3xl text-gray-900 font-semibold">
+        <h3 className="text-primary font-semibold text-xl">More About Us</h3>
+        <h1 className="text-3xl md:text-4xl lg:text-5xl text-gray-900 font-semibold">
           Frequently Asked Questions
         </h1>
       </div>

@@ -134,14 +134,23 @@ const Onboard = () => {
         </div>
       </div>
 
-      <Button
-        variant={"gradient"}
-        className="rounded-full px-6 py-2 mt-6"
-        onClick={handleContinue}
-        disabled={!selectedRole || loading}
-      >
-        {loading ? "Saving..." : "Continue"}
-      </Button>
+      <div className="flex justify-center items-center gap-4">
+        <Button
+          variant={"gradient"}
+          className="rounded-full px-6 py-2 mt-6"
+          onClick={handleContinue}
+          disabled={!selectedRole || loading}
+        >
+          {loading ? "Saving..." : "Continue"}
+        </Button>
+        <Button
+          className="flex items-center bg-white rounded-md text-black w-fit h-full gap-3 py-2 mb-4"
+          onClick={() => navigate(-1)}
+          variant={"ghost"}
+        >
+          Cancel
+        </Button>
+      </div>
     </div>
   );
 };

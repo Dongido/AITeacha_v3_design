@@ -21,5 +21,6 @@ module.exports = {
     "react-hooks/rules-of-hooks": "off",
     "react-hooks/exhaustive-deps": "off",
     "@typescript-eslint/no-empty-function": "off",
+    "no-prototype-builtins": "off",
   },
 };

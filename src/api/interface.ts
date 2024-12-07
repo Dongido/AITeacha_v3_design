@@ -11,6 +11,11 @@ export interface Tool {
   tool_description: string;
   tool_thumbnail: string | null;
 }
+export interface ClassroomResource {
+  resources_id: number;
+  classroom_path: string;
+  file_content: string;
+}
 
 export interface Classroom {
   classroom_id: number;
@@ -27,12 +32,15 @@ export interface Classroom {
   join_code: string;
   author: string;
   tools: Tool[];
+  classroomresources: ClassroomResource[];
   resources: any[];
 }
 export interface ClassroomData {
   id: number;
   name: string;
   description: string;
+  join_url: string;
+  join_code: string;
   thumbnail: string | null;
 }
 export interface Student {

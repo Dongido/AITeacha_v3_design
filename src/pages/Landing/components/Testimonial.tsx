@@ -23,10 +23,10 @@ const TestimonialSlider: React.FC<TestimonialSliderProps> = ({
   return (
     <div className="w-full pb-6 relative">
       <div className="mx-auto px-4">
-        <h1 className="text-md text-center font-bold text-primary">
+        <h1 className="text-md text-xl text-center font-bold text-primary">
           Testimonials
         </h1>
-        <h2 className="text-3xl font-bold text-center mb-8 text-gray-900">
+        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-8 text-gray-900">
           What Our Customers Say
         </h2>
 

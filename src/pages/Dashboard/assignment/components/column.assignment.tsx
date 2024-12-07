@@ -18,7 +18,6 @@ export const assignmentColumns = [
       const assignment = info.row.original;
       const assignmentThumbnail = assignment.assignment_thumbnail;
       const assignmentName = assignment.assignment_name;
-      const displayText = assignmentName.charAt(0).toUpperCase();
 
       return assignmentThumbnail ? (
         <img
@@ -27,8 +26,8 @@ export const assignmentColumns = [
           className="w-8 h-8 rounded-full object-cover"
         />
       ) : (
-        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-[#7a5ef8] to-[#5c3cbb] text-white font-semibold">
-          {displayText}
+        <div className="flex apitalise items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-[#7a5ef8] to-[#5c3cbb] text-white font-semibold">
+          {assignmentName.charAt(0).toUpperCase() || ""}
         </div>
       );
     },

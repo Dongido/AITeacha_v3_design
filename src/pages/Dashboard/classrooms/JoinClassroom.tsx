@@ -60,16 +60,13 @@ const JoinClassroom = () => {
       setIsJoining(true);
       try {
         const currentUrl = window.location.href;
-        const response = await joinClassroom(currentUrl, joinCode!);
+        const response = await joinClassroom(
+          classroom.join_url,
+          classroom.join_code!
+        );
         setToastMessage(
           response.message || "Successfully joined the classroom!"
         );
-        setToastVariant("default");
-        setShowToast(true);
-
-        await addStudentToClassroom(classroom.id);
-
-        setToastMessage("Student successfully added to the classroom!");
         setToastVariant("default");
         setShowToast(true);
 

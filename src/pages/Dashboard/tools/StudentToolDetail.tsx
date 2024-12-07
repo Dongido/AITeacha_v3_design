@@ -55,6 +55,7 @@ interface FormField {
   name: string;
   label: string;
   value?: string;
+  placeholder: string;
 }
 
 type Message = {
@@ -98,6 +99,13 @@ const StudentToolDetail = () => {
   );
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  interface Field {
+    req_param: string;
+    label: string;
+    placeholder: string;
+  }
+  const [fields, setFields] = useState<Field[]>([]);
+
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -133,37 +141,28 @@ const StudentToolDetail = () => {
       setTool(selectedTool);
 
       if (selectedTool?.req_param) {
-        const reqParam = JSON.parse(selectedTool.req_param);
-        const label = JSON.parse(selectedTool.label);
         try {
           const initialFields = JSON.parse(selectedTool.req_param);
-          const reqParam = JSON.parse(selectedTool.req_param);
-          const label = JSON.parse(selectedTool.label);
           delete initialFields.serviceId;
           setFormData({ ...initialFields, grade: "University" });
-          if (selectedTool.label) {
-            const parsedLabels = JSON.parse(selectedTool.label);
-            setFormLabels(parsedLabels);
 
-            const updatedLabels = Object.keys(parsedLabels).reduce(
-              (acc: FormLabels, key: string) => {
-                const labelValue = parsedLabels[key] || key;
-                const formattedKey = key.replace(/\s+/g, "");
-                acc[formattedKey] = labelValue;
-                return acc;
-              },
-              {}
-            );
+          if (studentTools.length > 0) {
+            const tool = studentTools.find((t) => t.slug === slug);
+            if (!tool) return;
 
-            const fields = Object.keys(reqParam).map((key) => ({
-              name: key,
-              label: updatedLabels[key] || key,
-            }));
+            const reqParams = JSON.parse(tool.req_param);
+            const labels = JSON.parse(tool.label);
+
+            const fields = Object.keys(reqParams).map((key, index) => {
+              const label = Object.keys(labels)[index];
+              return {
+                name: key,
+                label: label || "",
+                placeholder: labels[label] || "",
+              };
+            });
 
             setFormFields(fields);
-            console.log(fields);
-            console.log(reqParam);
-            console.log(updatedLabels);
           }
         } catch (error) {
           console.error("Failed to parse req_param:", error);
@@ -233,7 +232,7 @@ const StudentToolDetail = () => {
       const imageUrl = plainTextResponse;
       const quotedImageUrl = `${imageUrl}`;
       setImageUrl(quotedImageUrl);
-      console.log(quotedImageUrl);
+      //console.log(quotedImageUrl);
       setToastMessage("Submission successful!");
       setToastVariant("default");
     } catch (error: any) {
@@ -389,7 +388,7 @@ const StudentToolDetail = () => {
                     {field.name === "grade" &&
                       tool.req_param?.includes("grade") && (
                         <div>
-                          <Label>Grade</Label>
+                          <Label>{field.label}</Label>
                           <Select
                             onValueChange={handleGradeChange}
                             defaultValue="University"
@@ -410,7 +409,7 @@ const StudentToolDetail = () => {
                     {field.name === "country" &&
                       tool.req_param?.includes("country") && (
                         <div>
-                          <Label>Country</Label>
+                          <Label>{field.label}</Label>
                           <Select onValueChange={handleCountryChange}>
                             <SelectTrigger>
                               <SelectValue placeholder="Select Country" />
@@ -430,7 +429,7 @@ const StudentToolDetail = () => {
                       )}
                     {field.name === "subject" && (
                       <div>
-                        <Label>Subject</Label>
+                        <Label>{field.label}</Label>
                         {tool.service_id === "math calculator" ? (
                           <Select
                             onValueChange={(value) =>
@@ -458,6 +457,9 @@ const StudentToolDetail = () => {
                           <Input
                             type="text"
                             name="subject"
+                            placeholder={
+                              field.placeholder || `enter ${field.name}`
+                            }
                             value={formData.subject || ""}
                             onChange={handleInputChange}
                           />
@@ -466,7 +468,7 @@ const StudentToolDetail = () => {
                     )}
                     {field.name === "activitytype" && (
                       <div>
-                        <Label>Activity Type</Label>
+                        <Label>{field.label}</Label>
                         <Select
                           onValueChange={(value) =>
                             setFormData((prevData) => ({
@@ -498,14 +500,15 @@ const StudentToolDetail = () => {
                       field.name !== "activitytype" &&
                       field.name !== "subject" && (
                         <div>
-                          <label className="capitalize">
-                            {splitCompoundWord(field.label)}
-                          </label>
+                          <label className="capitalize">{field.label}</label>
 
                           <Input
                             type="text"
                             name={field.name}
                             value={formData[field.name] || ""}
+                            placeholder={
+                              field.placeholder || `enter ${field.label}`
+                            }
                             onChange={handleInputChange}
                           />
                         </div>

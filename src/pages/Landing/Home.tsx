@@ -5,10 +5,12 @@ import FaqsSection from "./components/FaqDesign";
 import CTA from "./components/CTA";
 import Footer from "./components/Footer";
 import Hero from "./components/Hero";
+import HeroA from "./components/HeroA";
+import HeroD from "./components/HeroD";
 import HowItWorks from "./components/HowItWorks";
 import WhatSetsUsApart from "./components/WhatSetsUsApart";
 import AnimatedSection from "./components/AnimatedSection";
-
+import Feature from "./components/Feature";
 const Home: React.FC = () => {
   const testimonials = [
     {
@@ -47,18 +49,25 @@ const Home: React.FC = () => {
   return (
     <div className="flex flex-col  min-h-screen bg-white">
       <AnimatedSection delay={0.4}>
-        <Hero />
+        <HeroA />
       </AnimatedSection>
 
       <div className="flex flex-col items-center justify-center">
         <HowItWorks />
+        <AnimatedSection delay={0.4}>
+          <section>
+            <Feature />
+          </section>
+        </AnimatedSection>
         <AnimatedSection delay={0.4}>
           <section id="features">
             <WhatSetsUsApart />
           </section>
         </AnimatedSection>
         <AnimatedSection delay={0.6}>
-          <ToolboxPage />
+          <section id="tools">
+            <ToolboxPage />
+          </section>
         </AnimatedSection>
         <AnimatedSection delay={0.8}>
           <CTA />

@@ -46,6 +46,17 @@ const ClassroomDetail = () => {
       })
       .catch((error) => console.error("Failed to copy link:", error));
   };
+
+  const handleCopyCode = () => {
+    navigator.clipboard
+      .writeText(classroom?.join_code || "")
+      .then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      })
+      .catch((error) => console.error("Failed to copy link:", error));
+  };
+
   const [userDetails, setUserDetails] = useState<any>(null);
   const [isEmailVerified, setIsEmailVerified] = useState<number>(0);
 
@@ -62,8 +73,16 @@ const ClassroomDetail = () => {
   return (
     <div className="mt-4">
       {userDetails && isEmailVerified === 1 && (
-        <div className="bg-yellow-100 mt-3 mb-4 text-black p-4 rounded-md flex justify-center items-center">
-          <span className="text-center">Teachers Are Heroes🎉</span>
+        <div
+          className="bg-[#e5dbff] mt-3 mb-4 text-black p-4 rounded-md flex justify-center items-center"
+          style={{
+            background:
+              "linear-gradient(143.6deg, rgba(192, 132, 252, 0) 20.79%, rgba(232, 121, 249, 0.26) 40.92%, rgba(204, 171, 238, 0) 70.35%)",
+          }}
+        >
+          <span className="text-center text-xl font-bold">
+            Teachers Are Heroes🎉
+          </span>
         </div>
       )}
       <div className="flex w-full mt-12 mb-6 items-center justify-between">
@@ -139,30 +158,32 @@ const ClassroomDetail = () => {
                 <ArrowRightIcon className="h-5 w-5 ml-2" />
               </button>
 
-              <div className="mt-4 sm:mt-0 flex flex-col items-center">
-                {/* Hide join URL on smaller screens */}
-                <span
-                  className="hidden sm:inline text-sm sm:text-xl font-medium mr-2 cursor-pointer"
-                  onClick={handleCopyLink}
-                >
-                  <span className="text-md sm:text-md">
-                    {classroom?.join_url || "Link not available"}
-                  </span>
-                </span>
-
-                {/* Copy URL button visible only on small screens */}
+              <div className="mt-4 sm:mt-0 flex flex-row gap-4 items-center">
                 <button
-                  className="inline sm:hidden bg-white text-[#5C3CBB] font-semibold py-2 px-4 rounded-full text-sm"
-                  onClick={handleCopyLink}
+                  className="bg-[#e5dbff] text-[#5C3CBB] font-semibold py-2 px-4 rounded-full text-sm"
+                  onClick={() => {
+                    navigator.clipboard.writeText(
+                      classroom?.join_url || "Link not available"
+                    );
+                    handleCopyLink();
+                  }}
                 >
-                  Copy Join URL
+                  Copy Link
                 </button>
 
-                <div className="flex items-center mt-2 sm:mt-0">
-                  <ClipboardIcon
-                    className="inline sm:hidden h-5 w-5 cursor-pointer hover:text-gray-300"
-                    onClick={handleCopyLink}
-                  />
+                <button
+                  className=" bg-[#e5dbff] text-[#5C3CBB] font-semibold py-2 px-4 rounded-full text-sm"
+                  onClick={() => {
+                    navigator.clipboard.writeText(
+                      classroom?.join_code || "Code not available"
+                    );
+                    handleCopyCode();
+                  }}
+                >
+                  Copy Code
+                </button>
+
+                <div className="flex items-center mt-2">
                   {copied && (
                     <CheckIcon className="h-5 w-5 ml-2 text-green-400" />
                   )}

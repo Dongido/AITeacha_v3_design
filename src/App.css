@@ -13,6 +13,37 @@
   color: #5c3cbb;
 }
 
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.animate-scroll {
+  animation: scroll 15s linear infinite;
+  display: flex;
+}
+
+.file-input {
+  border: 0.5px solid #ccc;
+  padding: 8px;
+  border-radius: 4px;
+  font-size: 14px;
+  width: 100%;
+}
+
+.file-input:focus {
+  border-color: #5c3cbb;
+  outline: none;
+}
+
+.primary-bold {
+  font-weight: 1000;
+}
+
 .swiper-button-prev:after,
 .swiper-rtl .swiper-button-next:after {
   content: "" !important;

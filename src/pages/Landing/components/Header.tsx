@@ -81,7 +81,7 @@ const Header = () => {
             {token ? (
               <Link
                 to="/dashboard/home"
-                className="text-white bg-primary focus:ring-4 focus:ring-primary-300 font-medium rounded-full text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800"
+                className="text-white bg-primary font-bold focus:ring-4 focus:ring-primary-300  rounded-full text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800"
               >
                 Go to Dashboard
               </Link>
@@ -89,13 +89,13 @@ const Header = () => {
               <>
                 <Link
                   to="/auth/login"
-                  className="text-gray-800 dark:text-white hover:bg-gray-50 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800"
+                  className="text-gray-800 dark:text-white font-bold hover:bg-gray-50 focus:ring-4 focus:ring-gray-300 rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800"
                 >
                   Log in
                 </Link>
                 <Link
                   to="/auth/onboarding"
-                  className="text-white bg-primary focus:ring-4 focus:ring-primary-300 font-medium rounded-full text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800"
+                  className="text-white font-bold bg-primary focus:ring-4 focus:ring-primary-300 rounded-full text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800"
                 >
                   Get started
                 </Link>
@@ -133,10 +133,10 @@ const Header = () => {
               <li>
                 <Link
                   to="/"
-                  className={`block py-2 pr-2 pl-2 lg:p-2 ${
+                  className={`block py-2 font-bold pr-2 pl-2 lg:p-2 ${
                     location.pathname === "/" && !location.hash
                       ? "text-primary"
-                      : "text-gray-700"
+                      : "text-gray-900"
                   }`}
                 >
                   Home
@@ -146,10 +146,10 @@ const Header = () => {
               <li>
                 <Link
                   to="/#features"
-                  className={`block py-2 pr-2 pl-2 lg:p-2 ${
+                  className={`block py-2 font-bold pr-2 pl-2 lg:p-2 ${
                     location.hash === "#features"
                       ? "text-primary"
-                      : "text-gray-700"
+                      : "text-gray-900"
                   }`}
                   onClick={() =>
                     setTimeout(() => scrollToSectionOnHome("features"), 50)
@@ -162,8 +162,8 @@ const Header = () => {
               <li>
                 <Link
                   to="/#faqs"
-                  className={`block py-2 pr-2 pl-2 lg:p-2 ${
-                    location.hash === "#faqs" ? "text-primary" : "text-gray-700"
+                  className={`block py-2 font-bold pr-2 pl-2 lg:p-2 ${
+                    location.hash === "#faqs" ? "text-primary" : "text-gray-900"
                   }`}
                   onClick={() =>
                     setTimeout(() => scrollToSectionOnHome("faqs"), 50)
@@ -175,10 +175,10 @@ const Header = () => {
               <li>
                 <Link
                   to="/pricing"
-                  className={`block py-2 pr-2 pl-2 lg:p-2 ${
+                  className={`block py-2 font-bold pr-2 pl-2 lg:p-2 ${
                     location.pathname === "/pricing"
                       ? "text-primary"
-                      : "text-gray-700"
+                      : "text-gray-900"
                   }`}
                 >
                   Pricing
@@ -188,10 +188,10 @@ const Header = () => {
               <li>
                 <Link
                   to="/blogs"
-                  className={`block py-2 pr-2 pl-2 lg:p-2 ${
+                  className={`block py-2 font-bold pr-2 pl-2 lg:p-2 ${
                     location.pathname === "/blogs"
                       ? "text-primary"
-                      : "text-gray-700"
+                      : "text-gray-900"
                   }`}
                 >
                   Blogs
@@ -200,10 +200,10 @@ const Header = () => {
               <li>
                 <Link
                   to="/contact"
-                  className={`block py-2 pr-2 pl-2 lg:p-2 ${
+                  className={`block py-2 font-bold pr-2 pl-2 lg:p-2 ${
                     location.pathname === "/contact"
                       ? "text-primary"
-                      : "text-gray-700"
+                      : "text-gray-900"
                   }`}
                 >
                   Contact Us

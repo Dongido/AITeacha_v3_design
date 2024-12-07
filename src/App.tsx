@@ -18,6 +18,7 @@ import LevelUp from "./pages/Landing/BlogPages/LevelUp";
 import AiRole from "./pages/Landing/BlogPages/AIRole";
 import AITransformation from "./pages/Landing/BlogPages/AITransformation";
 import AIEducation from "./pages/Landing/BlogPages/AIEducation";
+import RoleBasedRedirect from "./pages/Dashboard/RoleBasedRedirect";
 function App() {
   return (
     <Routes>
@@ -48,6 +49,7 @@ function App() {
 
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard/*" element={<Dashboard />} />
+        <Route path="/classroom/s/*" element={<RoleBasedRedirect />} />
         <Route
           path="/dashboard"
           element={<Navigate to="/dashboard/home" replace />}

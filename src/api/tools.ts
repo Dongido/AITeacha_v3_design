@@ -123,9 +123,16 @@ export const getUserResourceById = async (id: string): Promise<any> => {
   }
 };
 
-export const submitToolData = async (data: SubmitToolData) => {
+export const submitToolData = async (
+  data: any,
+  contentType: string = "multipart/form-data"
+) => {
   try {
-    const response = await apiClient.post("/ai/teacher", data);
+    const response = await apiClient.post("/ai/teacher", data, {
+      headers: {
+        "Content-Type": contentType,
+      },
+    });
     return response;
   } catch (error: any) {
     throw new Error(

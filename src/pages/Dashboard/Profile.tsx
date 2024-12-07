@@ -65,6 +65,19 @@ const Profile: React.FC = () => {
       await dispatch(
         updateUserNameThunk({ firstname: firstName, lastname: lastName })
       ).unwrap();
+      const updatedProfile = await dispatch(loadUserProfile()).unwrap();
+
+      const userDetails = JSON.parse(
+        localStorage.getItem("ai-teacha-user") || "{}"
+      );
+      userDetails.imageurl = updatedProfile.imageurl;
+      localStorage.setItem("ai-teacha-user", JSON.stringify(userDetails));
+
+      // setUserImage(
+      //   updatedProfile.imageurl.startsWith("http")
+      //     ? updatedProfile.imageurl
+      //     : `https://${updatedProfile.imageurl}`
+      // );
       setToastMessage("Profile updated successfully!");
       setEditMode(false);
     } catch (err) {
@@ -78,7 +91,9 @@ const Profile: React.FC = () => {
     if (profilePicture) {
       try {
         await dispatch(updateProfilePhotoThunk(profilePicture)).unwrap();
+        dispatch(loadUserProfile());
         setToastMessage("Profile photo updated successfully!");
+        setEditMode(false);
       } catch (err) {
         setToastMessage(err as string);
       } finally {

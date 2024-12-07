@@ -31,7 +31,10 @@ import {
   ToastTitle,
   ToastViewport,
 } from "../../../components/ui/Toast";
-import { createAssignmentThunk } from "../../../store/slices/assignmentSlice";
+import {
+  createAssignmentThunk,
+  loadAssignments,
+} from "../../../store/slices/assignmentSlice";
 import { Checkbox } from "../../../components/ui/Checkbox";
 
 interface CreateOrEditAssignmentProps {
@@ -98,12 +101,12 @@ const CreateOrEditAssignment: React.FC<CreateOrEditAssignmentProps> = ({
 
     try {
       await dispatch(createAssignmentThunk(assignmentData)).unwrap();
-      setToastMessage("Classroom created successfully!");
+      setToastMessage("Assigment created successfully!");
       setToastVariant("default");
-      await dispatch(loadClassrooms());
-      setTimeout(() => navigate("/dashboard/classrooms"), 1000);
+      await dispatch(loadAssignments());
+      setTimeout(() => navigate("/dashboard/assignment"), 1000);
     } catch (error) {
-      setToastMessage("Failed to create classroom. Please try again.");
+      setToastMessage("Failed to create assignmnet. Please try again.");
       setToastVariant("destructive");
     } finally {
       setToastOpen(true);

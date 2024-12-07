@@ -18,7 +18,6 @@ export const classroomColumns = [
       const classroom = info.row.original;
       const classroomThumbnail = classroom.classroom_thumbnail;
       const classroomName = classroom.classroom_name;
-      const displayText = classroomName.charAt(0).toUpperCase();
 
       return classroomThumbnail ? (
         <img
@@ -27,8 +26,8 @@ export const classroomColumns = [
           className="w-8 h-8 rounded-full object-cover"
         />
       ) : (
-        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-[#7a5ef8] to-[#5c3cbb] text-white font-semibold">
-          {displayText}
+        <div className="flex capitalize items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-[#7a5ef8] to-[#5c3cbb] text-white font-semibold">
+          {classroomName.charAt(0).toUpperCase() || ""}
         </div>
       );
     },
@@ -90,12 +89,12 @@ export const classroomColumns = [
         <div className="flex items-center gap-2">
           <Actions
             viewLink={`/dashboard/classrooms/details/${classroomId}`}
-            editLink={`/dashboard/classrooms/edit/${classroomId}`}
+            //  editLink={`/dashboard/classrooms/edit/${classroomId}`}
             deleteFunction={async () => {
               deleteDialogRef.current?.openDialog();
               return Promise.resolve();
             }}
-            editFunction={async () => console.log("edited")}
+            //  editFunction={async () => console.log("edited")}
           />
 
           <DeleteClassroomDialog

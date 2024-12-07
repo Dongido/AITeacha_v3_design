@@ -10,12 +10,12 @@ const CTA: React.FC = () => {
             <h3 className="text-primary font-semibold">
               Professional services
             </h3>
-            <p className="text-gray-900 text-3xl font-semibold sm:text-4xl">
-              Are you still looking for the “right tools” to enhance tutoring?{" "}
+            <p className="text-gray-900 text-3xl md:text-4xl lg:text-5xl font-semibold sm:text-4xl">
+              AI Tool for Tutors
             </p>
-            <p className="text-gray-600 text-sm">
-              Join AI Teacha to achieve your academic goals with 37+ custom AI
-              tools built specifically for students, educators, and lecturers.
+            <p className="text-gray-800 text-xl">
+              Create a classroom, upload a Curriculum or Teaching content, add
+              your Students and let AI Teacha do the rest.
             </p>
             <div className="mt-4">
               <Link

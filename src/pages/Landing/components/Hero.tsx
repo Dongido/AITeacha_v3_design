@@ -2,33 +2,37 @@ import Header from "./Header";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
-
+import rescillience from "../../../assets/img/resilienc.svg";
+import cfirst from "../../../assets/img/csfirst lag.jpg";
+import openAi from "../../../assets/img/OpenAI_Logo.svg";
+import icedt from "../../../assets/img/icedt.png";
+import nvidia from "../../../assets/img/NVIDIA_logo.svg.png";
 const Hero = () => {
   const [textIndex, setTextIndex] = useState(0);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [displayText, setDisplayText] = useState("");
-  const fullText = "AI Teacha";
-  const typingSpeed = isDeleting ? 50 : 150;
-  const pauseDuration = 1000;
+  // const [isDeleting, setIsDeleting] = useState(false);
+  // const [displayText, setDisplayText] = useState("");
+  // const fullText = "AI Teacha";
+  // const typingSpeed = isDeleting ? 50 : 150;
+  // const pauseDuration = 1000;
 
-  useEffect(() => {
-    const typingInterval = setTimeout(() => {
-      if (!isDeleting && displayText === fullText) {
-        setTimeout(() => setIsDeleting(true), pauseDuration);
-      } else if (isDeleting && displayText === "") {
-        setIsDeleting(false);
-        setTextIndex(0);
-      } else {
-        setDisplayText((prev) =>
-          isDeleting
-            ? fullText.substring(0, prev.length - 1)
-            : fullText.substring(0, prev.length + 1)
-        );
-      }
-    }, typingSpeed);
+  // useEffect(() => {
+  //   const typingInterval = setTimeout(() => {
+  //     if (!isDeleting && displayText === fullText) {
+  //       setTimeout(() => setIsDeleting(true), pauseDuration);
+  //     } else if (isDeleting && displayText === "") {
+  //       setIsDeleting(false);
+  //       setTextIndex(0);
+  //     } else {
+  //       setDisplayText((prev) =>
+  //         isDeleting
+  //           ? fullText.substring(0, prev.length - 1)
+  //           : fullText.substring(0, prev.length + 1)
+  //       );
+  //     }
+  //   }, typingSpeed);
 
-    return () => clearTimeout(typingInterval);
-  }, [displayText, isDeleting]);
+  //   return () => clearTimeout(typingInterval);
+  // }, [displayText, isDeleting]);
 
   return (
     <section
@@ -37,7 +41,7 @@ const Hero = () => {
       }}
     >
       <Header />
-      <div className="py-6 mt-20 px-4 mx-auto max-w-screen-xl text-center lg:py-12 lg:px-12">
+      <div className="relative py-6 mt-20 px-4 mx-auto max-w-screen-xl text-center lg:py-12 lg:px-12">
         <a
           href="#"
           className="inline-flex justify-between items-center py-1 px-3  mb-7 text-sm text-gray-700 bg-gray-100 rounded-full dark:bg-gray-800 dark:text-white border border-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
@@ -58,7 +62,7 @@ const Hero = () => {
             animate={{ opacity: 1 }}
             transition={{ duration: 1 }}
           >
-            {displayText}
+            {"AI Teacha"}
           </motion.span>
         </h1>
         <p className="mb-8 text-lg font-normal text-gray-800 lg:text-xl sm:px-16 xl:px-48 dark:text-gray-400">
@@ -86,51 +90,29 @@ const Hero = () => {
           </Link>
           <p className="mt-2 text-sm text-gray-700">No credit card required</p>
         </div>
-        <div className="px-4 mx-auto text-center md:max-w-screen-md lg:max-w-screen-lg lg:px-36">
-          <span className="font-semibold text-gray-700 ">
-            Over 1,000 organizations trust AI Teacha for their academic tasks
+        <div className="px-4 mx-auto text-center md:max-w-screen-md lg:max-w-screen-xl lg:px-36 overflow-hidden">
+          <span className="font-semibold text-gray-700">
+            Simplify your day to day administrative task by 80% and improve your
+            students outcome.
           </span>
-          <div className="flex flex-wrap justify-center items-center mt-8 text-gray-500 sm:justify-between">
-            <a
-              href="#"
-              className="mr-5 mb-5 lg:mb-0 hover:text-gray-800 dark:hover:text-gray-400"
-            >
-              <img
-                src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg"
-                alt="Microsoft Logo"
-                className="h-8"
-              />
-            </a>
-            <a
-              href="#"
-              className="mr-5 mb-5 lg:mb-0 hover:text-gray-800 dark:hover:text-gray-400"
-            >
-              <img
-                src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Apple_logo_black.svg/90px-Apple_logo_black.svg.png"
-                alt="Apple Logo"
-                className="h-8"
-              />
-            </a>
-            <a
-              href="#"
-              className="mr-5 mb-5 lg:mb-0 hover:text-gray-800 dark:hover:text-gray-400"
-            >
-              <img
-                src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/IBM_logo.svg/1920px-IBM_logo.svg.png"
-                alt="IBM Logo"
-                className="h-8"
-              />
-            </a>
-            <a
-              href="#"
-              className="mr-5 mb-5 lg:mb-0 hover:text-gray-800 dark:hover:text-gray-400"
-            >
-              <img
-                src="https://upload.wikimedia.org/wikipedia/commons/5/51/Google.png"
-                alt="Google Logo"
-                className="h-8"
-              />
-            </a>
+          <div className="relative flex overflow-hidden items-center mt-8 text-gray-500 marquee">
+            <div className="flex marquee-track">
+              <a href="#" className="mr-5 mb-5 lg:mb-0 hover:text-gray-800">
+                <img src={icedt} alt="Microsoft Logo" className="h-16" />
+              </a>
+              <a href="#" className="mr-5 mb-5 lg:mb-0 hover:text-gray-800">
+                <img src={nvidia} alt="Apple Logo" className="h-8" />
+              </a>
+              <a href="#" className="mr-5 mb-5 lg:mb-0 hover:text-gray-800">
+                <img src={openAi} alt="IBM Logo" className="h-10" />
+              </a>
+              <a href="#" className="mr-5 mb-5 lg:mb-0 hover:text-gray-800">
+                <img src={rescillience} alt="Google Logo" className="h-8" />
+              </a>
+              <a href="#" className="mr-5 mb-5 lg:mb-0 hover:text-gray-800">
+                <img src={cfirst} alt="Google Logo" className="h-16" />
+              </a>
+            </div>
           </div>
         </div>
       </div>

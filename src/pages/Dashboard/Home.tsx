@@ -39,8 +39,16 @@ const Home = () => {
   return (
     <div className="mt-4 ">
       {userDetails && isEmailVerified === 1 && (
-        <div className="bg-yellow-100 mt-3 mb-4 text-black p-4 rounded-md flex justify-center items-center">
-          <span className="text-center">Teachers Are Heroes🎉</span>
+        <div
+          className="bg-[#e5dbff] mt-3 mb-4 text-black p-4 rounded-md flex justify-center items-center"
+          style={{
+            background:
+              "linear-gradient(143.6deg, rgba(192, 132, 252, 0) 20.79%, rgba(232, 121, 249, 0.26) 40.92%, rgba(204, 171, 238, 0) 70.35%)",
+          }}
+        >
+          <span className="text-center text-xl font-bold">
+            Teachers Are Heroes🎉
+          </span>
         </div>
       )}
       {loading ? (

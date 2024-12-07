@@ -279,6 +279,12 @@ export const StudentParamroutes = [
       },
       {
         icon: <AcademicCapIcon {...icon} />,
+        name: "Join classroom",
+        path: "/classroom/s/:id",
+        element: <JoinClassroom />,
+      },
+      {
+        icon: <AcademicCapIcon {...icon} />,
         name: "verify",
         path: "/verify-email",
         element: <VerifyEmail />,

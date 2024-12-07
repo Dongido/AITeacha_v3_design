@@ -35,7 +35,19 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { jsPDF } from "jspdf";
 import { Country } from "country-state-city";
-
+import { Checkbox } from "../../../components/ui/Checkbox";
+import { MultiSelect } from "primereact/multiselect";
+import {
+  activityList,
+  sdgOptions,
+  questionTypelist,
+  curriculumFocus,
+  mediaTypelist,
+  difficultyList,
+  voiceTypelist,
+} from "./data";
+import "primereact/resources/primereact.css";
+import "primereact/resources/themes/saga-blue/theme.css";
 const gradeOptions = [
   "Pre School",
   "Early Years",
@@ -45,20 +57,15 @@ const gradeOptions = [
   "University",
 ];
 
-const activityList = [
-  { label: "Quizzes", value: "Quizzes" },
-  { label: "Crossword Puzzles", value: "Crossword Puzzles" },
-  { label: "Word Searches", value: "Word Searches" },
-  { label: "Matching Games", value: "Matching Games" },
-];
 interface FormField {
   name: string;
   label: string;
   value?: string;
+  placeholder: string;
 }
 
 interface FormLabels {
-  [key: string]: string; // Keys are field names, and values are the labels
+  [key: string]: string;
 }
 
 const ToolDetail = () => {
@@ -89,6 +96,13 @@ const ToolDetail = () => {
     "default"
   );
 
+  interface Field {
+    req_param: string;
+    label: string;
+    placeholder: string;
+  }
+  const [fields, setFields] = useState<Field[]>([]);
+
   useEffect(() => {
     const fetchData = async () => {
       if (tools.length === 0) {
@@ -113,37 +127,29 @@ const ToolDetail = () => {
       setTool(selectedTool);
 
       if (selectedTool?.req_param) {
-        const reqParam = JSON.parse(selectedTool.req_param);
-        const label = JSON.parse(selectedTool.label);
         try {
           const initialFields = JSON.parse(selectedTool.req_param);
-          const reqParam = JSON.parse(selectedTool.req_param);
-          const label = JSON.parse(selectedTool.label);
+
           delete initialFields.serviceId;
           setFormData({ ...initialFields, grade: "University" });
-          if (selectedTool.label) {
-            const parsedLabels = JSON.parse(selectedTool.label);
-            setFormLabels(parsedLabels);
+          if (tools.length > 0) {
+            const tool = tools.find((t) => t.slug === slug);
+            if (!tool) return;
 
-            const updatedLabels = Object.keys(parsedLabels).reduce(
-              (acc: FormLabels, key: string) => {
-                const labelValue = parsedLabels[key] || key;
-                const formattedKey = key.replace(/\s+/g, "");
-                acc[formattedKey] = labelValue;
-                return acc;
-              },
-              {}
-            );
+            const reqParams = JSON.parse(tool.req_param);
+            const labels = JSON.parse(tool.label);
 
-            const fields = Object.keys(reqParam).map((key) => ({
-              name: key,
-              label: updatedLabels[key] || key,
-            }));
+            const fields = Object.keys(reqParams).map((key, index) => {
+              const label = Object.keys(labels)[index];
+              return {
+                name: key,
+                label: label || "",
+                placeholder: labels[label] || "",
+              };
+            });
 
-            setFormFields(fields);
             console.log(fields);
-            console.log(reqParam);
-            console.log(updatedLabels);
+            setFormFields(fields);
           }
         } catch (error) {
           console.error("Failed to parse req_param:", error);
@@ -188,12 +194,26 @@ const ToolDetail = () => {
       setShowToast(true);
       return;
     }
+    const formDataToSubmit = new FormData();
 
     const data: SubmitToolData = {
       user_id: user_Id,
       serviceId: tool.service_id,
       ...formData,
     };
+
+    formDataToSubmit.append("user_id", user_Id.toString());
+    formDataToSubmit.append("serviceId", tool.service_id);
+
+    for (const key in formData) {
+      if (formData.hasOwnProperty(key)) {
+        if (key === "file" && formData[key]) {
+          formDataToSubmit.append(key, formData[key]);
+        } else {
+          formDataToSubmit.append(key, formData[key]);
+        }
+      }
+    }
 
     const markdownToPlainText = async (markdown: string): Promise<string> => {
       const html = await marked(markdown);
@@ -202,7 +222,10 @@ const ToolDetail = () => {
 
     setIsSubmitting(true);
     try {
-      const response = await submitToolData(data);
+      console.log(data);
+      console.log("FormData to submit:", formDataToSubmit);
+
+      const response = await submitToolData(formDataToSubmit);
       const plainTextResponse = await markdownToPlainText(response.data.data);
 
       setResponseMessage(response.data.data);
@@ -210,7 +233,6 @@ const ToolDetail = () => {
       const imageUrl = plainTextResponse;
       const quotedImageUrl = `${imageUrl}`;
       setImageUrl(quotedImageUrl);
-      console.log(quotedImageUrl);
       setToastMessage("Submission successful!");
       setToastVariant("default");
     } catch (error: any) {
@@ -223,6 +245,21 @@ const ToolDetail = () => {
       setShowToast(true);
     }
   };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const formData = new FormData();
+
+      formData.append("file", file);
+
+      setFormData((prevData) => ({
+        ...prevData,
+        file: formData,
+      }));
+    }
+  };
+
   const handleSave = async () => {
     setSaving(true);
     const currentDate = new Date().toLocaleDateString();
@@ -250,12 +287,12 @@ const ToolDetail = () => {
       setSaving(false);
     }
   };
-  const splitCompoundWord = (word: string): string => {
-    return word
-      .replace(/([a-z])([A-Z])/g, "$1 $2")
-      .replace(/([A-Z])([A-Z][a-z])/g, "$1 $2")
-      .replace(/^./, (match) => match.toUpperCase());
-  };
+  // const splitCompoundWord = (word: string): string => {
+  //   return word
+  //     .replace(/([a-z])([A-Z])/g, "$1 $2")
+  //     .replace(/([A-Z])([A-Z][a-z])/g, "$1 $2")
+  //     .replace(/^./, (match) => match.toUpperCase());
+  // };
 
   if (loading || loadingTool) {
     return (
@@ -306,7 +343,7 @@ const ToolDetail = () => {
                   {field.name === "grade" &&
                     tool.req_param?.includes("grade") && (
                       <div>
-                        <Label>Grade</Label>
+                        <Label>{field.label}</Label>
                         <Select
                           onValueChange={handleGradeChange}
                           defaultValue="University"
@@ -324,13 +361,13 @@ const ToolDetail = () => {
                         </Select>
                       </div>
                     )}
-                  {field.name === "country" &&
-                    tool.req_param?.includes("country") && (
+                  {field.name === "curriculum_type" &&
+                    tool.req_param?.includes("curriculum_type") && (
                       <div>
-                        <Label>Country</Label>
+                        <Label>{field.label}</Label>
                         <Select onValueChange={handleCountryChange}>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select Country" />
+                            <SelectValue placeholder="Select Curriculum Type" />
                           </SelectTrigger>
                           <SelectContent>
                             {countries.map((countryName) => (
@@ -342,9 +379,34 @@ const ToolDetail = () => {
                         </Select>
                       </div>
                     )}
+                  {field.name === "file" &&
+                    tool.req_param?.includes("file") && (
+                      <div>
+                        <Label>Upload File (Optional)</Label>
+                        <input
+                          type="file"
+                          onChange={(e) => handleFileChange(e)}
+                          className="file-input bg-white "
+                          accept="application/pdf, image/png, image/jpeg, image/jpg"
+                        />
+                      </div>
+                    )}
+                  {field.name === "audio" &&
+                    tool.req_param?.includes("audio") && (
+                      <div>
+                        <Label>{field.label}</Label>
+                        <input
+                          type="file"
+                          onChange={(e) => handleFileChange(e)}
+                          className="file-input bg-white "
+                          accept=" video/mp4, video/quicktime"
+                        />
+                      </div>
+                    )}
+
                   {field.name === "subject" && (
                     <div>
-                      <Label>Subject</Label>
+                      <Label>{field.label}</Label>
                       {tool.service_id === "math calculator" ? (
                         <Select
                           onValueChange={(value) =>
@@ -372,15 +434,42 @@ const ToolDetail = () => {
                         <Input
                           type="text"
                           name="subject"
+                          placeholder={
+                            field.placeholder || `enter ${field.name}`
+                          }
                           value={formData.subject || ""}
                           onChange={handleInputChange}
                         />
                       )}
                     </div>
                   )}
+                  {field.name === "sdg" && tool.req_param?.includes("sdg") && (
+                    <div>
+                      <Label>{field.label}</Label>
+                      <MultiSelect
+                        value={formData.sdg || []}
+                        onChange={(e) => {
+                          setFormData((prevData) => ({
+                            ...prevData,
+                            sdg: e.value,
+                          }));
+                        }}
+                        options={sdgOptions.map((option) => ({
+                          label: option.label,
+                          value: option.value,
+                        }))}
+                        optionLabel="label"
+                        placeholder="Select SDG Goals"
+                        display="chip"
+                        className="w-full rounded-md"
+                        maxSelectedLabels={3}
+                      />
+                    </div>
+                  )}
+
                   {field.name === "activitytype" && (
                     <div>
-                      <Label>Activity Type</Label>
+                      <Label>{field.label}</Label>
                       <Select
                         onValueChange={(value) =>
                           setFormData((prevData) => ({
@@ -406,19 +495,109 @@ const ToolDetail = () => {
                       </Select>
                     </div>
                   )}
+                  {field.name === "curriculum_focus" && (
+                    <div>
+                      <Label>{field.label}</Label>
+                      <Select
+                        onValueChange={(value) =>
+                          setFormData((prevData) => ({
+                            ...prevData,
+                            curriculum_focus: value,
+                          }))
+                        }
+                        defaultValue={formData.curriculum_focus || ""}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Curriculum Focus" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {curriculumFocus.map((curriculum) => (
+                            <SelectItem
+                              key={curriculum.value}
+                              value={curriculum.value}
+                            >
+                              {curriculum.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+                  {field.name === "type" && (
+                    <div>
+                      <Label>{field.label}</Label>
+                      <Select
+                        onValueChange={(value) =>
+                          setFormData((prevData) => ({
+                            ...prevData,
+                            type: value,
+                          }))
+                        }
+                        defaultValue={formData.type || ""}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Question Type Focus" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {questionTypelist.map((question) => (
+                            <SelectItem
+                              key={question.value}
+                              value={question.value}
+                            >
+                              {question.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+                  {field.name === "mediaType" && (
+                    <div>
+                      <Label>{field.label}</Label>
+                      <Select
+                        onValueChange={(value) =>
+                          setFormData((prevData) => ({
+                            ...prevData,
+                            mediaType: value,
+                          }))
+                        }
+                        defaultValue={formData.mediaType || ""}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Media Type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {mediaTypelist.map((media) => (
+                            <SelectItem key={media.value} value={media.value}>
+                              {media.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
 
                   {field.name !== "grade" &&
                     field.name !== "country" &&
+                    field.name != "sdg" &&
+                    field.name != "file" &&
+                    field.name != "type" &&
+                    field.name != "curriculum_type" &&
+                    field.name != "audio" &&
+                    field.name != "mediaType" &&
+                    field.name != "curriculum_focus" &&
                     field.name !== "activitytype" &&
                     field.name !== "subject" && (
                       <div>
-                        <label className="capitalize">
-                          {splitCompoundWord(field.label)}
-                        </label>
+                        <label className="capitalize">{field.label}</label>
 
                         <Input
                           type="text"
                           name={field.name}
+                          required
+                          placeholder={
+                            field.placeholder || `Enter ${field.label}`
+                          }
                           value={formData[field.name] || ""}
                           onChange={handleInputChange}
                         />
@@ -468,12 +647,6 @@ const ToolDetail = () => {
               </>
             ) : (
               <>
-                {/* <TextArea
-                  readOnly
-                  value={responseMessage || "No response yet."}
-                  className="w-full p-3 border border-gray-300 rounded-md resize-none"
-                  
-                /> */}
                 <ReactMarkdown
                   className="w-full p-3 border border-gray-300 bg-white rounded-md resize-none markdown overflow-auto max-h-96"
                   remarkPlugins={[remarkGfm]}
@@ -482,20 +655,6 @@ const ToolDetail = () => {
                 </ReactMarkdown>
                 {responseMessage && (
                   <div className="flex gap-4 mt-4">
-                    {/* <button
-                      onClick={() => {
-                        const blob = new Blob([responseMessage], {
-                          type: "text/plain;charset=utf-8",
-                        });
-                        const link = document.createElement("a");
-                        link.href = URL.createObjectURL(blob);
-                        link.download = "response.txt";
-                        link.click();
-                      }}
-                      className="bg-green-500 text-white py-2 px-4 rounded-md"
-                    >
-                      Download as .txt
-                    </button> */}
                     <button
                       onClick={() => {
                         const doc = new jsPDF();

@@ -89,6 +89,10 @@ const Classroom = () => {
           grade: classroom?.grade || "",
           student_message: inputText,
           content_from: "classroom_tools",
+          file_content:
+            classroom?.classroomresources?.map(
+              (resource) => resource.file_content
+            ) || [],
           tool_name: selectedTool || "",
           tool_id:
             tools.find((tool) => tool.tool_name === selectedTool)?.tool_id || 0,
@@ -102,11 +106,17 @@ const Classroom = () => {
           scope_restriction: classroom?.scope_restriction || true,
           description: classroom?.classroom_description || "",
           grade: classroom?.grade || "",
+          file_content: classroom?.classroomresources
+            ? classroom.classroomresources
+                .map((resource) => resource.file_content)
+                .join("\n\n")
+            : "",
           student_message: inputText,
           content_from: "classroom",
         };
 
     try {
+      console.log(messageData);
       const response = selectedTool
         ? await sendClassroomToolMessage(messageData)
         : await sendClassroomMessage(messageData);

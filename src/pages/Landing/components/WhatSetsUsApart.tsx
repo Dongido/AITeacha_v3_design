@@ -42,16 +42,16 @@ const WhatSetsUsApart: React.FC = () => {
   ];
 
   return (
-    <section className="py-4 px-4 text-center text-white">
-      <section className="relative py-8 px-4 text-center">
-        <h3 className="text-sm font-medium underline text-primary mb-2 relative">
+    <section className="   px-4 text-center text-white">
+      <section className="relative pb-8 px-4 text-center">
+        <h3 className="text-xl font-medium underline text-primary mb-2 relative">
           What sets us apart
         </h3>
-        <h2 className="text-2xl md:text-3xl font-extrabold text-black relative">
-          Unique AI Tools For Your Teaching Goals
+        <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-black relative">
+          Unique AI Tools To Teach Smarter Not Harder
         </h2>
 
-        <span className="absolute bottom-8 left-8">
+        <span className="absolute bottom-6 left-0">
           <svg
             width="16"
             height="16"
@@ -101,8 +101,12 @@ const WhatSetsUsApart: React.FC = () => {
       <div className="flex justify-center mb-8 px-4">
         <div
           className="w-full max-w-md h-48 md:max-w-lg md:h-64 lg:max-w-2xl lg:h-80 flex items-center justify-center rounded-lg"
+          // style={{
+          //   background: "linear-gradient(180deg, #CEBDFF, #FF16D4)",
+
+          // }}
           style={{
-            background: "linear-gradient(180deg, #CEBDFF, #FF16D4)",
+            background: "linear-gradient(180deg, #5C3CBB, #8071AE)",
             padding: "16px",
           }}
         >

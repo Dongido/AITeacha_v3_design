@@ -14,6 +14,8 @@ import {
   ToastTitle,
   ToastViewport,
 } from "../../../../components/ui/Toast";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../../../store";
 import { Input } from "../../../../components/ui/Input";
 import {
   Form,
@@ -29,6 +31,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { joinClassroom } from "../../../../api/studentclassroom";
 import { addStudentToClassroom } from "../../../../api/classrooms";
+import { loadStudentClassrooms } from "../../../../store/slices/studentClassroomSlice";
 
 interface IProps {
   classId: number;
@@ -42,6 +45,8 @@ const formSchema = z.object({
 const JoinClassDialog = forwardRef(
   ({ classId, onSuccess = () => {} }: IProps, ref) => {
     const [open, setOpen] = useState(false);
+
+    const dispatch = useDispatch<AppDispatch>();
     const [toastOpen, setToastOpen] = useState(false);
     const [toastMessage, setToastMessage] = useState("");
     const [toastVariant, setToastVariant] = useState<"default" | "destructive">(
@@ -70,6 +75,7 @@ const JoinClassDialog = forwardRef(
         if (response.status === "success") {
           setToastMessage("Successfully joined the class!");
           setToastVariant("default");
+          dispatch(loadStudentClassrooms());
           setToastOpen(true);
           setOpen(false);
           onSuccess();

@@ -6,41 +6,32 @@ interface FileUploadProps {
 }
 
 const FileUpload: React.FC<FileUploadProps> = ({ onFilesChange }) => {
-  const [files, setFiles] = useState<File[]>([]);
-  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+  const [file, setFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = Array.from(e.target.files || []);
-    const updatedFiles = [...files, ...selectedFiles];
-    setFiles(updatedFiles);
+    const selectedFile = e.target.files?.[0];
+    if (!selectedFile) return;
 
-    const newPreviewUrls = selectedFiles.map((file) =>
-      URL.createObjectURL(file)
-    );
-    setPreviewUrls((prevUrls) => [...prevUrls, ...newPreviewUrls]);
-    onFilesChange(updatedFiles);
+    const validTypes = ["image/jpeg", "image/png", "application/pdf"];
+    if (!validTypes.includes(selectedFile.type)) {
+      alert("Please upload a valid image or PDF file.");
+      return;
+    }
 
-    console.log(
-      "Files selected:",
-      selectedFiles.map((file) => file.name)
-    );
+    setFile(selectedFile);
+    setPreviewUrl(URL.createObjectURL(selectedFile));
+    onFilesChange([selectedFile]);
   };
 
-  const handleRemoveFile = (index: number) => {
-    const updatedFiles = files.filter((_, i) => i !== index);
-    const updatedUrls = previewUrls.filter((_, i) => i !== index);
-
-    setFiles(updatedFiles);
-    setPreviewUrls(updatedUrls);
-
-    onFilesChange(updatedFiles);
-
-    console.log("File removed at index:", index);
+  const handleRemoveFile = () => {
+    setFile(null);
+    setPreviewUrl(null);
+    onFilesChange([]);
   };
 
   const handleBrowseClick = () => {
-    console.log("Browse Files button clicked");
     fileInputRef.current?.click();
   };
 
@@ -51,8 +42,6 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFilesChange }) => {
         className="cursor-pointer flex flex-col items-center justify-center w-full h-32 bg-white border-2 border-dashed border-gray-300 rounded-lg hover:bg-gray-100 transition"
       >
         <div className="text-center text-gray-500">
-          {/* <p>Drag and drop files here</p>
-          <p>or</p> */}
           <Button
             variant="outline"
             className="mt-2 rounded-full"
@@ -71,36 +60,33 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFilesChange }) => {
           onChange={handleFileChange}
           className="hidden"
           accept="image/*,application/pdf"
-          multiple
         />
       </label>
 
-      {files.length > 0 && (
+      {file && (
         <div className="w-full mt-4 space-y-2">
-          {files.map((file, index) => (
-            <div key={index} className="flex items-center space-x-4">
-              {file.type.startsWith("image/") && previewUrls[index] ? (
-                <img
-                  src={previewUrls[index]}
-                  alt={`Preview ${index}`}
-                  className="w-16 h-16 object-cover rounded-lg"
-                />
-              ) : (
-                <p className="text-gray-500">File ready to be uploaded</p>
-              )}
-              <p className="text-gray-700 font-semibold flex-1">{file.name}</p>
-              <Button
-                variant="outline"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleRemoveFile(index);
-                }}
-                className="text-red-500"
-              >
-                Remove
-              </Button>
-            </div>
-          ))}
+          <div className="flex items-center space-x-4">
+            {file.type.startsWith("image/") && previewUrl ? (
+              <img
+                src={previewUrl}
+                alt="Preview"
+                className="w-16 h-16 object-cover rounded-lg"
+              />
+            ) : (
+              <p className="text-gray-500">PDF ready to be uploaded</p>
+            )}
+            <p className="text-gray-700 font-semibold flex-1">{file.name}</p>
+            <Button
+              variant="outline"
+              onClick={(e) => {
+                e.preventDefault();
+                handleRemoveFile();
+              }}
+              className="text-red-500"
+            >
+              Remove
+            </Button>
+          </div>
         </div>
       )}
     </div>
