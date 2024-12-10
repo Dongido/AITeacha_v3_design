@@ -9,17 +9,47 @@ const Pricing = () => {
   const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">(
     "monthly"
   );
+  const [currency, setCurrency] = useState<"NGN" | "USD" | "GBP">("NGN");
+
   const navigate = useNavigate();
 
   const prices = {
-    free: { monthly: "₦0", yearly: "₦0" },
-    pro: { monthly: 5000, yearly: 55000 },
-    premium: { monthly: 25000, yearly: 250000 },
-    enterprise: { monthly: 100000, yearly: 1200000 },
+    free: {
+      NGN: { monthly: "₦0", yearly: "₦0" },
+      USD: { monthly: "$0", yearly: "$0" },
+      GBP: { monthly: "£0", yearly: "£0" },
+    },
+    pro: {
+      NGN: { monthly: 5000, yearly: 55000 },
+      USD: { monthly: 5, yearly: 55 },
+      GBP: { monthly: 4, yearly: 50 },
+    },
+    premium: {
+      NGN: { monthly: 20000, yearly: 200000 },
+      USD: { monthly: 20, yearly: 200 },
+      GBP: { monthly: 18, yearly: 190 },
+    },
+    enterprise: {
+      NGN: { monthly: 100000, yearly: 1200000 },
+      USD: { monthly: 100, yearly: 1200 },
+      GBP: { monthly: 96, yearly: 1180 },
+    },
   };
-
+  const handleCurrencyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setCurrency(e.target.value as "NGN" | "USD");
+  };
   const toggleBillingCycle = () => {
     setBillingCycle((prev) => (prev === "monthly" ? "yearly" : "monthly"));
+  };
+  const getCurrencySign = (currency: "NGN" | "USD" | "GBP") => {
+    if (currency === "NGN") {
+      return "₦";
+    } else if (currency === "USD") {
+      return "$";
+    } else if (currency === "GBP") {
+      return "£";
+    }
+    return "";
   };
   return (
     <div className="flex flex-col  min-h-screen bg-white">
@@ -45,21 +75,37 @@ const Pricing = () => {
           </span>
         </div>
 
-        <div className="mb-8 w-60 mx-auto flex items-center justify-between">
-          <span className="text-xl font-medium text-gray-800">Monthly</span>
-          <Switch
-            checked={billingCycle === "yearly"}
-            onCheckedChange={toggleBillingCycle}
-            thumbColor="primary"
-          />
-          <span className="text-xl font-medium text-gray-800">Yearly</span>
+        <div className="flex justify-between">
+          <div className="mb-8 w-60 mx-auto flex items-center justify-between">
+            <span className="text-xl font-medium text-gray-800">Monthly</span>
+            <Switch
+              checked={billingCycle === "yearly"}
+              onCheckedChange={toggleBillingCycle}
+              thumbColor="primary"
+            />
+            <span className="text-xl font-medium text-gray-800">Yearly</span>
+          </div>
+          <div className="w-60 my-4">
+            <label className="text-gray-700 font-medium mb-2 block">
+              Select Currency
+            </label>
+            <select
+              className="border rounded-md w-full py-2 px-3"
+              value={currency}
+              onChange={handleCurrencyChange}
+            >
+              <option value="NGN">NGN (Naira)</option>
+              <option value="USD">USD (Dollar)</option>
+              <option value="GBP">GBP (Pounds)</option>
+            </select>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div className="border rounded-lg p-6 bg-gray-50 shadow-sm flex flex-col">
             <h3 className="text-lg font-semibold mb-4">AI Teacha Free</h3>
             <p className="text-2xl font-bold mb-2">
-              {prices.free[billingCycle]}
+              {prices.free[currency][billingCycle]}
             </p>
             <p className="mb-4 mt-2 text-sm text-gray-600">
               Get started for Free, learn how AI Teacha saves you time and
@@ -88,8 +134,22 @@ const Pricing = () => {
           <div className="border rounded-lg p-6 bg-gray-50 shadow-md flex flex-col">
             <h3 className="text-lg font-semibold mb-4">AI Teacha Pro</h3>
             <p className="text-2xl font-bold mb-2">
-              ₦{prices.pro[billingCycle].toLocaleString()}
-              {billingCycle === "yearly" && (
+              {getCurrencySign(currency)} {prices.pro[currency][billingCycle]}
+              {currency === "USD" && billingCycle === "yearly" && (
+                <span className="font-medium text-sm text-gray-700">
+                  {" "}
+                  {getCurrencySign(currency)}
+                  {(prices.pro[currency][billingCycle] / 12).toFixed(2)} monthly
+                </span>
+              )}
+              {currency === "GBP" && billingCycle === "yearly" && (
+                <span className="font-medium text-sm text-gray-700">
+                  {" "}
+                  {getCurrencySign(currency)}
+                  {(prices.pro[currency][billingCycle] / 12).toFixed(2)} monthly
+                </span>
+              )}
+              {billingCycle === "yearly" && currency === "NGN" && (
                 <span className="font-medium text-sm text-gray-700">
                   {" "}
                   ₦4,585 monthly
@@ -126,8 +186,29 @@ const Pricing = () => {
           <div className="border rounded-lg p-6 bg-gray-50 shadow-md flex flex-col">
             <h3 className="text-lg font-semibold mb-4">AI Teacha Premium </h3>
             <p className="text-2xl font-bold mb-2">
-              ₦{prices.premium[billingCycle].toLocaleString()}{" "}
-              {billingCycle === "yearly" && (
+              {getCurrencySign(currency)}{" "}
+              {prices.premium[currency][billingCycle]}
+              {currency === "USD" && billingCycle === "yearly" && (
+                <span className="font-medium text-sm text-gray-700">
+                  {" "}
+                  {getCurrencySign(currency)}
+                  {(prices.premium[currency][billingCycle] / 12).toFixed(
+                    2
+                  )}{" "}
+                  monthly
+                </span>
+              )}
+              {currency === "GBP" && billingCycle === "yearly" && (
+                <span className="font-medium text-sm text-gray-700">
+                  {" "}
+                  {getCurrencySign(currency)}
+                  {(prices.premium[currency][billingCycle] / 12).toFixed(
+                    2
+                  )}{" "}
+                  monthly
+                </span>
+              )}
+              {billingCycle === "yearly" && currency === "NGN" && (
                 <span className="font-medium text-sm text-gray-700">
                   {" "}
                   ₦20,385 monthly

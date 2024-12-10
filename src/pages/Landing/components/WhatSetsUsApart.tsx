@@ -44,9 +44,6 @@ const WhatSetsUsApart: React.FC = () => {
   return (
     <section className="   px-4 text-center text-white">
       <section className="relative pb-8 px-4 text-center">
-        <h3 className="text-xl font-medium underline text-primary mb-2 relative">
-          What sets us apart
-        </h3>
         <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-black relative">
           Unique AI Tools To Teach Smarter Not Harder
         </h2>

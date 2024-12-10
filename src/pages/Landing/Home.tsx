@@ -55,7 +55,7 @@ const Home: React.FC = () => {
       <div className="flex flex-col ">
         <HowItWorks />
         <AnimatedSection delay={0.4}>
-          <section>
+          <section id="features">
             <Feature />
           </section>
         </AnimatedSection>
@@ -66,7 +66,7 @@ const Home: React.FC = () => {
           }}
         >
           <AnimatedSection delay={0.4}>
-            <section id="features">
+            <section>
               <WhatSetsUsApart />
             </section>
           </AnimatedSection>
@@ -83,10 +83,10 @@ const Home: React.FC = () => {
         <AnimatedSection delay={1.2}>
           <section
             id="faqs"
-            style={{
-              background:
-                "linear-gradient(20deg, rgba(192, 132, 252, 0) 20.79%, rgba(232, 121, 249, 0.26) 40.92%, rgba(204, 171, 238, 0) 70.35%)",
-            }}
+            // style={{
+            //   background:
+            //     "linear-gradient(20deg, rgba(192, 132, 252, 0) 20.79%, rgba(232, 121, 249, 0.26) 40.92%, rgba(204, 171, 238, 0) 70.35%)",
+            // }}
           >
             <FaqsSection />
           </section>

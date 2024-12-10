@@ -4,6 +4,9 @@ const Feature = () => {
   return (
     <div>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-24 lg:px-8">
+        <h3 className="text-xl font-medium text-center underline text-primary mb-2 relative">
+          What sets us apart
+        </h3>
         <h2 className="text-slate-900 font-bold font-display text-4xl sm:text-5xl text-center mb-8 md:mb-20">
           Why AI Teacha is a Game-Changer
         </h2>
