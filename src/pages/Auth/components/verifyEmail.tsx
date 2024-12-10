@@ -11,6 +11,7 @@ import {
   ToastDescription,
   ToastViewport,
 } from "../../../components/ui/Toast";
+import { Link } from "react-router-dom";
 
 export function VerifyAuthEmail() {
   const [token, setToken] = useState("");
@@ -130,6 +131,13 @@ export function VerifyAuthEmail() {
                 {isSending ? "Resending..." : "Resend Code"}
               </Button>
             )}
+          </p>
+
+          <p className="text-xl font-bold">
+            Didn't get code?{" "}
+            <Link to={"/auth/login"} className="text-primary">
+              Proceed to Login
+            </Link>
           </p>
         </div>
 
