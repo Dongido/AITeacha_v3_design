@@ -215,7 +215,7 @@ const ClassroomDetail = () => {
               {classroom.tools.map((tool) => (
                 <Link
                   key={tool.tool_id}
-                  to={`/dashboard/tools/${tool.tool_slug}`}
+                  to={`/dashboard/student/tools/${tool.tool_slug}`}
                   className="flex items-center border border-gray-300 px-4 py-3 rounded-3xl bg-white hover:bg-gray-50 cursor-pointer transition duration-500 ease-in-out transform hover:scale-105"
                 >
                   <div className="text-left">
