@@ -3,7 +3,7 @@ export interface Tool {
   tool_name: string;
   service_id: string;
   assign_to: string;
-  slug: string;
+  tool_slug: string;
   customized_name: string | null;
   label: string;
   customized_description: string | null;

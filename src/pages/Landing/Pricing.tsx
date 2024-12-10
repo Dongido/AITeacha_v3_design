@@ -4,15 +4,18 @@ import { Switch } from "../../components/ui/Switch";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import BlogApp from "./components/BlogSlider";
+import { useNavigate } from "react-router-dom";
 const Pricing = () => {
   const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">(
     "monthly"
   );
+  const navigate = useNavigate();
 
   const prices = {
     free: { monthly: "₦0", yearly: "₦0" },
     pro: { monthly: 5000, yearly: 55000 },
     premium: { monthly: 25000, yearly: 250000 },
+    enterprise: { monthly: 100000, yearly: 1200000 },
   };
 
   const toggleBillingCycle = () => {
@@ -27,6 +30,20 @@ const Pricing = () => {
         <h2 className="text-3xl font-bold text-gray-900 mb-4 text-center">
           Our Subscription Plans
         </h2>
+        <div className="flex justify-center items-center mx-auto text-center max-w-xl mb-6">
+          <span>
+            <h2 className=" text-xl font-bold ">
+              Simple & Transparent Pricing for Educators & Schools
+            </h2>
+            <h2>
+              We offer a Free plan for educators with limited access, a Pro plan
+              with more Pro tools and classroom features, a Premium plan with
+              full AI Teacha suite for schools with maximum number of 15
+              educators and an Enterprise plan for larger schools with more than
+              15 educators.
+            </h2>
+          </span>
+        </div>
 
         <div className="mb-8 w-60 mx-auto flex items-center justify-between">
           <span className="text-xl font-medium text-gray-800">Monthly</span>
@@ -40,17 +57,28 @@ const Pricing = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div className="border rounded-lg p-6 bg-gray-50 shadow-sm flex flex-col">
-            <h3 className="text-lg font-semibold mb-4">Free Plan</h3>
+            <h3 className="text-lg font-semibold mb-4">AI Teacha Free</h3>
             <p className="text-2xl font-bold mb-2">
               {prices.free[billingCycle]}
             </p>
+            <p className="mb-4 mt-2 text-sm text-gray-600">
+              Get started for Free, learn how AI Teacha saves you time and
+              generates tailored resources.
+            </p>
             <ul className="list-disc pl-5 space-y-2 mb-6 flex-grow">
-              <li>Unlimited use</li>
-              <li>Fine-tuned GPT Prompt</li>
-              <li>16 AI Tools</li>
-              <li>Resources Download Enabled</li>
-              <li className="text-gray-400 line-through">Team Collaboration</li>
-              <li className="text-gray-400 line-through">Free Support</li>
+              <strong>Save time, get resources...</strong>
+              <li>Unlimited use of our essential free tools</li>
+              <li>Generate tailored, high-quality resources</li>
+              <li>
+                15 Time-Saving Tools to simplify lesson planning, assessments,
+                and more
+              </li>
+              <li>Easily download and save your generated resources</li>
+              <li>
+                Interact with Zyra, our AI Chat Assistant, built exclusively for
+                educators and students
+              </li>
+              <li>AI Image generation for educators and students</li>
             </ul>
             <Button className="w-full py-2 rounded-md bg-primary text-white hover:bg-[#4a2fa3] transition mt-auto">
               Sign Up for Free
@@ -58,7 +86,7 @@ const Pricing = () => {
           </div>
 
           <div className="border rounded-lg p-6 bg-gray-50 shadow-md flex flex-col">
-            <h3 className="text-lg font-semibold mb-4">Pro Plan</h3>
+            <h3 className="text-lg font-semibold mb-4">AI Teacha Pro</h3>
             <p className="text-2xl font-bold mb-2">
               ₦{prices.pro[billingCycle].toLocaleString()}
               {billingCycle === "yearly" && (
@@ -68,21 +96,35 @@ const Pricing = () => {
                 </span>
               )}
             </p>
+            <p className="mb-4 mt-2 text-sm text-gray-600">
+              Upgrade to AI Teacha Pro for unlimited access to all resources and
+              pro tools.
+            </p>
             <ul className="list-disc pl-5 space-y-2 mb-6 flex-grow">
-              <li>Unlimited use</li>
-              <li>Fine-tuned GPT Prompt</li>
-              <li>32 AI Tools</li>
-              <li>Resources Download Enabled</li>
-              <li>Create Classes</li>
-              <li>Free Support</li>
+              <strong>Everything in Free, Plus...</strong>
+              <li>Unlock all 37 advanced, time-saving AI tools</li>
+              <li>Unlimited content generation as you need</li>
+              <li>
+                Generate unlimited AI-powered slides, exportable directly to
+                Microsoft PowerPoint
+              </li>
+              <li>Unlimited assignments for student evaluation needs</li>
+              <li>
+                Unlimited student performance reports to track and enhance
+                learning outcomes
+              </li>
+              <li>
+                Unlimited AI-generated images perfect for engaging lessons
+              </li>
+              <li>Exclusive early access to new features and tools</li>
             </ul>
             <Button className="w-full py-2 rounded-md bg-primary text-white hover:bg-[#4a2fa3] transition mt-auto">
-              Pro
+              Subscribe to Pro
             </Button>
           </div>
 
           <div className="border rounded-lg p-6 bg-gray-50 shadow-md flex flex-col">
-            <h3 className="text-lg font-semibold mb-4">Premium Plan</h3>
+            <h3 className="text-lg font-semibold mb-4">AI Teacha Premium </h3>
             <p className="text-2xl font-bold mb-2">
               ₦{prices.premium[billingCycle].toLocaleString()}{" "}
               {billingCycle === "yearly" && (
@@ -92,20 +134,57 @@ const Pricing = () => {
                 </span>
               )}
             </p>
+            <p className="mb-4 mt-2 text-sm text-gray-600">
+              Full AI Teacha suite for schools with classroom, assignment, and
+              report features.
+            </p>
             <ul className="list-disc pl-5 space-y-2 mb-6 flex-grow">
-              <li>Unlimited use</li>
-              <li>Fine-tuned GPT Prompt</li>
-              <li>32 AI Tools</li>
-              <li>Resources Download Enabled</li>
-
-              <li>Free Support</li>
-              <li>Create paid classes and handle payments</li>
-              <li>Ability to Add Team Members</li>
+              <strong>Everything in Pro, Plus...</strong>
+              <li>
+                Institution-wide monitoring of teachers and students activity
+              </li>
+              <li>
+                Moderation features to prioritize student safety and compliance
+              </li>
+              <li>Data Privacy Agreements (DPA)</li>
+              <li>Personalized AI training and tool customizations</li>
+              <li>
+                Special pricing and discounts on bulk licenses for schools
+              </li>
+              <li>Unlimited chat and resource histories</li>
+              <li>Unlimited number of educators</li>
+              <li>Dedicated support for your school or institution</li>
             </ul>
             <Button className="w-full py-2 rounded-md bg-primary text-white hover:bg-[#4a2fa3] transition mt-auto">
-              Premium
+              Subscribe to Premium
             </Button>
           </div>
+        </div>
+        <div className="border rounded-lg p-6 bg-gray-50 text-center mt-4 shadow-md flex flex-col">
+          <h3 className="text-lg font-semibold mb-4">AI Teacha Enterprise</h3>
+
+          <p className="mb-4 mt-2 text-sm text-gray-600">
+            Custom discounted pricing for schools, districts, institutions, and
+            tutorial centers.
+          </p>
+          <ul className="list-none pl-5 space-y-2 mb-6 flex-grow">
+            <strong>Everything in Premium, Plus...</strong>
+            <li>Designed for large schools and institutions</li>
+            <li>
+              The AI Teacha Enterprise Plan is tailored for organizations with
+              15 or more educators seeking comprehensive AI solutions
+            </li>
+            <li>
+              Contact us today or use our Quote Calculator to receive customized
+              pricing and exclusive discounts for your institution.
+            </li>
+          </ul>
+          <Button
+            onClick={() => navigate("/upgrade/support")}
+            className="w-full py-2 rounded-md bg-primary text-white hover:bg-[#4a2fa3] transition mt-auto"
+          >
+            Get a Quote
+          </Button>
         </div>
       </div>
       <Footer />

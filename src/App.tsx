@@ -18,13 +18,16 @@ import LevelUp from "./pages/Landing/BlogPages/LevelUp";
 import AiRole from "./pages/Landing/BlogPages/AIRole";
 import AITransformation from "./pages/Landing/BlogPages/AITransformation";
 import AIEducation from "./pages/Landing/BlogPages/AIEducation";
+import UpgradeSupport from "./pages/Landing/UpgradeSupport";
 import RoleBasedRedirect from "./pages/Dashboard/RoleBasedRedirect";
+import Faqs from "./pages/Landing/Faqs";
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/pioneer" element={<Pioneers />} />
       <Route path="/blogs" element={<Blog />} />
+      <Route path="/faqs" element={<Faqs />} />
       <Route path="/contact" element={<Contact />} />
       <Route path="/pricing" element={<Pricing />} />
       <Route path="/about" element={<About />} />
@@ -46,6 +49,7 @@ function App() {
         path="/blogs/is-it-really-safe-to-use-ai-in-education"
         element={<AIEducation />}
       />
+      <Route path="/upgrade/support" element={<UpgradeSupport />} />
 
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard/*" element={<Dashboard />} />

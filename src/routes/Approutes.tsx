@@ -32,6 +32,7 @@ import Classrooms from "../pages/Dashboard/classrooms/Class";
 import ClassroomDetail from "../pages/Dashboard/classrooms/ClassroomDetail";
 import CreateOrEditClassroom from "../pages/Dashboard/classrooms/CreateOrEditClassroom";
 import Students from "../pages/Dashboard/classrooms/Students";
+import AssignmentDetail from "../pages/Dashboard/assignment/AssignmentDetail";
 
 import Home from "../pages/Dashboard/student/Home";
 import History from "../pages/Dashboard/student/History";
@@ -39,7 +40,7 @@ import Classes from "../pages/Dashboard/student/Classes";
 import Classroom from "../pages/Dashboard/student/Classroom";
 import Analytics from "../pages/Dashboard/classrooms/Analytics";
 import VerifyEmail from "../pages/Dashboard/VerifyEmail";
-
+import UpgradeSupport from "../pages/Dashboard/UpgradeSupport";
 import Login from "../pages/Auth/Login";
 import SignUp from "../pages/Auth/Signup";
 import VerifyForm from "../pages/Auth/VerifyForm";
@@ -136,6 +137,12 @@ export const Paramroutes = [
     pages: [
       {
         icon: <AcademicCapIcon {...icon} />,
+        name: "upgrade",
+        path: "/upgrade/support",
+        element: <UpgradeSupport />,
+      },
+      {
+        icon: <AcademicCapIcon {...icon} />,
         name: "classrooms",
         path: "/classrooms/joined",
         element: <Classes />,
@@ -206,6 +213,12 @@ export const Paramroutes = [
         name: "Join classroom",
         path: "/classroom/s/:id",
         element: <JoinClassroom />,
+      },
+      {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "Join classroom",
+        path: "/assignment/details/:id",
+        element: <AssignmentDetail />,
       },
 
       {

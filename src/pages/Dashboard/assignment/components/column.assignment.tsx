@@ -68,13 +68,7 @@ export const assignmentColumns = [
     sortingFn: "text",
     cell: (info) => {
       const studentsCompleted = info.getValue();
-      return (
-        <span className="whitespace-nowrap">
-          {studentsCompleted !== null
-            ? studentsCompleted
-            : "No students completed"}
-        </span>
-      );
+      return <span className="whitespace-nowrap">No students</span>;
     },
   }),
   assignmentColumnHelper.accessor("submit_url", {
@@ -89,13 +83,13 @@ export const assignmentColumns = [
       return (
         <div className="flex items-center gap-2">
           <Actions
-            viewLink={`/dashboard/assignments/details/${assignmentId}`}
-            editLink={`/dashboard/assignments/edit/${assignmentId}`}
+            viewLink={`/dashboard/assignment/details/${assignmentId}`}
+            //editLink={`/dashboard/assignments/edit/${assignmentId}`}
             deleteFunction={async () => {
               deleteDialogRef.current?.openDialog();
               return Promise.resolve();
             }}
-            editFunction={async () => console.log("edited")}
+            // editFunction={async () => console.log("edited")}
           />
 
           <DeleteAssignmentDialog

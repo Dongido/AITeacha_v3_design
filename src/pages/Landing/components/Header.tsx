@@ -161,13 +161,12 @@ const Header = () => {
 
               <li>
                 <Link
-                  to="/#faqs"
+                  to="/faqs"
                   className={`block py-2 font-bold pr-2 pl-2 lg:p-2 ${
-                    location.hash === "#faqs" ? "text-primary" : "text-gray-900"
+                    location.pathname === "/faqs" && !location.hash
+                      ? "text-primary"
+                      : "text-gray-900"
                   }`}
-                  onClick={() =>
-                    setTimeout(() => scrollToSectionOnHome("faqs"), 50)
-                  }
                 >
                   FAQs
                 </Link>

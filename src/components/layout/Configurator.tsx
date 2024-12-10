@@ -8,6 +8,7 @@ import {
 } from "../../context/index";
 import { Button } from "../ui/Button";
 import Text from "../ui/Text";
+import { Link } from "react-router-dom";
 
 function formatNumber(number: number, decPlaces: number): string {
   const dec = Math.pow(10, decPlaces);
@@ -76,6 +77,9 @@ export function Configurator() {
           <XMarkIcon strokeWidth={2.5} className="h-5 w-5" />
         </Button>
       </div>
+      <Link to={"/"}>
+        <Button className="px-4">Go to Home</Button>
+      </Link>
 
       {/* <div className="py-4 px-6">
         <div className="mb-12">

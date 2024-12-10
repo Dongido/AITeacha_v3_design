@@ -101,7 +101,7 @@ const Home = () => {
               <Link to={"/dashboard/history"}>
                 <button className="flex items-center gap-2 bg-purple-200 text-purple-800 rounded-full py-2 px-4 whitespace-nowrap">
                   <FaMagic className="h-5 w-5" />
-                  history
+                  History
                 </button>
               </Link>
               <Link to={"/dashboard/chats"}>
@@ -113,7 +113,7 @@ const Home = () => {
               <Link to={"/dashboard/classrooms"}>
                 <button className="flex items-center gap-2 bg-yellow-200 text-yellow-800 rounded-full py-2 px-4 whitespace-nowrap">
                   <BiImageAdd className="h-5 w-5" />
-                  classrooms
+                  Classrooms
                 </button>
               </Link>
             </div>

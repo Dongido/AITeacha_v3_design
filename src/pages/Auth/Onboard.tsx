@@ -144,7 +144,7 @@ const Onboard = () => {
           {loading ? "Saving..." : "Continue"}
         </Button>
         <Button
-          className="flex items-center bg-white rounded-md text-black w-fit h-full gap-3 py-2 mb-4"
+          className="flex items-center bg-white rounded-md mt-6 text-black w-fit h-full gap-3 px-6 py-2"
           onClick={() => navigate(-1)}
           variant={"ghost"}
         >

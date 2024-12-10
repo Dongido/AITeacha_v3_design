@@ -195,10 +195,10 @@ const ClassroomDetail = () => {
           <div className="mt-8 flex justify-center">
             <div className="flex gap-4 overflow-x-auto">
               <button className="flex items-center gap-2 bg-purple-200 text-purple-800 rounded-full py-2 px-4 whitespace-nowrap">
-                grade: {classroom?.grade}
+                Grade: {classroom?.grade}
               </button>
               <button className="flex items-center gap-2 bg-blue-200 text-blue-800 rounded-full py-2 px-4 whitespace-nowrap">
-                max_students: {classroom?.number_of_students}
+                Maximum No of Students: {classroom?.number_of_students}
               </button>
               {/* <button className="flex items-center gap-2 bg-yellow-200 text-yellow-800 rounded-full py-2 px-4 whitespace-nowrap">
                 no_of_students:{" "}
@@ -215,7 +215,7 @@ const ClassroomDetail = () => {
               {classroom.tools.map((tool) => (
                 <Link
                   key={tool.tool_id}
-                  to={`/dashboard/tools/${tool.slug}`}
+                  to={`/dashboard/tools/${tool.tool_slug}`}
                   className="flex items-center border border-gray-300 px-4 py-3 rounded-3xl bg-white hover:bg-gray-50 cursor-pointer transition duration-500 ease-in-out transform hover:scale-105"
                 >
                   <div className="text-left">

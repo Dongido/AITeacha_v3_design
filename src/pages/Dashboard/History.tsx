@@ -4,6 +4,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../store";
 import { loadUserResourceById } from "../../store/slices/resourcesSlice";
 import { Skeleton } from "../../components/ui/Skeleton";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+
 const HistoryDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const dispatch = useDispatch<AppDispatch>();
@@ -42,11 +45,17 @@ const HistoryDetail: React.FC = () => {
             <span className="font-semibold">Prompt:</span>{" "}
             {selectedResource.prompt}
           </p>
-          <div className="bg-white shadow-lg rounded-lg p-8  w-full">
-            <p className="text-gray-800 mb-6">
+          <div className="bg-white   p-6 w-full">
+            <p className="text-gray-800 mb-6 ">
               <span className="font-bold text-lg">AI Response:</span> <br />
-              {selectedResource.returned_answer}
+              <ReactMarkdown
+                className="w-full rounded-md resize-none markdown overflow-auto"
+                remarkPlugins={[remarkGfm]}
+              >
+                {selectedResource.returned_answer}
+              </ReactMarkdown>
             </p>
+
             <p className="text-gray-500 text-sm">
               <strong>Created at:</strong>{" "}
               {new Date(selectedResource.created_at).toLocaleString()}

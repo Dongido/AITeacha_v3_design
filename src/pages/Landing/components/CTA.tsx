@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 const CTA: React.FC = () => {
   return (
     <div>
-      <section className="py-16">
+      <section className="py-16 ">
         <div className="max-w-screen-xl mx-auto px-4 md:px-8 lg:flex lg:items-center">
           <div className="lg:w-1/2 space-y-3 md:mx-auto">
             <h3 className="text-primary font-semibold">
@@ -48,8 +48,8 @@ const CTA: React.FC = () => {
           </div>
         </div>
       </section>
-      <section className="relative z-10 overflow-hidden rounded-3xl bg-gradient-to-r from-[#07052D] to-[#171093] py-16 my-16 px-8">
-        <div className="container mx-auto">
+      <section className="relative flex max-w-screen-xl mx-auto px-4 md:px-8 lg:flex lg:items-center z-10 overflow-hidden rounded-3xl bg-gradient-to-r from-[#07052D] to-[#171093] py-16 my-16 px-8">
+        <div className="container ">
           <div className="-mx-4 flex flex-wrap items-center">
             <div className="w-full px-4 lg:w-1/2">
               <div className="text-center lg:text-left">

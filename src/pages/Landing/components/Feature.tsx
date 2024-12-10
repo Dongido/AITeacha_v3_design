@@ -24,8 +24,8 @@ const Feature = () => {
             </div>
             <div className="mt-1 flex flex-auto flex-col text-base/7 text-slate-700 text-center lg:text-left ">
               <p className="flex-auto">
-                Reduce time spent on administrative tasks, freeing you up to
-                focus more on student interaction and development.
+                Streamline administrative tasks, giving you more time to focus
+                on student engagement and growth
               </p>
             </div>
           </div>
@@ -45,9 +45,8 @@ const Feature = () => {
             </div>
             <div className="mt-1 flex flex-auto flex-col text-base/7 text-slate-700 text-center lg:text-left ">
               <p className="flex-auto">
-                Whether you're teaching large classes or small groups, Eduaide
-                helps you adapt materials to suit diverse student needs
-                effortlessly.
+                AI Teacha makes it easy to adapt materials for any class size,
+                meeting diverse student needs with ease
               </p>
             </div>
           </div>
@@ -67,9 +66,9 @@ const Feature = () => {
             </div>
             <div className="mt-1 flex flex-auto flex-col text-base/7 text-slate-700 text-center lg:text-left ">
               <p className="flex-auto">
-                With AI taking care of routine tasks, you're free to focus on
-                what you do best - executing engaging, innovative lessons that
-                inspire and captivate your students.
+                Let AI handle routine tasks, so you can focus on delivering
+                engaging, innovative lessons that inspire and captivate your
+                students
               </p>
             </div>
           </div>

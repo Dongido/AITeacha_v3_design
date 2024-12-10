@@ -143,7 +143,7 @@ const ToolDetail = () => {
               const label = Object.keys(labels)[index];
               return {
                 name: key,
-                label: label || "",
+                label: label ? capitalize(label) : "",
                 placeholder: labels[label] || "",
               };
             });
@@ -294,6 +294,13 @@ const ToolDetail = () => {
   //     .replace(/^./, (match) => match.toUpperCase());
   // };
 
+  const capitalize = (str: string) => {
+    return str
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(" ");
+  };
+
   if (loading || loadingTool) {
     return (
       <p>
@@ -407,7 +414,7 @@ const ToolDetail = () => {
                   {field.name === "subject" && (
                     <div>
                       <Label>{field.label}</Label>
-                      {tool.service_id === "math calculator" ? (
+                      {tool.service_id === "solver" ? (
                         <Select
                           onValueChange={(value) =>
                             setFormData((prevData) => ({
@@ -415,7 +422,7 @@ const ToolDetail = () => {
                               subject: value,
                             }))
                           }
-                          defaultValue="Maths"
+                          // defaultValue="Maths"
                         >
                           <SelectTrigger>
                             <SelectValue placeholder="Select subject" />
@@ -435,7 +442,7 @@ const ToolDetail = () => {
                           type="text"
                           name="subject"
                           placeholder={
-                            field.placeholder || `enter ${field.name}`
+                            field.placeholder || `Enter ${field.name}`
                           }
                           value={formData.subject || ""}
                           onChange={handleInputChange}
@@ -590,7 +597,6 @@ const ToolDetail = () => {
                     field.name !== "subject" && (
                       <div>
                         <label className="capitalize">{field.label}</label>
-
                         <Input
                           type="text"
                           name={field.name}
@@ -611,7 +617,7 @@ const ToolDetail = () => {
                 className="text-white py-2 px-4 rounded-md w-full"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "Submitting..." : "Submit"}
+                {isSubmitting ? "AI is Typing..." : "Submit"}
               </Button>
             </form>
           </div>
@@ -651,7 +657,9 @@ const ToolDetail = () => {
                   className="w-full p-3 border border-gray-300 bg-white rounded-md resize-none markdown overflow-auto max-h-96"
                   remarkPlugins={[remarkGfm]}
                 >
-                  {responseMessage || "No response yet."}
+                  {isSubmitting
+                    ? "AI is Typing..."
+                    : responseMessage || "No response yet."}
                 </ReactMarkdown>
                 {responseMessage && (
                   <div className="flex gap-4 mt-4">
