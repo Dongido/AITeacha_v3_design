@@ -44,13 +44,13 @@ const UpgradeSupport = () => {
                 You will receive a formal quote within 24 hours of your request.
               </p>
               <p>
-                Questions or concerns? Contact Mr Emmanuel at:
+                Questions or concerns? Contact Uche at:
                 <br />
                 <a
                   href="mailto:amanda.aitkens@curipod.com"
                   className="text-primary"
                 >
-                  emmanuel@aiteacha.com
+                  uchenwaobi@aiteacha.com
                 </a>{" "}
                 ||
                 <a href="tel:+4792943686" className="text-primary">

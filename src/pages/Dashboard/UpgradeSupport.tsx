@@ -255,12 +255,12 @@ const UpgradeSupport = () => {
                 </a>
               </p>
               <p>
-                Questions or concerns? Contact Mr Emmanuel at:
+                Questions or concerns? Contact Uche at:
                 <a
                   href="mailto:amanda.aitkens@curipod.com"
                   className="text-primary"
                 >
-                  emmanuel@aiteacha.com
+                  uchenwaobi@aiteacha.com
                 </a>{" "}
                 ||
                 <a href="tel:+4792943686" className="text-primary">
