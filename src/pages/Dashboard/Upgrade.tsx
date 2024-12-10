@@ -138,7 +138,11 @@ const Upgrade: React.FC = () => {
         console.log(response.status);
         if (response.status === "completed") {
           await changeUserPlan(packageId, userId, 1, duration, currency);
-          updateLocalStorage(plan);
+          const capitalize = (str: string) => {
+            return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+          };
+
+          updateLocalStorage(`AI Teacha ${capitalize(plan)}`);
           setToastMessage("Payment Successful");
           setToastVariant("default");
         } else {
@@ -248,9 +252,9 @@ const Upgrade: React.FC = () => {
                   ? "bg-gray-300 text-gray-700 cursor-not-allowed"
                   : "bg-primary text-white hover:bg-[#4a2fa3] transition"
               }`}
-              disabled={userDetails?.package === "Free"}
+              disabled={userDetails?.package === "AI Teacha Free"}
             >
-              {userDetails?.package === "Free"
+              {userDetails?.package === "AI Teacha Free"
                 ? "Current Plan"
                 : "Downgrade to Free"}
             </button>
@@ -304,14 +308,17 @@ const Upgrade: React.FC = () => {
             </ul>
             <Button
               onClick={() => handlePayment("pro")}
-              disabled={loadingPlan === "pro" || userDetails?.package === "pro"}
+              disabled={
+                loadingPlan === "pro" ||
+                userDetails?.package === "AI Teacha Pro"
+              }
               className={`bg-primary text-white w-full py-2 rounded-md transition mt-auto text-center ${
-                userDetails?.package === "pro"
+                userDetails?.package === "AI Teacha Pro"
                   ? "bg-gray-300 text-gray-700 cursor-not-allowed"
                   : "hover:bg-[#4a2fa3]"
               }`}
             >
-              {userDetails?.package === "pro"
+              {userDetails?.package === "AI Teacha Pro"
                 ? "Current Plan"
                 : loadingPlan === "pro"
                 ? "Processing..."
@@ -374,7 +381,8 @@ const Upgrade: React.FC = () => {
             <Button
               onClick={() => handlePayment("premium")}
               disabled={
-                loadingPlan === "premium" || userDetails?.package === "Premium"
+                loadingPlan === "premium" ||
+                userDetails?.package === "AI Teacha Premium"
               }
               className={`bg-primary text-white w-full py-2 rounded-md transition mt-auto text-center ${
                 userDetails?.package === "premium"
@@ -382,7 +390,7 @@ const Upgrade: React.FC = () => {
                   : "hover:bg-[#4a2fa3]"
               }`}
             >
-              {userDetails?.package === "premium"
+              {userDetails?.package === "AI Teacha Premium"
                 ? "Current Plan"
                 : loadingPlan === "premium"
                 ? "Processing..."
@@ -412,16 +420,16 @@ const Upgrade: React.FC = () => {
             onClick={() => navigate("/dashboard/upgrade/support")}
             disabled={
               loadingPlan === "enterprise" ||
-              userDetails?.package === "Enterprise"
+              userDetails?.package === "Ai Teacha Enterprise"
             }
             className={`bg-primary text-white w-full py-2 rounded-md transition mt-auto text-center ${
-              userDetails?.package === "enterprise"
+              userDetails?.package === "Ai Teacha Enterprise"
                 ? "bg-gray-300 text-gray-700 cursor-not-allowed"
                 : "hover:bg-[#4a2fa3]"
             }`}
           >
             {" "}
-            {userDetails?.package === "Enterprise"
+            {userDetails?.package === "Ai Teacha Enterprise"
               ? "Current Plan"
               : loadingPlan === "enterprise"
               ? "Processing..."
