@@ -3,152 +3,263 @@ import Footer from "./components/Footer";
 import BlogApp from "./components/BlogSlider";
 const Terms = () => {
   return (
-    <div className="flex flex-col  min-h-screen bg-white">
+    <div
+      className="flex flex-col  min-h-screen bg-white"
+      // style={{
+      //   background:
+      //     "linear-gradient(180deg, rgba(192, 132, 252, 0) 20.79%, rgba(232, 121, 249, 0.26) 40.92%, rgba(204, 171, 238, 0) 70.35%)",
+      // }}
+    >
       <section>
         <Navbar />
       </section>
-      <div className="mt-32">
+      <div className="rounded-t-3xl max-w-4xl mx-auto px-8 py-6 mt-20">
         <h2 className="text-4xl text-black text-center font-bold">
-          Terms and Conditions
+          Terms of Service
         </h2>
-        <h2 className="text-sm text-gray-600 text-center">
-          We guarantee your data privacy
+        <h2 className="text-sm text-gray-600 text-center mb-4">
+          <strong>Last Updated:</strong> 12/10/2024
         </h2>
 
-        <div className="rounded-t-3xl shadow-md max-w-4xl mx-auto px-8 py-6 mt-8">
-          <span className="font-bold text-2xl"> “AI TEACHA” APP</span>
-          <br />
-          <br />
-          These Terms and Conditions ("Terms") govern your use of the{" "}
-          <span className="font-bold">"Ai Teacha"</span> application ("App")
-          provided by <span className="font-bold">AI Teacha </span>("Company")
-          for schools and educational institutions. By accessing or using the
-          App, you agree to comply with these Terms.
-          <br />
-          <br />
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-lg font-bold mb-2 text-gray-900">
-                1. License
-              </h2>
-              <p className="text-gray-700">
-                The Company grants you a non-exclusive, non-transferable license
-                to use the App for educational purposes only, subject to these
-                Terms.
-              </p>
-            </div>
+        <p>
+          Welcome to AI Teacha, operated by ICEDT Consult Limited ("AI Teacha").
+          Our platform provides educators, schools, and institutions across
+          Nigeria and Africa with access to innovative AI-powered tools and
+          resources designed to enhance teaching and learning experiences. These
+          Terms of Service (“Terms”) govern your access to and use of our
+          website, tools, and services (collectively, “Services”). By using our
+          Services, you agree to these Terms.
+        </p>
 
-            <div>
-              <h2 className="text-lg font-bold mb-2 text-gray-900">
-                2. User Accounts
-              </h2>
-              <p className="text-gray-700">
-                You may be required to create a user account to access and use
-                the App. You are responsible for maintaining the confidentiality
-                of your account information and agree to be solely responsible
-                for all activities that occur under your account.
-              </p>
-            </div>
+        <h2 className="text-xl mt-4 font-bold">
+          1. Eligibility and Account Creation
+        </h2>
+        <div className="mx-4">
+          <h3 className="text-md mt-2 font-bold">1.1. Eligibility:</h3>
+          <p>
+            To use our Services, you must be at least 18 years old or have
+            obtained parental/guardian consent if under 18. By creating an
+            account, you confirm that you meet these eligibility requirements.
+          </p>
 
-            <div>
-              <h2 className="text-lg font-bold mb-2 text-gray-900">
-                3. Acceptable Use
-              </h2>
-              <p className="text-gray-700">
-                You agree not to use the App in any way that violates applicable
-                laws, regulations, or infringes upon the rights of others. You
-                shall not upload, post, transmit, or distribute any content that
-                is unlawful, harmful, or offensive.
-              </p>
-            </div>
+          <h3 className="text-md mt-2 font-bold"> 1.2. Account Creation:</h3>
+          <p>
+            To access certain features, you must create an account by providing
+            accurate and up-to-date information, including your name, email, and
+            password. You are responsible for maintaining the confidentiality of
+            your account credentials and any activity conducted through your
+            account.
+          </p>
 
-            <div>
-              <h2 className="text-lg font-bold mb-2 text-gray-900">
-                4. Intellectual Property
-              </h2>
-              <p className="text-gray-700">
-                All intellectual property rights in the App, including but not
-                limited to trademarks, copyrights, and patents, are owned by the
-                Company. You shall not copy, modify, distribute, or exploit any
-                part of the App without the Company's prior written consent.
-              </p>
-            </div>
-            <div>
-              <h2 className="text-lg font-bold mb-2 text-gray-900">
-                5. Data Privacy
-              </h2>
-              <p className="text-gray-700">
-                The Company respects your privacy and handles your personal data
-                in accordance with its Privacy Policy. By using the App, you
-                consent to the Company's collection, use, and disclosure of your
-                personal data as described in the Privacy Policy.
-              </p>
-            </div>
+          <h3 className="text-md mt-2 font-bold">
+            1.3. Educational Institution Use:
+          </h3>
+          <p>
+            If you are accessing our Services on behalf of an educational
+            institution, you represent and warrant that you have the authority
+            to bind the institution to these Terms. For student-facing services,
+            institutions must ensure compliance with relevant laws, including
+            providing parental consent where necessary.
+          </p>
+        </div>
 
-            <div>
-              <h2 className="text-lg font-bold mb-2 text-gray-900">
-                6. Disclaimer of Warranty
-              </h2>
-              <p className="text-gray-700">
-                The App is provided "as is" without any warranty or
-                representation, whether express or implied. The Company does not
-                guarantee that the App will be error-free, uninterrupted, or
-                secure.
-              </p>
-            </div>
+        <h2 className="text-xl mt-4 font-bold">
+          2. License and Use of Services
+        </h2>
+        <div className="mx-4">
+          <h3 className="text-md mt-2 font-bold">2.1. License Grant:</h3>
+          <p>
+            AI Teacha grants you a limited, non-exclusive, non-transferable, and
+            revocable license to use our Services for educational purposes in
+            accordance with these Terms.
+          </p>
 
-            <div>
-              <h2 className="text-lg font-bold mb-2 text-gray-900">
-                7. Limitation of Liability
-              </h2>
-              <p className="text-gray-700">
-                The Company shall not be liable for any direct, indirect,
-                incidental, consequential, or special damages arising out of or
-                in connection with the use of the App, even if the Company has
-                been advised of the possibility of such damages.
-              </p>
-            </div>
+          <h3 className="text-md mt-2 font-bold">2.2. Permitted Use:</h3>
+          <p>
+            You may use the Services to create, manage, and distribute
+            educational content, provided such use complies with all applicable
+            laws and regulations.
+          </p>
 
-            <div>
-              <h2 className="text-lg font-bold mb-2 text-gray-900">
-                8. Termination
-              </h2>
-              <p className="text-gray-700">
-                The Company may, at its sole discretion, suspend or terminate
-                your access to the App at any time, without prior notice, for
-                any reason or no reason.
-              </p>
-            </div>
+          <h3 className="text-md mt-2 font-bold">2.3. Prohibited Uses:</h3>
+          <ul className="list-disc mx-6">
+            <li>Violate intellectual property rights or data privacy laws.</li>
+            <li>Share or upload malicious software or harmful content.</li>
+            <li>
+              Use the Services for commercial purposes unrelated to education.
+            </li>
+            <li>
+              Decompile, reverse engineer, or otherwise attempt to access the
+              source code of our Services.
+            </li>
+            <li>
+              Circumvent security measures or disrupt the functionality of our
+              Services.
+            </li>
+          </ul>
+        </div>
 
-            <div>
-              <h2 className="text-lg font-bold mb-2 text-gray-900">
-                9. Governing Law
-              </h2>
-              <p className="text-gray-700">
-                These Terms shall be governed by and construed in accordance
-                with the laws of the jurisdiction where the Company is
-                incorporated, without regard to its conflict of laws provisions.
-              </p>
-            </div>
+        <h2 className="text-xl mt-4 font-bold">
+          3. Responsibilities for AI-Generated Content
+        </h2>
+        <div className="mx-4">
+          <h3 className="text-md mt-2 font-bold">3.1. Content Review:</h3>
+          <p>
+            Content generated by our AI tools is intended to support educators
+            but requires professional judgment. You are responsible for
+            reviewing, editing, and ensuring the accuracy and appropriateness of
+            all AI-generated content.
+          </p>
 
-            <div>
-              <h2 className="text-lg font-bold mb-2 text-gray-900">
-                10. Amendments
-              </h2>
-              <p className="text-gray-700">
-                The Company reserves the right to modify or update these Terms
-                at any time. Your continued use of the App after such
-                modifications shall constitute your acceptance of the updated
-                Terms.
-              </p>
-              <br />
-              <span className="italic font-bold">
-                Please read these Terms carefully before using the Ai Teacha
-                App. If you do not agree with any provision of these Terms, you
-                should not use the App.
-              </span>
-            </div>
-          </div>
+          <h3 className="text-md mt-2 font-bold">3.2. Privacy Protection:</h3>
+          <p>
+            Avoid sharing personal identifiable information (PII) of students or
+            others when using our tools unless explicitly permitted and
+            protected under a Data Privacy Agreement with AI Teacha.
+          </p>
+        </div>
+
+        <h2 className="text-xl mt-4 font-bold">4. Data Privacy and Security</h2>
+        <div className="mx-4">
+          <h3 className="text-md mt-2 font-bold">4.1. Privacy Commitment:</h3>
+          <p>
+            AI Teacha prioritizes data security and complies with relevant
+            regional laws, including the Nigeria Data Protection Regulation
+            (NDPR) and applicable international laws.
+          </p>
+
+          <h3 className="text-md mt-2 font-bold">4.2. Data Collection:</h3>
+          <p>
+            We collect minimal data necessary for account management and service
+            delivery. For details, refer to our Privacy Policy.
+          </p>
+
+          <h3 className="text-md mt-2 font-bold">
+            4.3. Student Data Protection:
+          </h3>
+          <p>
+            Institutions using student-facing services must enter into a Data
+            Privacy Agreement with AI Teacha to ensure compliance with privacy
+            laws.
+          </p>
+        </div>
+        <h2 className="text-xl mt-4 font-bold">5. Fees and Payment</h2>
+        <div className="mx-4">
+          <h3 className="text-md mt-2 font-bold">5.1. Subscription Plans:</h3>
+          <p>
+            Certain features of our Services require payment through
+            subscription plans. Fees and payment terms will be specified at the
+            time of subscription.
+          </p>
+
+          <h3 className="text-md mt-2 font-bold">5.2. Refund Policy:</h3>
+          <p>
+            Refunds are subject to our refund policy, which will be provided at
+            the time of purchase.
+          </p>
+        </div>
+
+        <h2 className="text-xl mt-4 font-bold">6. Intellectual Property</h2>
+
+        <div className="mx-4">
+          <h3 className="text-md mt-2 font-bold">6.1. Ownership:</h3>
+          <p>
+            AI Teacha retains ownership of all intellectual property rights
+            related to our Services, including software, design, and branding.
+          </p>
+
+          <h3 className="text-md mt-2 font-bold">6.2. User Content:</h3>
+          <p>
+            By submitting content to our platform, you grant AI Teacha a
+            non-exclusive, worldwide license to use, modify, and distribute the
+            content solely for the purpose of providing and improving our
+            Services.
+          </p>
+        </div>
+        <h2 className="text-xl mt-4 font-bold">7. Termination</h2>
+        <div className="mx-4">
+          <h3 className="text-md mt-2 font-bold">7.1. Termination by User:</h3>
+          <p>
+            You may terminate your account at any time by contacting us or using
+            account settings.
+          </p>
+
+          <h3 className="text-md mt-2 font-bold">
+            7.2. Termination by AI Teacha:
+          </h3>
+          <p>
+            We reserve the right to suspend or terminate your account for
+            violations of these Terms or any applicable laws.
+          </p>
+
+          <h3 className="text-md mt-2 font-bold">
+            7.3. Effect of Termination:
+          </h3>
+          <p>
+            Upon termination, your access to the Services will cease. Certain
+            provisions, such as those related to intellectual property,
+            confidentiality, and liability, will survive termination.
+          </p>
+        </div>
+
+        <h2 className="text-xl mt-4 font-bold">8. Limitation of Liability</h2>
+        <div className="mx-4">
+          <p>
+            To the extent permitted by law, AI Teacha and its affiliates shall
+            not be liable for any indirect, incidental, or consequential damages
+            arising from the use of our Services. Our total liability for any
+            claims shall not exceed the amount paid for Services in the
+            preceding 12 months.
+          </p>
+        </div>
+        <h2 className="text-xl mt-4 font-bold">9. Indemnification</h2>
+        <div className="mx-4">
+          <p>
+            You agree to indemnify and hold harmless AI Teacha, its officers,
+            employees, and partners from any claims, damages, or expenses
+            arising out of your use of the Services or violation of these Terms.
+          </p>
+        </div>
+
+        <h2 className="text-xl mt-4 font-bold">
+          10. Governing Law and Dispute Resolution
+        </h2>
+        <div className="mx-4">
+          <h3 className="text-md mt-2 font-bold">10.1. Governing Law:</h3>
+          <p>These Terms are governed by the laws of Nigeria.</p>
+
+          <h3 className="text-md mt-2 font-bold">10.2. Dispute Resolution:</h3>
+          <p>
+            Any disputes arising from these Terms shall be resolved through
+            arbitration in accordance with Nigerian arbitration laws.
+          </p>
+        </div>
+        <h2 className="text-xl mt-4 font-bold">11. Updates to Terms</h2>
+        <div className="mx-4">
+          <p>
+            AI Teacha may update these Terms from time to time. Users will be
+            notified of significant changes through email or in-app
+            notifications. Continued use of the Services after updates
+            constitutes acceptance of the revised Terms.
+          </p>
+        </div>
+
+        <h2 className="text-xl mt-4 font-bold">12. Contact Us</h2>
+        <div className="mx-4">
+          <p>
+            If you have questions or concerns about these Terms, please contact
+            us:
+          </p>
+          <ul>
+            <li>Email: info@aiteacha.com</li>
+            <li>Phone: 070 89115000</li>
+            <li>Address: 65, Gbasemo Street, Aga Ikorodu, Lagos</li>
+          </ul>
+
+          <p>
+            Thank you for choosing AI Teacha to empower your educational
+            journey!
+          </p>
         </div>
       </div>
 

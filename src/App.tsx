@@ -7,7 +7,7 @@ import Auth from "./layouts/Auth";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { PublicRoute } from "./PublicRoute";
 import Home from "./pages/Landing/Home";
-import Pioneers from "./pages/Landing/Pioneers";
+
 import Blog from "./pages/Landing/Blog";
 import Contact from "./pages/Landing/Contact";
 import Pricing from "./pages/Landing/Pricing";
@@ -21,11 +21,12 @@ import AIEducation from "./pages/Landing/BlogPages/AIEducation";
 import UpgradeSupport from "./pages/Landing/UpgradeSupport";
 import RoleBasedRedirect from "./pages/Dashboard/RoleBasedRedirect";
 import Faqs from "./pages/Landing/Faqs";
+import Pioneers from "./pages/Landing/communities/Pioneers";
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route path="/pioneer" element={<Pioneers />} />
+      <Route path="/communities/pioneers" element={<Pioneers />} />
       <Route path="/blogs" element={<Blog />} />
       <Route path="/faqs" element={<Faqs />} />
       <Route path="/contact" element={<Contact />} />

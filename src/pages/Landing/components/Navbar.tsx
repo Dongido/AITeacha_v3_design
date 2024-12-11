@@ -31,7 +31,7 @@ const Navbar = () => {
   const communities = [
     {
       name: "Pioneer Program",
-      to: "/pioneer-program",
+      to: "/communities/pioneers",
       description:
         "Track and analyze user interactions to improve learning outcomes.",
       icon: IconOne,
@@ -40,7 +40,7 @@ const Navbar = () => {
     {
       name: "Heroes Wall",
       description: "Showcase achievements and celebrate learner milestones.",
-      to: "/heroes-wall",
+      to: "/communities/heroes-wall",
       icon: IconTwo,
     },
   ];
@@ -70,8 +70,23 @@ const Navbar = () => {
       name: "Privacy Policy",
       description: "Understand how we protect and use your data responsibly.",
 
-      to: "##",
+      to: "/privacy-policy",
       icon: IconPrivacy,
+    },
+    {
+      name: "Terms Of Service",
+      description:
+        "Learn about the guidelines and agreements for using our services responsibly and securely.",
+      to: "/terms-of-service",
+      icon: IconSupport,
+    },
+    {
+      name: "Contact Us",
+      description:
+        "Reach out to us for support, feedback, or collaboration opportunities. We're here to help!",
+
+      to: "/contact",
+      icon: IconTwo,
     },
   ];
 
@@ -172,7 +187,7 @@ const Navbar = () => {
                 About Us
                 <ChevronDownIcon className="ml-1 h-5 w-5" />
               </Popover.Button>
-              <Popover.Panel className="absolute z-10 mt-2 w-48 p-4 bg-white shadow-lg rounded-lg">
+              <Popover.Panel className="absolute z-10 mt-2 w-64 p-4 bg-white shadow-lg rounded-lg">
                 {about.map((item) => (
                   <Link
                     key={item.name}
@@ -183,7 +198,7 @@ const Navbar = () => {
                       <item.icon aria-hidden="true" />
                     </div>
                     <div className="ml-4">
-                      <p className="text-sm font-medium text-gray-900">
+                      <p className="text-sm font-medium whitespace-nowrap text-gray-900">
                         {item.name}
                       </p>
                     </div>

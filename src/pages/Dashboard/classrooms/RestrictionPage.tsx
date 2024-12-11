@@ -1,7 +1,6 @@
 import React from "react";
 import { Button } from "../../../components/ui/Button";
-
-// SVG Icons (Example placeholders for each feature)
+import { useNavigate } from "react-router-dom";
 const LessonManagementIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -71,6 +70,7 @@ interface RestrictedPageProps {
 }
 
 const RestrictedPage: React.FC<RestrictedPageProps> = ({ error }) => {
+  const navigate = useNavigate();
   return (
     <div className="flex flex-col items-center justify-center">
       <div className="p-6 bg-gray-50 rounded-lg shadow-md">
@@ -137,7 +137,7 @@ const RestrictedPage: React.FC<RestrictedPageProps> = ({ error }) => {
           </div>
         </div>
         <Button
-          onClick={() => alert("Redirecting to upgrade page...")}
+          onClick={() => navigate("/dashboard/upgrade")}
           variant={"gradient"}
           className="px-6 py-2 mt-4 text-white font-semibold rounded-full hover:bg-blue-600 transition"
         >

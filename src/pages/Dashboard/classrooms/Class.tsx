@@ -47,30 +47,46 @@ const Classrooms = () => {
 
   if (loading) {
     return (
-      <div className="overflow-x-auto">
-        <table className="min-w-full border-collapse">
-          <thead>
-            <tr>
-              {[...Array(5)].map((_, index) => (
-                <th key={index} className="p-4 border-b">
-                  <Skeleton className="h-4 w-16 rounded" />
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {[...Array(6)].map((_, rowIndex) => (
-              <tr key={rowIndex} className="border-b">
-                {[...Array(5)].map((_, colIndex) => (
-                  <td key={colIndex} className="p-4">
-                    <Skeleton className="h-4 w-full rounded" />
-                  </td>
+      <>
+        {userDetails && isEmailVerified === 1 && (
+          <div
+            className="bg-[#e5dbff] mt-3 mb-4 text-black p-4 rounded-md flex justify-center items-center"
+            style={{
+              background:
+                "linear-gradient(143.6deg, rgba(192, 132, 252, 0) 20.79%, rgba(232, 121, 249, 0.26) 40.92%, rgba(204, 171, 238, 0) 70.35%)",
+            }}
+          >
+            <span className="text-center text-xl font-bold">
+              Teachers Are Heroes🎉
+            </span>
+          </div>
+        )}
+
+        <div className="overflow-x-auto">
+          <table className="min-w-full border-collapse">
+            <thead>
+              <tr>
+                {[...Array(5)].map((_, index) => (
+                  <th key={index} className="p-4 border-b">
+                    <Skeleton className="h-4 w-16 rounded" />
+                  </th>
                 ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {[...Array(6)].map((_, rowIndex) => (
+                <tr key={rowIndex} className="border-b">
+                  {[...Array(5)].map((_, colIndex) => (
+                    <td key={colIndex} className="p-4">
+                      <Skeleton className="h-4 w-full rounded" />
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </>
     );
   }
 
