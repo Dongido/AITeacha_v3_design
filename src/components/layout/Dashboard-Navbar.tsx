@@ -24,32 +24,36 @@ import {
   DialogTitle,
   DialogClose,
 } from "../ui/Dialogue";
+import { useSelector, useDispatch } from "react-redux";
+import { AppDispatch } from "../../store";
+import { loadProfileImage } from "../../store/slices/profileSlice";
 
 export function DashboardNavbar() {
-  const { controller, dispatch } = useMaterialTailwindController();
+  const { controller, dispatch: uiDispatch } = useMaterialTailwindController();
   const { fixedNavbar, openSidenav } = controller as {
     fixedNavbar: boolean;
     openSidenav: boolean;
   };
 
-  const [userImage, setUserImage] = useState<string>("");
+  const dispatch = useDispatch<AppDispatch>();
+  const { imageUrl, loading } = useSelector((state: any) => state.profile);
 
   useEffect(() => {
-    const userDetails = JSON.parse(
-      localStorage.getItem("ai-teacha-user") || "{}"
-    );
-    const imageUrl = userDetails.imageurl
-      ? userDetails.imageurl.startsWith("http")
-        ? userDetails.imageurl
-        : `https://${userDetails.imageurl}`
-      : "https://img.freepik.com/premium-photo/cool-asian-head-logo_925613-50527.jpg?w=360";
-
-    setUserImage(imageUrl);
-  }, []);
+    if (!imageUrl) {
+      dispatch(loadProfileImage());
+    }
+    console.log(imageUrl);
+  }, [dispatch, imageUrl]);
 
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const [layout, page] = pathname.split("/").filter((el) => el !== "");
+
+  const imageURL = imageUrl
+    ? imageUrl.startsWith("http")
+      ? imageUrl
+      : `https://${imageUrl}`
+    : "https://img.freepik.com/premium-photo/cool-asian-head-logo_925613-50527.jpg?w=360";
 
   const pageName = page === undefined ? "dashboard" : page;
 
@@ -89,7 +93,7 @@ export function DashboardNavbar() {
             variant="text"
             color="blue-gray"
             className="grid xl:hidden"
-            onClick={() => setOpenSidenav(dispatch, !openSidenav)}
+            onClick={() => setOpenSidenav(uiDispatch, !openSidenav)}
             aria-label="Toggle sidenav"
           >
             <Bars3Icon strokeWidth={3} className="h-6 w-6 text-blue-gray-500" />
@@ -97,7 +101,7 @@ export function DashboardNavbar() {
           <Link to="/dashboard/profile">
             <Button variant="text" color="blue-gray" className="grid mb-2">
               <img
-                src={userImage}
+                src={imageURL}
                 alt="Profile"
                 className="h-8 w-8 rounded-full object-cover border border-gray-300"
               />
@@ -133,7 +137,7 @@ export function DashboardNavbar() {
           <Button
             variant="text"
             color="blue-gray"
-            onClick={() => setOpenConfigurator(dispatch, true)}
+            onClick={() => setOpenConfigurator(uiDispatch, true)}
             aria-label="Open configurator"
           >
             <Cog6ToothIcon className="h-5 w-5 text-blue-gray-500" />

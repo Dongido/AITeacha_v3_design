@@ -4,6 +4,7 @@ import { AppDispatch, RootState } from "../../store";
 import {
   loadUserProfile,
   updateUserNameThunk,
+  loadProfileImage,
   updateProfilePhotoThunk,
 } from "../../store/slices/profileSlice";
 import { Input } from "../../components/ui/Input";
@@ -17,6 +18,7 @@ import {
   ToastViewport,
 } from "../../components/ui/Toast";
 import { FiEdit } from "react-icons/fi";
+
 import { TextArea } from "../../components/ui/TextArea";
 
 const Profile: React.FC = () => {
@@ -63,21 +65,15 @@ const Profile: React.FC = () => {
   const handleSave = async () => {
     try {
       await dispatch(
-        updateUserNameThunk({ firstname: firstName, lastname: lastName })
+        updateUserNameThunk({
+          firstname: firstName,
+          lastname: lastName,
+          about,
+          phone,
+        })
       ).unwrap();
       const updatedProfile = await dispatch(loadUserProfile()).unwrap();
 
-      const userDetails = JSON.parse(
-        localStorage.getItem("ai-teacha-user") || "{}"
-      );
-      userDetails.imageurl = updatedProfile.imageurl;
-      localStorage.setItem("ai-teacha-user", JSON.stringify(userDetails));
-
-      // setUserImage(
-      //   updatedProfile.imageurl.startsWith("http")
-      //     ? updatedProfile.imageurl
-      //     : `https://${updatedProfile.imageurl}`
-      // );
       setToastMessage("Profile updated successfully!");
       setEditMode(false);
     } catch (err) {
@@ -92,6 +88,7 @@ const Profile: React.FC = () => {
       try {
         await dispatch(updateProfilePhotoThunk(profilePicture)).unwrap();
         dispatch(loadUserProfile());
+        dispatch(loadProfileImage());
         setToastMessage("Profile photo updated successfully!");
         setEditMode(false);
       } catch (err) {
@@ -227,21 +224,19 @@ const Profile: React.FC = () => {
                 <div className="mb-2">
                   <label
                     htmlFor="role"
-                    className="block text-sm font-semibold text-gray-700 mb-2"
+                    className="block text-sm font-medium text-gray-700"
                   >
                     Role
                   </label>
-                  <select
-                    id="role"
-                    value={role}
-                    onChange={handleRoleChange}
-                    className="w-full border p-2 rounded-md border-gray-300"
-                    disabled={!editMode}
-                  >
-                    <option value={3}>Student</option>
-                    <option value={2}>Teacher</option>
-                    <option value={2}>Educator</option>
-                  </select>
+                  <p className="w-full border p-2 rounded-md border-gray-300 bg-gray-100">
+                    {role === 3
+                      ? "Student"
+                      : role === 2
+                      ? "Teacher"
+                      : role === 1
+                      ? "Educator"
+                      : "Unknown Role"}
+                  </p>
                 </div>
                 <div>
                   <label

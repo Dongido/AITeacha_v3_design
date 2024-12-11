@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { Dialog, Disclosure, Popover, Transition } from "@headlessui/react";
+import { ChevronDownIcon } from "@heroicons/react/24/solid";
 import { Link, useLocation } from "react-router-dom";
 import brandImg from "../../../logo.png";
 import Cookies from "js-cookie";
@@ -8,6 +10,7 @@ const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const location = useLocation();
+  const [showCommunityPopup, setShowCommunityPopup] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -97,7 +100,7 @@ const Header = () => {
                   to="/auth/onboarding"
                   className="text-white font-bold bg-primary focus:ring-4 focus:ring-primary-300 rounded-full text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800"
                 >
-                  Get started
+                  Get Started
                 </Link>
               </>
             )}
@@ -123,92 +126,212 @@ const Header = () => {
               </svg>
             </button>
           </div>
-          <div
-            className={`${
-              menuOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
-            } lg:flex lg:opacity-100 lg:max-h-full lg:relative lg:bg-transparent absolute top-full left-0 w-full bg-white lg:w-auto z-40 lg:z-auto transition-[max-height,opacity] duration-500 ease-in-out overflow-hidden`}
-            id="mobile-menu-2"
-          >
-            <ul className="flex flex-col mt-4 font-medium lg:flex-row lg:space-x-8 lg:mt-0">
-              <li>
-                <Link
-                  to="/"
-                  className={`block py-2 font-bold pr-2 pl-2 lg:p-2 ${
-                    location.pathname === "/" && !location.hash
-                      ? "text-primary"
-                      : "text-gray-900"
-                  }`}
+          <div className="relative">
+            <nav className="bg-white px-4 lg:px-6 py-2.5 ">
+              <div className="container flex flex-wrap items-center justify-between mx-auto">
+                <div
+                  className={`${
+                    menuOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
+                  } lg:flex lg:opacity-100 lg:max-h-full lg:relative lg:bg-transparent absolute top-full left-0 w-full bg-white lg:w-auto z-40 lg:z-auto transition-[max-height,opacity] duration-500 ease-in-out overflow-hidden`}
+                  id="mobile-menu-2"
                 >
-                  Home
-                </Link>
-              </li>
+                  <ul className="flex flex-col mt-4 font-medium lg:flex-row lg:space-x-8 lg:mt-0">
+                    {/* <li>
+                      <Link
+                        to="/#features"
+                        className={`block py-2 font-bold pr-2 pl-2 lg:p-2 ${
+                          location.hash === "#features"
+                            ? "text-primary"
+                            : "text-gray-900"
+                        }`}
+                        onClick={() =>
+                          setTimeout(
+                            () => scrollToSectionOnHome("features"),
+                            50
+                          )
+                        }
+                      >
+                        Features
+                      </Link>
+                    </li> */}
 
-              <li>
-                <Link
-                  to="/#features"
-                  className={`block py-2 font-bold pr-2 pl-2 lg:p-2 ${
-                    location.hash === "#features"
-                      ? "text-primary"
-                      : "text-gray-900"
-                  }`}
-                  onClick={() =>
-                    setTimeout(() => scrollToSectionOnHome("features"), 50)
-                  }
-                >
-                  Features
-                </Link>
-              </li>
+                    <li className="relative">
+                      <Popover>
+                        {({ open }) => (
+                          <>
+                            <Popover.Button
+                              onClick={() =>
+                                setShowCommunityPopup(!showCommunityPopup)
+                              }
+                              className="flex items-center  justify-between w-full py-2 font-bold pr-2 pl-2 lg:p-2 text-gray-900 focus:outline-none"
+                            >
+                              Communities
+                              <ChevronDownIcon
+                                className={`ml-2 h-5 w-5 transition-transform ${
+                                  open ? "rotate-180" : "rotate-0"
+                                }`}
+                              />
+                            </Popover.Button>
+                            <Popover.Panel
+                              className={`absolute top-full left-0 w-72 bg-white shadow-lg border rounded-lg p-4 z-50 mt-2 transition-all duration-300 ${
+                                showCommunityPopup ? "block" : "hidden"
+                              }`}
+                            >
+                              <ul className="space-y-2">
+                                <li>
+                                  <Link
+                                    to="/community-1"
+                                    className="block text-gray-700 hover:text-primary"
+                                  >
+                                    Community 1
+                                  </Link>
+                                </li>
+                                <li>
+                                  <Link
+                                    to="/community-2"
+                                    className="block text-gray-700 hover:text-primary"
+                                  >
+                                    Community 2
+                                  </Link>
+                                </li>
+                                <li>
+                                  <Link
+                                    to="/resources"
+                                    className="block text-gray-700 hover:text-primary"
+                                  >
+                                    Resources
+                                  </Link>
+                                </li>
+                                <li>
+                                  <Link
+                                    to="/guides"
+                                    className="block text-gray-700 hover:text-primary"
+                                  >
+                                    Guides
+                                  </Link>
+                                </li>
+                                <li>
+                                  <Link
+                                    to="/blogs"
+                                    className={`block py-2 font-bold pr-2 pl-2 lg:p-2 ${
+                                      location.pathname === "/blogs"
+                                        ? "text-primary"
+                                        : "text-gray-900"
+                                    }`}
+                                  >
+                                    Blogs
+                                  </Link>
+                                </li>
+                              </ul>
+                            </Popover.Panel>
+                          </>
+                        )}
+                      </Popover>
+                    </li>
 
-              <li>
-                <Link
-                  to="/faqs"
-                  className={`block py-2 font-bold pr-2 pl-2 lg:p-2 ${
-                    location.pathname === "/faqs" && !location.hash
-                      ? "text-primary"
-                      : "text-gray-900"
-                  }`}
-                >
-                  FAQs
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/pricing"
-                  className={`block py-2 font-bold pr-2 pl-2 lg:p-2 ${
-                    location.pathname === "/pricing"
-                      ? "text-primary"
-                      : "text-gray-900"
-                  }`}
-                >
-                  Pricing
-                </Link>
-              </li>
+                    <li>
+                      <Link
+                        to="/pricing"
+                        className={`block py-2 font-bold pr-2 pl-2 lg:p-2 ${
+                          location.pathname === "/pricing"
+                            ? "text-primary"
+                            : "text-gray-900"
+                        }`}
+                      >
+                        Pricing
+                      </Link>
+                    </li>
 
-              <li>
-                <Link
-                  to="/blogs"
-                  className={`block py-2 font-bold pr-2 pl-2 lg:p-2 ${
-                    location.pathname === "/blogs"
-                      ? "text-primary"
-                      : "text-gray-900"
-                  }`}
-                >
-                  Blogs
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/contact"
-                  className={`block py-2 font-bold pr-2 pl-2 lg:p-2 ${
-                    location.pathname === "/contact"
-                      ? "text-primary"
-                      : "text-gray-900"
-                  }`}
-                >
-                  Contact Us
-                </Link>
-              </li>
-            </ul>
+                    <li className="relative">
+                      <Popover>
+                        {({ open }) => (
+                          <>
+                            <Popover.Button
+                              onClick={() =>
+                                setShowCommunityPopup(!showCommunityPopup)
+                              }
+                              className="flex items-center  justify-between w-full py-2 font-bold pr-2 pl-2 lg:p-2 text-gray-900 focus:outline-none"
+                            >
+                              Resources
+                              <ChevronDownIcon
+                                className={`ml-2 h-5 w-5 transition-transform ${
+                                  open ? "rotate-180" : "rotate-0"
+                                }`}
+                              />
+                            </Popover.Button>
+                            <Popover.Panel
+                              className={`absolute top-full left-0 w-72 bg-white shadow-lg border rounded-lg p-4 z-50 mt-2 transition-all duration-300 ${
+                                showCommunityPopup ? "block" : "hidden"
+                              }`}
+                            >
+                              <ul className="space-y-2">
+                                <li>
+                                  <Link
+                                    to="/community-1"
+                                    className="block text-gray-700 hover:text-primary"
+                                  >
+                                    Community 1
+                                  </Link>
+                                </li>
+                                <li>
+                                  <Link
+                                    to="/community-2"
+                                    className="block text-gray-700 hover:text-primary"
+                                  >
+                                    Community 2
+                                  </Link>
+                                </li>
+                                <li>
+                                  <Link
+                                    to="/resources"
+                                    className="block text-gray-700 hover:text-primary"
+                                  >
+                                    Resources
+                                  </Link>
+                                </li>
+                                <li>
+                                  <Link
+                                    to="/guides"
+                                    className="block text-gray-700 hover:text-primary"
+                                  >
+                                    Guides
+                                  </Link>
+                                </li>
+                                <li>
+                                  <Link
+                                    to="/blogs"
+                                    className={`block py-2 font-bold pr-2 pl-2 lg:p-2 ${
+                                      location.pathname === "/blogs"
+                                        ? "text-primary"
+                                        : "text-gray-900"
+                                    }`}
+                                  >
+                                    Blogs
+                                  </Link>
+                                </li>
+                              </ul>
+                            </Popover.Panel>
+                          </>
+                        )}
+                      </Popover>
+                    </li>
+
+                    <li>
+                      <Link
+                        to="/about"
+                        className={`block py-2 font-bold pr-2 pl-2 lg:p-2 ${
+                          location.pathname === "/pricing"
+                            ? "text-primary"
+                            : "text-gray-900"
+                        }`}
+                      >
+                        About Us
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </nav>
           </div>
         </div>
       </nav>

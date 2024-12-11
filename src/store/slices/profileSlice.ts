@@ -4,12 +4,14 @@ import {
   updateUserRole,
   updateUserName,
   updateProfilePhoto,
+  fetchProfileImage,
   User,
 } from "../../api/profile";
 
 interface ProfileState {
   user: User | null;
-  loading: boolean; // General loading (for fetching user profile)
+  imageUrl: string | null;
+  loading: boolean;
   updateNameLoading: boolean;
   updatePhotoLoading: boolean;
   error: string | null;
@@ -17,13 +19,21 @@ interface ProfileState {
 
 const initialState: ProfileState = {
   user: null,
+  imageUrl: null,
   loading: false,
   updateNameLoading: false,
   updatePhotoLoading: false,
   error: null,
 };
 
-// Async thunk for loading user profile
+export const loadProfileImage = createAsyncThunk(
+  "profile/loadProfileImage",
+  async () => {
+    const imageUrl = await fetchProfileImage();
+    return imageUrl;
+  }
+);
+
 export const loadUserProfile = createAsyncThunk(
   "profile/loadUserProfile",
   async (_, { rejectWithValue }) => {
@@ -40,11 +50,16 @@ export const loadUserProfile = createAsyncThunk(
 export const updateUserNameThunk = createAsyncThunk(
   "profile/updateUserName",
   async (
-    { firstname, lastname }: { firstname: string; lastname: string },
+    {
+      firstname,
+      lastname,
+      about,
+      phone,
+    }: { firstname: string; lastname: string; about: string; phone: string },
     { rejectWithValue }
   ) => {
     try {
-      await updateUserName(firstname, lastname);
+      await updateUserName(firstname, lastname, about, phone);
       return { firstname, lastname };
     } catch (error: any) {
       return rejectWithValue(error.message || "Failed to update user name.");
@@ -127,11 +142,26 @@ const profileSlice = createSlice({
       })
       .addCase(updateProfilePhotoThunk.fulfilled, (state) => {
         state.updatePhotoLoading = false;
-        // Update the user photo URL if stored here
       })
       .addCase(updateProfilePhotoThunk.rejected, (state, action) => {
         state.updatePhotoLoading = false;
         state.error = action.payload as string;
+      });
+    builder
+      .addCase(loadProfileImage.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        loadProfileImage.fulfilled,
+        (state, action: PayloadAction<string>) => {
+          state.loading = false;
+          state.imageUrl = action.payload;
+        }
+      )
+      .addCase(loadProfileImage.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to load profile image.";
       });
   },
 });

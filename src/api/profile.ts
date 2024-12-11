@@ -49,12 +49,16 @@ export const fetchUserDetailsFromAuth = async (): Promise<User> => {
 };
 export const updateUserName = async (
   firstname: string,
-  lastname: string
+  lastname: string,
+  about: string,
+  phone: string
 ): Promise<void> => {
   try {
     const response = await apiClient.put(`profile/update/user`, {
       firstname,
       lastname,
+      about,
+      phone,
     });
     console.log("User name updated successfully:", response.data);
   } catch (error: any) {
@@ -88,6 +92,17 @@ export const updateUserRole = async (roleId: number): Promise<void> => {
   } catch (error: any) {
     throw new Error(
       error.response?.data || "Failed to update user role. Please try again."
+    );
+  }
+};
+export const fetchProfileImage = async (): Promise<string> => {
+  try {
+    const response = await apiClient.get<any>(`profile/photo`);
+    // console.log(response.data.data[0].imageurl);
+    return response.data.data[0].imageurl;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data || "Failed to fetch profile image. Please try again."
     );
   }
 };
