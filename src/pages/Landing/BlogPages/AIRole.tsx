@@ -1,10 +1,10 @@
-import Header from "../components/Header";
+import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 const AiRole = () => {
   return (
     <div className="flex flex-col  min-h-screen bg-white">
       <section>
-        <Header />
+        <Navbar />
       </section>
       <div className="mt-32 ">
         <div className="mx-auto max-w-4xl">

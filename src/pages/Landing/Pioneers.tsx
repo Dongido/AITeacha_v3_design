@@ -1,4 +1,4 @@
-import Header from "./components/Header";
+import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import { Button } from "../../components/ui/Button";
 
@@ -6,7 +6,7 @@ const Pioneers = () => {
   return (
     <div className="flex flex-col  min-h-screen bg-white">
       <section>
-        <Header />
+        <Navbar />
       </section>
 
       <div className="mt-24 mx-auto max-w-screen-lg pb-4 px-4 items-center lg:flex md:px-8">

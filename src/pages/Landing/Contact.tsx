@@ -1,4 +1,4 @@
-import Header from "./components/Header";
+import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import { Input } from "../../components/ui/Input";
 import { TextArea } from "../../components/ui/TextArea";
@@ -80,7 +80,7 @@ const Contact = () => {
   return (
     <div className="flex flex-col min-h-screen bg-white">
       <section>
-        <Header />
+        <Navbar />
       </section>
       <div className="mt-32">
         <h2 className="text-4xl text-black text-center font-bold">

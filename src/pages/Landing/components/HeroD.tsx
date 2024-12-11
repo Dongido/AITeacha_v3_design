@@ -5,6 +5,7 @@ import openAi from "../../../assets/img/OpenAI_Logo.svg";
 import icedt from "../../../assets/img/icedt-removebg-preview.png";
 import nvidia from "../../../assets/img/NVIDIA_logo.svg.png";
 import { motion } from "framer-motion";
+import Navbar from "./Navbar";
 
 const HeroD = () => {
   return (
@@ -15,7 +16,7 @@ const HeroD = () => {
             "linear-gradient(143.6deg, rgba(192, 132, 252, 0) 20.79%, rgba(232, 121, 249, 0.26) 40.92%, rgba(204, 171, 238, 0) 70.35%)",
         }}
       >
-        <Header />
+        <Navbar />
         <section className="py-28">
           <div className="max-w-screen-2xl mx-auto text-gray-600 gap-x-12 items-center justify-between overflow-hidden md:flex md:px-8">
             <div className="flex-none space-y-5 px-4 sm:max-w-lg md:px-0 lg:max-w-xl">

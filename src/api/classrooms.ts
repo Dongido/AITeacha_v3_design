@@ -3,13 +3,6 @@ import { Classroom, ClassroomData, Student } from "./interface";
 
 export const fetchClassroomsByUser = async (): Promise<Classroom[]> => {
   try {
-    const user = JSON.parse(localStorage.getItem("ai-teacha-user") || "{}");
-    const userId = user.id;
-
-    if (!userId) {
-      throw new Error("User ID not found. Please log in.");
-    }
-
     const response = await apiClient.get<{
       status: string;
       message: string;
@@ -18,9 +11,14 @@ export const fetchClassroomsByUser = async (): Promise<Classroom[]> => {
 
     return response.data.data;
   } catch (error: any) {
-    throw new Error(
-      error.response?.data || "Failed to fetch classrooms. Please try again."
-    );
+    if (error.response?.status === 400) {
+      throw new Error(
+        error.response?.data?.message ||
+          "Failed to fetch classrooms. Please try again."
+      );
+    } else {
+      throw new Error("Failed to fetch classrooms. Please try again.");
+    }
   }
 };
 

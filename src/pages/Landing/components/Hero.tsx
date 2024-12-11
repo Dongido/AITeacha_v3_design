@@ -7,6 +7,7 @@ import cfirst from "../../../assets/img/csfirst lag.jpg";
 import openAi from "../../../assets/img/OpenAI_Logo.svg";
 import icedt from "../../../assets/img/icedt.png";
 import nvidia from "../../../assets/img/NVIDIA_logo.svg.png";
+import Navbar from "./Navbar";
 const Hero = () => {
   const [textIndex, setTextIndex] = useState(0);
   // const [isDeleting, setIsDeleting] = useState(false);
@@ -40,7 +41,7 @@ const Hero = () => {
         background: "linear-gradient(135deg, #CEBDFF0D 50%, #5C3CBB1A 100%)",
       }}
     >
-      <Header />
+      <Navbar />
       <div className="relative py-6 mt-20 px-4 mx-auto max-w-screen-xl text-center lg:py-12 lg:px-12">
         <a
           href="#"

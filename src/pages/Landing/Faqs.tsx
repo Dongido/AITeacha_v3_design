@@ -1,10 +1,10 @@
-import Header from "./components/Header";
+import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import FaqsSection from "./components/FaqDesign";
 const Faqs = () => {
   return (
     <div>
-      <Header />
+      <Navbar />
       <div className="mt-24">
         <FaqsSection />
       </div>

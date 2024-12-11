@@ -14,6 +14,7 @@ import {
   ToastViewport,
   ToastClose,
 } from "../../components/ui/Toast";
+import PricingFaq from "../Landing/components/PricingFaq";
 
 interface UserDetails {
   id: string;
@@ -435,6 +436,9 @@ const Upgrade: React.FC = () => {
               ? "Processing..."
               : "Contact Support"}{" "}
           </Button>{" "}
+        </div>
+        <div className="mt-12">
+          <PricingFaq />
         </div>
       </div>
       {showToast && (

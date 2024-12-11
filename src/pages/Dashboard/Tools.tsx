@@ -4,11 +4,22 @@ import { loadTools, loadStudentTools } from "../../store/slices/toolsSlice";
 import { RootState, AppDispatch } from "../../store";
 import { FaHeart } from "react-icons/fa";
 import { Skeleton } from "../../components/ui/Skeleton";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Switch } from "../../components/ui/Switch";
-
+import { checkEligibility } from "../../api/tools";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+  DialogClose,
+  DialogTrigger,
+} from "../../components/ui/Dialogue";
 const Tools = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate(); // Initialize navigate
 
   const { tools, loading, error, studentTools, studentLoading, studentError } =
     useSelector((state: RootState) => state.tools);
@@ -23,6 +34,7 @@ const Tools = () => {
       dispatch(loadStudentTools());
     }
   }, [dispatch, tools.length, studentTools.length]);
+
   const [userDetails, setUserDetails] = useState<any>(null);
   const [isEmailVerified, setIsEmailVerified] = useState<number>(0);
 
@@ -35,6 +47,27 @@ const Tools = () => {
       setIsEmailVerified(parsedDetails.is_email_verified);
     }
   }, []);
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const handleToolClick = async (toolId: number, slug: string) => {
+    try {
+      const eligibility = await checkEligibility(toolId);
+      if (eligibility) {
+        navigate(
+          showStudentTools
+            ? `/dashboard/student/tools/${slug}`
+            : `/dashboard/tools/${slug}`
+        );
+      } else {
+        setIsDialogOpen(true);
+      }
+    } catch (error) {
+      setIsDialogOpen(true);
+      //  alert("Failed to check eligibility. Please try again.");
+    }
+  };
+
   return (
     <div className="mt-4">
       {userDetails && isEmailVerified === 1 && (
@@ -76,13 +109,9 @@ const Tools = () => {
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 text-center mx-auto">
           {(showStudentTools ? studentTools : tools).map((tool) => (
-            <Link
-              to={
-                showStudentTools
-                  ? `/dashboard/student/tools/${tool.slug}`
-                  : `/dashboard/tools/${tool.slug}`
-              }
+            <div
               key={tool.id}
+              onClick={() => handleToolClick(tool.id, tool.slug)} // Use handleToolClick here
               className="flex items-center border border-gray-300 px-4 py-3 rounded-3xl bg-white hover:bg-gray-50 cursor-pointer transition duration-500 ease-in-out transform hover:scale-105"
             >
               <div className="text-primary text-2xl mr-4">
@@ -110,10 +139,32 @@ const Tools = () => {
                 {tool.description.charAt(0).toUpperCase() +
                   tool.description.slice(1)}
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       )}
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent>
+          <DialogHeader className="flex justify-center items-center mx-auto text-center">
+            <DialogTitle>Eligibility Check</DialogTitle>
+            <DialogDescription className="text-xl font-medium">
+              You are not eligible to access this tool.
+            </DialogDescription>
+            <p className="text-xl font-medium text-primary">
+              Please Upgrade your Plan to use this
+            </p>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose
+              className=" text-black rounded-lg p-2"
+              onClick={() => setIsDialogOpen(false)}
+            >
+              Close
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

@@ -66,7 +66,7 @@ const ToolboxPage: React.FC = () => {
   }, [currentIndex, toolboxItems]);
 
   return (
-    <section className="mx-auto mt-12 px-4 md:px-12 text-white">
+    <section className="mx-auto mt-12 px-4 md:px-12 py-12 text-white">
       <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900">
         Over 37 Powerful tools
       </h2>

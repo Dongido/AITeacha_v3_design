@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import dashboardImg from "../../../assets/img/dashboardAi.png";
 import Header from "./Header";
+import Navbar from "./Navbar";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import rescillience from "../../../assets/img/resilienc.svg";
@@ -51,7 +52,7 @@ export default () => {
           "linear-gradient(180deg, rgba(192, 132, 252, 0) 20.79%, rgba(232, 121, 249, 0.26) 40.92%, rgba(204, 171, 238, 0) 70.35%)",
       }}
     >
-      <Header />
+      <Navbar />
       <div className="max-w-screen-2xl mx-auto px-4 pt-32 pb-12 gap-12 text-gray-600 md:px-8">
         <div className="relative space-y-5 max-w-4xl mx-auto text-center">
           <a
@@ -108,7 +109,7 @@ export default () => {
               to={"/auth/onboarding"}
               className="block py-2 px-4 text-white font-medium bg-primary duration-150 hover:bg-indigo-500 active:bg-indigo-700 rounded-lg shadow-lg hover:shadow-none"
             >
-              Get started for free
+              Get started for Free
             </Link>
             <Link
               to="/#tools"

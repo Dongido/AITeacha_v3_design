@@ -7,9 +7,7 @@ const CTA: React.FC = () => {
       <section className="py-16 ">
         <div className="max-w-screen-xl mx-auto px-4 md:px-8 lg:flex lg:items-center">
           <div className="lg:w-1/2 space-y-3 md:mx-auto">
-            <h3 className="text-primary font-semibold">
-              Professional services
-            </h3>
+            <h3 className="text-primary font-semibold">AI tutors</h3>
             <p className="text-gray-900 text-3xl md:text-4xl lg:text-5xl font-semibold sm:text-4xl">
               AI Tool for Tutors
             </p>

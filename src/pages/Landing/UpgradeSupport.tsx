@@ -1,10 +1,10 @@
-import Header from "./components/Header";
+import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 
 const UpgradeSupport = () => {
   return (
     <>
-      <Header />
+      <Navbar />
 
       <div className="flex items-center text-xl mt-24 font-bold rounded-md text-black w-full gap-12">
         <main className="w-1/2">

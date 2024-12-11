@@ -27,8 +27,22 @@ export const resources = [
     icon: IconTools,
   },
 ];
+export const about = [
+  {
+    name: "AI Teacha Mission",
+    description: "Discover how we aim to revolutionize education with AI.",
+    href: "##",
+    icon: IconMission,
+  },
+  {
+    name: "Privacy Policy",
+    description: "Understand how we protect and use your data responsibly.",
+    href: "##",
+    icon: IconPrivacy,
+  },
+];
 
-function IconOne() {
+export function IconOne() {
   return (
     <svg
       width="48"
@@ -61,7 +75,7 @@ function IconOne() {
   );
 }
 
-function IconTwo() {
+export function IconTwo() {
   return (
     <svg
       width="48"
@@ -87,7 +101,7 @@ function IconTwo() {
   );
 }
 
-function IconSupport() {
+export function IconSupport() {
   return (
     <svg
       width="48"
@@ -109,7 +123,7 @@ function IconSupport() {
   );
 }
 
-function IconTools() {
+export function IconTools() {
   return (
     <svg
       width="48"
@@ -124,6 +138,47 @@ function IconTools() {
         fill="#2563EB"
       />
       <path d="M17 23H15V25H17V23ZM33 23H31V25H33V23Z" fill="#1E40AF" />
+    </svg>
+  );
+}
+export function IconMission() {
+  return (
+    <svg
+      width="48"
+      height="48"
+      viewBox="0 0 48 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect width="48" height="48" rx="8" fill="#FFF7ED" />
+      <path
+        d="M24 12L18 24H30L24 12ZM24 28C22.3431 28 21 29.3431 21 31C21 32.6569 22.3431 34 24 34C25.6569 34 27 32.6569 27 31C27 29.3431 25.6569 28 24 28Z"
+        fill="#FB923C"
+      />
+    </svg>
+  );
+}
+
+export function IconPrivacy() {
+  return (
+    <svg
+      width="48"
+      height="48"
+      viewBox="0 0 48 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect width="48" height="48" rx="8" fill="#EFF6FF" />
+      <path
+        d="M24 14C27.3137 14 30 16.6863 30 20V24C30 27.3137 27.3137 30 24 30C20.6863 30 18 27.3137 18 24V20C18 16.6863 20.6863 14 24 14ZM22 26H26V28H22V26Z"
+        fill="#2563EB"
+      />
+      <path
+        d="M24 32V34"
+        stroke="#1D4ED8"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }

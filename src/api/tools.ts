@@ -123,6 +123,23 @@ export const getUserResourceById = async (id: string): Promise<any> => {
   }
 };
 
+export const checkEligibility = async (id: number): Promise<any> => {
+  try {
+    const response = await apiClient.get<{
+      status: string;
+      message: string;
+      data: any;
+    }>(`/profile/check/toolrestriction/${id}`);
+    console.log(response.data.data);
+    return response.data.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data ||
+        "Failed to check tool eligibility. Please try again."
+    );
+  }
+};
+
 export const submitToolData = async (
   data: any,
   contentType: string = "multipart/form-data"

@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { Button } from "../../components/ui/Button";
 import { Switch } from "../../components/ui/Switch";
-import Header from "./components/Header";
+import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import BlogApp from "./components/BlogSlider";
+import PricingFaq from "./components/PricingFaq";
 import { useNavigate } from "react-router-dom";
 const Pricing = () => {
   const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">(
@@ -54,7 +55,7 @@ const Pricing = () => {
   return (
     <div className="flex flex-col  min-h-screen bg-white">
       <section>
-        <Header />
+        <Navbar />
       </section>
       <div className="mt-24 px-4">
         <h2 className="text-3xl font-bold text-gray-900 mb-4 text-center">
@@ -266,6 +267,10 @@ const Pricing = () => {
           >
             Get a Quote
           </Button>
+        </div>
+
+        <div className="mt-12">
+          <PricingFaq />
         </div>
       </div>
       <Footer />
