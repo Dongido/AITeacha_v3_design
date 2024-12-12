@@ -61,7 +61,10 @@ const PioneersProgram = () => {
                   Complete the AI Teacha Level 1 Certification and upload proof
                   of certification (a screenshot of your certificate). Haven’t
                   completed the certification?{" "}
-                  <a href="#" className="text-primary hover:underline">
+                  <a
+                    href="https://uni.icedt.org/course/AI-TEACHER-CERTIFICATION-LEVEL-1"
+                    className="text-primary hover:underline"
+                  >
                     Take the course here
                   </a>
                   .
@@ -175,7 +178,7 @@ const PioneersProgram = () => {
 
             <div className="text-center mt-8">
               <a
-                href="#"
+                href="https://docs.google.com/forms/d/1brhKX9Zbe9AtsFrfu0Z6iAoQ7gBbnmaH5PA29LC878c/edit#response=ACYDBNgfiJqvMIjmWKW5diq2zmQDa13coA_zQPeZmw51wKqTu3w2eKDmkg0EgjmhfxOCjJk"
                 className="inline-block bg-primary text-white py-3 px-6 rounded-full text-lg font-semibold hover:bg-blue-700 transition"
               >
                 Apply Now to Join the AI Teacha Pioneers Program

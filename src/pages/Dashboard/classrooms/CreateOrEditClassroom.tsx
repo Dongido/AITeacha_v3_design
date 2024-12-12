@@ -242,11 +242,11 @@ const CreateOrEditClassroom: React.FC<CreateOrEditClassroomProps> = ({
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Classroom Name</FormLabel>
+                      <FormLabel>Enter Classroom Name</FormLabel>
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder="Enter name"
+                          placeholder="eg. Intro to web design for begginers"
                           {...field}
                         />
                       </FormControl>
@@ -255,7 +255,12 @@ const CreateOrEditClassroom: React.FC<CreateOrEditClassroomProps> = ({
                   )}
                 />
                 <FormItem>
-                  <FormLabel>Upload </FormLabel>
+                  <FormLabel>
+                    {" "}
+                    Upload Your Teaching Materials or Resources (eg. Lesson
+                    plan, syllables, Curriculum)
+                  </FormLabel>
+
                   <FileUpload
                     onFilesChange={(files: File[]) => setUploadedFiles(files)}
                   />
@@ -266,9 +271,15 @@ const CreateOrEditClassroom: React.FC<CreateOrEditClassroomProps> = ({
                   name="description"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Description</FormLabel>
+                      <FormLabel>
+                        Enter a detailed description on what this classroom is
+                        all about
+                      </FormLabel>
                       <FormControl>
-                        <TextArea placeholder="Enter description" {...field} />
+                        <TextArea
+                          placeholder="e.g. This course offers an introduction to web design concepts, tools, and techniques, tailored for beginners with no prior experience in designing websites"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage className="text-red-300" />
                     </FormItem>

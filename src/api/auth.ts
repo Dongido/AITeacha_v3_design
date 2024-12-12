@@ -76,7 +76,8 @@ export const sendCode = async (email: string) => {
     return response.data;
   } catch (error: any) {
     throw new Error(
-      error.response?.data || "Verification failed. Please try again."
+      error.response?.data ||
+        "Failed to send verification code. Please try again."
     );
   }
 };
