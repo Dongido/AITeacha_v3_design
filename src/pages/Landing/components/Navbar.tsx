@@ -31,7 +31,7 @@ const Navbar = () => {
   const communities = [
     {
       name: "Pioneer Program",
-      to: "/communities/pioneers",
+      to: "/communities/pioneer-program",
       description:
         "Track and analyze user interactions to improve learning outcomes.",
       icon: IconOne,
@@ -63,7 +63,7 @@ const Navbar = () => {
     {
       name: "AI Teacha Mission",
       description: "Discover how we aim to revolutionize education with AI.",
-      to: "##",
+      to: "/mission",
       icon: IconMission,
     },
     {

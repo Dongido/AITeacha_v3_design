@@ -7,7 +7,7 @@ const Privacy = () => {
         <Navbar />
       </section>
       <div className="mt-32">
-        <h2 className="text-4xl text-black text-center font-bold">
+        <h2 className="text-4xl text-primary text-center font-bold">
           Privacy Policy At AI Teacha
         </h2>
         <h2 className="text-sm text-gray-600 text-center">

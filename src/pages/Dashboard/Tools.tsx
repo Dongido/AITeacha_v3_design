@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import { loadTools, loadStudentTools } from "../../store/slices/toolsSlice";
 import { RootState, AppDispatch } from "../../store";
 import { FaHeart } from "react-icons/fa";
@@ -17,6 +18,7 @@ import {
   DialogClose,
   DialogTrigger,
 } from "../../components/ui/Dialogue";
+import { Button } from "../../components/ui/Button";
 const Tools = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate(); // Initialize navigate
@@ -111,7 +113,7 @@ const Tools = () => {
           {(showStudentTools ? studentTools : tools).map((tool) => (
             <div
               key={tool.id}
-              onClick={() => handleToolClick(tool.id, tool.slug)} // Use handleToolClick here
+              onClick={() => handleToolClick(tool.id, tool.slug)}
               className="flex items-center border border-gray-300 px-4 py-3 rounded-3xl bg-white hover:bg-gray-50 cursor-pointer transition duration-500 ease-in-out transform hover:scale-105"
             >
               <div className="text-primary text-2xl mr-4">
@@ -151,9 +153,11 @@ const Tools = () => {
             <DialogDescription className="text-xl font-medium">
               You are not eligible to access this tool.
             </DialogDescription>
-            <p className="text-xl font-medium text-primary">
-              Please Upgrade your Plan to use this
-            </p>
+            <Link to={"/dashboard/upgrade"}>
+              <Button variant={"gradient"} className="rounded-full mt-6">
+                Please Upgrade your Plan to use this
+              </Button>
+            </Link>
           </DialogHeader>
           <DialogFooter>
             <DialogClose

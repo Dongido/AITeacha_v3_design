@@ -14,7 +14,7 @@ const Terms = () => {
         <Navbar />
       </section>
       <div className="rounded-t-3xl max-w-4xl mx-auto px-8 py-6 mt-20">
-        <h2 className="text-4xl text-black text-center font-bold">
+        <h2 className="text-4xl text-primary text-center font-bold">
           Terms of Service
         </h2>
         <h2 className="text-sm text-gray-600 text-center mb-4">

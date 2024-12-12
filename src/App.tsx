@@ -21,18 +21,23 @@ import AIEducation from "./pages/Landing/BlogPages/AIEducation";
 import UpgradeSupport from "./pages/Landing/UpgradeSupport";
 import RoleBasedRedirect from "./pages/Dashboard/RoleBasedRedirect";
 import Faqs from "./pages/Landing/Faqs";
-import Pioneers from "./pages/Landing/communities/Pioneers";
+import PioneersProgram from "./pages/Landing/communities/PioneerProgram";
+import AITeachaMission from "./pages/Landing/communities/Mission";
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route path="/communities/pioneers" element={<Pioneers />} />
+      <Route
+        path="/communities/pioneer-program"
+        element={<PioneersProgram />}
+      />
       <Route path="/blogs" element={<Blog />} />
       <Route path="/faqs" element={<Faqs />} />
       <Route path="/contact" element={<Contact />} />
       <Route path="/pricing" element={<Pricing />} />
       <Route path="/about" element={<About />} />
       <Route path="/terms-of-service" element={<Terms />} />
+      <Route path="/mission" element={<AITeachaMission />} />
       <Route path="/privacy-policy" element={<Privacy />} />
       <Route
         path="/blogs/level-up-your-teaching-introducing-the-ai-teacher-certification-course"

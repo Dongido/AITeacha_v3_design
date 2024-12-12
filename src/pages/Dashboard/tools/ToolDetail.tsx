@@ -179,7 +179,7 @@ const ToolDetail = () => {
     setSelectedCountry(countryName);
     setFormData((prevData) => ({
       ...prevData,
-      country: countryName,
+      curriculum_type: countryName,
     }));
   };
 

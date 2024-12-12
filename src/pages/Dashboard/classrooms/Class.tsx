@@ -28,6 +28,10 @@ const Classrooms = () => {
     // navigate(`/dashboard/classrooms/details/${classroom.classroom_id}`);
   };
 
+  const handleVerifyEmail = () => {
+    navigate("/dashboard/verify-email");
+  };
+
   const handleLaunchNewClassroom = () => {
     navigate("/dashboard/classrooms/create");
   };
@@ -89,8 +93,25 @@ const Classrooms = () => {
       </>
     );
   }
+  if (error === "Permission restricted for unverified email") {
+    return (
+      <div>
+        <div
+          className="bg-[#ffe6e6] mt-3 mb-4 text-black p-4 rounded-md flex justify-center items-center"
+          style={{
+            background:
+              "linear-gradient(143.6deg, rgba(255, 132, 132, 0) 20.79%, rgba(255, 121, 121, 0.26) 40.92%, rgba(255, 171, 171, 0) 70.35%)",
+          }}
+        >
+          <span className="text-center text-xl font-bold">
+            Please verify your email to continue!
+          </span>
+        </div>
+      </div>
+    );
+  }
 
-  if (error === "Permission restricted") {
+  if (error === "Permission restricted for free account") {
     return (
       <div>
         {userDetails && isEmailVerified === 1 && (
@@ -122,9 +143,12 @@ const Classrooms = () => {
                 "linear-gradient(143.6deg, rgba(192, 132, 252, 0) 20.79%, rgba(232, 121, 249, 0.26) 40.92%, rgba(204, 171, 238, 0) 70.35%)",
             }}
           >
-            <span className="text-center text-xl font-bold">
-              Teachers Are Heroes🎉
-            </span>
+            <button
+              onClick={handleVerifyEmail}
+              className="text-primary hover:underline"
+            >
+              Verify Email
+            </button>
           </div>
         )}
         <p className="text-red-500">{error}</p>

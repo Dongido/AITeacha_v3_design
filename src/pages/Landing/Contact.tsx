@@ -83,7 +83,7 @@ const Contact = () => {
         <Navbar />
       </section>
       <div className="mt-32">
-        <h2 className="text-4xl text-black text-center font-bold">
+        <h2 className="text-4xl text-primary text-center font-bold">
           Get in Touch with Us
         </h2>
         <h2 className="text-sm text-gray-600 text-center">
@@ -116,12 +116,12 @@ const Contact = () => {
           <div className="gap-8 items-center py-8 px-4 mx-auto max-w-screen-xl xl:gap-16 md:grid md:grid-cols-2 sm:py-16 lg:px-6">
             <img
               className="w-full dark:hidden"
-              src="https://aiteacha.com/img/files/about.svg"
+              src="https://images.template.net/78027/Free-Contact-Us-Illustration-JPEG-1.jpg"
               alt="Contact image"
             />
             <img
               className="w-full hidden dark:block"
-              src="https://aiteacha.com/img/files/about.svg"
+              src="https://images.template.net/78027/Free-Contact-Us-Illustration-JPEG-1.jpg"
               alt="Contact image"
             />
             <div className=" md:mt-0">
