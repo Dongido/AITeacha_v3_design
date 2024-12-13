@@ -49,7 +49,7 @@ const Contact = () => {
           />
         </svg>
       ),
-      contact: "+234 803-8563-171, +234 708-9115-000",
+      contact: "+234 708-9115-000",
       title: "Phone",
       label:
         "Drop us an email and you will receive a reply within a short time.",

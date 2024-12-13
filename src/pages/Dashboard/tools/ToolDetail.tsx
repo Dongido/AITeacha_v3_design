@@ -48,6 +48,7 @@ import {
 } from "./data";
 import "primereact/resources/primereact.css";
 import "primereact/resources/themes/saga-blue/theme.css";
+import { pdf, Document, Page, Text, StyleSheet } from "@react-pdf/renderer";
 const gradeOptions = [
   "Pre School",
   "Early Years",
@@ -67,6 +68,11 @@ interface FormField {
 interface FormLabels {
   [key: string]: string;
 }
+
+const markdownToPlainText = async (markdown: string): Promise<string> => {
+  const html = await marked(markdown);
+  return html.replace(/<[^>]*>?/gm, "");
+};
 
 const ToolDetail = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -215,11 +221,6 @@ const ToolDetail = () => {
       }
     }
 
-    const markdownToPlainText = async (markdown: string): Promise<string> => {
-      const html = await marked(markdown);
-      return html.replace(/<[^>]*>?/gm, "");
-    };
-
     setIsSubmitting(true);
     try {
       console.log(data);
@@ -287,12 +288,23 @@ const ToolDetail = () => {
       setSaving(false);
     }
   };
-  // const splitCompoundWord = (word: string): string => {
-  //   return word
-  //     .replace(/([a-z])([A-Z])/g, "$1 $2")
-  //     .replace(/([A-Z])([A-Z][a-z])/g, "$1 $2")
-  //     .replace(/^./, (match) => match.toUpperCase());
-  // };
+  const handleDownload = async () => {
+    console.log("pdf");
+    const MyDocument = (
+      <Document>
+        <Page style={styles.page}>
+          <Text>{tunedResponseMessage || "No response available."}</Text>
+        </Page>
+      </Document>
+    );
+
+    const blob = await pdf(MyDocument).toBlob();
+
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `${tool.service_id}response.pdf`;
+    link.click();
+  };
 
   const capitalize = (str: string) => {
     return str
@@ -653,10 +665,7 @@ const ToolDetail = () => {
               </>
             ) : (
               <>
-                <ReactMarkdown
-                  className="w-full p-3 border border-gray-300 bg-white rounded-md resize-none markdown overflow-auto max-h-96"
-                  remarkPlugins={[remarkGfm]}
-                >
+                <ReactMarkdown className="w-full p-3 border border-gray-300 bg-white rounded-md resize-none markdown overflow-auto max-h-96">
                   {isSubmitting
                     ? "AI is Typing..."
                     : responseMessage || "No response yet."}
@@ -664,11 +673,7 @@ const ToolDetail = () => {
                 {responseMessage && (
                   <div className="flex gap-4 mt-4">
                     <button
-                      onClick={() => {
-                        const doc = new jsPDF();
-                        doc.text(responseMessage, 10, 10);
-                        doc.save("response.pdf");
-                      }}
+                      onClick={handleDownload}
                       className="bg-black text-white py-2 px-4 rounded-md"
                     >
                       Download as PDF
@@ -703,4 +708,11 @@ const ToolDetail = () => {
   );
 };
 
+const styles = StyleSheet.create({
+  page: {
+    fontSize: 12,
+    padding: 20,
+    lineHeight: 1.6,
+  },
+});
 export default ToolDetail;

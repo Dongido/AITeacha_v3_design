@@ -43,6 +43,13 @@ const Navbar = () => {
       to: "/communities/heroes-wall",
       icon: IconTwo,
     },
+    {
+      name: "Schools Onboarding Program",
+      description:
+        "A program to onboard schools effortlessly, empowering educators with innovative tools to enhance teaching and streamline operations.",
+      to: "/communities/heroes-wall",
+      icon: IconTwo,
+    },
   ];
 
   const resources = [
@@ -120,7 +127,7 @@ const Navbar = () => {
                     : "text-gray-900"
                 }`}
               >
-                Communities
+                Community
                 <ChevronDownIcon className="ml-1 h-5 w-5" />
               </Popover.Button>
               <Popover.Panel className="absolute z-10 mt-2 p-4 w-48 bg-white shadow-lg rounded-lg">
@@ -184,7 +191,7 @@ const Navbar = () => {
                     : "text-gray-900"
                 }`}
               >
-                About Us
+                About AI Teacha
                 <ChevronDownIcon className="ml-1 h-5 w-5" />
               </Popover.Button>
               <Popover.Panel className="absolute z-10 mt-2 w-64 p-4 bg-white shadow-lg rounded-lg">

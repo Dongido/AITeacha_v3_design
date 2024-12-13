@@ -8,11 +8,24 @@ import dashImg from "../../assets/img/0e846ab4-992d-48b3-a818-d62a7803bd8e 1.png
 import { FaDraftingCompass, FaMagic, FaHeart } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { BiImageAdd } from "react-icons/bi";
-
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+  DialogClose,
+  DialogTrigger,
+} from "../../components/ui/Dialogue";
+import { Button } from "../../components/ui/Button";
+import { checkEligibility } from "../../api/tools";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
 const Home = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
 
   const { tools, loading, error } = useSelector(
     (state: RootState) => state.tools
@@ -35,6 +48,21 @@ const Home = () => {
       setIsEmailVerified(parsedDetails.is_email_verified);
     }
   }, []);
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const handleToolClick = async (toolId: number, slug: string) => {
+    try {
+      const eligibility = await checkEligibility(toolId);
+      if (eligibility) {
+        navigate(`/dashboard/tools/${slug}`);
+      } else {
+        setIsDialogOpen(true);
+      }
+    } catch (error) {
+      setIsDialogOpen(true);
+    }
+  };
 
   return (
     <div className="mt-4 ">
@@ -139,8 +167,8 @@ const Home = () => {
             >
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 text-center mx-auto">
                 {tools.slice(0, 15).map((tool) => (
-                  <Link
-                    to={`/dashboard/tools/${tool.slug}`}
+                  <div
+                    onClick={() => handleToolClick(tool.id, tool.slug)}
                     key={tool.id}
                     className="flex items-center border border-gray-300 px-4 py-3 rounded-3xl bg-white hover:bg-gray-50 cursor-pointer transition duration-500 ease-in-out transform hover:scale-105"
                   >
@@ -169,13 +197,37 @@ const Home = () => {
                           tool.description.slice(1)}
                       </p>
                     </div>
-                  </Link>
+                  </div>
                 ))}
               </div>
             </motion.div>
           </div>
         </div>
       )}
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent>
+          <DialogHeader className="flex justify-center items-center mx-auto text-center">
+            <DialogTitle>Eligibility Check</DialogTitle>
+            <DialogDescription className="text-xl font-medium">
+              You are not eligible to access this tool.
+            </DialogDescription>
+            <Link to={"/dashboard/upgrade"}>
+              <Button variant={"gradient"} className="rounded-full mt-6">
+                Please Upgrade your Plan to use this
+              </Button>
+            </Link>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose
+              className=" text-black rounded-lg p-2"
+              onClick={() => setIsDialogOpen(false)}
+            >
+              Close
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

@@ -35,7 +35,14 @@ export const registerUser = async (
   firstname: string,
   lastname: string,
   password: string,
-  role_id: number
+  role_id: number,
+  confirm_policy?: boolean,
+  confirm_newsletter?: boolean,
+  phone?: string,
+  organization?: string,
+  country?: string,
+  city?: string,
+  referred_by?: string
 ): Promise<SignupResponse> => {
   try {
     const response = await apiClient.post<SignupResponse>("auth/register", {
@@ -43,7 +50,15 @@ export const registerUser = async (
       firstname,
       lastname,
       password,
+
       role_id,
+      confirm_policy,
+      confirm_newsletter,
+      phone,
+      organization,
+      country,
+      city,
+      referred_by,
     });
     if (response.status === 201) {
       return response.data;

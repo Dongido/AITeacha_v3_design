@@ -79,15 +79,15 @@ const Onboard = () => {
 
       localStorage.setItem("selectedRole", selectedRole);
 
-      // const roleId = selectedRole === "student" ? 3 : 2;
+      const roleId = selectedRole === "student" ? 3 : 2;
       try {
-        // await updateUserRole(roleId);
-        // if (selectedRole === "student") {
-        //   navigate("/student/home");
-        // } else {
-        //   navigate("/auth/sign-up");
-        // }
-        navigate("/auth/sign-up");
+        //   await updateUserRole(roleId);
+        if (selectedRole === "student") {
+          navigate("/auth/student");
+        } else {
+          navigate("/auth/sign-up");
+        }
+        // navigate("/auth/sign-up");
       } catch (error) {
         console.error("Error updating user role:", error);
       } finally {

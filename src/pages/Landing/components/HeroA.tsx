@@ -60,7 +60,7 @@ export default () => {
             className="inline-flex justify-between items-center py-2 px-3   text-sm text-primary bg-gray-50 rounded-full dark:text-white border border-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
             role="alert"
           >
-            <span className="text-lg font-medium">❤️ Teachers are Heroes</span>
+            <span className="text-lg font-medium">❤️ Teachers Are Heroes</span>
           </a>
           <div className="text-center">
             <motion.h2

@@ -256,14 +256,14 @@ export const fetchClassroomTools = async (
 };
 
 export const fetchStudentAnalytics = async (
-  classroomId: number,
-  studentId: number,
+  classroom_id: number,
+  student_id: number,
   tools: any[]
 ): Promise<any> => {
   try {
     const response = await apiClient.post("/assistant/student/analytics", {
-      classroomId,
-      studentId,
+      classroom_id,
+      student_id,
       tools,
     });
     return response.data;

@@ -8,6 +8,7 @@ import {
   FormLabel,
   FormMessage,
 } from "../../../components/ui/Form";
+import { Label } from "../../../components/ui/Label";
 import { Input } from "../../../components/ui/Input";
 import { cn } from "../../../lib/utils";
 import { Button } from "../../../components/ui/Button";
@@ -20,10 +21,19 @@ import {
   ToastTitle,
   ToastViewport,
 } from "../../../components/ui/Toast";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectLabel,
+  SelectValue,
+} from "../../../components/ui/Select";
 import { Link, useNavigate } from "react-router-dom";
 import { registerUser, SignupResponse } from "../../../api/auth";
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebook } from "react-icons/fa";
+import { Country, State, City } from "country-state-city";
 import { Checkbox } from "../../../components/ui/Checkbox";
 
 interface SignupFormProps extends HTMLAttributes<HTMLDivElement> {}
@@ -40,10 +50,19 @@ const formSchema = z
       .string()
       .min(1, { message: "Please enter your email" })
       .email({ message: "Invalid email address" }),
-    phone: z.string(),
+    phone: z
+      .string()
+      .min(10, { message: "Phone number must be at least 10 digits long" }),
+    organization: z
+      .string()
+      .min(1, { message: "Please Input Organizatin or School Name" }),
+    country: z.string(),
+    city: z
+      .string()
+      .min(2, { message: "Password must be at least 2 characters long" }),
     password: z
       .string()
-      .min(8, { message: "Password must be at least 7 characters long" }),
+      .min(8, { message: "Password must be at least 8 characters long" }),
     referred_by: z.string(),
     acceptTerms: z.boolean().refine((val) => val, {
       message: "You must accept the Terms & Policy",
@@ -58,7 +77,12 @@ const formSchema = z
     path: ["confirmPassword"],
   });
 
-export function SignupForm({ className, ...props }: SignupFormProps) {
+type Option = {
+  value: string;
+  label: string;
+};
+
+export function TeacherSignupForm({ className, ...props }: SignupFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [toastOpen, setToastOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
@@ -67,6 +91,9 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
   );
 
   const navigate = useNavigate();
+  const [selectedCountry, setSelectedCountry] = useState<Option | null>(null);
+  const [selectedState, setSelectedState] = useState<Option | null>(null);
+  const [selectedCity, setSelectedCity] = useState<Option | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -75,32 +102,46 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
       lastName: "",
       email: "",
       phone: "",
-
+      organization: "",
+      country: "",
+      city: "",
       password: "",
       confirmPassword: "",
+      acceptTerms: false,
+      receiveNewsletters: false,
     },
   });
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
-    setIsLoading(true);
-
-    const storedRole = localStorage.getItem("selectedRole");
-
-    let role_id: number | 4 = 4;
-    if (storedRole === "student") {
-      role_id = 3;
-    } else if (storedRole === "teacher" || storedRole === "lecturer") {
-      role_id = 2;
+    if (!selectedCountry?.label) {
+      setToastMessage("Please select country");
+      setToastVariant("destructive");
+      setToastOpen(true);
+      return;
     }
-
+    if (!data.acceptTerms) {
+      setToastMessage("You must accept the Terms & Policy");
+      setToastVariant("destructive");
+      setToastOpen(true);
+      return;
+    }
+    setIsLoading(true);
     try {
       const res: SignupResponse = await registerUser(
         data.email,
         data.firstName,
         data.lastName,
         data.password,
-        role_id
+        2,
+        data.acceptTerms,
+        data.receiveNewsletters,
+        data.phone,
+        data.organization,
+        selectedCountry.label,
+        data.city,
+        data.referred_by
       );
+      console.log(data);
       setToastMessage(res.message || "Signup successful! Redirecting...");
       setToastVariant("default");
       localStorage.setItem("userEmail", data.email);
@@ -118,46 +159,56 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
     }
   }
 
+  const countryOptions: Option[] = Country.getAllCountries().map((country) => ({
+    value: country.isoCode,
+    label: country.name,
+  }));
+
   return (
     <ToastProvider swipeDirection="right">
       <div className={cn("grid gap-6", className)} {...props}>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className="grid gap-4">
-              <FormField
-                control={form.control}
-                name="firstName"
-                render={({ field }) => (
-                  <FormItem className="space-y-1">
-                    <FormLabel className="font-semibold">First Name</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter First Name"
-                        className="rounded-full"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage className="text-red-700" />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="lastName"
-                render={({ field }) => (
-                  <FormItem className="space-y-1">
-                    <FormLabel className="font-semibold">Last Name</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter Last Name"
-                        className="rounded-full"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage className="text-red-700" />
-                  </FormItem>
-                )}
-              />
+              <div className="flex space-x-4">
+                <FormField
+                  control={form.control}
+                  name="firstName"
+                  render={({ field }) => (
+                    <FormItem className="space-y-1 w-full">
+                      <FormLabel className="font-semibold">
+                        First Name
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter First Name"
+                          className="rounded-full"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-red-700" />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="lastName"
+                  render={({ field }) => (
+                    <FormItem className="space-y-1 w-full">
+                      <FormLabel className="font-semibold">Last Name</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter Last Name"
+                          className="rounded-full"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-red-700" />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
               <div className="flex space-x-4">
                 <FormField
                   control={form.control}
@@ -176,17 +227,37 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
                     </FormItem>
                   )}
                 />
+                <FormField
+                  control={form.control}
+                  name="phone"
+                  render={({ field }) => (
+                    <FormItem className="space-y-1">
+                      <FormLabel className="font-semibold">Phone</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter Phone Number"
+                          type="number"
+                          className="rounded-full"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-red-700" />
+                    </FormItem>
+                  )}
+                />
               </div>
-
               <FormField
                 control={form.control}
-                name="password"
+                name="organization"
                 render={({ field }) => (
                   <FormItem className="space-y-1">
-                    <FormLabel className="font-semibold">Password</FormLabel>
+                    <FormLabel className="font-semibold">
+                      School/Organization Name
+                    </FormLabel>
                     <FormControl>
-                      <PasswordInput
-                        placeholder="********"
+                      <Input
+                        placeholder="Enter School Name or Organization"
+                        type="text"
                         className="rounded-full"
                         {...field}
                       />
@@ -195,17 +266,94 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
                   </FormItem>
                 )}
               />
+
+              <div className="flex space-x-4">
+                <Select
+                  onValueChange={(value) =>
+                    setSelectedCountry({ value, label: value })
+                  }
+                >
+                  <div className="flex flex-col w-full space-y-2">
+                    <Label className="font-semibold mt-2 ">Country</Label>
+                    <SelectTrigger className="h-10 rounded-full">
+                      <SelectValue placeholder="Select a Country" />
+                    </SelectTrigger>
+                  </div>
+                  <SelectContent>
+                    {countryOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <FormField
+                  control={form.control}
+                  name="city"
+                  render={({ field }) => (
+                    <FormItem className="space-y-1 w-full">
+                      <FormLabel className="font-semibold">City</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter City"
+                          className="rounded-full"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-red-700" />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="flex space-x-4">
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem className="space-y-1">
+                      <FormLabel className="font-semibold">Password</FormLabel>
+                      <FormControl>
+                        <PasswordInput
+                          placeholder="********"
+                          className="rounded-full"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-red-700" />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="confirmPassword"
+                  render={({ field }) => (
+                    <FormItem className="space-y-1">
+                      <FormLabel className="font-semibold">
+                        Confirm Password
+                      </FormLabel>
+                      <FormControl>
+                        <PasswordInput
+                          placeholder="********"
+                          className="rounded-full"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-red-700" />
+                    </FormItem>
+                  )}
+                />
+              </div>
               <FormField
                 control={form.control}
-                name="confirmPassword"
+                name="referred_by"
                 render={({ field }) => (
-                  <FormItem className="space-y-1">
-                    <FormLabel className="font-semibold">
-                      Confirm Password
-                    </FormLabel>
+                  <FormItem className="space-y-1 w-full">
+                    <FormLabel className="font-semibold">Referred By</FormLabel>
                     <FormControl>
-                      <PasswordInput
-                        placeholder="********"
+                      <Input
+                        placeholder="Enter referral code"
                         className="rounded-full"
                         {...field}
                       />
@@ -266,6 +414,7 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
               </div>
               <Button
                 className="mt-2 bg-primary text-white rounded-full"
+                type="submit"
                 disabled={isLoading}
               >
                 {isLoading ? "Signing up..." : "Sign Up"}

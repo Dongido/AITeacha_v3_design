@@ -43,6 +43,7 @@ import VerifyEmail from "../pages/Dashboard/VerifyEmail";
 import UpgradeSupport from "../pages/Dashboard/UpgradeSupport";
 import Login from "../pages/Auth/Login";
 import SignUp from "../pages/Auth/Signup";
+import TeacherSignUp from "../pages/Auth/TeacherSignUp";
 import VerifyForm from "../pages/Auth/VerifyForm";
 import ResetForm from "../pages/Auth/ResetForm";
 import JoinClassroom from "../pages/Dashboard/classrooms/JoinClassroom";
@@ -325,8 +326,14 @@ export const Authroutes = [
       {
         icon: <RectangleStackIcon {...icon} />,
         name: "sign-up",
-        path: "/sign-up",
+        path: "/student",
         element: <SignUp />,
+      },
+      {
+        icon: <RectangleStackIcon {...icon} />,
+        name: "sign-up",
+        path: "/sign-up",
+        element: <TeacherSignUp />,
       },
       {
         icon: <RectangleStackIcon {...icon} />,
