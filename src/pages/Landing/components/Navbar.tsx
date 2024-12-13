@@ -9,6 +9,8 @@ import {
   IconSupport,
   IconOne,
   IconTools,
+  IconBlog,
+  IconFAQ,
   IconTwo,
   IconMission,
   IconPrivacy,
@@ -16,6 +18,7 @@ import {
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -47,7 +50,7 @@ const Navbar = () => {
       name: "Schools Onboarding Program",
       description:
         "A program to onboard schools effortlessly, empowering educators with innovative tools to enhance teaching and streamline operations.",
-      to: "/communities/heroes-wall",
+      to: "/communities/pioneers",
       icon: IconTwo,
     },
   ];
@@ -62,8 +65,14 @@ const Navbar = () => {
     {
       name: "Educator Tools",
       description: "Leverage powerful tools designed for educators.",
-      to: "##",
+      to: "/educator-tools",
       icon: IconTools,
+    },
+    {
+      name: "Student Tools",
+      description: "Leverage powerful tools designed for students.",
+      to: "/student-tools",
+      icon: IconFAQ,
     },
   ];
   const about = [
@@ -86,6 +95,20 @@ const Navbar = () => {
         "Learn about the guidelines and agreements for using our services responsibly and securely.",
       to: "/terms-of-service",
       icon: IconSupport,
+    },
+    {
+      name: "FAQ",
+      description:
+        "Find answers to frequently asked questions about our services.",
+      to: "/faqs",
+      icon: IconFAQ,
+    },
+    {
+      name: "Blog",
+      description:
+        "Explore articles and updates about education and technology.",
+      to: "/blogs",
+      icon: IconBlog,
     },
     {
       name: "Contact Us",
@@ -160,28 +183,34 @@ const Navbar = () => {
               Pricing
             </Link>
             <Popover className="relative">
-              <Popover.Button className="flex items-center block font-bold ">
+              <Popover.Button
+                onMouseEnter={() => setIsOpen(true)}
+                //onMouseLeave={() => setIsOpen(false)}
+                className="flex items-center block font-bold"
+              >
                 Resources
                 <ChevronDownIcon className="ml-1 h-5 w-5" />
               </Popover.Button>
-              <Popover.Panel className="absolute z-10 mt-2 p-4  w-48 bg-white shadow-lg rounded-lg">
-                {resources.map((item) => (
-                  <Link
-                    key={item.name}
-                    to={item.to}
-                    className="-m-3 flex items-center rounded-lg p-2 transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus-visible:ring focus-visible:ring-orange-500/50"
-                  >
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center text-white sm:h-12 sm:w-12">
-                      <item.icon aria-hidden="true" />
-                    </div>
-                    <div className="ml-4">
-                      <p className="text-sm font-medium text-gray-900">
-                        {item.name}
-                      </p>
-                    </div>
-                  </Link>
-                ))}
-              </Popover.Panel>
+              {isOpen && (
+                <Popover.Panel className="absolute z-10 mt-2 p-4 w-48 bg-white shadow-lg rounded-lg">
+                  {resources.map((item) => (
+                    <Link
+                      key={item.name}
+                      to={item.to}
+                      className="-m-3 flex items-center rounded-lg p-2 transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus-visible:ring focus-visible:ring-orange-500/50"
+                    >
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center text-white sm:h-12 sm:w-12">
+                        <item.icon aria-hidden="true" />
+                      </div>
+                      <div className="ml-4">
+                        <p className="text-sm font-medium text-gray-900">
+                          {item.name}
+                        </p>
+                      </div>
+                    </Link>
+                  ))}
+                </Popover.Panel>
+              )}
             </Popover>
             <Popover className="relative">
               <Popover.Button

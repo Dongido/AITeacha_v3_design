@@ -22,7 +22,10 @@ import UpgradeSupport from "./pages/Landing/UpgradeSupport";
 import RoleBasedRedirect from "./pages/Dashboard/RoleBasedRedirect";
 import Faqs from "./pages/Landing/Faqs";
 import PioneersProgram from "./pages/Landing/communities/PioneerProgram";
+import Pioneers from "./pages/Landing/communities/Pioneers";
 import AITeachaMission from "./pages/Landing/communities/Mission";
+import EducatorTools from "./pages/Landing/Tools";
+import StudentTools from "./pages/Landing/StudentTools";
 function App() {
   return (
     <Routes>
@@ -31,6 +34,9 @@ function App() {
         path="/communities/pioneer-program"
         element={<PioneersProgram />}
       />
+      <Route path="/communities/pioneers" element={<PioneersProgram />} />
+      <Route path="/educator-tools" element={<EducatorTools />} />
+      <Route path="/student-tools" element={<EducatorTools />} />
       <Route path="/blogs" element={<Blog />} />
       <Route path="/faqs" element={<Faqs />} />
       <Route path="/contact" element={<Contact />} />

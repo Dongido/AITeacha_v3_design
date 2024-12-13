@@ -182,3 +182,39 @@ export function IconPrivacy() {
     </svg>
   );
 }
+export function IconFAQ() {
+  return (
+    <svg
+      width="48"
+      height="48"
+      viewBox="0 0 48 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect width="48" height="48" rx="8" fill="#E0F7FA" />
+      <path
+        d="M24 12C18.4772 12 14 16.4772 14 22C14 27.5228 18.4772 32 24 32C29.5228 32 34 27.5228 34 22C34 16.4772 29.5228 12 24 12ZM24 26C23.4477 26 23 26.4477 23 27C23 27.5523 23.4477 28 24 28C24.5523 28 25 27.5523 25 27C25 26.4477 24.5523 26 24 26ZM24 15C25.1046 15 26 15.8954 26 17C26 18.1046 25.1046 19 24 19C23.1046 19 22 19.8954 22 21H24V24H22C22 22.3431 20.6569 21 19 21C20.6569 19 22 17.1046 22 15H24Z"
+        fill="#26C6DA"
+      />
+    </svg>
+  );
+}
+
+export function IconBlog() {
+  return (
+    <svg
+      width="48"
+      height="48"
+      viewBox="0 0 48 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect width="48" height="48" rx="8" fill="#FCE4EC" />
+      <path
+        d="M16 16H32V20H16V16ZM16 24H32V28H16V24ZM16 32H24V36H16V32Z"
+        fill="#EC407A"
+      />
+    </svg>
+  );
+}
+

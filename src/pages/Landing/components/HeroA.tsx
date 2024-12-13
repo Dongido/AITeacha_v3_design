@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import dashboardImg from "../../../assets/img/dashboardAi.png";
+import dashboardImg from "../../../assets/img/IMG_4968.gif";
 import Header from "./Header";
 import Navbar from "./Navbar";
 import { motion, AnimatePresence } from "framer-motion";
@@ -148,10 +148,9 @@ export default () => {
         </div>
         <div className="mt-14">
           <img
-            src={dashboardImg}
             className="w-full shadow-lg rounded-lg border"
-            alt=""
-          />
+            src={dashboardImg}
+          ></img>
         </div>
       </div>
       <div className="py-12">
