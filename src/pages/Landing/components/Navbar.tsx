@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Popover } from "@headlessui/react";
+import React, { Fragment, useRef, useState, useEffect } from "react";
+import { Popover, Transition } from "@headlessui/react";
 import { Link, useLocation } from "react-router-dom";
 import brandImg from "../../../logo.png";
 import Cookies from "js-cookie";
@@ -18,6 +18,9 @@ import {
 import Drawer from "react-modern-drawer";
 import "react-modern-drawer/dist/index.css";
 
+let timeout: NodeJS.Timeout;
+const timeoutDuration = 400;
+
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -34,6 +37,47 @@ const Navbar = () => {
     };
   }, []);
   const token = Cookies.get("at-accessToken");
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
+  const [openState, setOpenState] = useState<boolean>(false);
+
+  const handleClick = (open: boolean): void => {
+    setOpenState(!open);
+    clearTimeout(timeout);
+  };
+
+  const toggleMenu = (open: boolean): void => {
+    setOpenState((prevOpenState) => !prevOpenState);
+    buttonRef?.current?.click();
+  };
+
+  const onHover = (
+    open: boolean,
+    action: "onMouseEnter" | "onMouseLeave"
+  ): void => {
+    if (
+      (!open && !openState && action === "onMouseEnter") ||
+      (open && openState && action === "onMouseLeave")
+    ) {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => toggleMenu(open), timeoutDuration);
+    }
+  };
+  const handleClickOutside = (event: MouseEvent): void => {
+    if (
+      buttonRef.current &&
+      !buttonRef.current.contains(event.target as Node)
+    ) {
+      event.stopPropagation();
+    }
+  };
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   const communities = [
     {
       name: "Pioneer Program",
@@ -140,35 +184,57 @@ const Navbar = () => {
 
           <div className="hidden lg:flex items-center justify-center flex-1 space-x-8">
             <Popover className="relative">
-              <Popover.Button
-                className={`flex items-center  font-bold ${
-                  location.pathname === "/communities"
-                    ? "text-primary"
-                    : "text-gray-900"
-                }`}
-              >
-                Community
-                <ChevronDownIcon className="ml-1 h-5 w-5" />
-              </Popover.Button>
-              <Popover.Panel className="absolute z-10 mt-2 p-4 w-48 bg-white shadow-lg rounded-lg">
-                {communities.map((item) => (
-                  <Link
-                    key={item.name}
-                    to={item.to}
-                    className="-m-3 flex items-center rounded-lg p-2 transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus-visible:ring focus-visible:ring-orange-500/50"
+              {({ open }) => (
+                <div
+                  onMouseEnter={() => onHover(open, "onMouseEnter")}
+                  onMouseLeave={() => onHover(open, "onMouseLeave")}
+                  className="flex flex-col"
+                >
+                  <Popover.Button
+                    ref={buttonRef}
+                    className={`flex items-center  font-bold ${
+                      location.pathname === "/communities"
+                        ? "text-primary"
+                        : "text-gray-900"
+                    }`}
+                    onClick={() => handleClick(open)}
                   >
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center text-white sm:h-12 sm:w-12">
-                      <item.icon aria-hidden="true" />
-                    </div>
-                    <div className="ml-4">
-                      <p className="text-sm font-medium text-gray-900">
-                        {item.name}
-                      </p>
-                    </div>
-                  </Link>
-                ))}
-              </Popover.Panel>
+                    Community
+                    <ChevronDownIcon className="ml-1 h-5 w-5" />
+                  </Popover.Button>
+                  <Transition
+                    show={open}
+                    as={Fragment}
+                    enter="transition ease-out duration-200"
+                    enterFrom="opacity-0 translate-y-1"
+                    enterTo="opacity-100 translate-y-0"
+                    leave="transition ease-in duration-150"
+                    leaveFrom="opacity-100 translate-y-0"
+                    leaveTo="opacity-0 translate-y-1"
+                  >
+                    <Popover.Panel className="absolute z-10 mt-2 p-4 w-48 bg-white shadow-lg rounded-lg">
+                      {communities.map((item) => (
+                        <Link
+                          key={item.name}
+                          to={item.to}
+                          className="-m-3 flex items-center rounded-lg p-2 transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus-visible:ring focus-visible:ring-orange-500/50"
+                        >
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center text-white sm:h-12 sm:w-12">
+                            <item.icon aria-hidden="true" />
+                          </div>
+                          <div className="ml-4">
+                            <p className="text-sm font-medium text-gray-900">
+                              {item.name}
+                            </p>
+                          </div>
+                        </Link>
+                      ))}
+                    </Popover.Panel>
+                  </Transition>
+                </div>
+              )}
             </Popover>
+
             <Link
               to="/pricing"
               className={`block font-bold  ${
@@ -180,64 +246,106 @@ const Navbar = () => {
               Pricing
             </Link>
             <Popover className="relative">
-              <Popover.Button
-                onMouseEnter={() => setIsOpen(true)}
-                onMouseLeave={() => setIsOpen(false)}
-                className="flex items-center block font-bold"
-              >
-                Resources
-                <ChevronDownIcon className="ml-1 h-5 w-5" />
-              </Popover.Button>
-              {isOpen && (
-                <Popover.Panel className="absolute z-10 mt-2 p-4 w-48 bg-white shadow-lg rounded-lg">
-                  {resources.map((item) => (
-                    <Link
-                      key={item.name}
-                      to={item.to}
-                      className="-m-3 flex items-center rounded-lg p-2 transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus-visible:ring focus-visible:ring-orange-500/50"
-                    >
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center text-white sm:h-12 sm:w-12">
-                        <item.icon aria-hidden="true" />
-                      </div>
-                      <div className="ml-4">
-                        <p className="text-sm font-medium text-gray-900">
-                          {item.name}
-                        </p>
-                      </div>
-                    </Link>
-                  ))}
-                </Popover.Panel>
+              {({ open }) => (
+                <div
+                  onMouseEnter={() => onHover(open, "onMouseEnter")}
+                  onMouseLeave={() => onHover(open, "onMouseLeave")}
+                  className="flex flex-col"
+                >
+                  <Popover.Button
+                    ref={buttonRef}
+                    className={`flex items-center  font-bold ${
+                      location.pathname === "/communities"
+                        ? "text-primary"
+                        : "text-gray-900"
+                    }`}
+                    onClick={() => handleClick(open)}
+                  >
+                    Resources
+                    <ChevronDownIcon className="ml-1 h-5 w-5" />
+                  </Popover.Button>
+                  <Transition
+                    show={open}
+                    as={Fragment}
+                    enter="transition ease-out duration-200"
+                    enterFrom="opacity-0 translate-y-1"
+                    enterTo="opacity-100 translate-y-0"
+                    leave="transition ease-in duration-150"
+                    leaveFrom="opacity-100 translate-y-0"
+                    leaveTo="opacity-0 translate-y-1"
+                  >
+                    <Popover.Panel className="absolute z-10 mt-2 p-4 w-48 bg-white shadow-lg rounded-lg">
+                      {resources.map((item) => (
+                        <Link
+                          key={item.name}
+                          to={item.to}
+                          className="-m-3 flex items-center rounded-lg p-2 transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus-visible:ring focus-visible:ring-orange-500/50"
+                        >
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center text-white sm:h-12 sm:w-12">
+                            <item.icon aria-hidden="true" />
+                          </div>
+                          <div className="ml-4">
+                            <p className="text-sm font-medium text-gray-900">
+                              {item.name}
+                            </p>
+                          </div>
+                        </Link>
+                      ))}
+                    </Popover.Panel>
+                  </Transition>
+                </div>
               )}
             </Popover>
             <Popover className="relative">
-              <Popover.Button
-                className={`flex items-center font-bold ${
-                  location.pathname === "/about"
-                    ? "text-primary"
-                    : "text-gray-900"
-                }`}
-              >
-                About AI Teacha
-                <ChevronDownIcon className="ml-1 h-5 w-5" />
-              </Popover.Button>
-              <Popover.Panel className="absolute z-10 mt-2 w-64 p-4 bg-white shadow-lg rounded-lg">
-                {about.map((item) => (
-                  <Link
-                    key={item.name}
-                    to={item.to}
-                    className="-m-3 flex items-center rounded-lg p-2 transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus-visible:ring focus-visible:ring-orange-500/50"
+              {({ open }) => (
+                <div
+                  onMouseEnter={() => onHover(open, "onMouseEnter")}
+                  onMouseLeave={() => onHover(open, "onMouseLeave")}
+                  className="flex flex-col"
+                >
+                  <Popover.Button
+                    ref={buttonRef}
+                    className={`flex items-center  font-bold ${
+                      location.pathname === "/communities"
+                        ? "text-primary"
+                        : "text-gray-900"
+                    }`}
+                    onClick={() => handleClick(open)}
                   >
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center text-white sm:h-12 sm:w-12">
-                      <item.icon aria-hidden="true" />
-                    </div>
-                    <div className="ml-4">
-                      <p className="text-sm font-medium whitespace-nowrap text-gray-900">
-                        {item.name}
-                      </p>
-                    </div>
-                  </Link>
-                ))}
-              </Popover.Panel>
+                    About AI Teacha
+                    <ChevronDownIcon className="ml-1 h-5 w-5" />
+                  </Popover.Button>
+                  <Transition
+                    show={open}
+                    as={Fragment}
+                    enter="transition ease-out duration-200"
+                    enterFrom="opacity-0 translate-y-1"
+                    enterTo="opacity-100 translate-y-0"
+                    leave="transition ease-in duration-150"
+                    leaveFrom="opacity-100 translate-y-0"
+                    leaveTo="opacity-0 translate-y-1"
+                  >
+                    <Popover.Panel className="absolute z-10 mt-2 w-64 p-4 bg-white shadow-lg rounded-lg">
+                      {about.map((item) => (
+                        <Link
+                          key={item.name}
+                          to={item.to}
+                          className="-m-3 flex items-center rounded-lg p-2 transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus-visible:ring focus-visible:ring-orange-500/50"
+                        >
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center text-white sm:h-12 sm:w-12">
+                            <item.icon aria-hidden="true" />
+                          </div>
+                          <div className="ml-4">
+                            <p className="text-sm font-medium whitespace-nowrap text-gray-900">
+                              {item.name}
+                            </p>
+                          </div>
+                        </Link>
+                      ))}
+                    </Popover.Panel>
+                  </Transition>
+                </div>
+              )}
             </Popover>
           </div>
 
@@ -266,6 +374,7 @@ const Navbar = () => {
               </>
             )}
           </div>
+
           <div className="lg:hidden">
             <Button
               onClick={() => setMenuOpen(!menuOpen)}
@@ -288,34 +397,55 @@ const Navbar = () => {
         >
           <div className="flex flex-col space-y-4 mt-4">
             <Popover className="relative">
-              <Popover.Button
-                className={`flex items-center  font-bold ${
-                  location.pathname === "/communities"
-                    ? "text-primary"
-                    : "text-gray-900"
-                }`}
-              >
-                Community
-                <ChevronDownIcon className="ml-1 h-5 w-5" />
-              </Popover.Button>
-              <Popover.Panel className="absolute z-10 mt-2 p-4 w-48 bg-white shadow-lg rounded-lg">
-                {communities.map((item) => (
-                  <Link
-                    key={item.name}
-                    to={item.to}
-                    className="-m-3 flex items-center rounded-lg p-2 transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus-visible:ring focus-visible:ring-orange-500/50"
+              {({ open }) => (
+                <div
+                  onMouseEnter={() => onHover(open, "onMouseEnter")}
+                  onMouseLeave={() => onHover(open, "onMouseLeave")}
+                  className="flex flex-col"
+                >
+                  <Popover.Button
+                    ref={buttonRef}
+                    className={`flex items-center  font-bold ${
+                      location.pathname === "/communities"
+                        ? "text-primary"
+                        : "text-gray-900"
+                    }`}
+                    onClick={() => handleClick(open)}
                   >
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center text-white sm:h-12 sm:w-12">
-                      <item.icon aria-hidden="true" />
-                    </div>
-                    <div className="ml-4">
-                      <p className="text-sm font-medium text-gray-900">
-                        {item.name}
-                      </p>
-                    </div>
-                  </Link>
-                ))}
-              </Popover.Panel>
+                    Community
+                    <ChevronDownIcon className="ml-1 h-5 w-5" />
+                  </Popover.Button>
+                  <Transition
+                    show={open}
+                    as={Fragment}
+                    enter="transition ease-out duration-200"
+                    enterFrom="opacity-0 translate-y-1"
+                    enterTo="opacity-100 translate-y-0"
+                    leave="transition ease-in duration-150"
+                    leaveFrom="opacity-100 translate-y-0"
+                    leaveTo="opacity-0 translate-y-1"
+                  >
+                    <Popover.Panel className="absolute z-10 mt-2 p-4 w-48 bg-white shadow-lg rounded-lg">
+                      {communities.map((item) => (
+                        <Link
+                          key={item.name}
+                          to={item.to}
+                          className="-m-3 flex items-center rounded-lg p-2 transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus-visible:ring focus-visible:ring-orange-500/50"
+                        >
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center text-white sm:h-12 sm:w-12">
+                            <item.icon aria-hidden="true" />
+                          </div>
+                          <div className="ml-4">
+                            <p className="text-sm font-medium text-gray-900">
+                              {item.name}
+                            </p>
+                          </div>
+                        </Link>
+                      ))}
+                    </Popover.Panel>
+                  </Transition>
+                </div>
+              )}
             </Popover>
             <Link
               to="/pricing"
@@ -328,63 +458,106 @@ const Navbar = () => {
               Pricing
             </Link>
             <Popover className="relative">
-              <Popover.Button
-                onMouseEnter={() => setIsOpen(true)}
-                className="flex items-center block font-bold"
-              >
-                Resources
-                <ChevronDownIcon className="ml-1 h-5 w-5" />
-              </Popover.Button>
-              {isOpen && (
-                <Popover.Panel className="absolute z-10 mt-2 p-4 w-48 bg-white shadow-lg rounded-lg">
-                  {resources.map((item) => (
-                    <Link
-                      key={item.name}
-                      to={item.to}
-                      className="-m-3 flex items-center rounded-lg p-2 transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus-visible:ring focus-visible:ring-orange-500/50"
-                    >
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center text-white sm:h-12 sm:w-12">
-                        <item.icon aria-hidden="true" />
-                      </div>
-                      <div className="ml-4">
-                        <p className="text-sm font-medium text-gray-900">
-                          {item.name}
-                        </p>
-                      </div>
-                    </Link>
-                  ))}
-                </Popover.Panel>
+              {({ open }) => (
+                <div
+                  onMouseEnter={() => onHover(open, "onMouseEnter")}
+                  onMouseLeave={() => onHover(open, "onMouseLeave")}
+                  className="flex flex-col"
+                >
+                  <Popover.Button
+                    ref={buttonRef}
+                    className={`flex items-center  font-bold ${
+                      location.pathname === "/communities"
+                        ? "text-primary"
+                        : "text-gray-900"
+                    }`}
+                    onClick={() => handleClick(open)}
+                  >
+                    Resources
+                    <ChevronDownIcon className="ml-1 h-5 w-5" />
+                  </Popover.Button>
+                  <Transition
+                    show={open}
+                    as={Fragment}
+                    enter="transition ease-out duration-200"
+                    enterFrom="opacity-0 translate-y-1"
+                    enterTo="opacity-100 translate-y-0"
+                    leave="transition ease-in duration-150"
+                    leaveFrom="opacity-100 translate-y-0"
+                    leaveTo="opacity-0 translate-y-1"
+                  >
+                    <Popover.Panel className="absolute z-10 mt-2 p-4 w-48 bg-white shadow-lg rounded-lg">
+                      {resources.map((item) => (
+                        <Link
+                          key={item.name}
+                          to={item.to}
+                          className="-m-3 flex items-center rounded-lg p-2 transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus-visible:ring focus-visible:ring-orange-500/50"
+                        >
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center text-white sm:h-12 sm:w-12">
+                            <item.icon aria-hidden="true" />
+                          </div>
+                          <div className="ml-4">
+                            <p className="text-sm font-medium text-gray-900">
+                              {item.name}
+                            </p>
+                          </div>
+                        </Link>
+                      ))}
+                    </Popover.Panel>
+                  </Transition>
+                </div>
               )}
             </Popover>
             <Popover className="relative">
-              <Popover.Button
-                className={`flex items-center font-bold ${
-                  location.pathname === "/about"
-                    ? "text-primary"
-                    : "text-gray-900"
-                }`}
-              >
-                About AI Teacha
-                <ChevronDownIcon className="ml-1 h-5 w-5" />
-              </Popover.Button>
-              <Popover.Panel className="absolute z-10 mt-2 w-64 p-4 bg-white shadow-lg rounded-lg">
-                {about.map((item) => (
-                  <Link
-                    key={item.name}
-                    to={item.to}
-                    className="-m-3 flex items-center rounded-lg p-2 transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus-visible:ring focus-visible:ring-orange-500/50"
+              {({ open }) => (
+                <div
+                  onMouseEnter={() => onHover(open, "onMouseEnter")}
+                  onMouseLeave={() => onHover(open, "onMouseLeave")}
+                  className="flex flex-col"
+                >
+                  <Popover.Button
+                    ref={buttonRef}
+                    className={`flex items-center  font-bold ${
+                      location.pathname === "/communities"
+                        ? "text-primary"
+                        : "text-gray-900"
+                    }`}
+                    onClick={() => handleClick(open)}
                   >
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center text-white sm:h-12 sm:w-12">
-                      <item.icon aria-hidden="true" />
-                    </div>
-                    <div className="ml-4">
-                      <p className="text-sm font-medium whitespace-nowrap text-gray-900">
-                        {item.name}
-                      </p>
-                    </div>
-                  </Link>
-                ))}
-              </Popover.Panel>
+                    About AI Teacha
+                    <ChevronDownIcon className="ml-1 h-5 w-5" />
+                  </Popover.Button>
+                  <Transition
+                    show={open}
+                    as={Fragment}
+                    enter="transition ease-out duration-200"
+                    enterFrom="opacity-0 translate-y-1"
+                    enterTo="opacity-100 translate-y-0"
+                    leave="transition ease-in duration-150"
+                    leaveFrom="opacity-100 translate-y-0"
+                    leaveTo="opacity-0 translate-y-1"
+                  >
+                    <Popover.Panel className="absolute z-10 mt-2 w-64 p-4 bg-white shadow-lg rounded-lg">
+                      {about.map((item) => (
+                        <Link
+                          key={item.name}
+                          to={item.to}
+                          className="-m-3 flex items-center rounded-lg p-2 transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus-visible:ring focus-visible:ring-orange-500/50"
+                        >
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center text-white sm:h-12 sm:w-12">
+                            <item.icon aria-hidden="true" />
+                          </div>
+                          <div className="ml-4">
+                            <p className="text-sm font-medium whitespace-nowrap text-gray-900">
+                              {item.name}
+                            </p>
+                          </div>
+                        </Link>
+                      ))}
+                    </Popover.Panel>
+                  </Transition>
+                </div>
+              )}
             </Popover>
             {token ? (
               <Link
