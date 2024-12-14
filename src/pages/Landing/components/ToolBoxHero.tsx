@@ -16,7 +16,7 @@ interface ToolsApiResponse {
   data: Tool[];
 }
 
-const ToolboxPage: React.FC = () => {
+const HeroToolBox: React.FC = () => {
   const [toolboxItems, setToolboxItems] = useState<Tool[]>([]);
   const [displayItems, setDisplayItems] = useState<Tool[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -65,9 +65,9 @@ const ToolboxPage: React.FC = () => {
   }, [currentIndex, toolboxItems]);
 
   return (
-    <section className="mx-auto mt-12  py-12 text-white">
+    <section className="mx-auto   py-12 text-white">
       <section className="">
-        <section className="relative bg-blight w-full h-[60vh] pt-[5rem] flex justify-center bg-[#c1bad4] items-center overflow-hidden overlow-hidden">
+        <section className="relative w-full h-[60vh] flex justify-center items-center overflow-hidden overlow-hidden">
           <span className="absolute inse=t-0 z-0 p-5  justif-center top-[rem]"></span>
           <section>
             <figcaption className="desc z-10 relative">
@@ -140,4 +140,4 @@ const ToolboxPage: React.FC = () => {
   );
 };
 
-export default ToolboxPage;
+export default HeroToolBox;

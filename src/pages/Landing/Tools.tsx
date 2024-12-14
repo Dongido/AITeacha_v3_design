@@ -7,9 +7,8 @@ const EducatorTools = () => {
     <div>
       <Navbar />
 
-      <div className="mx-auto px-8 py-6 mt-20">
-        <ToolboxPage />
-      </div>
+      <ToolboxPage />
+
       <Footer />
     </div>
   );

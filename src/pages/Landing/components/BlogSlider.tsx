@@ -23,11 +23,20 @@ type BlogSliderProps = {
 const BlogSlider: React.FC<BlogSliderProps> = ({ blogs }) => {
   return (
     <div className="w-full pb-6 mt-24 relative">
-      <div className="mx-auto px-4">
-        <h1 className="text-md text-center font-bold text-primary">Blog</h1>
-        <h2 className="text-3xl font-bold text-center mb-8 text-gray-900">
-          Latest Posts
-        </h2>
+      <div className="mx-auto ">
+        <section className="relative bg-blight w-full mb-6 h-[60vh] pt-[5rem] flex justify-center bg-[#c1bad4] items-center overflow-hidden overlow-hidden">
+          <span className="absolute inse=t-0 z-0 p-5  justif-center top-[rem]"></span>
+          <section>
+            <figcaption className="desc z-10 relative">
+              <h1 className="text-md text-center font-bold text-primary">
+                Our Blog
+              </h1>
+              <h2 className="text-6xl font-bold text-center mb-8 text-gray-900">
+                Latest Posts
+              </h2>
+            </figcaption>
+          </section>
+        </section>
 
         <Swiper
           slidesPerView={1}
@@ -46,8 +55,8 @@ const BlogSlider: React.FC<BlogSliderProps> = ({ blogs }) => {
           className="blog-swiper"
         >
           {blogs.map((blog, index) => (
-            <SwiperSlide key={index}>
-              <div className="w-[350px] h-[250px] sm:w-[400px] lg:w-[420px] h-[280px] bg-gray-50 text-gray-900 rounded-lg border border-gray-300 text-left p-2 relative">
+            <SwiperSlide key={index} className="">
+              <div className="w-[350px]  mt-6 h-[250px] sm:w-[400px] lg:w-[420px] h-[280px] bg-gray-50 text-gray-900 rounded-lg border border-gray-300 text-left p-2 px-4 relative">
                 <img
                   src={blog.image}
                   alt={blog.title}

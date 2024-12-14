@@ -53,11 +53,12 @@ const CTA: React.FC = () => {
               <div className="text-center lg:text-left">
                 <div className="mb-10 lg:mb-0">
                   <h1 className="mt-0 mb-3 text-3xl font-bold leading-tight text-white sm:text-4xl md:text-[40px]">
-                    Achieve your teaching goals faster with AI Teacha{" "}
+                    AI Teacha is 100% Free for all Students Worldwide, Forever
                   </h1>
                   <p className="w-full text-base font-medium leading-relaxed text-white sm:text-lg">
-                    AI Teacha gives you over 37 advanced AI tools that will
-                    accelerate your process to any academic goal
+                    Inspire your students with AI-powered classrooms, streamline
+                    assignments using AI Assistants, and receive instant
+                    performance reports highlighting strengths and weaknesses
                   </p>
                 </div>
               </div>

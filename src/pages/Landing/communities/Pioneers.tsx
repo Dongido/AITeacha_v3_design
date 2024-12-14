@@ -8,6 +8,19 @@ const Pioneers = () => {
       <section>
         <Navbar />
       </section>
+      <section className="mt-24">
+        <section className="relative bg-blight w-full h-[60vh] pt-[5rem] flex justify-center bg-[#c1bad4] items-center overflow-hidden overlow-hidden">
+          <span className="absolute inse=t-0 z-0 p-5  justif-center top-[rem]"></span>
+          <section>
+            <figcaption className="desc z-10 relative">
+              <h1 className="text-6xl font-bold text-center my-6 text-header text-black">
+                {" "}
+                Introducing AI Teacha for Schools:{" "}
+              </h1>
+            </figcaption>
+          </section>
+        </section>
+      </section>
 
       <div className="mt-24 mx-auto max-w-screen-lg pb-4 px-4 items-center lg:flex md:px-8">
         <div className="space-y-0 flex-1 sm:text-center lg:text-left">
@@ -17,9 +30,6 @@ const Pioneers = () => {
               alt=""
               className="w-full mb-2 rounded-3xl"
             />
-            <h2 className="text-2xl mb-4 text-center font-bold">
-              Introducing AI Teacha for Schools:{" "}
-            </h2>
           </div>
 
           <span className="text-lg font-medium  mb-8 text-gray-900">

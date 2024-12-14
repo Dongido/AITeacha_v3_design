@@ -26,6 +26,11 @@ import Pioneers from "./pages/Landing/communities/Pioneers";
 import AITeachaMission from "./pages/Landing/communities/Mission";
 import EducatorTools from "./pages/Landing/Tools";
 import StudentTools from "./pages/Landing/StudentTools";
+import TermsPolicy from "./pages/Landing/TermsPolicy";
+import HeroesWall from "./pages/Landing/HeroesWall";
+import AIPolicy from "./pages/Landing/communities/AIPolicy";
+import StudentDataPolicy from "./pages/Landing/communities/StudentDataPolicy";
+import DataPrivacy from "./pages/Landing/communities/DataPrivacy";
 function App() {
   return (
     <Routes>
@@ -34,17 +39,22 @@ function App() {
         path="/communities/pioneer-program"
         element={<PioneersProgram />}
       />
-      <Route path="/communities/pioneers" element={<PioneersProgram />} />
+      <Route path="/communities/pioneers" element={<Pioneers />} />
       <Route path="/educator-tools" element={<EducatorTools />} />
-      <Route path="/student-tools" element={<EducatorTools />} />
+      <Route path="/student-tools" element={<StudentTools />} />
       <Route path="/blogs" element={<Blog />} />
       <Route path="/faqs" element={<Faqs />} />
+      <Route path="/heroes-wall" element={<HeroesWall />} />
       <Route path="/contact" element={<Contact />} />
       <Route path="/pricing" element={<Pricing />} />
       <Route path="/about" element={<About />} />
+      <Route path="/legal-terms" element={<TermsPolicy />} />
       <Route path="/terms-of-service" element={<Terms />} />
       <Route path="/mission" element={<AITeachaMission />} />
       <Route path="/privacy-policy" element={<Privacy />} />
+      <Route path="/ai-policy" element={<AIPolicy />} />
+      <Route path="/data-privacy" element={<DataPrivacy />} />
+      <Route path="/student-policy" element={<StudentDataPolicy />} />
       <Route
         path="/blogs/level-up-your-teaching-introducing-the-ai-teacher-certification-course"
         element={<LevelUp />}

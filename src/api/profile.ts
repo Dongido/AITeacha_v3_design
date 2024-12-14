@@ -16,6 +16,7 @@ export interface User {
   organization: string | null;
   passcode: string;
   password_token: string;
+  referral_code: string;
   active_status: string;
   created_at: string;
   updated_at: string;
@@ -103,6 +104,18 @@ export const fetchProfileImage = async (): Promise<string> => {
   } catch (error: any) {
     throw new Error(
       error.response?.data || "Failed to fetch profile image. Please try again."
+    );
+  }
+};
+
+export const generateReferralCode = async (): Promise<string> => {
+  try {
+    const response = await apiClient.put<any>(`profile/generatereferralcode`);
+    return response.data.referralCode;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data ||
+        "Failed to generate referral code. Please try again."
     );
   }
 };

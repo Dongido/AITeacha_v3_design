@@ -7,7 +7,9 @@ const Blog = () => {
       <section>
         <Navbar />
       </section>
+
       <BlogApp />
+
       <Footer />
     </div>
   );

@@ -5,11 +5,21 @@ const AITeachaMission = () => {
     <>
       <Navbar />
 
-      <section className="bg-gray-100 text-gray-800 py-24 px-6">
-        <div className="max-w-5xl mx-auto">
-          <h2 className="text-3xl font-bold text-primary text-center mb-6">
-            AI Teacha Mission
-          </h2>
+      <section className="bg-gray-100 text-gray-800 py-24 ">
+        <section className="relative bg-blight w-full h-[60vh] pt-[5rem] flex justify-center bg-[#c1bad4] items-center overflow-hidden overlow-hidden">
+          <span className="absolute inse=t-0 z-0 p-5  justif-center top-[rem]"></span>
+          <section>
+            <figcaption className="desc z-10 relative">
+              <h1 className="text-6xl font-bold text-center my-6 text-header text-black">
+                {" "}
+                AI Teacha Mission
+              </h1>
+            </figcaption>
+          </section>
+        </section>
+
+        <div className="max-w-5xl mx-auto px-6">
+          <h2 className="text-3xl md:text-4xl lg:text-4xl font-bold text-primary mt-6 text-center mb-6"></h2>
           <p className="text-lg leading-relaxed mb-8">
             <span className="text-lg font-bold"> At AI Teacha</span>, our
             mission is to revolutionize education by empowering educators with

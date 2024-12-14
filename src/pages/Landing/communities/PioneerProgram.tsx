@@ -5,21 +5,30 @@ const PioneersProgram = () => {
   return (
     <>
       <Navbar />
-      <div className="bg-gray-50 py-24 px-6 sm:px-12 lg:px-24">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-4xl font-bold text-primary mb-6 text-center">
-            Pioneers Program
-          </h1>
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4 text-center">
-            Be a Trailblazer in AI-Powered Education
-          </h2>
-          <p className="text-gray-600 mb-8 text-lg text-center">
-            Are you an educator committed to transforming teaching with
-            innovative technology? The AI Teacha Pioneers Program is your
-            opportunity to lead the charge in revolutionizing education across
-            Nigeria and Africa.
-          </p>
+      <section className="mt-24">
+        <section className="relative bg-blight w-full h-[60vh] pt-[5rem] flex justify-center bg-[#c1bad4] items-center overflow-hidden overlow-hidden">
+          <span className="absolute inse=t-0 z-0 p-5  justif-center top-[rem]"></span>
+          <section>
+            <figcaption className="desc z-10 relative">
+              <h1 className="text-4xl font-bold text-primary mb-6 text-center">
+                Pioneers Program
+              </h1>
+              <h2 className="text-2xl font-semibold text-gray-800 mb-4 text-center">
+                Be a Trailblazer in AI-Powered Education
+              </h2>
+              <p className="text-gray-800 mb-8 text-lg text-center">
+                Are you an educator committed to transforming teaching with
+                innovative technology? The AI Teacha Pioneers Program is your
+                opportunity to lead the charge in revolutionizing education
+                across Nigeria and Africa.
+              </p>
+            </figcaption>
+          </section>
+        </section>
+      </section>
 
+      <div className="bg-gray-50 py-16 px-6 sm:px-12 lg:px-16">
+        <div className="max-w-4xl mx-auto">
           <div className="space-y-6">
             <div>
               <h3 className="text-xl font-semibold text-gray-800 mb-2">

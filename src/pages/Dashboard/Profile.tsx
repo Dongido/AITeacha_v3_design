@@ -18,6 +18,7 @@ import {
   ToastViewport,
 } from "../../components/ui/Toast";
 import { FiEdit } from "react-icons/fi";
+import { generateReferralCode } from "../../api/profile";
 
 import { TextArea } from "../../components/ui/TextArea";
 
@@ -32,10 +33,11 @@ const Profile: React.FC = () => {
   const [phone, setPhone] = useState<string>("");
   const [about, setAbout] = useState<string>("");
   const [role, setRole] = useState<number>(3);
+  const [referral_code, setReferral_code] = useState<string>("");
   const [editMode, setEditMode] = useState<boolean>(false);
   const [toastVisible, setToastVisible] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string>("");
-
+  const [generating, setGenerating] = useState<boolean>(false);
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
 
   useEffect(() => {
@@ -49,6 +51,7 @@ const Profile: React.FC = () => {
       setPhone(user.phone || "N/A");
       setEmail(user.email || "N/A");
       setAbout(user.about || "N/A");
+      setReferral_code(user.referral_code || "");
       setRole(user.role_id || 3);
     }
   }, [user]);
@@ -102,6 +105,18 @@ const Profile: React.FC = () => {
     setRole(Number(e.target.value));
   };
 
+  const handleGenerateReferralCode = async () => {
+    setGenerating(true);
+    try {
+      const code = await generateReferralCode();
+      dispatch(loadUserProfile());
+      setReferral_code(code);
+    } catch (error) {
+      console.error("Error generating referral code:", error);
+    } finally {
+      setGenerating(false);
+    }
+  };
   const handleCancel = () => {
     if (user) {
       setFirstName(user.firstname || "");
@@ -149,7 +164,6 @@ const Profile: React.FC = () => {
             )}
 
             <div className="flex flex-col lg:flex-row gap-6">
-              {/* Left Section: Profile Form */}
               <div className="flex-1 p-3 rounded-md border border-gray-200">
                 <h3 className="text-lg font-semibold mb-4">
                   Profile Information
@@ -238,6 +252,27 @@ const Profile: React.FC = () => {
                       : "Unknown Role"}
                   </p>
                 </div>
+                <div className="mb-2">
+                  <label
+                    htmlFor="referralCode"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Referral Code
+                  </label>
+                  {referral_code ? (
+                    <p className="w-full border p-2 rounded-md border-gray-300 bg-gray-100">
+                      {referral_code}
+                    </p>
+                  ) : (
+                    <button
+                      onClick={handleGenerateReferralCode}
+                      className="w-full bg-primary text-white p-2 rounded-md"
+                      disabled={generating}
+                    >
+                      {generating ? "Generating..." : "Generate Referral Code"}
+                    </button>
+                  )}
+                </div>
                 <div>
                   <label
                     htmlFor="last-name"
@@ -256,7 +291,6 @@ const Profile: React.FC = () => {
                 </div>
               </div>
 
-              {/* Right Section: Profile Image */}
               <div className="w-full h-72 lg:w-1/3 bg-gray-200 p-6 rounded-md shadow-sm">
                 <h3 className="text-lg text-center font-semibold mb-4">
                   Profile Picture

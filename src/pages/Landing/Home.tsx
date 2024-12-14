@@ -1,6 +1,6 @@
 import React from "react";
 import TestimonialSlider from "./components/Testimonial";
-import ToolboxPage from "./components/ToolBox";
+import HeroToolBox from "./components/ToolBoxHero";
 import FaqsSection from "./components/FaqDesign";
 import CTA from "./components/CTA";
 import Footer from "./components/Footer";
@@ -72,7 +72,7 @@ const Home: React.FC = () => {
           </AnimatedSection>
           <AnimatedSection delay={0.6}>
             <section id="tools">
-              <ToolboxPage />
+              <HeroToolBox />
             </section>
           </AnimatedSection>
         </div>

@@ -57,25 +57,35 @@ const Pricing = () => {
       <section>
         <Navbar />
       </section>
-      <div className="mt-24 px-4">
-        <h2 className="text-3xl font-bold text-gray-900 mb-4 text-center">
-          Our Subscription Plans
-        </h2>
-        <div className="flex justify-center items-center mx-auto text-center max-w-xl mb-6">
-          <span>
-            <h2 className=" text-xl font-bold ">
-              Simple & Transparent Pricing for Educators & Schools
-            </h2>
-            <h2>
-              We offer a Free plan for educators with limited access, a Pro plan
-              with more Pro tools and classroom features, a Premium plan with
-              full AI Teacha suite for schools with maximum number of 15
-              educators and an Enterprise plan for larger schools with more than
-              15 educators.
-            </h2>
-          </span>
-        </div>
-
+      <section className="mt-24">
+        <section className="relative bg-blight w-full h-[60vh] pt-[5rem] flex justify-center bg-[#c1bad4] items-center overflow-hidden overlow-hidden">
+          <span className="absolute inse=t-0 z-0 p-5  justif-center top-[rem]"></span>
+          <section>
+            <figcaption className="desc z-10 relative">
+              <h1 className="text-6xl font-bold text-center my-6 text-header">
+                {" "}
+                Our Subscription Plans
+              </h1>
+              <p className="text-center text-primary">
+                {" "}
+                Simple & Transparent Pricing for Educators & Schools
+              </p>
+              <div className="flex justify-center items-center mx-auto text-center max-w-xl mb-6">
+                <span>
+                  <h2>
+                    We offer a Free plan for educators with limited access, a
+                    Pro plan with more Pro tools and classroom features, a
+                    Premium plan with full AI Teacha suite for schools with
+                    maximum number of 15 educators and an Enterprise plan for
+                    larger schools with more than 15 educators.
+                  </h2>
+                </span>
+              </div>
+            </figcaption>
+          </section>
+        </section>
+      </section>
+      <div className=" px-4">
         <div className="flex justify-between">
           <div className="mb-8 w-60 mx-auto flex items-center justify-between">
             <span className="text-xl font-medium text-gray-800">Monthly</span>

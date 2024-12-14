@@ -119,14 +119,22 @@ const FaqsSection: React.FC = () => {
   ];
 
   return (
-    <section className="leading-relaxed max-w-screen-xl mt-12 mx-auto px-4 md:px-8">
-      <div className="space-y-2 text-center">
-        <h3 className="text-primary font-semibold text-xl">More About Us</h3>
-        <h1 className="text-3xl md:text-4xl lg:text-5xl text-gray-900 font-semibold">
-          Frequently Asked Questions
-        </h1>
-      </div>
-      <div className="mt-14 max-w-2xl mx-auto">
+    <section className="leading-relaxed mt-24 ">
+      <section className="relative bg-blight w-full h-[60vh] pt-[5rem] flex justify-center bg-[#c1bad4] items-center overflow-hidden overlow-hidden">
+        <span className="absolute inse=t-0 z-0 p-5  justif-center top-[rem]"></span>
+        <section>
+          <figcaption className="desc z-10 relative text-center">
+            <h3 className="text-primary font-semibold text-xl ">
+              More About Us
+            </h3>
+            <h1 className="text-6xl md:text-4xl lg:text-5xl text-gray-900 font-semibold">
+              Frequently Asked Questions
+            </h1>
+          </figcaption>
+        </section>
+      </section>
+      <div className="space-y-2 text-center"></div>
+      <div className="mt-14 max-w-2xl px-4 md:px-8 mx-auto">
         {faqsList.map((item, idx) => (
           <FaqsCard key={idx} idx={idx} faqsList={item} />
         ))}

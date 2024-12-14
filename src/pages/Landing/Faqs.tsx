@@ -5,9 +5,8 @@ const Faqs = () => {
   return (
     <div>
       <Navbar />
-      <div className="mt-24">
-        <FaqsSection />
-      </div>
+      <FaqsSection />
+
       <Footer />
     </div>
   );

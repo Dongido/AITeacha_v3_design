@@ -65,20 +65,32 @@ const StudentToolboxPage: React.FC = () => {
   }, [currentIndex, toolboxItems]);
 
   return (
-    <section className="mx-auto mt-12 px-4 md:px-12 py-12 text-white">
-      <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900">
-        Over 37 Powerful tools
-      </h2>
-      <h2 className="text-xl font-medium text-gray-700 mb-6">
-        Handle all administrative or learning tasks with our AI toolbox
-      </h2>
+    <section className="mx-auto mt-12 py-12 text-white">
+      <section className="">
+        <section className="relative bg-blight w-full h-[60vh] pt-[5rem] flex justify-center bg-[#c1bad4] items-center overflow-hidden overlow-hidden">
+          <span className="absolute inse=t-0 z-0 p-5  justif-center top-[rem]"></span>
+          <section>
+            <figcaption className="desc z-10 relative">
+              <h1 className="text-6xl font-bold text-center my-6 text-header text-black">
+                {" "}
+                Amazing AI Student tools
+              </h1>
+              <p className="text-center text-primary">
+                {" "}
+                Handle all administrative or learning tasks with our AI Student
+                toolbox
+              </p>
+            </figcaption>
+          </section>
+        </section>
+      </section>
 
       {loading ? (
         <div className="text-center text-xl text-gray-700">
           Loading tools...
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 text-center mx-auto">
+        <div className="grid  px-4 md:px-12 mt-8  grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 text-center mx-auto">
           {displayItems.map((item) => (
             <motion.div
               key={item.id}

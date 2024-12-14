@@ -15,6 +15,9 @@ import {
   IconMission,
   IconPrivacy,
 } from "./HeaderComponents";
+import Drawer from "react-modern-drawer";
+import "react-modern-drawer/dist/index.css";
+
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -43,7 +46,7 @@ const Navbar = () => {
     {
       name: "Heroes Wall",
       description: "Showcase achievements and celebrate learner milestones.",
-      to: "/communities/heroes-wall",
+      to: "/heroes-wall",
       icon: IconTwo,
     },
     {
@@ -58,7 +61,7 @@ const Navbar = () => {
   const resources = [
     {
       name: "Support Center",
-      to: "##",
+      to: "/contact",
       description: "Get help and find answers to your questions.",
       icon: IconSupport,
     },
@@ -83,19 +86,13 @@ const Navbar = () => {
       icon: IconMission,
     },
     {
-      name: "Privacy Policy",
-      description: "Understand how we protect and use your data responsibly.",
-
-      to: "/privacy-policy",
+      name: "Legal Terms",
+      description:
+        "Understand how we protect and use your data responsibly,and learn about the guidelines and agreements for using our services responsibly and securely.",
+      to: "/legal-terms",
       icon: IconPrivacy,
     },
-    {
-      name: "Terms Of Service",
-      description:
-        "Learn about the guidelines and agreements for using our services responsibly and securely.",
-      to: "/terms-of-service",
-      icon: IconSupport,
-    },
+
     {
       name: "FAQ",
       description:
@@ -185,7 +182,7 @@ const Navbar = () => {
             <Popover className="relative">
               <Popover.Button
                 onMouseEnter={() => setIsOpen(true)}
-                //onMouseLeave={() => setIsOpen(false)}
+                onMouseLeave={() => setIsOpen(false)}
                 className="flex items-center block font-bold"
               >
                 Resources
@@ -283,30 +280,112 @@ const Navbar = () => {
           </div>
         </div>
 
-        <div
-          className={`${
-            menuOpen ? "max-h-screen  bg-white" : "max-h-0 "
-          } lg:hidden transition-[max-height,opacity] duration-500 ease-in-out overflow-hidden`}
+        <Drawer
+          open={menuOpen}
+          onClose={() => setMenuOpen(false)}
+          direction="left"
+          className="lg:hidden px-6  pt-12"
         >
           <div className="flex flex-col space-y-4 mt-4">
+            <Popover className="relative">
+              <Popover.Button
+                className={`flex items-center  font-bold ${
+                  location.pathname === "/communities"
+                    ? "text-primary"
+                    : "text-gray-900"
+                }`}
+              >
+                Community
+                <ChevronDownIcon className="ml-1 h-5 w-5" />
+              </Popover.Button>
+              <Popover.Panel className="absolute z-10 mt-2 p-4 w-48 bg-white shadow-lg rounded-lg">
+                {communities.map((item) => (
+                  <Link
+                    key={item.name}
+                    to={item.to}
+                    className="-m-3 flex items-center rounded-lg p-2 transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus-visible:ring focus-visible:ring-orange-500/50"
+                  >
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center text-white sm:h-12 sm:w-12">
+                      <item.icon aria-hidden="true" />
+                    </div>
+                    <div className="ml-4">
+                      <p className="text-sm font-medium text-gray-900">
+                        {item.name}
+                      </p>
+                    </div>
+                  </Link>
+                ))}
+              </Popover.Panel>
+            </Popover>
             <Link
-              to="/communities"
-              className="text-gray-900 dark:text-white px-4 py-2"
+              to="/pricing"
+              className={`block font-bold  ${
+                location.pathname === "/pricing"
+                  ? "text-primary"
+                  : "text-gray-900"
+              }`}
             >
-              Communities
+              Pricing
             </Link>
-            <Link
-              to="/resources"
-              className="text-gray-900 dark:text-white px-4 py-2"
-            >
-              Resources
-            </Link>
-            <Link
-              to="/about"
-              className="text-gray-900 dark:text-white px-4 py-2"
-            >
-              About Us
-            </Link>
+            <Popover className="relative">
+              <Popover.Button
+                onMouseEnter={() => setIsOpen(true)}
+                className="flex items-center block font-bold"
+              >
+                Resources
+                <ChevronDownIcon className="ml-1 h-5 w-5" />
+              </Popover.Button>
+              {isOpen && (
+                <Popover.Panel className="absolute z-10 mt-2 p-4 w-48 bg-white shadow-lg rounded-lg">
+                  {resources.map((item) => (
+                    <Link
+                      key={item.name}
+                      to={item.to}
+                      className="-m-3 flex items-center rounded-lg p-2 transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus-visible:ring focus-visible:ring-orange-500/50"
+                    >
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center text-white sm:h-12 sm:w-12">
+                        <item.icon aria-hidden="true" />
+                      </div>
+                      <div className="ml-4">
+                        <p className="text-sm font-medium text-gray-900">
+                          {item.name}
+                        </p>
+                      </div>
+                    </Link>
+                  ))}
+                </Popover.Panel>
+              )}
+            </Popover>
+            <Popover className="relative">
+              <Popover.Button
+                className={`flex items-center font-bold ${
+                  location.pathname === "/about"
+                    ? "text-primary"
+                    : "text-gray-900"
+                }`}
+              >
+                About AI Teacha
+                <ChevronDownIcon className="ml-1 h-5 w-5" />
+              </Popover.Button>
+              <Popover.Panel className="absolute z-10 mt-2 w-64 p-4 bg-white shadow-lg rounded-lg">
+                {about.map((item) => (
+                  <Link
+                    key={item.name}
+                    to={item.to}
+                    className="-m-3 flex items-center rounded-lg p-2 transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus-visible:ring focus-visible:ring-orange-500/50"
+                  >
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center text-white sm:h-12 sm:w-12">
+                      <item.icon aria-hidden="true" />
+                    </div>
+                    <div className="ml-4">
+                      <p className="text-sm font-medium whitespace-nowrap text-gray-900">
+                        {item.name}
+                      </p>
+                    </div>
+                  </Link>
+                ))}
+              </Popover.Panel>
+            </Popover>
             {token ? (
               <Link
                 to="/dashboard/home"
@@ -331,7 +410,7 @@ const Navbar = () => {
               </>
             )}
           </div>
-        </div>
+        </Drawer>
       </nav>
     </header>
   );

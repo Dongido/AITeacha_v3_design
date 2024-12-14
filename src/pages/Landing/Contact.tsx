@@ -82,13 +82,21 @@ const Contact = () => {
       <section>
         <Navbar />
       </section>
-      <div className="mt-32">
-        <h2 className="text-4xl text-primary text-center font-bold">
-          Get in Touch with Us
-        </h2>
-        <h2 className="text-sm text-gray-600 text-center">
-          We are always here right by your side
-        </h2>
+      <div className="mt-24">
+        <section className="relative bg-blight w-full h-[60vh] pt-[5rem] flex justify-center bg-[#c1bad4] items-center overflow-hidden overlow-hidden">
+          <span className="absolute inse=t-0 z-0 p-5  justif-center top-[rem]"></span>
+          <section>
+            <figcaption className="desc z-10 relative">
+              <h1 className="text-6xl font-bold text-center my-6 text-header text-black">
+                {" "}
+                Get in Touch with Us
+              </h1>
+              <h2 className="text-sm text-primary text-center">
+                We are always here right by your side
+              </h2>
+            </figcaption>
+          </section>
+        </section>
 
         <div className="mt-24">
           <div className="max-w-screen-xl shadow-md border  mx-auto my-12 px-4 py-8 rounded-t-3xl text-center md:px-8">
