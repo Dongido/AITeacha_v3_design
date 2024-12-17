@@ -63,7 +63,7 @@ const formSchema = z
     password: z
       .string()
       .min(8, { message: "Password must be at least 8 characters long" }),
-    referred_by: z.string(),
+    referred_by: z.string().optional(),
     acceptTerms: z.boolean().refine((val) => val, {
       message: "You must accept the Terms & Policy",
     }),

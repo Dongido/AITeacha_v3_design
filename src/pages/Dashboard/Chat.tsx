@@ -74,7 +74,7 @@ const Chat = () => {
           {messages.length === 0 ? (
             <div className="text-center text-gray-800 italic">
               Hi👋, welcome to the{" "}
-              <span className="text-lg font-bold">Zyra chatbot</span>! Start
+              <span className="text-lg font-bold">Zyra AI Agent</span>! Start
               your conversation here!
             </div>
           ) : (

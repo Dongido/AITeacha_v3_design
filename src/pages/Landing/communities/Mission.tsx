@@ -21,8 +21,8 @@ const AITeachaMission = () => {
         <div className="max-w-5xl mx-auto px-6">
           <h2 className="text-3xl md:text-4xl lg:text-4xl font-bold text-primary mt-6 text-center mb-6"></h2>
           <p className="text-lg leading-relaxed mb-8">
-            <span className="text-lg font-bold"> At AI Teacha</span>, our
-            mission is to revolutionize education by empowering educators with
+            <span className="text-lg font-bold"> Our Mission</span>
+            is to revolutionize education by empowering educators with
             innovative AI-powered tools that simplify teaching, enhance
             personalized learning, and make quality educational resources
             accessible, fostering transformative, efficient, and impactful

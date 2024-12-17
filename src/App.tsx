@@ -31,6 +31,9 @@ import HeroesWall from "./pages/Landing/HeroesWall";
 import AIPolicy from "./pages/Landing/communities/AIPolicy";
 import StudentDataPolicy from "./pages/Landing/communities/StudentDataPolicy";
 import DataPrivacy from "./pages/Landing/communities/DataPrivacy";
+import Resources from "./pages/Dashboard/Resources";
+
+//Dashboard Routes
 function App() {
   return (
     <Routes>
@@ -75,6 +78,7 @@ function App() {
 
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard/*" element={<Dashboard />} />
+
         <Route path="/classroom/s/*" element={<RoleBasedRedirect />} />
         <Route
           path="/dashboard"

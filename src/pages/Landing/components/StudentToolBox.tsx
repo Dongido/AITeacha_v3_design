@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { FaBook, FaRss, FaFileAlt, FaClipboard } from "react-icons/fa";
 import axios, { AxiosResponse } from "axios";
-
+import { Link } from "react-router-dom";
 interface Tool {
   id: number;
   name: string;
@@ -73,7 +73,7 @@ const StudentToolboxPage: React.FC = () => {
             <figcaption className="desc z-10 relative">
               <h1 className="text-6xl font-bold text-center my-6 text-header text-black">
                 {" "}
-                Amazing AI Student tools
+                Amazing AI Student Tools
               </h1>
               <p className="text-center text-primary">
                 {" "}
@@ -122,21 +122,23 @@ const StudentToolboxPage: React.FC = () => {
         </div>
       )}
 
-      <button className="mt-8 px-4 py-2 bg-primary mx-auto text-white rounded-full flex items-center justify-center space-x-2">
-        <span className="text-md">Explore All</span>
-        <svg
-          width="22"
-          height="22"
-          viewBox="0 0 22 22"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M13.75 17.4166L12.4437 16.1333L16.6604 11.9166H1.83333V10.0833H16.6604L12.4667 5.86659L13.75 4.58325L20.1667 10.9999L13.75 17.4166Z"
-            fill="#E8EAED"
-          />
-        </svg>
-      </button>
+      <Link to={"/dashboard/tools"}>
+        <button className="mt-8 px-4 py-2 bg-primary mx-auto text-white rounded-full flex items-center justify-center space-x-2">
+          <span className="text-md">Explore All</span>
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 22 22"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M13.75 17.4166L12.4437 16.1333L16.6604 11.9166H1.83333V10.0833H16.6604L12.4667 5.86659L13.75 4.58325L20.1667 10.9999L13.75 17.4166Z"
+              fill="#E8EAED"
+            />
+          </svg>
+        </button>
+      </Link>
     </section>
   );
 };

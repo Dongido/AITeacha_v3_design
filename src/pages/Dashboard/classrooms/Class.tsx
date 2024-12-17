@@ -111,7 +111,7 @@ const Classrooms = () => {
     );
   }
 
-  if (error === "Permission restricted for free account") {
+  if (error === "Permission restricted: for free account") {
     return (
       <div>
         {userDetails && isEmailVerified === 1 && (

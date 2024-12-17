@@ -12,6 +12,9 @@ import { Paramroutes } from "../routes/Approutes";
 import { Button } from "../components/ui/Button";
 import { useMaterialTailwindController, setOpenConfigurator } from "../context";
 import { RouteConfig } from "../interfaces";
+import Resources from "../pages/Dashboard/Resources";
+import Team from "../pages/Dashboard/Team";
+import ResourceSingle from "../pages/Dashboard/ResourcesSingle";
 
 export function Dashboard() {
   const navigate = useNavigate();
@@ -87,6 +90,11 @@ export function Dashboard() {
                 <Route key={path} path={path} element={element} />
               ))
           )}
+        </Routes>
+        <Routes>
+          <Route path="/premium/teams" element={<Team />} />
+          <Route path="/premium/resources" element={<Resources />} />
+          <Route path="/premium/resources/:id" element={<ResourceSingle />} />
         </Routes>
         {/* <div className="text-blue-gray-600">
           <Footer />

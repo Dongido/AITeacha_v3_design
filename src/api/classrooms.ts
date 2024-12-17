@@ -11,7 +11,7 @@ export const fetchClassroomsByUser = async (): Promise<Classroom[]> => {
 
     return response.data.data;
   } catch (error: any) {
-    if (error.response?.status === 400) {
+    if (error.response?.status === 403) {
       throw new Error(
         error.response?.data?.message ||
           "Failed to fetch classrooms. Please try again."

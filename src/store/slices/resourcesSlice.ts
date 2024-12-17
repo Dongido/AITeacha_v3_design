@@ -12,7 +12,7 @@ interface SaveResourceData {
 }
 
 interface Resource {
-  id: number;
+  id: string;
   category: string;
   prompt: string;
   returned_answer: string;

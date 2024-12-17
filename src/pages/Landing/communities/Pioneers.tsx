@@ -23,7 +23,7 @@ const Pioneers = () => {
       </section>
 
       <div className="mt-24 mx-auto max-w-screen-lg pb-4 px-4 items-center lg:flex md:px-8">
-        <div className="space-y-0 flex-1 sm:text-center lg:text-left">
+        <div className="space-y-0 flex-1 sm:text-center lg:text-leftk">
           <div className=" mx-auto  mb-3 lg:w-auto">
             <img
               src="https://content.api.news/v3/images/bin/17ac3d7dcbb45ccf87725b9c52bac2b5"

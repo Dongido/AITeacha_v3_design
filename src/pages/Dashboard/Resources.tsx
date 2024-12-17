@@ -1,40 +1,31 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useAppSelector, useAppDispatch } from "../../store/hooks";
+
 import {
-  loadTeamMembers,
-  inviteTeamMemberThunk,
-} from "../../store/slices/teamSlice";
-import { Input } from "../../components/ui/Input";
+  loadResources,
+  shareResourceThunk,
+} from "../../store/slices/teamResourcesSlice";
+import { RootState } from "../../store";
+import ShareResourceDialog from "./_components/ShareResourceDialog";
 import { Button } from "../../components/ui/Button";
-import { Skeleton } from "../../components/ui/Skeleton";
 import BaseTable from "../../components/table/BaseTable";
-import { teamColumns } from "./_components/column.team";
-
-import {
-  ToastProvider,
-  Toast,
-  ToastTitle,
-  ToastDescription,
-  ToastClose,
-  ToastViewport,
-} from "../../components/ui/Toast";
-import RestrictedPage from "./classrooms/RestrictionPage";
+import { sharedResourceColumns } from "./_components/column.sharedresource";
+import { Skeleton } from "../../components/ui/Skeleton";
 import { useNavigate } from "react-router-dom";
-
-const Team = () => {
+import RestrictedPage from "./classrooms/RestrictionPage";
+const Resources = () => {
   const dispatch = useAppDispatch();
-  const { members, loading, error, inviteLoading, inviteError } =
-    useAppSelector((state) => state.team);
   const navigate = useNavigate();
   const [email, setEmail] = useState<string>("");
   const [userDetails, setUserDetails] = useState<any>(null);
   const [isEmailVerified, setIsEmailVerified] = useState<number>(0);
-  const [showToast, setShowToast] = useState(false);
-  const [isInviteAttempted, setIsInviteAttempted] = useState(false);
-  useEffect(() => {
-    dispatch(loadTeamMembers());
-  }, [dispatch]);
+  const { resources, loading, error, shareResourceLoading } = useAppSelector(
+    (state: RootState) => state.teamResources
+  );
 
+  useEffect(() => {
+    dispatch(loadResources());
+  }, [dispatch]);
   useEffect(() => {
     const userDetailsFromStorage = localStorage.getItem("ai-teacha-user");
 
@@ -45,27 +36,14 @@ const Team = () => {
     }
   }, []);
 
-  useEffect(() => {
-    if (inviteError && isInviteAttempted) {
-      setShowToast(true);
-    }
-  }, [inviteError, isInviteAttempted]);
-
   const handleVerifyEmail = () => {
     navigate("/dashboard/verify-email");
   };
 
-  const handleInvite = async () => {
-    if (!email) {
-      alert("Please enter a valid email address.");
-      return;
-    }
+  const shareDialogRef = useRef<any>(null);
 
-    setIsInviteAttempted(true);
-    await dispatch(inviteTeamMemberThunk(email)).then(() => {
-      setEmail("");
-    });
-    dispatch(loadTeamMembers());
+  const openShareDialog = () => {
+    shareDialogRef.current.openDialog();
   };
 
   if (loading) {
@@ -145,61 +123,28 @@ const Team = () => {
   }
 
   return (
-    <ToastProvider>
-      <div className="mt-4">
-        {userDetails && isEmailVerified === 1 && (
-          <div
-            className="bg-[#e5dbff] mt-3 mb-4 text-black p-4 rounded-md flex justify-center items-center"
-            style={{
-              background:
-                "linear-gradient(143.6deg, rgba(192, 132, 252, 0) 20.79%, rgba(232, 121, 249, 0.26) 40.92%, rgba(204, 171, 238, 0) 70.35%)",
-            }}
-          >
-            <span className="text-center text-xl font-bold">
-              Teachers Are Heroes🎉
-            </span>
-          </div>
-        )}
-
-        <div className="flex items-center gap-2 my-8">
-          <Input
-            type="email"
-            placeholder="Enter email to invite"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full py-3"
-          />
-          <Button
-            onClick={handleInvite}
-            disabled={inviteLoading}
-            variant={"gradient"}
-            className={`px-4 py-3 rounded-md  ${
-              inviteLoading ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-          >
-            {inviteLoading ? "Inviting..." : "Invite"}
-          </Button>
-        </div>
-
-        <BaseTable data={members} columns={teamColumns} />
+    <div className="mt-12">
+      <div className="flex justify-between mb-4">
+        <h1>Resources</h1>
+        <Button
+          className="rounded-md"
+          variant={"gradient"}
+          onClick={() => openShareDialog()}
+        >
+          Share Resource
+        </Button>
       </div>
 
-      {showToast && (
-        <Toast
-          variant="destructive"
-          onOpenChange={(isOpen) => {
-            if (!isOpen) setShowToast(false);
-          }}
-        >
-          <ToastTitle>Invitation Failed</ToastTitle>
-          <ToastDescription>{inviteError}</ToastDescription>
-          <ToastClose />
-        </Toast>
-      )}
+      <BaseTable data={resources} columns={sharedResourceColumns} />
 
-      <ToastViewport />
-    </ToastProvider>
+      <ShareResourceDialog
+        ref={shareDialogRef}
+        resourceName=""
+        resourceId=""
+        onSuccess={() => console.log("Resource shared!")}
+      />
+    </div>
   );
 };
 
-export default Team;
+export default Resources;

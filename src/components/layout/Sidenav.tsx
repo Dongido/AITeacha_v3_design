@@ -20,6 +20,7 @@ interface RoutePage {
   name: string;
   path: string;
   adminOnly?: boolean;
+  submenu?: RoutePage[];
 }
 
 interface Route {
@@ -137,16 +138,32 @@ export function Sidenav({
                 </Text>
               </li>
             )}
-            {pages.map(({ icon, name, path, adminOnly }) => {
+            {pages.map(({ icon, name, path, adminOnly, submenu }) => {
               if (adminOnly && !isAdmin) return null;
+
               const fullPath = `/${layout}${path}`;
-              const basePath = `/${layout}`;
+              const [isExpanded, setIsExpanded] = React.useState(false);
+              const location = useLocation();
+
+              // Automatically expand the submenu if the current path matches a submenu item
+              React.useEffect(() => {
+                if (
+                  submenu?.some(
+                    (sub) => location.pathname === `/${layout}${sub.path}`
+                  )
+                ) {
+                  setIsExpanded(true);
+                }
+              }, [location.pathname, submenu]);
+
               return (
-                <li key={name}>
+                <li key={name} className="menu-item">
                   <NavLink
-                    to={`/${layout}${path}`}
+                    to={!submenu ? fullPath : "#"} // Submenu parent is not navigable
                     onClick={() => {
-                      if (window.innerWidth < 1280) {
+                      if (submenu) {
+                        setIsExpanded(!isExpanded);
+                      } else if (window.innerWidth < 1280) {
                         setOpenSidenav(dispatch, false);
                       }
                     }}
@@ -165,22 +182,77 @@ export function Sidenav({
                           isCollapsed ? "justify-center" : "flex items-center"
                         } hover:bg-[#d2a9f3] hover:text-white`}
                       >
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 w-full">
                           <span className="w-6 flex items-center justify-center">
                             {icon}
                           </span>
                           {!isCollapsed && (
                             <Text
                               color="inherit"
-                              className="font-medium w-40 capitalize text-left"
+                              className="font-medium capitalize text-left flex-1"
                             >
                               {name}
                             </Text>
+                          )}
+                          {submenu && (
+                            <span
+                              className={`ml-auto transition-transform ${
+                                isExpanded ? "rotate-90" : ""
+                              }`}
+                            >
+                              ▶
+                            </span>
                           )}
                         </div>
                       </Button>
                     )}
                   </NavLink>
+
+                  {/* Render submenu */}
+                  {submenu && isExpanded && (
+                    <ul className="submenu ml-6 mt-2">
+                      {submenu.map(
+                        ({ icon: subIcon, name: subName, path: subPath }) => (
+                          <li key={subName} className="submenu-item">
+                            <NavLink
+                              to={`/${layout}${subPath}`} // Full submenu path
+                              onClick={() => {
+                                if (window.innerWidth < 1280) {
+                                  setOpenSidenav(dispatch, false);
+                                }
+                              }}
+                            >
+                              {({ isActive }) => (
+                                <Button
+                                  variant={isActive ? "gradient" : "ghost"}
+                                  color={isActive ? sidenavColor : "blue-gray"}
+                                  className={`w-full px-4 capitalize rounded-full ${
+                                    isCollapsed
+                                      ? "justify-center"
+                                      : "flex items-center"
+                                  } hover:bg-[#d2a9f3] hover:text-white`}
+                                >
+                                  <div className="flex items-center gap-2">
+                                    <span className="w-6 flex items-center justify-center">
+                                      {subIcon}
+                                    </span>
+                                    {!isCollapsed && (
+                                      <Text
+                                        color="inherit"
+                                        className="font-medium capitalize text-left"
+                                      >
+                                        {subName}
+                                      </Text>
+                                    )}
+                                  </div>
+                                </Button>
+                              )}
+                            </NavLink>
+                          </li>
+                        )
+                      )}
+                    </ul>
+                  )}
                 </li>
               );
             })}

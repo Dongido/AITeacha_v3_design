@@ -130,7 +130,7 @@ const Navbar = () => {
       icon: IconMission,
     },
     {
-      name: "Legal Terms",
+      name: "AI Teacha Privacy",
       description:
         "Understand how we protect and use your data responsibly,and learn about the guidelines and agreements for using our services responsibly and securely.",
       to: "/legal-terms",

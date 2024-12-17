@@ -12,6 +12,14 @@
 .text-primary {
   color: #5c3cbb;
 }
+.submenu {
+  border-left: 2px solid #e0e0e0;
+  padding-left: 1rem;
+}
+
+.submenu-item {
+  margin-top: 0.5rem;
+}
 
 @keyframes scroll {
   0% {

@@ -7,7 +7,8 @@ import profileReducer from "./slices/profileSlice";
 import resourcesReducer from "./slices/resourcesSlice";
 import assignmentsReducer from "./slices/assignmentSlice";
 import notificationsReducer from "./slices/notificationsSlice";
-
+import teamReducer from "./slices/teamSlice";
+import teamResourcesReducer from "./slices/teamResourcesSlice";
 const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -18,6 +19,8 @@ const store = configureStore({
     resources: resourcesReducer,
     assignments: assignmentsReducer,
     notifications: notificationsReducer,
+    team: teamReducer,
+    teamResources: teamResourcesReducer,
   },
 });
 

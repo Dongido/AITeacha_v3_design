@@ -25,7 +25,7 @@ const TermsPolicy = () => {
               <figcaption className="desc z-10 relative">
                 <h1 className="text-6xl font-bold text-center my-6 text-header">
                   {" "}
-                  Legal Terms
+                  AI Teacha Privacy
                 </h1>
                 <p className="text-center text-primary ">
                   {" "}

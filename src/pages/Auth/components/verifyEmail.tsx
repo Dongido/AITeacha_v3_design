@@ -133,12 +133,12 @@ export function VerifyAuthEmail() {
             )}
           </p>
 
-          <p className="text-xl font-bold">
+          {/* <p className="text-xl font-bold">
             Didn't get code?{" "}
             <Link to={"/auth/login"} className="text-primary">
               Proceed to Login
             </Link>
-          </p>
+          </p> */}
         </div>
 
         <Toast

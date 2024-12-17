@@ -11,6 +11,7 @@ import {
   DocumentIcon,
   DocumentTextIcon,
   UsersIcon,
+  UserGroupIcon,
   WrenchScrewdriverIcon,
   ArrowUpIcon,
 } from "@heroicons/react/24/solid";
@@ -33,6 +34,7 @@ import ClassroomDetail from "../pages/Dashboard/classrooms/ClassroomDetail";
 import CreateOrEditClassroom from "../pages/Dashboard/classrooms/CreateOrEditClassroom";
 import Students from "../pages/Dashboard/classrooms/Students";
 import AssignmentDetail from "../pages/Dashboard/assignment/AssignmentDetail";
+import Resources from "../pages/Dashboard/Resources";
 
 import Home from "../pages/Dashboard/student/Home";
 import History from "../pages/Dashboard/student/History";
@@ -85,7 +87,7 @@ export const routes = [
       },
       {
         icon: <ChatBubbleLeftIcon {...icon} />,
-        name: "Zyra (Chatbot)",
+        name: "Zyra (Edubot)",
         path: "/chats",
         element: <Chat />,
       },
@@ -114,7 +116,26 @@ export const routes = [
         path: "/report",
         element: <Report />,
       },
-
+      {
+        icon: <UserGroupIcon {...icon} />,
+        name: "Premium Features",
+        path: "/premium",
+        element: <Team />,
+        submenu: [
+          {
+            icon: <UserGroupIcon {...icon} />,
+            name: "Teams",
+            path: "/premium/teams",
+            element: <Team />,
+          },
+          {
+            icon: <DocumentIcon {...icon} />,
+            name: "Resources",
+            path: "/premium/resources",
+            element: <Resources />,
+          },
+        ],
+      },
       {
         icon: <ArrowUpIcon {...icon} />,
         name: "upgrade",
