@@ -19,7 +19,7 @@ const Footer: React.FC = () => {
       }}
     >
       <div className="mx-auto text-center">
-        <h2 className="text-white text-3xl md:text-4xl lg:text-5xl">
+        <h2 className="text-white text-2xl md:text-4xl lg:text-5xl">
           Teachers Are Truly Heroes
         </h2>
         <div className="flex items-center justify-center py-6 px-8">

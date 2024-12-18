@@ -9,14 +9,20 @@ const Pioneers = () => {
         <Navbar />
       </section>
       <section className="mt-24">
-        <section className="relative bg-blight w-full h-[60vh] pt-[5rem] flex justify-center bg-[#c1bad4] items-center overflow-hidden overlow-hidden">
+        <section className="relative bg-blight w-full h-[60vh] pt-[5rem] flex justify-center bg-gradient-to-r from-[#07052D] to-[#171093] items-center overflow-hidden overlow-hidden">
           <span className="absolute inse=t-0 z-0 p-5  justif-center top-[rem]"></span>
           <section>
             <figcaption className="desc z-10 relative">
-              <h1 className="text-6xl font-bold text-center my-6 text-header text-black">
+              <h1 className="text-6xl font-bold text-center my-6 text-header text-white">
                 {" "}
-                Introducing AI Teacha for Schools:{" "}
+                Empower Your School with AI Teacha{" "}
               </h1>
+              <h2 className="text-xl text-gray-100 text-center">
+                Discover the future of education with AI Teacha's Schools
+                Onboarding Program. Streamline teaching, boost student
+                engagement, and unlock access to innovative AI tools tailored
+                for your institution. Begin your transformation today!
+              </h2>
             </figcaption>
           </section>
         </section>

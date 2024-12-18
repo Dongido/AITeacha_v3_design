@@ -6,14 +6,22 @@ const Privacy = () => {
       <section>
         <Navbar />
       </section>
-      <div className="mt-32">
-        <h2 className="text-4xl text-primary text-center font-bold">
-          Privacy Policy At AI Teacha
-        </h2>
-        <h2 className="text-sm text-gray-600 text-center">
-          We guarantee your data privacy
-        </h2>
+      <section className="relative bg-blight w-full h-[60vh] mt-24 pt-[5rem] flex justify-center bg-gradient-to-r from-[#07052D] to-[#171093] items-center overflow-hidden overlow-hidden">
+        <span className="absolute inse=t-0 z-0 p-5  justif-center top-[rem]"></span>
+        <section>
+          <figcaption className="desc z-10 relative">
+            <h1 className="text-6xl font-bold text-center my-2 text-header text-white">
+              {" "}
+              Privacy Policy
+            </h1>
+            <h2 className="text-lg text-gray-300 text-center">
+              We guarantee your data privacy
+            </h2>
+          </figcaption>
+        </section>
+      </section>
 
+      <div className="mt-16">
         <div className="rounded-t-3xl  max-w-4xl mx-auto px-8 py-8 ">
           We value your trust and are deeply committed to safeguarding the
           privacy and security of all personal information entrusted to us. Our

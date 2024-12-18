@@ -75,9 +75,10 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
       lastName: "",
       email: "",
       phone: "",
-
       password: "",
       confirmPassword: "",
+      acceptTerms: false,
+      receiveNewsletters: false,
     },
   });
 
@@ -124,40 +125,44 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className="grid gap-4">
-              <FormField
-                control={form.control}
-                name="firstName"
-                render={({ field }) => (
-                  <FormItem className="space-y-1">
-                    <FormLabel className="font-semibold">First Name</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter First Name"
-                        className="rounded-full"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage className="text-red-700" />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="lastName"
-                render={({ field }) => (
-                  <FormItem className="space-y-1">
-                    <FormLabel className="font-semibold">Last Name</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter Last Name"
-                        className="rounded-full"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage className="text-red-700" />
-                  </FormItem>
-                )}
-              />
+              <div className="flex space-x-4">
+                <FormField
+                  control={form.control}
+                  name="firstName"
+                  render={({ field }) => (
+                    <FormItem className="space-y-1">
+                      <FormLabel className="font-semibold">
+                        First Name
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter First Name"
+                          className="rounded-full"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-red-700" />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="lastName"
+                  render={({ field }) => (
+                    <FormItem className="space-y-1">
+                      <FormLabel className="font-semibold">Last Name</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter Last Name"
+                          className="rounded-full"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-red-700" />
+                    </FormItem>
+                  )}
+                />
+              </div>
               <div className="flex space-x-4">
                 <FormField
                   control={form.control}
@@ -165,6 +170,25 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
                   render={({ field }) => (
                     <FormItem className="space-y-1">
                       <FormLabel className="font-semibold">Email</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter Email"
+                          className="rounded-full"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-red-700" />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="phone"
+                  render={({ field }) => (
+                    <FormItem className="space-y-1">
+                      <FormLabel className="font-semibold">
+                        Phone Number
+                      </FormLabel>
                       <FormControl>
                         <Input
                           placeholder="Enter Email"
@@ -214,7 +238,23 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
                   </FormItem>
                 )}
               />
-
+              <FormField
+                control={form.control}
+                name="referred_by"
+                render={({ field }) => (
+                  <FormItem className="space-y-1 w-full">
+                    <FormLabel className="font-semibold">Referred By</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Enter referral code"
+                        className="rounded-full"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage className="text-red-700" />
+                  </FormItem>
+                )}
+              />
               <div className="flex  space-x-6">
                 <div className="flex items-center space-x-2">
                   <FormField

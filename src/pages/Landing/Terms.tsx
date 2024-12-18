@@ -13,14 +13,25 @@ const Terms = () => {
       <section>
         <Navbar />
       </section>
-      <div className="rounded-t-3xl max-w-4xl mx-auto px-8 py-6 mt-20">
-        <h2 className="text-4xl text-primary text-center font-bold">
-          Terms of Service
-        </h2>
-        <h2 className="text-sm text-gray-600 text-center mb-4">
-          <strong>Last Updated:</strong> 12/10/2024
-        </h2>
+      <section className="relative bg-blight w-full h-[60vh] mt-24 pt-[5rem] flex justify-center bg-gradient-to-r from-[#07052D] to-[#171093] items-center overflow-hidden overlow-hidden">
+        <span className="absolute inse=t-0 z-0 p-5  justif-center top-[rem]"></span>
+        <section>
+          <figcaption className="desc z-10 relative">
+            <h1 className="text-6xl font-bold text-center my-6 text-header text-white">
+              {" "}
+              Terms of Service
+            </h1>
+            <h2 className="text-lg text-gray-300 text-center">
+              We guarantee your data privacy
+            </h2>
+            <h2 className="text-lg text-gray-300 text-center mb-4">
+              <strong>Last Updated:</strong> 12/10/2024
+            </h2>
+          </figcaption>
+        </section>
+      </section>
 
+      <div className="rounded-t-3xl max-w-4xl mx-auto px-8 py-6 mt-8">
         <p>
           Welcome to AI Teacha, operated by ICEDT Consult Limited ("AI Teacha").
           Our platform provides educators, schools, and institutions across

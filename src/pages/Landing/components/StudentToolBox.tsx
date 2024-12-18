@@ -67,15 +67,15 @@ const StudentToolboxPage: React.FC = () => {
   return (
     <section className="mx-auto mt-12 py-12 text-white">
       <section className="">
-        <section className="relative bg-blight w-full h-[60vh] pt-[5rem] flex justify-center bg-[#c1bad4] items-center overflow-hidden overlow-hidden">
+        <section className="relative bg-blight w-full h-[60vh] pt-[5rem] flex justify-center bg-gradient-to-r from-[#07052D] to-[#171093] items-center overflow-hidden overlow-hidden">
           <span className="absolute inse=t-0 z-0 p-5  justif-center top-[rem]"></span>
           <section>
             <figcaption className="desc z-10 relative">
-              <h1 className="text-6xl font-bold text-center my-6 text-header text-black">
+              <h1 className="text-6xl font-bold text-center my-2 text-header text-white">
                 {" "}
                 Amazing AI Student Tools
               </h1>
-              <p className="text-center text-primary">
+              <p className="text-center text-gray-200 text-xl ">
                 {" "}
                 Handle all administrative or learning tasks with our AI Student
                 toolbox

@@ -43,7 +43,11 @@ import {
   questionTypelist,
   curriculumFocus,
   mediaTypelist,
+  wordTypeList,
+  supportResourcesList,
   difficultyList,
+  ageGroupList,
+  examTypeList,
   voiceTypelist,
 } from "./data";
 import "primereact/resources/primereact.css";
@@ -92,6 +96,7 @@ const ToolDetail = () => {
     null
   );
   const [imageUrl, setImageUrl] = useState<string | "">("");
+  const [visibleFieldPairs, setVisibleFieldPairs] = useState(1);
   const [countries, setCountries] = useState<string[]>([]);
   const [selectedCountry, setSelectedCountry] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -105,6 +110,7 @@ const ToolDetail = () => {
   interface Field {
     req_param: string;
     label: string;
+    name: string;
     placeholder: string;
   }
   const [fields, setFields] = useState<Field[]>([]);
@@ -313,6 +319,17 @@ const ToolDetail = () => {
       .join(" ");
   };
 
+  interface FieldPair {
+    criteria: string;
+    weightage: string;
+  }
+  const fieldPairs: FieldPair[] = [
+    { criteria: "criteria", weightage: "weightage" },
+    { criteria: "criteria2", weightage: "weightage2" },
+    { criteria: "criteria3", weightage: "weightage3" },
+    { criteria: "criteria4", weightage: "weightage4" },
+  ];
+
   if (loading || loadingTool) {
     return (
       <p>
@@ -355,8 +372,158 @@ const ToolDetail = () => {
               </svg>
             </div>
             <p className="mb-6">{tool.description}</p>
-
             <form onSubmit={handleSubmit} className="space-y-4">
+              {tool.service_id === "markingscheme generator" && (
+                <>
+                  <div className="flex gap-4 mb-4">
+                    <div className="w-full">
+                      <Label className="capitalize">Description</Label>
+                      <Input
+                        type="text"
+                        name="description"
+                        placeholder="Enter description"
+                        value={formData.description || ""}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            description: e.target.value,
+                          }))
+                        }
+                        className="input-field w-full"
+                      />
+                    </div>
+                  </div>
+                  {fieldPairs.slice(0, visibleFieldPairs).map((pair, index) => (
+                    <div
+                      key={index}
+                      className="flex gap-4 mb-4 border p-4 rounded-md border-gray-400"
+                    >
+                      <div className="w-1/2">
+                        <Label className="capitalize">{pair.criteria}</Label>
+                        <Input
+                          type="text"
+                          name={pair.criteria}
+                          placeholder={`Enter ${pair.criteria}`}
+                          value={formData[pair.criteria] || ""}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              [pair.criteria]: e.target.value,
+                            }))
+                          }
+                          className="input-field w-full"
+                        />
+                      </div>
+                      <div className="w-1/2">
+                        <Label>{pair.weightage}</Label>
+                        <Input
+                          type="text"
+                          name={pair.weightage}
+                          placeholder={`Enter ${pair.weightage}`}
+                          value={formData[pair.weightage] || ""}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              [pair.weightage]: e.target.value,
+                            }))
+                          }
+                          className="input-field w-full"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                  <div className="mt-4 flex gap-4">
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (visibleFieldPairs < fieldPairs.length) {
+                          setVisibleFieldPairs((prev) => prev + 1);
+                        }
+                      }}
+                      className={`bg-gray-900 p-2 px-6 text-white rounded-full ${
+                        visibleFieldPairs >= fieldPairs.length
+                          ? "cursor-not-allowed opacity-50"
+                          : "hover:bg-gray-500"
+                      }`}
+                      disabled={visibleFieldPairs >= fieldPairs.length}
+                    >
+                      Add
+                    </button>
+
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (visibleFieldPairs > 1) {
+                          setVisibleFieldPairs((prev) => prev - 1);
+                        }
+                      }}
+                      className={`bg-red-900 p-2 px-6 text-white rounded-full ${
+                        visibleFieldPairs <= 1
+                          ? "cursor-not-allowed opacity-50"
+                          : "hover:bg-red-700"
+                      }`}
+                      disabled={visibleFieldPairs <= 1}
+                    >
+                      Remove
+                    </button>
+                  </div>
+
+                  <div className="flex gap-4 mb-4">
+                    <div className="w-1/2">
+                      <Label>Scoring Scale</Label>
+                      <Input
+                        type="text"
+                        name="scoringScale"
+                        placeholder="Enter Scoring Scale (e.g., 0-5, 1-10)"
+                        value={formData.scoringScale || ""}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            scoringScale: e.target.value,
+                          }))
+                        }
+                        className="input-field w-full"
+                      />
+                    </div>
+                    <div className="w-1/2">
+                      <Label>Comments</Label>
+                      <Input
+                        type="text"
+                        name="comments"
+                        placeholder="Indicate if you want space for comments for each criterion"
+                        value={formData.comments || ""}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            comments: e.target.value,
+                          }))
+                        }
+                        className="input-field w-full"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4 mb-4 border">
+                    <div className="w-full">
+                      <Label>Additional Notes</Label>
+                      <Input
+                        type="text"
+                        name="additionalNotes"
+                        placeholder="Enter any additional guidelines or notes for the markers"
+                        value={formData.additionalNotes || ""}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            additionalNotes: e.target.value,
+                          }))
+                        }
+                        className="input-field w-full"
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
+
               {formFields.map((field) => (
                 <div key={field.name}>
                   {field.name === "grade" &&
@@ -434,7 +601,6 @@ const ToolDetail = () => {
                               subject: value,
                             }))
                           }
-                          // defaultValue="Maths"
                         >
                           <SelectTrigger>
                             <SelectValue placeholder="Select subject" />
@@ -514,6 +680,232 @@ const ToolDetail = () => {
                       </Select>
                     </div>
                   )}
+                  {field.name === "voiceType" && (
+                    <div>
+                      <Label>{field.label}</Label>
+                      <Select
+                        onValueChange={(value) =>
+                          setFormData((prevData) => ({
+                            ...prevData,
+                            voiceType: value,
+                          }))
+                        }
+                        defaultValue={formData.voiceType || ""}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Voice Type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {voiceTypelist.map((voiceType) => (
+                            <SelectItem
+                              key={voiceType.value}
+                              value={voiceType.value}
+                            >
+                              {voiceType.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+                  {field.name === "examType" && (
+                    <div>
+                      <Label>{field.label}</Label>
+                      <Select
+                        onValueChange={(value) =>
+                          setFormData((prevData) => ({
+                            ...prevData,
+                            examType: value,
+                          }))
+                        }
+                        defaultValue={formData.examType || ""}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Exam Type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {examTypeList.map((examType) => (
+                            <SelectItem
+                              key={examType.value}
+                              value={examType.value}
+                            >
+                              {examType.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+
+                  {field.name === "supportResources" && (
+                    <div>
+                      <Label>{field.label}</Label>
+                      <Select
+                        onValueChange={(value) =>
+                          setFormData((prevData) => ({
+                            ...prevData,
+                            supportResources: value,
+                          }))
+                        }
+                        defaultValue={formData.supportResources || ""}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Support Resources " />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {supportResourcesList.map((supportResources) => (
+                            <SelectItem
+                              key={supportResources.value}
+                              value={supportResources.value}
+                            >
+                              {supportResources.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+                  {field.name === "difficultyLevel" && (
+                    <div>
+                      <Label>{field.label}</Label>
+                      <Select
+                        onValueChange={(value) =>
+                          setFormData((prevData) => ({
+                            ...prevData,
+                            difficultyLevel: value,
+                          }))
+                        }
+                        defaultValue={formData.difficultyLevel || ""}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Difficulty Level" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {difficultyList.map((difficultyLevel) => (
+                            <SelectItem
+                              key={difficultyLevel.value}
+                              value={difficultyLevel.value}
+                            >
+                              {difficultyLevel.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+                  {field.name === "ageGroup" && (
+                    <div>
+                      <Label>{field.label}</Label>
+                      <Select
+                        onValueChange={(value) =>
+                          setFormData((prevData) => ({
+                            ...prevData,
+                            ageGroup: value,
+                          }))
+                        }
+                        defaultValue={formData.ageGroup || ""}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Age Group" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {ageGroupList.map((ageGroup) => (
+                            <SelectItem
+                              key={ageGroup.value}
+                              value={ageGroup.value}
+                            >
+                              {ageGroup.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+                  {field.name === "wordType" && (
+                    <div>
+                      <Label>{field.label}</Label>
+                      <Select
+                        onValueChange={(value) =>
+                          setFormData((prevData) => ({
+                            ...prevData,
+                            wordType: value,
+                          }))
+                        }
+                        defaultValue={formData.wordType || ""}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Word Type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {wordTypeList.map((wordType) => (
+                            <SelectItem
+                              key={wordType.value}
+                              value={wordType.value}
+                            >
+                              {wordType.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+                  {field.name === "questionFormat" && (
+                    <div>
+                      <Label>{field.label}</Label>
+                      <Select
+                        onValueChange={(value) =>
+                          setFormData((prevData) => ({
+                            ...prevData,
+                            questionFormat: value,
+                          }))
+                        }
+                        defaultValue={formData.questionFormat || ""}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Question Format" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {questionTypelist.map((questionFormat) => (
+                            <SelectItem
+                              key={questionFormat.value}
+                              value={questionFormat.value}
+                            >
+                              {questionFormat.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+                  {field.name === "assessmentType" && (
+                    <div>
+                      <Label>{field.label}</Label>
+                      <Select
+                        onValueChange={(value) =>
+                          setFormData((prevData) => ({
+                            ...prevData,
+                            assessmentType: value,
+                          }))
+                        }
+                        defaultValue={formData.assessmentType || ""}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Assessment Type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {questionTypelist.map((assessmentType) => (
+                            <SelectItem
+                              key={assessmentType.value}
+                              value={assessmentType.value}
+                            >
+                              {assessmentType.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+
                   {field.name === "curriculum_focus" && (
                     <div>
                       <Label>{field.label}</Label>
@@ -601,18 +993,39 @@ const ToolDetail = () => {
                     field.name != "sdg" &&
                     field.name != "file" &&
                     field.name != "type" &&
+                    field.name != "difficultyLevel" &&
+                    field.name != "wordType" &&
+                    field.name != "examType" &&
+                    field.name != "assessmentType" &&
+                    field.name != "ageGroup" &&
+                    field.name != "voiceType" &&
+                    field.name != "supportResources" &&
+                    field.name != "questionFormat" &&
                     field.name != "curriculum_type" &&
                     field.name != "audio" &&
                     field.name != "mediaType" &&
                     field.name != "curriculum_focus" &&
                     field.name !== "activitytype" &&
+                    tool.service_id !== "markingscheme generator" &&
                     field.name !== "subject" && (
                       <div>
                         <label className="capitalize">{field.label}</label>
                         <Input
-                          type="text"
+                          type={
+                            field.name === "numberOfSlides" ||
+                            field.name === "numberOfQuestion" ||
+                            field.name === "numberOfVerse"
+                              ? "number"
+                              : "text"
+                          }
                           name={field.name}
-                          required
+                          required={
+                            field.name === "theme"
+                              ? false
+                              : field.name === "description"
+                              ? tool.is_description_optional === 0
+                              : field.name !== "additionalNotes"
+                          }
                           placeholder={
                             field.placeholder || `Enter ${field.label}`
                           }
@@ -663,6 +1076,20 @@ const ToolDetail = () => {
                   </button>
                 </div>
               </>
+            ) : tool.service_id === "power point slide" && responseMessage ? (
+              <div className="mt-4">
+                <button
+                  onClick={() => {
+                    const link = document.createElement("a");
+                    link.href = responseMessage;
+                    link.download = "generated_slide.pptx";
+                    link.click();
+                  }}
+                  className="bg-black  text-white py-2 px-4 rounded-md"
+                >
+                  Download Slide
+                </button>
+              </div>
             ) : (
               <>
                 <ReactMarkdown className="w-full p-3 border border-gray-300 bg-white rounded-md resize-none markdown overflow-auto max-h-96">

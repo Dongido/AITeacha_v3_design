@@ -7,15 +7,15 @@ const DataPrivacy = () => {
       <div>
         <Navbar />
         <section className="bg-gray-100 text-gray-800 py-24 ">
-          <section className="relative bg-blight w-full h-[60vh] pt-[5rem] flex justify-center bg-[#c1bad4] items-center overflow-hidden overlow-hidden">
+          <section className="relative bg-blight w-full h-[60vh] pt-[5rem] flex justify-center bg-gradient-to-r from-[#07052D] to-[#171093] items-center overflow-hidden overlow-hidden">
             <span className="absolute inse=t-0 z-0 p-5  justif-center top-[rem]"></span>
             <section>
               <figcaption className="desc z-10 relative">
-                <h1 className="text-6xl font-bold text-center my-6 text-header text-black">
+                <h1 className="text-6xl font-bold text-center my-6 text-header text-white">
                   {" "}
                   Data Privacy Addendum (DPA)
                 </h1>
-                <h2 className="text-sm text-primary text-center">
+                <h2 className="text-xl text-gray-300 text-center">
                   Version: 1.0 | Effective Date: 01/07/2023 | Last Updated:
                   11/12/2024
                 </h2>

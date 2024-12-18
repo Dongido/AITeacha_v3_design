@@ -19,15 +19,15 @@ const TermsPolicy = () => {
 
       <section className=" pb-[4rem] min-h-screen bg-gradient-to-b from-white to-blight  mt-24">
         <section className="">
-          <section className="relative bg-blight w-full h-[60vh] pt-[5rem] flex justify-center bg-[#c1bad4] items-center overflow-hidden overlow-hidden">
+          <section className="relative bg-blight w-full h-[60vh] pt-[5rem] flex justify-center bg-gradient-to-r from-[#07052D] to-[#171093] items-center overflow-hidden overlow-hidden">
             <span className="absolute inse=t-0 z-0 p-5  justif-center top-[rem]"></span>
             <section>
               <figcaption className="desc z-10 relative">
-                <h1 className="text-6xl font-bold text-center my-6 text-header">
+                <h1 className="text-6xl font-bold text-center my-6 text-white">
                   {" "}
                   AI Teacha Privacy
                 </h1>
-                <p className="text-center text-primary ">
+                <p className="text-center text-gray-100 ">
                   {" "}
                   Important things you need to know as you use AI Teacha
                   platforms

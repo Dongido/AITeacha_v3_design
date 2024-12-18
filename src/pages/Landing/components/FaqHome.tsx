@@ -74,7 +74,7 @@ const FaqsCard: React.FC<FaqsCardProps> = ({ faqsList, idx }) => {
   );
 };
 
-const FaqsSection: React.FC = () => {
+const FaqHome: React.FC = () => {
   const faqsList: Faq[] = [
     {
       q: "What is AI Teacha?",
@@ -119,22 +119,22 @@ const FaqsSection: React.FC = () => {
   ];
 
   return (
-    <section className="leading-relaxed mt-24 ">
-      <section className="relative bg-blight w-full h-[60vh] pt-[5rem] flex justify-center bg-gradient-to-r from-[#07052D] to-[#171093] items-center overflow-hidden overlow-hidden">
+    <section className="leading-relaxed ">
+      <section className="relative bg-blight w-full h-[30vh] pt-[5rem] flex justify-center items-center overflow-hidden overlow-hidden">
         <span className="absolute inse=t-0 z-0 p-5  justif-center top-[rem]"></span>
         <section>
-          <figcaption className="desc z-10 relative text-center">
-            <h3 className="text-gray-300 font-semibold text-xl ">
+          <figcaption className="desc z-10 relative text-center mx-auto">
+            <h3 className="text-primary font-semibold text-xl ">
               More About Us
             </h3>
-            <h1 className="text-6xl md:text-4xl lg:text-5xl text-white font-semibold">
+            <h1 className="text-6xl md:text-4xl lg:text-5xl text-gray-900 font-semibold">
               Frequently Asked Questions
             </h1>
           </figcaption>
         </section>
       </section>
       <div className="space-y-2 text-center"></div>
-      <div className="mt-14 max-w-2xl px-4 md:px-8 mx-auto">
+      <div className=" max-w-2xl px-4 md:px-8 mx-auto">
         {faqsList.map((item, idx) => (
           <FaqsCard key={idx} idx={idx} faqsList={item} />
         ))}
@@ -143,4 +143,4 @@ const FaqsSection: React.FC = () => {
   );
 };
 
-export default FaqsSection;
+export default FaqHome;

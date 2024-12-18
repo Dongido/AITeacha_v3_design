@@ -155,6 +155,7 @@ export function Sidenav({
                   setIsExpanded(true);
                 }
               }, [location.pathname, submenu]);
+              const isPremium = name.toLowerCase().includes("premium");
 
               return (
                 <li key={name} className="menu-item">
@@ -170,7 +171,9 @@ export function Sidenav({
                   >
                     {({ isActive }) => (
                       <Button
-                        variant={isActive ? "gradient" : "ghost"}
+                        variant={
+                          isPremium ? "ghost" : isActive ? "gradient" : "ghost"
+                        }
                         color={
                           isActive
                             ? sidenavColor

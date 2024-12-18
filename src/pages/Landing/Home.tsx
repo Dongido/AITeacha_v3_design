@@ -1,7 +1,7 @@
 import React from "react";
 import TestimonialSlider from "./components/Testimonial";
 import HeroToolBox from "./components/ToolBoxHero";
-import FaqsSection from "./components/FaqDesign";
+import FaqHome from "./components/FaqHome";
 import CTA from "./components/CTA";
 import Footer from "./components/Footer";
 import Hero from "./components/Hero";
@@ -88,7 +88,7 @@ const Home: React.FC = () => {
             //     "linear-gradient(20deg, rgba(192, 132, 252, 0) 20.79%, rgba(232, 121, 249, 0.26) 40.92%, rgba(204, 171, 238, 0) 70.35%)",
             // }}
           >
-            <FaqsSection />
+            <FaqHome />
           </section>
         </AnimatedSection>
         <Footer />

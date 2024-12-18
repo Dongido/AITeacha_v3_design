@@ -38,7 +38,7 @@ const SignUp = () => {
             </Link>
           </div>
 
-          <h1 className="text-2xl font-semibold text-gray-800 text-center">
+          <h1 className="text-2xl font-semibold text-gray-800 mt-24 text-center">
             Start Your Journey With AI Teacha!
           </h1>
           <p className="text-center text-gray-600 mb-6">

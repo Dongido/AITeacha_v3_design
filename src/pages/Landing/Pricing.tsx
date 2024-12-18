@@ -58,19 +58,19 @@ const Pricing = () => {
         <Navbar />
       </section>
       <section className="mt-24">
-        <section className="relative bg-blight w-full h-[60vh] pt-[5rem] flex justify-center bg-[#c1bad4] items-center overflow-hidden overlow-hidden">
+        <section className="relative bg-blight w-full h-[60vh] pt-[5rem] flex justify-center bg-gradient-to-r from-[#07052D] to-[#171093] items-center overflow-hidden overlow-hidden">
           <span className="absolute inse=t-0 z-0 p-5  justif-center top-[rem]"></span>
           <section>
             <figcaption className="desc z-10 relative">
-              <h1 className="text-6xl font-bold text-center my-6 text-header">
+              <h1 className="text-6xl font-bold text-center my-6 text-white">
                 {" "}
                 Our Subscription Plans
               </h1>
-              <p className="text-center text-primary">
+              <p className="text-center text-xl font-bold text-gray-200">
                 {" "}
                 Simple & Transparent Pricing for Educators & Schools
               </p>
-              <div className="flex justify-center items-center mx-auto text-center max-w-xl mb-6">
+              <div className="flex justify-center items-center mx-auto text-center text-gray-400 max-w-xl mb-6">
                 <span>
                   <h2>
                     We offer a Free plan for educators with limited access, a

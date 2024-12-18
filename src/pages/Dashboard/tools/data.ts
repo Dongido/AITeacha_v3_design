@@ -6,7 +6,18 @@ const questionTypelist = [
 
 const voiceTypelist = [
   { label: "Male Voice", value: "alloy" },
-  { label: '"Female Voice', value: "nova" },
+  { label: "Female Voice", value: "nova" },
+];
+
+const ageGroupList = [
+  { label: "1 - 3 years", value: "1 - 3 years" },
+  { label: "4 - 7 years", value: "4 - 7 years" },
+  { label: "7 - 18 years", value: "7 - 18 years" },
+];
+
+const supportResourcesList = [
+  { label: "Specialized educators", value: "specialized educators" },
+  { label: "Assistive technologies", value: "assistive technologies" },
 ];
 
 const difficultyList = [
@@ -39,6 +50,11 @@ const curriculumFocus = [
     label: "Teacher-centered curriculum",
     value: "Teacher-centered curriculum",
   },
+];
+const wordTypeList = [
+  { label: "Nouns", value: "nouns" },
+  { label: "Adjectives", value: "adjectives" },
+  { label: "Verbs", value: "verbs" },
 ];
 
 interface SDGOption {
@@ -126,10 +142,21 @@ const sdgOptions: SDGOption[] = [
     label: "SDG 17 - Partnerships for the Goals",
   },
 ];
+const examTypeList = [
+  { label: "SAT", value: "SAT" },
+  { label: "TOEFL", value: "TOEFL" },
+  { label: "IELTS", value: "IELTS" },
+  { label: "GMAT", value: "GMAT" },
+];
+
 export {
   activityList,
   sdgOptions,
   questionTypelist,
+  ageGroupList,
+  supportResourcesList,
+  wordTypeList,
+  examTypeList,
   curriculumFocus,
   mediaTypelist,
   difficultyList,
