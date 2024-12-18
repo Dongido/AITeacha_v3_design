@@ -148,9 +148,15 @@ const examTypeList = [
   { label: "IELTS", value: "IELTS" },
   { label: "GMAT", value: "GMAT" },
 ];
+const appraisalTypeList = [
+  { label: "Performance appraisal", value: "performance appraisal" },
+  { label: "Project feedback", value: "project feedback" },
+  { label: "General progress", value: "general progress" },
+];
 
 export {
   activityList,
+  appraisalTypeList,
   sdgOptions,
   questionTypelist,
   ageGroupList,

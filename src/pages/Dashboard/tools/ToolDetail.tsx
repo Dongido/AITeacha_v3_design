@@ -42,6 +42,7 @@ import {
   sdgOptions,
   questionTypelist,
   curriculumFocus,
+  appraisalTypeList,
   mediaTypelist,
   wordTypeList,
   supportResourcesList,
@@ -877,6 +878,34 @@ const ToolDetail = () => {
                       </Select>
                     </div>
                   )}
+                  {field.name === "feedbackType" && (
+                    <div>
+                      <Label>{field.label}</Label>
+                      <Select
+                        onValueChange={(value) =>
+                          setFormData((prevData) => ({
+                            ...prevData,
+                            feedbackType: value,
+                          }))
+                        }
+                        defaultValue={formData.type || ""}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select  Feedback Type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {appraisalTypeList.map((feedbackType) => (
+                            <SelectItem
+                              key={feedbackType.value}
+                              value={feedbackType.value}
+                            >
+                              {feedbackType.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
                   {field.name === "assessmentType" && (
                     <div>
                       <Label>{field.label}</Label>
@@ -1004,6 +1033,7 @@ const ToolDetail = () => {
                     field.name != "curriculum_type" &&
                     field.name != "audio" &&
                     field.name != "mediaType" &&
+                    field.name != "feedbackType" &&
                     field.name != "curriculum_focus" &&
                     field.name !== "activitytype" &&
                     tool.service_id !== "markingscheme generator" &&
