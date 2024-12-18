@@ -160,7 +160,7 @@ export function Sidenav({
               return (
                 <li key={name} className="menu-item">
                   <NavLink
-                    to={!submenu ? fullPath : "#"} // Submenu parent is not navigable
+                    to={!submenu ? fullPath : "#"}  // Submenu parent is not navigable
                     onClick={() => {
                       if (submenu) {
                         setIsExpanded(!isExpanded);

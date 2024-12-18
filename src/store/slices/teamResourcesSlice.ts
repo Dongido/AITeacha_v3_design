@@ -29,7 +29,7 @@ const initialState: ResourcesState = {
   selectedResource: null,
   error: null,
   shareResourceLoading: false,
-  shareResourceError: null, // Initialize error state
+  shareResourceError: null, 
 };
 
 export const loadResources = createAsyncThunk(

@@ -382,7 +382,7 @@ const ToolDetail = () => {
                       <Input
                         type="text"
                         name="description"
-                        placeholder="Enter description"
+                        placeholder="Enter Specific Details "
                         value={formData.description || ""}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                           setFormData((prev) => ({
@@ -1072,14 +1072,16 @@ const ToolDetail = () => {
                 className="text-white py-2 px-4 rounded-md w-full"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "AI is Typing..." : "Submit"}
+                {isSubmitting ? "AI Teacha is Typing..." : "Submit"}
               </Button>
             </form>
           </div>
 
           <div className="lg:w-1/2 mt-8 lg:mt-0">
             <h3 className="text-xl font-bold mb-4">Submission Response</h3>
-            {tool.service_id === "image creator" && responseMessage ? (
+            {(tool.service_id === "image creator" ||
+              tool.service_id === "worksheet generator") &&
+            responseMessage ? (
               <>
                 <div className="p-2 bg-white border border-gray-300 rounded-md">
                   <img
@@ -1124,7 +1126,7 @@ const ToolDetail = () => {
               <>
                 <ReactMarkdown className="w-full p-3 border border-gray-300 bg-white rounded-md resize-none markdown overflow-auto max-h-96">
                   {isSubmitting
-                    ? "AI is Typing..."
+                    ? "AI Teacha is Typing..."
                     : responseMessage || "No response yet."}
                 </ReactMarkdown>
                 {responseMessage && (

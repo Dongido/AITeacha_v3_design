@@ -243,7 +243,9 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
                 name="referred_by"
                 render={({ field }) => (
                   <FormItem className="space-y-1 w-full">
-                    <FormLabel className="font-semibold">Referred By</FormLabel>
+                    <FormLabel className="font-semibold">
+                      Referred By(Optional)
+                    </FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Enter referral code"
