@@ -27,11 +27,11 @@ const BlogSlider: React.FC<BlogSliderProps> = ({ blogs }) => {
         <section className="relative bg-blight w-full mb-6 h-[60vh] mt-24 pt-[5rem] flex justify-center bg-gradient-to-r from-[#07052D] to-[#171093] items-center overflow-hidden overlow-hidden">
           <span className="absolute inse=t-0 z-0 p-5  justif-center top-[rem]"></span>
           <section>
-            <figcaption className="desc z-10 relative">
+            <figcaption className="desc z-10 relative px-2">
               <h1 className="text-xl text-center font-bold text-gray-300">
                 Our Blog
               </h1>
-              <h2 className="text-6xl font-bold text-center mb-8 text-white">
+              <h2 className="text-3xl md:text-4xl lg:text-6xl font-bold text-center mb-8 text-white">
                 Latest Posts
               </h2>
             </figcaption>

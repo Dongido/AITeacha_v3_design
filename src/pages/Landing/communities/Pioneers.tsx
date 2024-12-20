@@ -11,13 +11,13 @@ const Pioneers = () => {
       <section className="mt-24">
         <section className="relative bg-blight w-full h-[60vh] pt-[5rem] flex justify-center bg-gradient-to-r from-[#07052D] to-[#171093] items-center overflow-hidden overlow-hidden">
           <span className="absolute inse=t-0 z-0 p-5  justif-center top-[rem]"></span>
-          <section>
+          <section className="px-2">
             <figcaption className="desc z-10 relative">
-              <h1 className="text-6xl font-bold text-center my-6 text-header text-white">
+              <h1 className="text-3xl md:text-4xl lg:text-6xl font-bold text-center my-6 text-header text-white">
                 {" "}
                 Empower Your School with AI Teacha{" "}
               </h1>
-              <h2 className="text-xl text-gray-100 text-center">
+              <h2 className="text-md md:text-lg lg:text-xl text-gray-100 text-center">
                 Discover the future of education with AI Teacha's Schools
                 Onboarding Program. Streamline teaching, boost student
                 engagement, and unlock access to innovative AI tools tailored

@@ -49,11 +49,20 @@ export interface Student {
   grade: string;
   status: "joined";
   profile_image: string;
+  submission_status: string;
   last_join: string;
   firstname: string;
   lastname: string;
   classroom_id: number;
 }
+
+export interface Question {
+  assignmentquestion_id: number;
+  assignment_question: string;
+  assignment_answer: string | null;
+  question_type: string | null;
+}
+
 export interface Assignment {
   assignment_id: number;
   assignment_name: string;
@@ -61,12 +70,18 @@ export interface Assignment {
   grade: string;
   status: string;
   assignment_intro: string;
+  join_url: string;
   number_of_students: number;
+  join_code: string;
+  classroom_id: number | null;
+  classroom_name: string | null;
   number_of_students_completed: number;
   assignment_thumbnail: string | null;
+  thumbnail: string | null;
   submit_url: string;
   submission_code: string;
   author: string;
+  questions: Question[];
 }
 
 export interface AssignmentData {

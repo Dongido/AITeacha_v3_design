@@ -1080,7 +1080,7 @@ const ToolDetail = () => {
           <div className="lg:w-1/2 mt-8 lg:mt-0">
             <h3 className="text-xl font-bold mb-4">Submission Response</h3>
             {(tool.service_id === "image creator" ||
-              tool.service_id === "worksheet generator") &&
+              tool.service_id === "worksheeteid generator") &&
             responseMessage ? (
               <>
                 <div className="p-2 bg-white border border-gray-300 rounded-md">
@@ -1117,9 +1117,24 @@ const ToolDetail = () => {
                     link.download = "generated_slide.pptx";
                     link.click();
                   }}
-                  className="bg-black  text-white py-2 px-4 rounded-md"
+                  className="bg-black text-white py-2 px-4 rounded-md"
                 >
                   Download Slide
+                </button>
+              </div>
+            ) : tool.service_id === "text to speech" && responseMessage ? (
+              <div className="mt-4">
+                <button
+                  onClick={() => {
+                    const link = document.createElement("a");
+                    link.href = responseMessage;
+                    link.target = "_blank";
+                    link.download = "generated_audio.mp3";
+                    link.click();
+                  }}
+                  className="bg-green-500 text-white py-2 px-4 rounded-md"
+                >
+                  Download Audio
                 </button>
               </div>
             ) : (

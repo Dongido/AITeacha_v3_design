@@ -37,14 +37,18 @@ export const deleteAssignment = async (assignmentId: number): Promise<void> => {
   }
 };
 
+export interface CreateAssignmentQuestion {
+  assignment_question: string;
+}
+
 export interface CreateAssignmentData {
   user_id: number;
-  name: string;
-  description?: string;
+  classroom_id: number;
+  description: string;
   grade: string;
-  status: string;
   number_of_students: number;
-  scope_restriction: boolean;
+  questions: CreateAssignmentQuestion[];
+  status?: string; // Optional, if not part of the current structure
 }
 
 export const createAssignment = async (
@@ -52,7 +56,8 @@ export const createAssignment = async (
   contentType: string = "application/json"
 ): Promise<Assignment> => {
   console.log("Using Content-Type:", contentType);
-  console.log(data);
+  console.log("Data being sent:", data);
+
   try {
     const response = await apiClient.post<{
       status: string;
@@ -75,7 +80,6 @@ export const createAssignment = async (
     );
   }
 };
-
 export const fetchAssignmentById = async (
   assignmentId: number
 ): Promise<Assignment> => {
@@ -165,6 +169,21 @@ export const checkIfStudentInAssignment = async (
     );
   }
 };
+export const generateQuestion = async (
+  topic: string,
+  grade: string
+): Promise<boolean> => {
+  try {
+    const response = await apiClient.post<{
+      status: string;
+      data: any;
+    }>("/assistant/suggest/assignment/question", { topic, grade });
+
+    return response.data.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data || "Failed to Generate Questions.");
+  }
+};
 
 export const addStudentToAssignment = async (
   assignmentId: number
@@ -191,6 +210,7 @@ export const addStudentToAssignment = async (
 };
 
 export const fetchStudentsInAssignment = async (
+  classroomId: number,
   assignmentId: number
 ): Promise<any[]> => {
   try {
@@ -198,7 +218,7 @@ export const fetchStudentsInAssignment = async (
       status: string;
       message: string;
       data: any[];
-    }>(`/assignment/students/${assignmentId}`, {});
+    }>(`/assignment/students/${classroomId}/${assignmentId}`, {});
 
     if (response.status !== 200) {
       throw new Error("Failed to fetch students.");
@@ -254,17 +274,15 @@ export const fetchAssignmentQuestions = async (
 };
 
 export const fetchStudentAssignmentAnalytics = async (
-  assignmentId: number,
-  studentId: number,
-  questions: any[]
+  assignment_id: number,
+  student_id: number
 ): Promise<any> => {
   try {
     const response = await apiClient.post(
-      "/assistant/student/assignment-analytics",
+      "/assistant/student/assignment/analytics",
       {
-        assignmentId,
-        studentId,
-        questions,
+        assignment_id,
+        student_id,
       }
     );
     return response.data;

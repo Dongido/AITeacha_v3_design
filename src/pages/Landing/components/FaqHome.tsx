@@ -127,7 +127,7 @@ const FaqHome: React.FC = () => {
             <h3 className="text-primary font-semibold text-xl ">
               More About Us
             </h3>
-            <h1 className="text-6xl md:text-4xl lg:text-5xl text-gray-900 font-semibold">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl text-gray-900 font-semibold">
               Frequently Asked Questions
             </h1>
           </figcaption>

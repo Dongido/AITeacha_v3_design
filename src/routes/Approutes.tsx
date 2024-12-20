@@ -34,7 +34,11 @@ import ClassroomDetail from "../pages/Dashboard/classrooms/ClassroomDetail";
 import CreateOrEditClassroom from "../pages/Dashboard/classrooms/CreateOrEditClassroom";
 import Students from "../pages/Dashboard/classrooms/Students";
 import AssignmentDetail from "../pages/Dashboard/assignment/AssignmentDetail";
+import StudentAssignments from "../pages/Dashboard/student/Assignments";
 import Resources from "../pages/Dashboard/Resources";
+import AssignmentStudents from "../pages/Dashboard/assignment/Students";
+import StudentAssignment from "../pages/Dashboard/student/Assignment";
+import StudentAnalytics from "../pages/Dashboard/assignment/StudentAnalytics";
 
 import Home from "../pages/Dashboard/student/Home";
 import History from "../pages/Dashboard/student/History";
@@ -210,13 +214,13 @@ export const Paramroutes = [
         icon: <AcademicCapIcon {...icon} />,
         name: "assignments",
         path: "/assignments/create",
-        element: <CreateOrEditAssignment isEdit={false} />,
+        element: <CreateOrEditAssignment />,
       },
       {
         icon: <AcademicCapIcon {...icon} />,
         name: "assignments",
         path: "//assignments/edit/:id",
-        element: <CreateOrEditAssignment isEdit={true} />,
+        element: <CreateOrEditAssignment />,
       },
       {
         icon: <AcademicCapIcon {...icon} />,
@@ -227,8 +231,20 @@ export const Paramroutes = [
       {
         icon: <AcademicCapIcon {...icon} />,
         name: "classrooms",
+        path: "/assignments/:id/students/:assignmentId",
+        element: <AssignmentStudents />,
+      },
+      {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "classrooms",
         path: "/classrooms/:id/students/:studentId",
         element: <Analytics />,
+      },
+      {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "classrooms",
+        path: "/assignments/report/:id/students/:studentId",
+        element: <StudentAnalytics />,
       },
       {
         icon: <AcademicCapIcon {...icon} />,
@@ -288,6 +304,12 @@ export const Studentroutes = [
         element: <Classes />,
       },
       {
+        icon: <DocumentTextIcon {...icon} />,
+        name: "assignments",
+        path: "/assignments",
+        element: <StudentAssignments />,
+      },
+      {
         icon: <GlobeAltIcon {...icon} />,
         name: "work history",
         path: "/history",
@@ -306,6 +328,13 @@ export const StudentParamroutes = [
         path: "/class/class-details/:id",
         element: <Classroom />,
       },
+      {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "classes",
+        path: "/assignments/details/:id",
+        element: <StudentAssignment />,
+      },
+
       {
         icon: <AcademicCapIcon {...icon} />,
         name: "profile",

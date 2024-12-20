@@ -10,14 +10,14 @@ const DataPrivacy = () => {
           <section className="relative bg-blight w-full h-[60vh] pt-[5rem] flex justify-center bg-gradient-to-r from-[#07052D] to-[#171093] items-center overflow-hidden overlow-hidden">
             <span className="absolute inse=t-0 z-0 p-5  justif-center top-[rem]"></span>
             <section>
-              <figcaption className="desc z-10 relative">
-                <h1 className="text-6xl font-bold text-center my-6 text-header text-white">
+              <figcaption className="desc z-10 relative px-2">
+                <h1 className="text-3xl md:text-4xl lg:text-6xl font-bold text-center my-6 text-header text-white">
                   {" "}
                   Data Privacy Addendum (DPA)
                 </h1>
                 <h2 className="text-xl text-gray-300 text-center">
-                  Version: 1.0 | Effective Date: 01/07/2023 | Last Updated:
-                  11/12/2024
+                  Version: 1.0 | <br /> Effective Date: 01/07/2023 | <br />
+                  Last Updated: 11/12/2024
                 </h2>
               </figcaption>
             </section>

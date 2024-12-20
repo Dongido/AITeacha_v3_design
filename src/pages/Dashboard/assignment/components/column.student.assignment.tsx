@@ -5,12 +5,14 @@ import { StatusType } from "../../../../lib/constants";
 import Status from "../../_components/Status";
 import { Student } from "../../../../api/interface";
 import { useNavigate } from "react-router-dom";
-import RemoveStudentDialog from "./DeleteStudentDialog";
 import { useRef } from "react";
 
 const studentColumnHelper = createColumnHelper<Student>();
 
-export const studentColumns = (classroomId: string | undefined) => [
+export const studentColumns = (
+  classroomId: string | undefined,
+  assignmentId: string | undefined
+) => [
   studentColumnHelper.accessor("profile_image", {
     header: ({ column }) => <Header title="" column={column} />,
     sortingFn: "text",
@@ -76,18 +78,7 @@ export const studentColumns = (classroomId: string | undefined) => [
       return (
         <div className="flex items-center gap-2">
           <Actions
-            viewLink={`/dashboard/classrooms/${classroomId}/students/${studentId}`}
-            deleteFunction={() => {
-              deleteDialogRef.current?.openDialog();
-              return Promise.resolve();
-            }}
-          />
-
-          <RemoveStudentDialog
-            ref={deleteDialogRef}
-            classroomId={Number(classroomId)}
-            studentId={studentId}
-            studentName={`${student.firstname} ${student.lastname}`}
+            viewLink={`/dashboard/assignments/report/${assignmentId}/students/${studentId}`}
           />
         </div>
       );

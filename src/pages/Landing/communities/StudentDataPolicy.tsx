@@ -9,8 +9,8 @@ const StudentDataPolicy = () => {
         <section className="relative bg-blight w-full h-[60vh] pt-[5rem] flex justify-center bg-gradient-to-r from-[#07052D] to-[#171093] items-center overflow-hidden overlow-hidden">
           <span className="absolute inse=t-0 z-0 p-5  justif-center top-[rem]"></span>
           <section>
-            <figcaption className="desc z-10 relative">
-              <h1 className="text-6xl font-bold text-center my-2 text-header text-white">
+            <figcaption className="desc z-10 relative px-2">
+              <h1 className="text-3xl md:text-4xl lg:text-6xl font-bold text-center my-2 text-header text-white">
                 {" "}
                 Student Data Policy
               </h1>

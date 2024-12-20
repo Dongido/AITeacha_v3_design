@@ -10,13 +10,13 @@ const PioneersProgram = () => {
           <span className="absolute inse=t-0 z-0 p-5  justif-center top-[rem]"></span>
           <section>
             <figcaption className="desc z-10 relative">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 text-center">
+              <h1 className="text-3xl md:4xl lg:text-6xl  md:text-5xl lg:text-6xl font-bold text-white mb-6 text-center">
                 Pioneers Program
               </h1>
-              <h2 className="text-2xl font-semibold text-gray-200 mb-4 text-center">
+              <h2 className="text-md md:text-xl lg:text-2xl font-semibold text-gray-200 mb-4 text-center">
                 Be a Trailblazer in AI-Powered Education
               </h2>
-              <p className="text-gray-100 mb-8 text-lg text-center">
+              <p className="text-gray-100 mb-8 px-2 text-sm md:text-lg xl:text-lg text-center">
                 Are you an educator committed to transforming teaching with
                 innovative technology? The AI Teacha Pioneers Program is your
                 opportunity to lead the charge in revolutionizing education

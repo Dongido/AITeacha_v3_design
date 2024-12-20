@@ -18,8 +18,8 @@ const Footer: React.FC = () => {
         clipPath: "ellipse(100% 100% at 50% 100%)",
       }}
     >
-      <div className="mx-auto text-center">
-        <h2 className="text-white text-2xl md:text-4xl lg:text-5xl">
+      <div className="mx-auto text-center mt-6">
+        <h2 className="text-white text-lg md:text-xl lg:text-2xl md:text-4xl lg:text-5xl">
           Teachers Are Truly Heroes
         </h2>
         <div className="flex items-center justify-center py-6 px-8">
@@ -28,7 +28,7 @@ const Footer: React.FC = () => {
           )}
           <span className="text-center text-3xl text-white">AI Teacha</span>
         </div>
-        <p className="my-3 text-2xl text-gray-200 dark:text-gray-400">
+        <p className="my-3 text-lg md:text-xl lg:text-2xl text-gray-200 dark:text-gray-400">
           Simplify lesson planning, resource creation, and student engagement by
           80%
         </p>

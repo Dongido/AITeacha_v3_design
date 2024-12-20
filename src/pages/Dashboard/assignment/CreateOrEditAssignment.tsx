@@ -1,13 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { Undo2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { useForm, FormProvider } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { loadClassrooms } from "../../../store/slices/classroomSlice";
-import { RootState, AppDispatch } from "../../../store";
-import { Button } from "../../../components/ui/Button";
+import { useForm, FormProvider } from "react-hook-form";
 import {
   Form,
   FormField,
@@ -16,8 +12,8 @@ import {
   FormControl,
   FormMessage,
 } from "../../../components/ui/Form";
-import { TextArea } from "../../../components/ui/TextArea";
 import { Input } from "../../../components/ui/Input";
+import { TextArea } from "../../../components/ui/TextArea";
 import {
   Select,
   SelectTrigger,
@@ -25,55 +21,32 @@ import {
   SelectItem,
   SelectValue,
 } from "../../../components/ui/Select";
-import {
-  ToastProvider,
-  Toast,
-  ToastTitle,
-  ToastViewport,
-} from "../../../components/ui/Toast";
-import {
-  createAssignmentThunk,
-  loadAssignments,
-} from "../../../store/slices/assignmentSlice";
-import { Checkbox } from "../../../components/ui/Checkbox";
-
-interface CreateOrEditAssignmentProps {
-  isEdit?: boolean;
-}
-
-const gradeOptions = [
-  "Pre School",
-  "Early Years",
-  "Nursery 1",
-  "Nursery 2",
-  ...Array.from({ length: 12 }, (_, i) => `Grade ${i + 1}`),
-  "University",
-];
+import { Button } from "../../../components/ui/Button";
+import { loadClassrooms } from "../../../store/slices/classroomSlice";
+import { createAssignmentThunk } from "../../../store/slices/assignmentSlice";
+import { RootState, AppDispatch } from "../../../store";
+import GenerateQuestionsDialog from "./GenerateQuestionsDialog";
 
 const formSchema = z.object({
   user_id: z.number(),
-  name: z.string().min(1, { message: "Classroom name is required" }),
-  description: z.string().min(1, { message: "Description is required" }),
+  classroom_id: z.number().min(1, "Please select a valid classroom"),
+  description: z.string().nonempty("Description is required"),
+  number_of_students: z.number(),
   grade: z.string(),
-  status: z.string(),
-  number_of_students: z
-    .number({ required_error: "Number of students is required" })
-    .min(1, { message: "Number of students must be at least 1" }),
-  scope_restriction: z.boolean(),
+  questions: z.array(
+    z.object({
+      assignment_question: z.string().nonempty("Question cannot be empty"),
+    })
+  ),
 });
 
-const CreateOrEditAssignment: React.FC<CreateOrEditAssignmentProps> = ({
-  isEdit,
-}) => {
-  const navigate = useNavigate();
-  const { id } = useParams<{ id?: string }>();
+const CreateOrEditAssignment: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const [isLoading, setIsLoading] = useState(false);
-  const [toastOpen, setToastOpen] = useState(false);
-  const [toastMessage, setToastMessage] = useState("");
-  const [toastVariant, setToastVariant] = useState<"default" | "destructive">(
-    "default"
-  );
+  const navigate = useNavigate();
+
+  const [step, setStep] = useState(1);
+  const [questionsCount, setQuestionsCount] = useState(1);
+  const { classrooms } = useSelector((state: RootState) => state.classrooms);
 
   const storedUser = JSON.parse(localStorage.getItem("ai-teacha-user") || "{}");
   const userId = storedUser.id;
@@ -82,90 +55,112 @@ const CreateOrEditAssignment: React.FC<CreateOrEditAssignmentProps> = ({
     resolver: zodResolver(formSchema),
     defaultValues: {
       user_id: userId,
-      name: "",
+      classroom_id: 0,
+      number_of_students: 0,
+      grade: "",
       description: "",
-      grade: "University",
-      status: "active",
-      number_of_students: 1,
-      scope_restriction: true,
+      questions: [{ assignment_question: "" }],
     },
   });
 
-  const { handleSubmit, control, setValue } = formMethods;
+  const { handleSubmit, control, setValue, watch, getValues } = formMethods;
 
-  const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    setIsLoading(true);
-    const assignmentData = {
-      ...data,
-    };
-
-    try {
-      await dispatch(createAssignmentThunk(assignmentData)).unwrap();
-      setToastMessage("Assigment created successfully!");
-      setToastVariant("default");
-      await dispatch(loadAssignments());
-      setTimeout(() => navigate("/dashboard/assignment"), 1000);
-    } catch (error) {
-      setToastMessage("Failed to create assignmnet. Please try again.");
-      setToastVariant("destructive");
-    } finally {
-      setToastOpen(true);
-      setIsLoading(false);
-    }
-  };
-
-  const selectedClassroom = useSelector(
-    (state: RootState) => state.classrooms.selectedClassroom
+  const selectedClassroomId = watch("classroom_id");
+  const selectedClassroom = classrooms.find(
+    (classroom) => classroom.classroom_id === selectedClassroomId
   );
 
   useEffect(() => {
-    if (isEdit && selectedClassroom) {
-      setValue("name", selectedClassroom.classroom_name);
-      setValue("description", selectedClassroom.classroom_description || "");
-      setValue("grade", selectedClassroom.grade);
-      setValue("status", selectedClassroom.status);
+    dispatch(loadClassrooms());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (selectedClassroom) {
       setValue("number_of_students", selectedClassroom.number_of_students);
+      setValue("grade", selectedClassroom.grade);
     }
-  }, [isEdit, selectedClassroom, setValue]);
+  }, [selectedClassroom, setValue]);
+
+  const handleClassroomChange = (classroomId: string) => {
+    setValue("classroom_id", Number(classroomId));
+  };
+
+  const handleNextStep = () => {
+    const values = getValues();
+    if (values.classroom_id && values.description) {
+      setStep(2);
+    } else {
+      /// alert("Please select a classroom and enter a description");
+    }
+  };
+
+  const handleAddQuestions = (count: number) => {
+    const existingQuestions = getValues("questions");
+    const newQuestions = Array.from(
+      { length: count - existingQuestions.length },
+      () => ({ assignment_question: "" })
+    );
+    setValue("questions", [...existingQuestions, ...newQuestions]);
+    setQuestionsCount(count);
+  };
+
+  const handleQuestionsGenerated = (
+    assignment_question: { assignment_question: string }[]
+  ) => {
+    setValue("questions", assignment_question);
+    setQuestionsCount(assignment_question.length);
+  };
+
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    try {
+      console.log(data);
+      await dispatch(createAssignmentThunk(data)).unwrap();
+      navigate("/dashboard/assignment");
+    } catch (error) {
+      console.error("Failed to create assignment:", error);
+    }
+  };
 
   return (
-    <ToastProvider swipeDirection="left">
-      <div className="mt-12">
-        <h1 className="text-2xl font-bold text-gray-900 ">
-          {isEdit ? "Edit Assignment" : "Create Assignment"}
-        </h1>
+    <div className="mt-12">
+      <h1 className="text-2xl font-bold text-gray-900">
+        {step === 1 ? "Step 1: Classroom & Description" : "Step 2: Questions"}
+      </h1>
 
-        <div className="flex w-full my-6 items-center justify-between">
-          <Button
-            className="flex items-center bg-white rounded-md text-black w-fit h-full gap-3 py-2"
-            onClick={() => navigate(-1)}
-          >
-            <Undo2 size={"1.1rem"} color="black" />
-            Back
-          </Button>
-          <Button
-            variant={"gradient"}
-            className="flex items-center w-fit h-full gap-3 py-2 rounded-md"
-            onClick={handleSubmit(onSubmit)}
-            disabled={isLoading}
-          >
-            {isLoading ? "Saving..." : "Save"}
-          </Button>
-        </div>
-
-        <FormProvider {...formMethods}>
-          <form onSubmit={handleSubmit(onSubmit)}>
+      <FormProvider {...formMethods}>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          {step === 1 && (
             <div className="space-y-4">
               <FormField
                 control={control}
-                name="name"
+                name="classroom_id"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Assignment Name</FormLabel>
+                    <FormLabel>Classroom</FormLabel>
                     <FormControl>
-                      <Input type="text" placeholder="Enter name" {...field} />
+                      <Select
+                        onValueChange={(value) => {
+                          field.onChange(value);
+                          handleClassroomChange(value);
+                        }}
+                        value={field.value?.toString()}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a classroom" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {classrooms.map((classroom) => (
+                            <SelectItem
+                              key={classroom.classroom_id}
+                              value={classroom.classroom_id.toString()}
+                            >
+                              {classroom.classroom_name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </FormControl>
-                    <FormMessage className="text-red-300" />
+                    <FormMessage className="text-red-500" />
                   </FormItem>
                 )}
               />
@@ -176,117 +171,78 @@ const CreateOrEditAssignment: React.FC<CreateOrEditAssignmentProps> = ({
                   <FormItem>
                     <FormLabel>Description</FormLabel>
                     <FormControl>
-                      <TextArea placeholder="Enter description" {...field} />
-                    </FormControl>
-                    <FormMessage className="text-red-300" />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={control}
-                name="scope_restriction"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <div className="flex items-center gap-2">
-                        <Checkbox
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                          name="scope_restriction"
-                        />
-                        <FormLabel>
-                          Limit student to stay within the scope
-                        </FormLabel>
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={control}
-                name="grade"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Grade</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select grade" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {gradeOptions.map((grade) => (
-                          <SelectItem key={grade} value={grade}>
-                            {grade}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={control}
-                name="number_of_students"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Number of Students</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="Enter number"
+                      <TextArea
+                        placeholder="Enter assignment description"
                         {...field}
-                        onChange={(e) =>
-                          field.onChange(Number(e.target.value) || 0)
-                        }
                       />
                     </FormControl>
-                    <FormMessage className="text-red-300" />
+                    <FormMessage className="text-red-500" />
                   </FormItem>
                 )}
               />
-
-              <FormField
-                control={control}
-                name="status"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Status</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="active">Active</SelectItem>
-                        <SelectItem value="inactive">Inactive</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="flex justify-end mt-6">
+                <Button
+                  variant="gradient"
+                  className="rounded-md"
+                  onClick={handleNextStep}
+                >
+                  Next
+                </Button>
+              </div>
             </div>
-          </form>
-        </FormProvider>
+          )}
 
-        <Toast
-          open={toastOpen}
-          onOpenChange={setToastOpen}
-          variant={toastVariant}
-        >
-          <ToastTitle>{toastMessage}</ToastTitle>
-        </Toast>
-        <ToastViewport />
-      </div>
-    </ToastProvider>
+          {step === 2 && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <FormLabel>Number of Questions</FormLabel>
+                <Input
+                  type="number"
+                  min={1}
+                  value={questionsCount}
+                  onChange={(e) => handleAddQuestions(Number(e.target.value))}
+                />
+              </div>
+
+              <GenerateQuestionsDialog
+                classroomId={selectedClassroom?.classroom_id || ""}
+                grade={selectedClassroom?.grade || ""}
+                description={getValues("description")}
+                onQuestionsGenerated={handleQuestionsGenerated}
+              />
+
+              {Array.from({ length: questionsCount }, (_, index) => (
+                <FormField
+                  key={index}
+                  control={control}
+                  name={`questions.${index}.assignment_question`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Question {index + 1}</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder={`Enter question ${index + 1}`}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              ))}
+              <div className="flex justify-between mt-6">
+                <Button variant="default" onClick={() => setStep(1)}>
+                  Back
+                </Button>
+                <Button variant="gradient" type="submit" className="rounded-md">
+                  Submit Assignment
+                </Button>
+              </div>
+            </div>
+          )}
+        </form>
+      </FormProvider>
+    </div>
   );
 };
 

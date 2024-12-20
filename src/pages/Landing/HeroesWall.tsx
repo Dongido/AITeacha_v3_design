@@ -9,7 +9,7 @@ const HeroesWall = () => {
         <span className="absolute inse=t-0 z-0 p-5  justif-center top-[rem]"></span>
         <section>
           <figcaption className="desc z-10 relative">
-            <h1 className="text-6xl font-bold text-center my-6 text-white">
+            <h1 className="text-3xl md:text-4xl lg:text-6xl font-bold text-center my-6 text-white">
               {" "}
               Heroes Wall
             </h1>

@@ -4,17 +4,20 @@ import {
   fetchAssignmentById,
   createAssignment,
   deleteAssignment,
+  fetchStudentsInAssignment,
   CreateAssignmentData,
 } from "../../api/assignment";
-import { Assignment } from "../../api/interface";
+import { Assignment, Student } from "../../api/interface";
 
 interface AssignmentsState {
   assignments: Assignment[];
   selectedAssignment: Assignment | null;
   loading: boolean;
+  students: Student[];
   creating: boolean;
   deleting: boolean;
   fetchingAssignment: boolean;
+  fetchingStudents: boolean;
   error: string | null;
 }
 
@@ -23,9 +26,11 @@ const initialState: AssignmentsState = {
   assignments: [],
   selectedAssignment: null,
   loading: false,
+  students: [],
   creating: false,
   deleting: false,
   fetchingAssignment: false,
+  fetchingStudents: false,
   error: null,
 };
 
@@ -79,6 +84,29 @@ export const deleteAssignmentThunk = createAsyncThunk(
     }
   }
 );
+export const fetchStudentsForAssignmentThunk = createAsyncThunk(
+  "classrooms/fetchStudentsForClassroom",
+  async (
+    {
+      classroomId,
+      assignmentId,
+    }: { classroomId: number; assignmentId: number },
+    { rejectWithValue }
+  ) => {
+    try {
+      const students = await fetchStudentsInAssignment(
+        classroomId,
+        assignmentId
+      );
+      return students;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.message || "Failed to fetch students for this assignment."
+      );
+    }
+  }
+);
+
 const assignmentSlice = createSlice({
   name: "assignments",
   initialState,
@@ -149,6 +177,20 @@ const assignmentSlice = createSlice({
       })
       .addCase(deleteAssignmentThunk.rejected, (state, action) => {
         state.deleting = false;
+        state.error = action.payload as string;
+      })
+      .addCase(fetchStudentsForAssignmentThunk.pending, (state) => {
+        state.fetchingStudents = true;
+      })
+      .addCase(
+        fetchStudentsForAssignmentThunk.fulfilled,
+        (state, action: PayloadAction<Student[]>) => {
+          state.fetchingStudents = false;
+          state.students = action.payload;
+        }
+      )
+      .addCase(fetchStudentsForAssignmentThunk.rejected, (state, action) => {
+        state.fetchingStudents = false;
         state.error = action.payload as string;
       });
   },

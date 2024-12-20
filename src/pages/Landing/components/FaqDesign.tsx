@@ -123,11 +123,11 @@ const FaqsSection: React.FC = () => {
       <section className="relative bg-blight w-full h-[60vh] pt-[5rem] flex justify-center bg-gradient-to-r from-[#07052D] to-[#171093] items-center overflow-hidden overlow-hidden">
         <span className="absolute inse=t-0 z-0 p-5  justif-center top-[rem]"></span>
         <section>
-          <figcaption className="desc z-10 relative text-center">
+          <figcaption className="desc z-10 relative text-center px-2">
             <h3 className="text-gray-300 font-semibold text-xl ">
               More About Us
             </h3>
-            <h1 className="text-6xl md:text-4xl lg:text-5xl text-white font-semibold">
+            <h1 className="text-3xl md:text-4xl lg:text-6xl text-white font-semibold">
               Frequently Asked Questions
             </h1>
           </figcaption>

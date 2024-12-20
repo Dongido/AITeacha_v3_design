@@ -2,7 +2,6 @@ import { Assignment } from "../../../../api/interface";
 import { createColumnHelper } from "@tanstack/react-table";
 import Header from "../../../../components/table/TableHeaderItem";
 import Actions from "../../../../components/table/TableActions";
-import DeleteAssignmentDialog from "./DeleteAssignmentDialog";
 import { StatusType } from "../../../../lib/constants";
 import Status from "../../_components/Status";
 import { useRef } from "react";
@@ -11,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 const assignmentColumnHelper = createColumnHelper<Assignment>();
 
 export const assignmentColumns = [
-  assignmentColumnHelper.accessor("assignment_thumbnail", {
+  assignmentColumnHelper.accessor("thumbnail", {
     header: ({ column }) => <Header title="" column={column} />,
     sortingFn: "text",
     cell: (info) => {
@@ -58,24 +57,7 @@ export const assignmentColumns = [
       <span className="capitalize whitespace-nowrap">{info.getValue()}</span>
     ),
   }),
-  assignmentColumnHelper.accessor("status", {
-    header: ({ column }) => <Header title="Status" column={column} />,
-    sortingFn: "text",
-    cell: (info) => {
-      const val = info.getValue()?.toString() as StatusType;
-      return <Status value={val} />;
-    },
-  }),
-  assignmentColumnHelper.accessor("number_of_students_completed", {
-    header: ({ column }) => (
-      <Header title="Students Completed" column={column} />
-    ),
-    sortingFn: "text",
-    cell: (info) => {
-      const studentsCompleted = info.getValue();
-      return <span className="whitespace-nowrap">No students</span>;
-    },
-  }),
+
   assignmentColumnHelper.accessor("submit_url", {
     header: ({ column }) => <Header title="Actions" column={column} />,
     sortingFn: "text",
@@ -88,19 +70,10 @@ export const assignmentColumns = [
       return (
         <div className="flex items-center gap-2">
           <Actions
-            viewLink={`/dashboard/assignment/details/${assignmentId}`}
+            viewLink={`/student/assignments/details/${assignmentId}`}
             //editLink={`/dashboard/assignments/edit/${assignmentId}`}
-            deleteFunction={async () => {
-              deleteDialogRef.current?.openDialog();
-              return Promise.resolve();
-            }}
-            // editFunction={async () => console.log("edited")}
-          />
 
-          <DeleteAssignmentDialog
-            ref={deleteDialogRef}
-            assignmentId={assignmentId}
-            onSuccess={() => {}}
+            // editFunction={async () => console.log("edited")}
           />
         </div>
       );
