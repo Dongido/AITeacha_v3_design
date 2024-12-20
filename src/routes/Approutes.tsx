@@ -39,6 +39,7 @@ import Resources from "../pages/Dashboard/Resources";
 import AssignmentStudents from "../pages/Dashboard/assignment/Students";
 import StudentAssignment from "../pages/Dashboard/student/Assignment";
 import StudentAnalytics from "../pages/Dashboard/assignment/StudentAnalytics";
+import AssignmentDetails from "../pages/Dashboard/student/AssignmentDetails";
 
 import Home from "../pages/Dashboard/student/Home";
 import History from "../pages/Dashboard/student/History";
@@ -328,11 +329,18 @@ export const StudentParamroutes = [
         path: "/class/class-details/:id",
         element: <Classroom />,
       },
+
       {
         icon: <AcademicCapIcon {...icon} />,
         name: "classes",
-        path: "/assignments/details/:id",
+        path: "/assignments/attempt/:id",
         element: <StudentAssignment />,
+      },
+      {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "classes",
+        path: "/assignments/:id/details/:assignmentId",
+        element: <AssignmentDetails />,
       },
 
       {
@@ -385,6 +393,7 @@ export const Authroutes = [
         path: "/sign-up",
         element: <TeacherSignUp />,
       },
+
       {
         icon: <RectangleStackIcon {...icon} />,
         name: "verify-email",

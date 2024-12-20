@@ -1,3 +1,4 @@
+import { response } from "express";
 import apiClient from "../lib/apiClient";
 import { Assignment, AssignmentData } from "./interface";
 
@@ -172,7 +173,7 @@ export const checkIfStudentInAssignment = async (
 export const generateQuestion = async (
   topic: string,
   grade: string
-): Promise<boolean> => {
+): Promise<any> => {
   try {
     const response = await apiClient.post<{
       status: string;
@@ -290,6 +291,45 @@ export const fetchStudentAssignmentAnalytics = async (
     throw new Error(
       error.response?.data?.message ||
         "Failed to fetch student assignment analytics."
+    );
+  }
+};
+export const submitAssignmentFeedback = async (
+  student_id: number,
+  assignment_id: number,
+  feedback: string,
+  analyticsData: string
+): Promise<any> => {
+  try {
+    const response = await apiClient.post("/assignment/teacher/feedback", {
+      student_id,
+      assignment_id,
+      feedback,
+      response: analyticsData,
+    });
+    return response.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data?.message || "Failed to submit assignment feedback."
+    );
+  }
+};
+export const updateAssignmentFeedback = async (
+  student_id: number,
+  assignment_id: number,
+  feedback: string
+): Promise<any> => {
+  try {
+    const response = await apiClient.put(
+      `/assignment/teacher/feedback/${student_id}/${assignment_id}`,
+      {
+        feedback,
+      }
+    );
+    return response.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data?.message || "Failed to submit assignment feedback."
     );
   }
 };

@@ -1,5 +1,5 @@
 import { Button } from "../ui/Button";
-import { EditIcon, Eye, EllipsisVertical, Trash } from "lucide-react";
+import { EditIcon, Eye, EllipsisVertical, Trash, FileText } from "lucide-react";
 import { ReactNode } from "react";
 import {
   DropdownMenu,
@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 export default function Actions<T>({
   viewLink,
   editLink,
+  attemptLink,
   isHidden,
   hideFunction,
   editFunction,
@@ -21,6 +22,7 @@ export default function Actions<T>({
 }: {
   viewLink?: string;
   editLink?: string;
+  attemptLink?: string;
   isHidden?: boolean;
   hideFunction?: () => Promise<void>;
   editButton?: ReactNode;
@@ -88,6 +90,20 @@ export default function Actions<T>({
             <p>Edit</p>
           </DropdownMenuItem>
         ) : null}
+
+        {attemptLink && ( // New Attempt Assignment action
+          <DropdownMenuItem
+            asChild
+            className="flex gap-2 p-1 hover:bg-gray-100"
+          >
+            <Link to={attemptLink}>
+              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-600/20">
+                <FileText size={17} className="text-blue-600" />
+              </div>
+              <p>Attempt Assignment</p>
+            </Link>
+          </DropdownMenuItem>
+        )}
 
         {deleteFunction && (
           <DropdownMenuItem

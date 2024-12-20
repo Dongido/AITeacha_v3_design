@@ -32,7 +32,9 @@ const Footer: React.FC = () => {
           Simplify lesson planning, resource creation, and student engagement by
           80%
         </p>
-        <button className="text-primary mb-4">Try AI Teacha 100% Free</button>
+        <button className="text-primary font-bold mb-4 bg-white rounded-full p-2 px-4 ">
+          Try AI Teacha 100% Free
+        </button>
         <ul className="flex flex-wrap justify-center items-center mb-6 text-gray-300">
           {footerLinks.map((link, index) => (
             <li key={index}>

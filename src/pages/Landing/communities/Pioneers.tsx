@@ -12,24 +12,26 @@ const Pioneers = () => {
         <section className="relative bg-blight w-full h-[60vh] pt-[5rem] flex justify-center bg-gradient-to-r from-[#07052D] to-[#171093] items-center overflow-hidden overlow-hidden">
           <span className="absolute inse=t-0 z-0 p-5  justif-center top-[rem]"></span>
           <section className="px-2">
-            <figcaption className="desc z-10 relative">
+            <figcaption className="desc z-10 relative px-2 text-center">
               <h1 className="text-3xl md:text-4xl lg:text-6xl font-bold text-center my-6 text-header text-white">
                 {" "}
                 Empower Your School with AI Teacha{" "}
               </h1>
-              <h2 className="text-md md:text-lg lg:text-xl text-gray-100 text-center">
-                Discover the future of education with AI Teacha's Schools
-                Onboarding Program. Streamline teaching, boost student
-                engagement, and unlock access to innovative AI tools tailored
-                for your institution. Begin your transformation today!
-              </h2>
+              <center>
+                <h2 className="text-md md:text-lg text-center  lg:text-xl text-gray-100 max-w-3xl ">
+                  Discover the future of education with AI Teacha's Schools
+                  Onboarding Program. Streamline teaching, boost student
+                  engagement, and unlock access to innovative AI tools tailored
+                  for your institution. Begin your transformation today!
+                </h2>
+              </center>
             </figcaption>
           </section>
         </section>
       </section>
 
       <div className="mt-24 mx-auto max-w-screen-lg pb-4 px-4 items-center lg:flex md:px-8">
-        <div className="space-y-0 flex-1 sm:text-center lg:text-leftk">
+        <div className="space-y-0 flex-1 text-left">
           <div className=" mx-auto  mb-3 lg:w-auto">
             <img
               src="https://content.api.news/v3/images/bin/17ac3d7dcbb45ccf87725b9c52bac2b5"

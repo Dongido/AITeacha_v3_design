@@ -189,8 +189,9 @@ const AssignmentDetail = () => {
                   key={question.assignmentquestion_id}
                   className="mb-4 p-4 border border-gray-300 rounded-lg shadow-sm bg-white"
                 >
-                  <p className="font-semibold text-xl mb-2">
-                    {index + 1}. {question.assignment_question}
+                  <p className="font-medium text-xl mb-2">
+                    {/* {index + 1}.  */}
+                    {question.assignment_question}
                   </p>
                 </div>
               ))}

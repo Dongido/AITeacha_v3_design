@@ -34,11 +34,20 @@ const GenerateQuestionsDialog: React.FC<GenerateQuestionsDialogProps> = ({
     if (!classroomId || !description) return;
     setLoading(true);
     try {
-      const data = await generateQuestion(description, grade);
+      const data: string = await generateQuestion(description, grade);
       console.log(data);
-      //setGeneratedQuestions(data || []);
+
+      const parsedQuestions = data
+        .split("\n")
+        .map((question) => ({
+          assignment_question: question.trim(),
+        }))
+        .filter((q) => q.assignment_question);
+
+      setGeneratedQuestions(parsedQuestions);
     } catch (error) {
       console.error("Error fetching questions:", error);
+      setGeneratedQuestions([]);
     } finally {
       setLoading(false);
     }
@@ -47,7 +56,7 @@ const GenerateQuestionsDialog: React.FC<GenerateQuestionsDialogProps> = ({
   return (
     <Dialog onOpenChange={(isOpen) => isOpen && handleDialogOpen()}>
       <DialogTrigger asChild>
-        <Button className="rounded-md bg-gray-800 text-white">
+        <Button variant={"ghost"} className="rounded-md text-white bg-black">
           Generate AI Questions
         </Button>
       </DialogTrigger>
@@ -58,7 +67,7 @@ const GenerateQuestionsDialog: React.FC<GenerateQuestionsDialogProps> = ({
             AI-generated questions based on your classroom and description.
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-4">
+        <div className="space-y-4 max-h-96 overflow-y-auto">
           {loading ? (
             <p>Loading...</p>
           ) : (
@@ -71,6 +80,7 @@ const GenerateQuestionsDialog: React.FC<GenerateQuestionsDialogProps> = ({
             </ul>
           )}
         </div>
+
         <DialogFooter>
           <Button
             variant="gradient"

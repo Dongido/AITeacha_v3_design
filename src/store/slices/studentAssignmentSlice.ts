@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import {
   fetchAssignments,
   fetchAssignmentById,
+  getSubmittedAssignmentDetails,
   Assignment,
 } from "../../api/studentassignment";
 
@@ -10,6 +11,7 @@ interface StudentAssignmentsState {
   assignment: Assignment | null;
   loading: boolean;
   error: string | null;
+  submittedAssignmentDetails: any;
 }
 
 const initialState: StudentAssignmentsState = {
@@ -17,6 +19,7 @@ const initialState: StudentAssignmentsState = {
   assignment: null,
   loading: false,
   error: null,
+  submittedAssignmentDetails: null,
 };
 
 export const loadStudentAssignments = createAsyncThunk(
@@ -43,6 +46,26 @@ export const fetchAssignmentByIdThunk = createAsyncThunk(
   }
 );
 
+export const getSubmittedAssignmentDetailsThunk = createAsyncThunk(
+  "studentAssignments/getSubmittedAssignmentDetails",
+  async (
+    { studentId, assignmentId }: { studentId: string; assignmentId: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      const submittedDetails = await getSubmittedAssignmentDetails(
+        studentId,
+        assignmentId
+      );
+      return submittedDetails;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.message || "Failed to fetch submitted assignment details."
+      );
+    }
+  }
+);
+
 const studentAssignmentsSlice = createSlice({
   name: "studentAssignments",
   initialState,
@@ -51,6 +74,7 @@ const studentAssignmentsSlice = createSlice({
       state.assignments = [];
       state.assignment = null;
       state.error = null;
+      state.submittedAssignmentDetails = null;
     },
   },
   extraReducers: (builder) => {
@@ -83,6 +107,22 @@ const studentAssignmentsSlice = createSlice({
         }
       )
       .addCase(fetchAssignmentByIdThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(getSubmittedAssignmentDetailsThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.submittedAssignmentDetails = null;
+      })
+      .addCase(
+        getSubmittedAssignmentDetailsThunk.fulfilled,
+        (state, action: PayloadAction<any>) => {
+          state.loading = false;
+          state.submittedAssignmentDetails = action.payload;
+        }
+      )
+      .addCase(getSubmittedAssignmentDetailsThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

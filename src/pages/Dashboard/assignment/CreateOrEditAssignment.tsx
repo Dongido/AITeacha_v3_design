@@ -13,7 +13,6 @@ import {
   FormMessage,
 } from "../../../components/ui/Form";
 import { Input } from "../../../components/ui/Input";
-import { TextArea } from "../../../components/ui/TextArea";
 import {
   Select,
   SelectTrigger,
@@ -22,10 +21,19 @@ import {
   SelectValue,
 } from "../../../components/ui/Select";
 import { Button } from "../../../components/ui/Button";
+import { TextArea } from "../../../components/ui/TextArea";
 import { loadClassrooms } from "../../../store/slices/classroomSlice";
-import { createAssignmentThunk } from "../../../store/slices/assignmentSlice";
+import {
+  createAssignmentThunk,
+  loadAssignments,
+} from "../../../store/slices/assignmentSlice";
 import { RootState, AppDispatch } from "../../../store";
 import GenerateQuestionsDialog from "./GenerateQuestionsDialog";
+import {
+  ToastProvider,
+  Toast,
+  ToastViewport,
+} from "../../../components/ui/Toast";
 
 const formSchema = z.object({
   user_id: z.number(),
@@ -46,8 +54,12 @@ const CreateOrEditAssignment: React.FC = () => {
 
   const [step, setStep] = useState(1);
   const [questionsCount, setQuestionsCount] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState<"default" | "destructive">(
+    "default"
+  );
   const { classrooms } = useSelector((state: RootState) => state.classrooms);
-
   const storedUser = JSON.parse(localStorage.getItem("ai-teacha-user") || "{}");
   const userId = storedUser.id;
 
@@ -89,8 +101,6 @@ const CreateOrEditAssignment: React.FC = () => {
     const values = getValues();
     if (values.classroom_id && values.description) {
       setStep(2);
-    } else {
-      /// alert("Please select a classroom and enter a description");
     }
   };
 
@@ -112,137 +122,160 @@ const CreateOrEditAssignment: React.FC = () => {
   };
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    setLoading(true);
     try {
       console.log(data);
       await dispatch(createAssignmentThunk(data)).unwrap();
+      await dispatch(loadAssignments());
+      setToastMessage("Assignment created successfully!");
+      setToastType("default");
       navigate("/dashboard/assignment");
     } catch (error) {
+      setToastMessage("Failed to create assignment. Please try again.");
+      setToastType("destructive");
       console.error("Failed to create assignment:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="mt-12">
-      <h1 className="text-2xl font-bold text-gray-900">
-        {step === 1 ? "Step 1: Classroom & Description" : "Step 2: Questions"}
-      </h1>
+    <ToastProvider>
+      <div className="mt-12">
+        <h1 className="text-2xl font-bold text-gray-900">
+          {step === 1 ? "Step 1: Classroom & Description" : "Step 2: Questions"}
+        </h1>
 
-      <FormProvider {...formMethods}>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          {step === 1 && (
-            <div className="space-y-4">
-              <FormField
-                control={control}
-                name="classroom_id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Classroom</FormLabel>
-                    <FormControl>
-                      <Select
-                        onValueChange={(value) => {
-                          field.onChange(value);
-                          handleClassroomChange(value);
-                        }}
-                        value={field.value?.toString()}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a classroom" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {classrooms.map((classroom) => (
-                            <SelectItem
-                              key={classroom.classroom_id}
-                              value={classroom.classroom_id.toString()}
-                            >
-                              {classroom.classroom_name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                    <FormMessage className="text-red-500" />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Description</FormLabel>
-                    <FormControl>
-                      <TextArea
-                        placeholder="Enter assignment description"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage className="text-red-500" />
-                  </FormItem>
-                )}
-              />
-              <div className="flex justify-end mt-6">
-                <Button
-                  variant="gradient"
-                  className="rounded-md"
-                  onClick={handleNextStep}
-                >
-                  Next
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {step === 2 && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <FormLabel>Number of Questions</FormLabel>
-                <Input
-                  type="number"
-                  min={1}
-                  value={questionsCount}
-                  onChange={(e) => handleAddQuestions(Number(e.target.value))}
-                />
-              </div>
-
-              <GenerateQuestionsDialog
-                classroomId={selectedClassroom?.classroom_id || ""}
-                grade={selectedClassroom?.grade || ""}
-                description={getValues("description")}
-                onQuestionsGenerated={handleQuestionsGenerated}
-              />
-
-              {Array.from({ length: questionsCount }, (_, index) => (
+        <FormProvider {...formMethods}>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            {step === 1 && (
+              <div className="space-y-4">
                 <FormField
-                  key={index}
                   control={control}
-                  name={`questions.${index}.assignment_question`}
+                  name="classroom_id"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Question {index + 1}</FormLabel>
+                      <FormLabel>Classroom</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder={`Enter question ${index + 1}`}
-                          {...field}
-                        />
+                        <Select
+                          onValueChange={(value) => {
+                            field.onChange(value);
+                            handleClassroomChange(value);
+                          }}
+                          value={field.value?.toString()}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a classroom" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {classrooms.map((classroom) => (
+                              <SelectItem
+                                key={classroom.classroom_id}
+                                value={classroom.classroom_id.toString()}
+                              >
+                                {classroom.classroom_name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-red-500" />
                     </FormItem>
                   )}
                 />
-              ))}
-              <div className="flex justify-between mt-6">
-                <Button variant="default" onClick={() => setStep(1)}>
-                  Back
-                </Button>
-                <Button variant="gradient" type="submit" className="rounded-md">
-                  Submit Assignment
-                </Button>
+                <FormField
+                  control={control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Description</FormLabel>
+                      <FormControl>
+                        <TextArea
+                          placeholder="Enter assignment description"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-red-500" />
+                    </FormItem>
+                  )}
+                />
+                <div className="flex justify-end mt-6">
+                  <Button
+                    variant="gradient"
+                    className="rounded-md"
+                    onClick={handleNextStep}
+                  >
+                    Next
+                  </Button>
+                </div>
               </div>
-            </div>
-          )}
-        </form>
-      </FormProvider>
-    </div>
+            )}
+
+            {step === 2 && (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <FormLabel>Number of Questions</FormLabel>
+                  <Input
+                    type="number"
+                    min={1}
+                    value={questionsCount}
+                    onChange={(e) => handleAddQuestions(Number(e.target.value))}
+                  />
+                </div>
+
+                <GenerateQuestionsDialog
+                  classroomId={selectedClassroom?.classroom_id || ""}
+                  grade={selectedClassroom?.grade || ""}
+                  description={getValues("description")}
+                  onQuestionsGenerated={handleQuestionsGenerated}
+                />
+
+                {Array.from({ length: questionsCount }, (_, index) => (
+                  <FormField
+                    key={index}
+                    control={control}
+                    name={`questions.${index}.assignment_question`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Question {index + 1}</FormLabel>
+                        <FormControl>
+                          <TextArea
+                            placeholder={`Enter question ${index + 1}`}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                ))}
+                <div className="flex justify-between mt-6">
+                  <Button variant="default" onClick={() => setStep(1)}>
+                    Back
+                  </Button>
+                  <Button
+                    variant="gradient"
+                    type="submit"
+                    className="rounded-md"
+                    disabled={loading}
+                  >
+                    {loading ? "Submitting..." : "Submit Assignment"}
+                  </Button>
+                </div>
+              </div>
+            )}
+          </form>
+        </FormProvider>
+      </div>
+      <Toast
+        open={!!toastMessage}
+        onOpenChange={(open) => !open && setToastMessage("")}
+        variant={toastType}
+      >
+        {toastMessage}
+      </Toast>
+      <ToastViewport />
+    </ToastProvider>
   );
 };
 

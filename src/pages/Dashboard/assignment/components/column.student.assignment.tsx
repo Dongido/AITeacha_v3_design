@@ -19,9 +19,6 @@ export const studentColumns = (
     cell: (info) => {
       const profileImage = info.getValue();
       const student = info.row.original;
-      const displayText = `${student.firstname.charAt(
-        0
-      )}${student.lastname.charAt(0)}`.toUpperCase();
 
       return profileImage ? (
         <img
@@ -35,7 +32,7 @@ export const studentColumns = (
         />
       ) : (
         <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-[#7a5ef8] to-[#5c3cbb] text-white font-semibold">
-          {displayText}
+          {"A"}
         </div>
       );
     },
@@ -54,8 +51,11 @@ export const studentColumns = (
     ),
     sortingFn: "text",
     cell: (info) => {
-      const val = info.getValue() as StatusType;
-      return <Status value={val} />;
+      return (
+        <div className="rounded-full p-2  w-1/2 border text-black border-gray-400">
+          {info.getValue()}
+        </div>
+      );
     },
   }),
   studentColumnHelper.accessor("last_join", {

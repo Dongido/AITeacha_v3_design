@@ -1,6 +1,8 @@
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
+import Image3 from "../../../assets/img/certification2.jpg";
+
 const AIEducation = () => {
   return (
     <div className="flex flex-col  min-h-screen bg-white">
@@ -17,7 +19,7 @@ const AIEducation = () => {
           </h2>
 
           <img
-            src="https://aiteacha.com/img/blogs/ChlGcIvCY0.jpg"
+            src={Image3}
             alt=" AI Teacher Certification"
             className="rounded-3xl  mt-6"
           />

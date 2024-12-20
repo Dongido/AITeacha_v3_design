@@ -74,6 +74,7 @@ export interface Assignment {
   number_of_students: number;
   join_code: string;
   classroom_id: number | null;
+  submission_status: string;
   classroom_name: string | null;
   number_of_students_completed: number;
   assignment_thumbnail: string | null;

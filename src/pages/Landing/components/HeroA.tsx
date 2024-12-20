@@ -156,19 +156,34 @@ export default () => {
       <div className="py-12">
         <p className="text-center text-xl text-gray-900 font-bold">Backed By</p>
         <div className="flex justify-center items-center flex-wrap gap-x-12 gap-y-6 mt-6 mb-6">
-          <a href="#" className="mr-5 mb-5 lg:mb-0 hover:text-gray-800">
+          <a
+            href="https://icedt.org"
+            className="mr-5 mb-5 lg:mb-0 hover:text-gray-800"
+          >
             <img src={icedt} alt="Microsoft Logo" className="h-16" />
           </a>
-          <a href="#" className="mr-5 mb-5 lg:mb-0 hover:text-gray-800">
+          <a
+            href="https://nvidia.com"
+            className="mr-5 mb-5 lg:mb-0 hover:text-gray-800"
+          >
             <img src={nvidia} alt="Apple Logo" className="h-8" />
           </a>
-          <a href="#" className="mr-5 mb-5 lg:mb-0 hover:text-gray-800">
+          <a
+            href="https://openai.com"
+            className="mr-5 mb-5 lg:mb-0 hover:text-gray-800"
+          >
             <img src={openAi} alt="IBM Logo" className="h-10" />
           </a>
-          <a href="#" className="mr-5 mb-5 lg:mb-0 hover:text-gray-800">
+          <a
+            href="https://resilience17.com"
+            className="mr-5 mb-5 lg:mb-0 hover:text-gray-800"
+          >
             <img src={rescillience} alt="Google Logo" className="h-8" />
           </a>
-          <a href="#" className="mr-5 mb-5 lg:mb-0 hover:text-gray-800">
+          <a
+            href="https://cfirstlagos.com.ng"
+            className="mr-5 mb-5 lg:mb-0 hover:text-gray-800"
+          >
             <img src={cfirst} alt="Google Logo" className="h-16" />
           </a>
         </div>

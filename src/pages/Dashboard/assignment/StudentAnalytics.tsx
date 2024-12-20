@@ -1,10 +1,25 @@
-import { useEffect, useState } from "react";
-import { fetchStudentAssignmentAnalytics } from "../../../api/assignment";
+import React, { useState, useEffect } from "react";
+import {
+  fetchStudentAssignmentAnalytics,
+  submitAssignmentFeedback,
+  updateAssignmentFeedback,
+} from "../../../api/assignment";
 import { Button } from "../../../components/ui/Button";
 import { useNavigate, useParams } from "react-router-dom";
 import { Undo2 } from "lucide-react";
 import { Skeleton } from "../../../components/ui/Skeleton";
 import ReactMarkdown from "react-markdown";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogClose,
+} from "../../../components/ui/Dialogue";
+import { Editor, EditorState, RichUtils, ContentState } from "draft-js";
+import "draft-js/dist/Draft.css";
 
 const StudentAnalytics = () => {
   const navigate = useNavigate();
@@ -14,18 +29,12 @@ const StudentAnalytics = () => {
   }>();
 
   const [analyticsData, setAnalyticsData] = useState<any>(null);
+  const [teachersFeedback, setTeachersFeedback] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-
-  // Define the structure of the parsed data object
-  type ParsedData = {
-    timeSpent: string;
-    questionsAnswered: string;
-    understanding: string;
-    areasForImprovement: string;
-    engagementWithAI: string;
-    activeParticipation: string;
-    conceptualUnderstanding: string;
-  };
+  const [loadingFeedback, setLoadingFeedback] = useState<boolean>(false);
+  const [editorState, setEditorState] = useState(EditorState.createEmpty());
+  const [openDialog, setOpenDialog] = useState(false);
+  const [isEditingFeedback, setIsEditingFeedback] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -34,49 +43,8 @@ const StudentAnalytics = () => {
           Number(assignmentId),
           Number(studentId)
         );
-        // Parse the analytics data
-        const parsedData: ParsedData = {
-          timeSpent: "No Data Available",
-          questionsAnswered: "No Data Available",
-          understanding: "No Data Available",
-          areasForImprovement: "No Data Available",
-          engagementWithAI: "No Data Available",
-          activeParticipation: "No Data Available",
-          conceptualUnderstanding: "No Data Available",
-        };
-
-        // Example: Assuming `analytics.data` is a string with section titles and values
-        const data = analytics.data;
-        console.log(data);
-        const sections = {
-          timeSpent: "Time Spent",
-          questionsAnswered: "Questions Answered",
-          understanding: "Understanding of the Concept",
-          areasForImprovement: "Areas for Improvement",
-          engagementWithAI: "Engagement with AI Tools",
-          activeParticipation: "Active Participation",
-          conceptualUnderstanding: "Conceptual Understanding",
-        };
-
-        // Parse data into a structured object
-        Object.keys(sections).forEach((key) => {
-          // Type the key as one of the specific keys of the ParsedData type
-          const sectionTitle = sections[key as keyof typeof sections];
-          const regex = new RegExp(
-            `(?<=\\b${sectionTitle}\\b)[^\\n]*:\\s?([^\\n]+)`,
-            "g"
-          );
-          const match = regex.exec(data);
-
-          // Update parsedData with the matched value
-          if (key in parsedData) {
-            parsedData[key as keyof ParsedData] = match
-              ? match[1]
-              : "No Data Available";
-          }
-        });
-
-        setAnalyticsData(analytics.data);
+        setAnalyticsData(analytics.data.response);
+        setTeachersFeedback(analytics.data.feedback);
       } catch (error: any) {
         console.error(error.message);
       } finally {
@@ -86,6 +54,60 @@ const StudentAnalytics = () => {
 
     if (assignmentId && studentId) loadData();
   }, [assignmentId, studentId]);
+
+  const handleSubmitFeedback = async () => {
+    const feedback = editorState.getCurrentContent().getPlainText();
+    setLoadingFeedback(true);
+    try {
+      await submitAssignmentFeedback(
+        Number(studentId),
+        Number(assignmentId),
+        feedback,
+        analyticsData
+      );
+      setOpenDialog(false);
+      setTeachersFeedback(feedback);
+    } catch (error: any) {
+      console.error(error.message);
+    } finally {
+      setLoadingFeedback(false);
+    }
+  };
+
+  const handleEditFeedback = async () => {
+    const feedback = editorState.getCurrentContent().getPlainText();
+    setLoadingFeedback(true);
+    try {
+      await updateAssignmentFeedback(
+        Number(studentId),
+        Number(assignmentId),
+        feedback
+      );
+      setOpenDialog(false);
+      setTeachersFeedback(feedback);
+    } catch (error: any) {
+      console.error(error.message);
+    } finally {
+      setLoadingFeedback(false);
+    }
+  };
+
+  const handleToggle = (style: string) => {
+    const newState = RichUtils.toggleInlineStyle(editorState, style);
+    setEditorState(newState);
+  };
+
+  const openFeedbackDialog = () => {
+    if (teachersFeedback) {
+      const contentState = ContentState.createFromText(teachersFeedback);
+      setEditorState(EditorState.createWithContent(contentState));
+      setIsEditingFeedback(true);
+    } else {
+      setEditorState(EditorState.createEmpty());
+      setIsEditingFeedback(false);
+    }
+    setOpenDialog(true);
+  };
 
   return (
     <div className="mt-12">
@@ -115,10 +137,122 @@ const StudentAnalytics = () => {
               {analyticsData}
             </ReactMarkdown>
           </div>
+
+          <div className="mt-4">
+            <div className="mb-4 p-4 border rounded-md bg-gray-50">
+              <h3 className="font-semibold text-gray-900">
+                Teacher's Feedback
+              </h3>
+              <p>{teachersFeedback || "No feedback provided yet."}</p>
+            </div>
+
+            <Button
+              className="rounded-md"
+              variant="gradient"
+              onClick={openFeedbackDialog}
+            >
+              {teachersFeedback ? "Edit Feedback" : "Give Feedback"}
+            </Button>
+          </div>
         </div>
       ) : (
         <p>No analytics available.</p>
       )}
+
+      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {isEditingFeedback ? "Edit Feedback" : "Provide Feedback"}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="mt-4">
+            <div className="flex space-x-2 mb-4">
+              <button
+                onClick={() => handleToggle("BOLD")}
+                className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+              >
+                <strong>B</strong>
+              </button>
+              <button
+                onClick={() => handleToggle("ITALIC")}
+                className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+              >
+                <em>I</em>
+              </button>
+              <button
+                onClick={() => handleToggle("UNDERLINE")}
+                className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+              >
+                <u>U</u>
+              </button>
+              <button
+                onClick={() => handleToggle("STRIKETHROUGH")}
+                className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+              >
+                <del>S</del>
+              </button>
+
+              <button
+                onClick={() => handleToggle("CODE")}
+                className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+              >
+                <code>C</code>
+              </button>
+              <button
+                onClick={() => handleToggle("BLOCKQUOTE")}
+                className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+              >
+                <q>“</q>
+              </button>
+              <button
+                onClick={() => handleToggle("unordered-list-item")}
+                className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+              >
+                <ul>
+                  <li>•</li>
+                </ul>
+              </button>
+              <button
+                onClick={() => handleToggle("ordered-list-item")}
+                className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+              >
+                <ol>
+                  <li>1.</li>
+                </ol>
+              </button>
+            </div>
+
+            <div className="border border-gray-300 rounded-md p-4 max-w-full h-400px max-h-[400px] overflow-auto bg-gray-50 shadow-xs">
+              <Editor
+                editorState={editorState}
+                onChange={setEditorState}
+                placeholder="Write your feedback here..."
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="gradient"
+              className="rounded-md"
+              onClick={
+                isEditingFeedback ? handleEditFeedback : handleSubmitFeedback
+              }
+              disabled={loadingFeedback}
+            >
+              {loadingFeedback
+                ? "Submitting..."
+                : isEditingFeedback
+                ? "Update Feedback"
+                : "Submit Feedback"}
+            </Button>
+            <DialogClose asChild>
+              <Button variant="ghost">Cancel</Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

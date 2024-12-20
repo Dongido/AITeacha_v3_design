@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { loadStudentAssignments } from "../../../store/slices/studentAssignmentSlice";
 import { RootState, AppDispatch } from "../../../store";
 import JoinAssignment from "./_components/joinAssignmentDialog";
-import { assignmentColumns } from "./_components/column.assignment";
+import AssignmentColumnsComponent from "./_components/column.assignment";
 import { Skeleton } from "../../../components/ui/Skeleton";
 import BaseTable from "../../../components/table/BaseTable";
 
@@ -14,12 +14,12 @@ const StudentAssignments = () => {
     (state: RootState) => state.studentAssignments
   );
   const joinClassDialogRef = useRef<any>(null);
+  const columns = AssignmentColumnsComponent();
 
   useEffect(() => {
     if (assignments.length === 0) {
       dispatch(loadStudentAssignments());
     }
-    console.log(assignments);
   }, [dispatch, assignments.length]);
 
   return (
@@ -57,7 +57,7 @@ const StudentAssignments = () => {
       ) : error ? (
         <p className="text-red-500">{error}</p>
       ) : (
-        <BaseTable data={assignments} columns={assignmentColumns} />
+        <BaseTable data={assignments} columns={columns} />
       )}
       <JoinAssignment ref={joinClassDialogRef} classId={1} />
     </div>

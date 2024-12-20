@@ -1,5 +1,6 @@
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import Image1 from "../../../assets/img/course.png";
 
 const LevelUp = () => {
   return (
@@ -18,7 +19,7 @@ const LevelUp = () => {
           </h2>
 
           <img
-            src="https://aiteacha.com/img/blogs/KqeTJM0EU3.png"
+            src={Image1}
             alt=" AI Teacher Certification"
             className="rounded-3xl  mt-6"
           />

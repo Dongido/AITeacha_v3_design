@@ -16,7 +16,7 @@ const PioneersProgram = () => {
               <h2 className="text-md md:text-xl lg:text-2xl font-semibold text-gray-200 mb-4 text-center">
                 Be a Trailblazer in AI-Powered Education
               </h2>
-              <p className="text-gray-100 mb-8 px-2 text-sm md:text-lg xl:text-lg text-center">
+              <p className="text-gray-100 mb-8 px-2 max-w-2xl text-sm md:text-lg xl:text-lg text-center">
                 Are you an educator committed to transforming teaching with
                 innovative technology? The AI Teacha Pioneers Program is your
                 opportunity to lead the charge in revolutionizing education

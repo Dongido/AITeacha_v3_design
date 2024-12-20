@@ -177,6 +177,28 @@ export const submitAssignmentAnswer = async (
   }
 };
 
+export const getSubmittedAssignmentDetails = async (
+  studentId: string,
+  assignmentId: string
+): Promise<any> => {
+  try {
+    const response = await apiClient.post<any>(
+      `/student/submitted/assignment`,
+      {
+        student_id: studentId,
+        assignment_id: assignmentId,
+      }
+    );
+
+    return response.data.data[0];
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data?.message ||
+        "Failed to fetch submitted assignment details."
+    );
+  }
+};
+
 export const submitAssignmentChatMessage = async (
   description: string,
   grade: string,

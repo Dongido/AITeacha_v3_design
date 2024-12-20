@@ -6,6 +6,12 @@ import SwiperCore from "swiper";
 import { Link } from "react-router-dom";
 import { Navigation, Pagination, Autoplay, A11y } from "swiper/modules";
 
+// Import local images
+import Image1 from "../../../assets/img/course.png";
+import Image2 from "../../../assets/img/certification.jpg";
+import Image3 from "../../../assets/img/certification2.jpg";
+import Image4 from "../../../assets/img/certification3.jpg";
+
 SwiperCore.use([Navigation, Pagination, Autoplay, A11y]);
 
 type Blog = {
@@ -22,10 +28,10 @@ type BlogSliderProps = {
 
 const BlogSlider: React.FC<BlogSliderProps> = ({ blogs }) => {
   return (
-    <div className="w-full pb-6  relative">
-      <div className="mx-auto ">
-        <section className="relative bg-blight w-full mb-6 h-[60vh] mt-24 pt-[5rem] flex justify-center bg-gradient-to-r from-[#07052D] to-[#171093] items-center overflow-hidden overlow-hidden">
-          <span className="absolute inse=t-0 z-0 p-5  justif-center top-[rem]"></span>
+    <div className="w-full pb-6 relative">
+      <div className="mx-auto">
+        <section className="relative bg-blight w-full mb-6 h-[60vh] mt-24 pt-[5rem] flex justify-center bg-gradient-to-r from-[#07052D] to-[#171093] items-center overflow-hidden">
+          <span className="absolute inset-0 z-0 p-5 justify-center"></span>
           <section>
             <figcaption className="desc z-10 relative px-2">
               <h1 className="text-xl text-center font-bold text-gray-300">
@@ -53,11 +59,11 @@ const BlogSlider: React.FC<BlogSliderProps> = ({ blogs }) => {
               768: { slidesPerView: 2 },
               1024: { slidesPerView: 3 },
             }}
-            className="blog-swiper mt-24 "
+            className="blog-swiper mt-24"
           >
             {blogs.map((blog, index) => (
-              <SwiperSlide key={index} className="">
-                <div className="w-[350px]  mt-6 h-[320px] sm:w-[400px] lg:w-[420px] h-[320px] bg-gray-50 text-gray-900 rounded-lg border border-gray-300 text-left p-2 px-4 relative">
+              <SwiperSlide key={index}>
+                <div className="w-[350px] mt-6 h-[320px] sm:w-[400px] lg:w-[420px] h-[320px] bg-gray-50 text-gray-900 rounded-lg border border-gray-300 text-left p-2 px-4 relative">
                   <img
                     src={blog.image}
                     alt={blog.title}
@@ -69,7 +75,7 @@ const BlogSlider: React.FC<BlogSliderProps> = ({ blogs }) => {
                   <div className="absolute bottom-2 left-2 flex items-center space-x-2">
                     <Link
                       to={blog.href}
-                      className="text-primary underline py-1  rounded-full"
+                      className="text-primary underline py-1 rounded-full"
                     >
                       Read more
                     </Link>
@@ -92,28 +98,28 @@ const dummyBlogData: Blog[] = [
     excerpt: "Are you ready to transform your classroom with the....",
     href: "/blogs/level-up-your-teaching-introducing-the-ai-teacher-certification-course",
     date: "September 1, 2024",
-    image: "https://aiteacha.com/img/blogs/KqeTJM0EU3.png",
+    image: Image1,
   },
   {
     title: "The Role of AI Natural Language Processors",
     excerpt: "In the dynamic landscape of education, harnessing the....",
     href: "/blogs/the-role-of-ai-natural-language-processors",
     date: "November 14, 2023",
-    image: "https://aiteacha.com/img/blogs/I0u8CvDUQ2.jpg",
+    image: Image2,
   },
   {
     title: "Artificial Intelligence Transforming Education",
     excerpt: "As we stand on the brink of a new era in education, the ...",
     href: "/blogs/artificial-intelligence-transforming-education",
     date: "November 14, 2023",
-    image: "https://aiteacha.com/img/blogs/UYmHpkQ5pQ.jpg",
+    image: Image3,
   },
   {
     title: "Is it really safe to use AI in Education?",
     excerpt: "In the ever-evolving landscape of education, technology...",
     href: "/blogs/is-it-really-safe-to-use-ai-in-education",
     date: "November 14, 2023",
-    image: "https://aiteacha.com/img/blogs/ChlGcIvCY0.jpg",
+    image: Image4,
   },
 ];
 

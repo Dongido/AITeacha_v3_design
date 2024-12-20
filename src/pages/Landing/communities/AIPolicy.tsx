@@ -15,7 +15,7 @@ const AIPolicy = () => {
                 AI Policy
               </h1>
               <h2 className="text-xl  text-gray-200 text-center">
-                Effective Date: 11/12/2024 <br /> Last Updated: 11/12/2024
+                Effective Date: 01/07/2023 <br /> Last Updated: 11/12/2024
               </h2>
             </figcaption>
           </section>
