@@ -45,7 +45,7 @@ export function StudentDashboard() {
         }`}
       >
         <DashboardNavbar />
-        {userDetails && !isEmailVerified && (
+        {/* {userDetails && !isEmailVerified && (
           <div className="bg-yellow-200 mt-3 text-black p-4 rounded-md flex justify-between items-center">
             <span>Your email is not verified. Please verify your email.</span>
             <button
@@ -55,7 +55,7 @@ export function StudentDashboard() {
               Verify Email
             </button>
           </div>
-        )}
+        )} */}
 
         <Configurator />
 

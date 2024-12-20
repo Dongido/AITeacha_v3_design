@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowRightIcon } from "@heroicons/react/24/solid";
 import dashImg from "../../../assets/img/0e846ab4-992d-48b3-a818-d62a7803bd8e 1.png";
 import { classroomColumns } from "./_components/column.classroom";
@@ -30,21 +30,37 @@ const Home = () => {
   }, [dispatch, classrooms.length]);
 
   const displayedClassrooms = classrooms.slice(0, 5);
+  const navigate = useNavigate();
 
-  const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
+  const [userDetails, setUserDetails] = useState<any>(null);
+  const [isEmailVerified, setIsEmailVerified] = useState<number>(0);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("ai-teacha-user");
+    const userDetailsFromStorage = localStorage.getItem("ai-teacha-user");
 
-    if (storedUser) {
-      const userData: UserDetails = JSON.parse(storedUser);
-      console.log(userData);
-      setUserDetails(userData);
+    if (userDetailsFromStorage) {
+      const parsedDetails = JSON.parse(userDetailsFromStorage);
+      setUserDetails(parsedDetails);
+      setIsEmailVerified(parsedDetails.is_email_verified);
     }
   }, []);
+  const handleVerifyEmail = () => {
+    navigate("/dashboard/verify-email");
+  };
 
   return (
     <div className="mt-12">
+      {userDetails && isEmailVerified === 0 && (
+        <div className="bg-yellow-200 mt-3 text-black p-4 rounded-md flex justify-between items-center">
+          <span>Your email is not verified. Please verify your email.</span>
+          <button
+            onClick={handleVerifyEmail}
+            className="text-primary hover:underline"
+          >
+            Verify Email
+          </button>
+        </div>
+      )}
       <div className="relative mt-4">
         <div className="bg-[#5C3CBB] text-white p-8 rounded-lg overflow-hidden">
           <p className="text-sm font-semibold">Your Journey</p>

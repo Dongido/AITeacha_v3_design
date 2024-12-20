@@ -27,7 +27,7 @@ export const assignmentColumns = [
         />
       ) : (
         <div className="flex capitalise items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-[#7a5ef8] to-[#5c3cbb] text-white font-semibold">
-          {assignmentName.charAt(0).toUpperCase() || ""}
+          {"A"}
         </div>
       );
     },

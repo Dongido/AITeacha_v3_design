@@ -147,7 +147,7 @@ const AssignmentDetail = () => {
                 <ArrowRightIcon className="h-5 w-5 ml-2" />
               </button>
 
-              <div className="mt-4 sm:mt-0 flex flex-row gap-4 items-center">
+              {/* <div className="mt-4 sm:mt-0 flex flex-row gap-4 items-center">
                 <button
                   className="bg-[#e5dbff] text-[#5C3CBB] font-semibold py-2 px-4 rounded-full text-sm"
                   onClick={() => {
@@ -177,7 +177,7 @@ const AssignmentDetail = () => {
                     <CheckIcon className="h-5 w-5 ml-2 text-green-400" />
                   )}
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
 
@@ -191,9 +191,6 @@ const AssignmentDetail = () => {
                 >
                   <p className="font-semibold text-xl mb-2">
                     {index + 1}. {question.assignment_question}
-                  </p>
-                  <p className="text-gray-600 mb-2">
-                    Answer: {question.assignment_answer || "Not yet answered"}
                   </p>
                 </div>
               ))}

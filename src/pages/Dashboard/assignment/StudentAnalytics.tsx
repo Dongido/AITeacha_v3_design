@@ -111,7 +111,7 @@ const StudentAnalytics = () => {
       ) : analyticsData ? (
         <div>
           <div className="mt-4">
-            <ReactMarkdown className="w-full p-4 border border-gray-300 bg-white rounded-md resize-none markdown overflow-auto max-h-96">
+            <ReactMarkdown className="w-full p-4 border border-gray-300 bg-white rounded-md resize-none markdown overflow-auto max-h-[600px]">
               {analyticsData}
             </ReactMarkdown>
           </div>

@@ -70,6 +70,19 @@ const Tools = () => {
     }
   };
 
+  useEffect(() => {
+    const userDetailsFromStorage = localStorage.getItem("ai-teacha-user");
+
+    if (userDetailsFromStorage) {
+      const parsedDetails = JSON.parse(userDetailsFromStorage);
+      setUserDetails(parsedDetails);
+      setIsEmailVerified(parsedDetails.is_email_verified);
+    }
+  }, []);
+  const handleVerifyEmail = () => {
+    navigate("/dashboard/verify-email");
+  };
+
   return (
     <div className="mt-4">
       {userDetails && isEmailVerified === 1 && (
