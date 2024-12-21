@@ -5,7 +5,10 @@ import { Undo2 } from "lucide-react";
 import { Button } from "../../../components/ui/Button";
 import { TextArea } from "../../../components/ui/TextArea";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchAssignmentByIdThunk } from "../../../store/slices/studentAssignmentSlice";
+import {
+  fetchAssignmentByIdThunk,
+  loadStudentAssignments,
+} from "../../../store/slices/studentAssignmentSlice";
 import { RootState, AppDispatch } from "../../../store";
 import { Skeleton } from "../../../components/ui/Skeleton";
 import { submitAssignmentAnswer } from "../../../api/studentassignment";
@@ -76,6 +79,7 @@ const StudentAssignment: React.FC = () => {
           setResponses({});
           setTimeout(() => setShowSuccessMessage(false), 3000);
         }
+        await dispatch(loadStudentAssignments());
         navigate("/student/assignments");
       } catch (error) {
         console.error(error);

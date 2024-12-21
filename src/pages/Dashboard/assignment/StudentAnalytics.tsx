@@ -65,6 +65,10 @@ const StudentAnalytics = () => {
         feedback,
         analyticsData
       );
+      await fetchStudentAssignmentAnalytics(
+        Number(assignmentId),
+        Number(studentId)
+      );
       setOpenDialog(false);
       setTeachersFeedback(feedback);
     } catch (error: any) {
