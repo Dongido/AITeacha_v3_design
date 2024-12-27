@@ -29,8 +29,8 @@ const TermsPolicy = () => {
                 </h1>
                 <p className="text-center text-gray-100 ">
                   {" "}
-                  Important things you need to know as you use AI Teacha
-                  platforms
+                  Important Privacy Information you need to know as you use AI
+                  Teacha <span className="font-bold">LMS</span>
                 </p>
               </figcaption>
             </section>

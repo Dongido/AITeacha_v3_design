@@ -14,6 +14,7 @@ import {
 import { Button } from "../ui/Button";
 import Text from "../ui/Text";
 import brandImg from "../../logo.png";
+import { setOpenConfigurator } from "../../context/index";
 
 interface RoutePage {
   icon: React.ReactNode;
@@ -160,7 +161,7 @@ export function Sidenav({
               return (
                 <li key={name} className="menu-item">
                   <NavLink
-                    to={!submenu ? fullPath : "#"}  // Submenu parent is not navigable
+                    to={!submenu ? fullPath : "#"} // Submenu parent is not navigable
                     onClick={() => {
                       if (submenu) {
                         setIsExpanded(!isExpanded);
@@ -285,7 +286,10 @@ export function Sidenav({
             color={sidenavColor}
             className="w-full rounded-full flex items-center justify-center gap-2"
           >
-            <Cog6ToothIcon className="h-5 w-5" />
+            <Cog6ToothIcon
+              className="h-5 w-5"
+              onClick={() => setOpenConfigurator(dispatch, true)}
+            />
             <span>Account Settings</span>
           </Button>
         </div>

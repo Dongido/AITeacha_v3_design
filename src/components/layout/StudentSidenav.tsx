@@ -38,7 +38,7 @@ interface SidenavProps {
 type SidenavType = "dark" | "white" | "transparent";
 
 export function Sidenav({
-  brandName = "AI-Teacha",
+  brandName = "AI Teacha",
   routes,
   onToggle,
 }: SidenavProps) {

@@ -15,7 +15,7 @@ const AITeachaMission = () => {
                 AI Teacha Mission
               </h1>
               <p className="text-gray-100 mb-8 px-2 text-sm md:text-lg xl:text-lg text-center">
-                SaSaving educators time, ensuring they have the tools and
+                Saving educators time, ensuring they have the tools and
                 resources they need to transform lives
               </p>
             </figcaption>

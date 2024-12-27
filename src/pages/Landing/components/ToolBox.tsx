@@ -73,7 +73,7 @@ const ToolboxPage: React.FC = () => {
             <figcaption className="desc z-10 relative px-2">
               <h1 className="text-3xl md:text-4xl lg:text-6xl font-bold text-center my-2 text-header text-white">
                 {" "}
-                Over 37 Powerful tools
+                Over 37 Powerful Tools
               </h1>
               <p className="text-center text-gray-300 text-xl">
                 {" "}
