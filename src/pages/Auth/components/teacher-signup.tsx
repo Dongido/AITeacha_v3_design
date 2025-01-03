@@ -433,12 +433,12 @@ export function TeacherSignupForm({ className, ...props }: SignupFormProps) {
               </div>
 
               <div className="flex flex-col sm:flex-row justify-center mt-0 space-y-4 sm:space-y-0 sm:space-x-4">
-                <Button
+                {/* <Button
                   variant="outline"
                   className="w-full flex items-center rounded-full justify-center"
                 >
                   <FaFacebook className="mr-2" /> Facebook
-                </Button>
+                </Button> */}
                 <Button
                   variant="outline"
                   className="w-full flex items-center rounded-full justify-center"

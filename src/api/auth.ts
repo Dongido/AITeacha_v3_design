@@ -30,6 +30,16 @@ export const loginUser = async (
   }
 };
 
+export const loginWithGoogle = async (): Promise<LoginResponse> => {
+  try {
+    const response = await apiClient.get<LoginResponse>("/auth/google");
+    return response.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data?.message || "Google login failed. Please try again."
+    );
+  }
+};
 export const registerUser = async (
   email: string,
   firstname: string,

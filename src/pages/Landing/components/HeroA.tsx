@@ -159,29 +159,34 @@ export default () => {
           <a
             href="https://icedt.org"
             className="mr-5 mb-5 lg:mb-0 hover:text-gray-800"
+            target="_blank"
           >
             <img src={icedt} alt="Microsoft Logo" className="h-16" />
           </a>
           <a
             href="https://nvidia.com"
             className="mr-5 mb-5 lg:mb-0 hover:text-gray-800"
+            target="_blank"
           >
             <img src={nvidia} alt="Apple Logo" className="h-8" />
           </a>
           <a
             href="https://openai.com"
             className="mr-5 mb-5 lg:mb-0 hover:text-gray-800"
+            target="_blank"
           >
             <img src={openAi} alt="IBM Logo" className="h-10" />
           </a>
           <a
             href="https://resilience17.com"
             className="mr-5 mb-5 lg:mb-0 hover:text-gray-800"
+            target="_blank"
           >
             <img src={rescillience} alt="Google Logo" className="h-8" />
           </a>
           <a
             href="https://cfirstlagos.com.ng"
+            target="_blank"
             className="mr-5 mb-5 lg:mb-0 hover:text-gray-800"
           >
             <img src={cfirst} alt="Google Logo" className="h-16" />

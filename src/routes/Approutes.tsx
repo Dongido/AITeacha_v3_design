@@ -41,6 +41,7 @@ import StudentAssignment from "../pages/Dashboard/student/Assignment";
 import StudentAnalytics from "../pages/Dashboard/assignment/StudentAnalytics";
 import AssignmentDetails from "../pages/Dashboard/student/AssignmentDetails";
 
+import HeroesWallAdmin from "../pages/Dashboard/HoroesWall";
 import Home from "../pages/Dashboard/student/Home";
 import History from "../pages/Dashboard/student/History";
 import Classes from "../pages/Dashboard/student/Classes";
@@ -152,6 +153,13 @@ export const routes = [
         name: "Admin Tools",
         path: "/admin-tools",
         element: <AdminTools />,
+        adminOnly: true,
+      },
+      {
+        icon: <WrenchScrewdriverIcon {...icon} />,
+        name: "Heroes Wall",
+        path: "/heroes-wall",
+        element: <HeroesWallAdmin />,
         adminOnly: true,
       },
     ],
