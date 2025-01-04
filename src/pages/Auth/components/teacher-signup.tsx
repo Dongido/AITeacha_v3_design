@@ -15,12 +15,19 @@ import { Button } from "../../../components/ui/Button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PasswordInput } from "../../../components/ui/PasswordInput";
+import { loginWithGoogle } from "../../../api/auth";
+import { jwtDecode } from "jwt-decode";
+import Cookies from "js-cookie";
+import { DecodedToken } from "../../../interfaces";
 import {
   ToastProvider,
   Toast,
   ToastTitle,
   ToastViewport,
 } from "../../../components/ui/Toast";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../../store";
+import { setAuthData } from "../../../store/slices/authSlice";
 import {
   Select,
   SelectTrigger,
@@ -91,6 +98,8 @@ export function TeacherSignupForm({ className, ...props }: SignupFormProps) {
   );
 
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
+
   const [selectedCountry, setSelectedCountry] = useState<Option | null>(null);
   const [selectedState, setSelectedState] = useState<Option | null>(null);
   const [selectedCity, setSelectedCity] = useState<Option | null>(null);
@@ -431,24 +440,91 @@ export function TeacherSignupForm({ className, ...props }: SignupFormProps) {
                   </span>
                 </div>
               </div>
-
-              <div className="flex flex-col sm:flex-row justify-center mt-0 space-y-4 sm:space-y-0 sm:space-x-4">
-                {/* <Button
-                  variant="outline"
-                  className="w-full flex items-center rounded-full justify-center"
-                >
-                  <FaFacebook className="mr-2" /> Facebook
-                </Button> */}
-                <Button
-                  variant="outline"
-                  className="w-full flex items-center rounded-full justify-center"
-                >
-                  <FcGoogle className="mr-2" /> Google
-                </Button>
-              </div>
             </div>
           </form>
         </Form>
+
+        <div className="flex flex-col sm:flex-row justify-center mt-0 space-y-4 sm:space-y-0 sm:space-x-4">
+          <Button
+            variant="outline"
+            type="button"
+            className="w-full flex items-center rounded-full justify-center"
+            onClick={async (event) => {
+              event.preventDefault();
+              try {
+                //setIsGoogleLoading(true);
+                const res = await loginWithGoogle();
+                if (res?.data?.accessToken) {
+                  const decodedToken = jwtDecode(
+                    res.data.accessToken
+                  ) as DecodedToken;
+                  Cookies.set("at-accessToken", res.data.accessToken, {
+                    expires: 7,
+                  });
+                  Cookies.set("at-refreshToken", res.data.refreshToken, {
+                    expires: 7,
+                  });
+
+                  const userDetails = {
+                    id: decodedToken.id,
+                    email: decodedToken.uemail,
+                    role: decodedToken.role,
+                    package: decodedToken.package,
+                    firstname: decodedToken.firstname,
+                    is_email_verified: decodedToken.is_email_verified,
+                    imageurl: decodedToken.imageurl,
+                  };
+                  localStorage.setItem(
+                    "ai-teacha-user",
+                    JSON.stringify(userDetails)
+                  );
+
+                  dispatch(
+                    setAuthData({
+                      token: res.data.accessToken,
+                      user: {
+                        id: decodedToken.id,
+                        email: decodedToken.uemail,
+                        role: decodedToken.role,
+                      },
+                    })
+                  );
+
+                  setToastMessage("Google login successful!");
+                  setToastVariant("default");
+
+                  const redirectPath = localStorage.getItem("redirectPath");
+                  if (decodedToken.role === 3) {
+                    navigate("/student/home");
+                  } else if (decodedToken.role === 2) {
+                    navigate("/dashboard/home");
+                  } else if (decodedToken.role === 4) {
+                    navigate("/auth/onboarding");
+                  } else if (redirectPath) {
+                    localStorage.removeItem("redirectPath");
+                    navigate(redirectPath);
+                  } else {
+                    navigate("/dashboard");
+                  }
+                } else if (res.status === "error") {
+                  setToastMessage(res.message);
+                  setToastVariant("destructive");
+                }
+              } catch (error: any) {
+                console.log(error);
+                setToastMessage(
+                  error.message || "Google login failed. Please try again."
+                );
+                setToastVariant("destructive");
+              } finally {
+                setToastOpen(true);
+                setIsLoading(false);
+              }
+            }}
+          >
+            <FcGoogle className="mr-2" /> Google
+          </Button>
+        </div>
 
         <Toast
           open={toastOpen}
