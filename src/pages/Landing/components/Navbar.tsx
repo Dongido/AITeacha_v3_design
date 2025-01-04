@@ -37,6 +37,20 @@ const Navbar = () => {
     };
   }, []);
   const token = Cookies.get("at-accessToken");
+  const location = useLocation();
+  const userDetails = token
+    ? JSON.parse(localStorage.getItem("ai-teacha-user") || "{}")
+    : null;
+
+  const getDashboardPath = () => {
+    // const currentPath = location.pathname;
+    if (userDetails?.role === 2) {
+      return `/dashboard`;
+    } else if (userDetails?.role === 3) {
+      return `/student/home`;
+    }
+    return `/dashboard`;
+  };
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const [openState, setOpenState] = useState<boolean>(false);
 
@@ -561,8 +575,8 @@ const Navbar = () => {
             </Popover>
             {token ? (
               <Link
-                to="/dashboard/home"
-                className="text-white bg-primary font-bold focus:ring-4 focus:ring-primary-300  rounded-full text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800"
+                to={getDashboardPath()}
+                className="text-white bg-primary font-bold focus:ring-4 focus:ring-primary-300 rounded-full text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800"
               >
                 Go to Dashboard
               </Link>
