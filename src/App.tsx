@@ -32,6 +32,7 @@ import AIPolicy from "./pages/Landing/communities/AIPolicy";
 import StudentDataPolicy from "./pages/Landing/communities/StudentDataPolicy";
 import DataPrivacy from "./pages/Landing/communities/DataPrivacy";
 import Resources from "./pages/Dashboard/Resources";
+import DashboardHandler from "./DashboardHandler";
 
 //Dashboard Routes
 function App() {
@@ -78,12 +79,8 @@ function App() {
 
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard/*" element={<Dashboard />} />
-
         <Route path="/classroom/s/*" element={<RoleBasedRedirect />} />
-        <Route
-          path="/dashboard"
-          element={<Navigate to="/dashboard/home" replace />}
-        />
+        <Route path="/dashboard" element={<DashboardHandler />} />
         <Route
           path="/student"
           element={<Navigate to="/student/home" replace />}

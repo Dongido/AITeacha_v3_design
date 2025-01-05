@@ -56,7 +56,7 @@ const HeroesWall = () => {
     const { source, post_url } = wall;
 
     return (
-      <div className="embed-container max-h-[500px]  overflow-hidden rounded-md relative">
+      <div className="embed-container max-h-[500px] overflow-hidden rounded-md relative">
         {source === "twitter" ||
         source === "facebook" ||
         source === "instagram" ||
@@ -83,7 +83,8 @@ const HeroesWall = () => {
   return (
     <div>
       <Navbar />
-      <section className="relative bg-blight w-full mt-24 h-[60vh] pt-[5rem] flex justify-center bg-gradient-to-r from-[#07052D] to-[#171093] items-center overflow-hidden">
+      {/* Header Section */}
+      <section className="relative w-full mt-24 h-[60vh] pt-[5rem] flex justify-center bg-gradient-to-r from-[#07052D] via-[#4E43D7] to-[#171093] items-center overflow-hidden">
         <span className="absolute inset-0 z-0 p-5 justify-center top-[5rem]"></span>
         <section>
           <figcaption className="desc z-10 relative">
@@ -98,29 +99,44 @@ const HeroesWall = () => {
           </figcaption>
         </section>
       </section>
+
+      {/* Cards Section */}
       <section className="container mx-auto p-4">
         {loading ? (
           <p className="text-center text-gray-500">Loading...</p>
         ) : error ? (
           <p className="text-center text-red-500">{error}</p>
         ) : (
-          <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+          <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {heroes.map((wall) => (
-              <li key={wall.id} className="transition-shadow">
-                {/* Wrapping the entire card with an <a> tag */}
+              <li
+                key={wall.id}
+                className="transition-transform transform hover:scale-105"
+              >
+                {/* Card Design */}
                 <a
                   href={wall.post_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block bg-white rounded-md max-w-[500px] shadow-md p-4 hover:shadow-lg"
+                  className="block bg-gradient-to-br from-[#9B5FA0] via-[#D565A7] to-[#FF8A95]
+ text-white rounded-xl shadow-lg p-6 hover:shadow-2xl"
                 >
                   {renderEmbed(wall)}
+                  <div className="mt-4">
+                    <p className="text-sm text-white font-medium">
+                      Source: {wall.source}
+                    </p>
+                    <p className="text-xs text-gray-200">
+                      Created: {new Date(wall.created_at).toLocaleDateString()}
+                    </p>
+                  </div>
                 </a>
               </li>
             ))}
           </ul>
         )}
       </section>
+
       <Footer />
     </div>
   );

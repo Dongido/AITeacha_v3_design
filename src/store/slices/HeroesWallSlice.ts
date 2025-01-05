@@ -42,7 +42,7 @@ export const fetchHeroesWallThunk = createAsyncThunk(
 export const createHeroesWallThunk = createAsyncThunk(
   "heroesWall/create",
   async (
-    data: { post_url: string; source: string; thumbnail: File },
+    data: { post_url: string; source: string; thumbnail?: File },
     { rejectWithValue }
   ) => {
     try {

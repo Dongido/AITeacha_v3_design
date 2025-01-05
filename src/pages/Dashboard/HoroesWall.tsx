@@ -35,7 +35,7 @@ const HeroesWallAdmin = () => {
   const [formData, setFormData] = useState({
     post_url: "",
     source: "",
-    thumbnail: null as File | null,
+    // thumbnail: null as File | null,
   });
 
   useEffect(() => {
@@ -44,27 +44,25 @@ const HeroesWallAdmin = () => {
   }, [dispatch]);
 
   const handleCreate = async () => {
-    if (!formData.thumbnail) {
-      console.error("Thumbnail is required.");
-      return;
-    }
+    // if (!formData.thumbnail) {
+    //   console.error("Thumbnail is required.");
+    //   return;
+    // }
 
     const res = await dispatch(
-      createHeroesWallThunk(
-        formData as { post_url: string; source: string; thumbnail: File }
-      )
+      createHeroesWallThunk(formData as { post_url: string; source: string })
     );
 
     console.log(res);
     if (res.meta.requestStatus === "fulfilled") {
       dispatch(fetchHeroesWallThunk());
-      setFormData({ post_url: "", source: "", thumbnail: null });
+      setFormData({ post_url: "", source: "" });
       setCreateDialogOpen(false);
     } else {
       console.error("Failed to create hero wall post:");
     }
 
-    setFormData({ post_url: "", source: "", thumbnail: null });
+    setFormData({ post_url: "", source: "" });
     setCreateDialogOpen(false);
   };
 
@@ -82,15 +80,15 @@ const HeroesWallAdmin = () => {
         })
       );
 
-      if (formData.thumbnail) {
-        const image = await dispatch(
-          updateHeroesWallThumbnailThunk({
-            id: selectedWall.id,
-            thumbnail: formData.thumbnail,
-          })
-        );
-        console.log(image);
-      }
+      // if (formData.thumbnail) {
+      //   const image = await dispatch(
+      //     updateHeroesWallThumbnailThunk({
+      //       id: selectedWall.id,
+      //       thumbnail: formData.thumbnail,
+      //     })
+      //   );
+      //   console.log(image);
+      // }
 
       dispatch(fetchHeroesWallThunk()); // Refresh data
       setEditDialogOpen(false);
@@ -181,7 +179,7 @@ const HeroesWallAdmin = () => {
                         setFormData({
                           post_url: wall.post_url,
                           source: wall.source,
-                          thumbnail: null,
+                          //    thumbnail: null,
                         });
                         setEditDialogOpen(true);
                       }}
@@ -245,7 +243,7 @@ const HeroesWallAdmin = () => {
               <option value="youtube">YouTube</option>
             </select>
 
-            <input
+            {/* <input
               type="file"
               className="w-full p-2 border rounded-md"
               onChange={(e) =>
@@ -254,7 +252,7 @@ const HeroesWallAdmin = () => {
                   thumbnail: e.target.files ? e.target.files[0] : null,
                 }))
               }
-            />
+            /> */}
           </form>
           <DialogFooter>
             <Button
@@ -307,7 +305,7 @@ const HeroesWallAdmin = () => {
               <option value="youtube">YouTube</option>
             </select>
 
-            <input
+            {/* <input
               type="file"
               className="w-full p-2 border rounded-md"
               onChange={(e) =>
@@ -316,7 +314,7 @@ const HeroesWallAdmin = () => {
                   thumbnail: e.target.files ? e.target.files[0] : null,
                 }))
               }
-            />
+            /> */}
           </form>
           <DialogFooter>
             <Button

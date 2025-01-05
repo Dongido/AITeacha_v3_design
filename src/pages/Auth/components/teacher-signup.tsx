@@ -449,76 +449,20 @@ export function TeacherSignupForm({ className, ...props }: SignupFormProps) {
             variant="outline"
             type="button"
             className="w-full flex items-center rounded-full justify-center"
-            onClick={async (event) => {
+            onClick={(event) => {
               event.preventDefault();
               try {
-                //setIsGoogleLoading(true);
-                const res = await loginWithGoogle();
-                if (res?.data?.accessToken) {
-                  const decodedToken = jwtDecode(
-                    res.data.accessToken
-                  ) as DecodedToken;
-                  Cookies.set("at-accessToken", res.data.accessToken, {
-                    expires: 7,
-                  });
-                  Cookies.set("at-refreshToken", res.data.refreshToken, {
-                    expires: 7,
-                  });
-
-                  const userDetails = {
-                    id: decodedToken.id,
-                    email: decodedToken.uemail,
-                    role: decodedToken.role,
-                    package: decodedToken.package,
-                    firstname: decodedToken.firstname,
-                    is_email_verified: decodedToken.is_email_verified,
-                    imageurl: decodedToken.imageurl,
-                  };
-                  localStorage.setItem(
-                    "ai-teacha-user",
-                    JSON.stringify(userDetails)
-                  );
-
-                  dispatch(
-                    setAuthData({
-                      token: res.data.accessToken,
-                      user: {
-                        id: decodedToken.id,
-                        email: decodedToken.uemail,
-                        role: decodedToken.role,
-                      },
-                    })
-                  );
-
-                  setToastMessage("Google login successful!");
-                  setToastVariant("default");
-
-                  const redirectPath = localStorage.getItem("redirectPath");
-                  if (decodedToken.role === 3) {
-                    navigate("/student/home");
-                  } else if (decodedToken.role === 2) {
-                    navigate("/dashboard/home");
-                  } else if (decodedToken.role === 4) {
-                    navigate("/auth/onboarding");
-                  } else if (redirectPath) {
-                    localStorage.removeItem("redirectPath");
-                    navigate(redirectPath);
-                  } else {
-                    navigate("/dashboard");
-                  }
-                } else if (res.status === "error") {
-                  setToastMessage(res.message);
-                  setToastVariant("destructive");
-                }
+                const googleAuthUrl = `https://vd.aiteacha.com/api/auth/google?redirect_uri=${encodeURIComponent(
+                  window.location.origin + "/auth/callback"
+                )}`;
+                window.location.href = googleAuthUrl;
               } catch (error: any) {
                 console.log(error);
                 setToastMessage(
                   error.message || "Google login failed. Please try again."
                 );
                 setToastVariant("destructive");
-              } finally {
                 setToastOpen(true);
-                setIsLoading(false);
               }
             }}
           >
