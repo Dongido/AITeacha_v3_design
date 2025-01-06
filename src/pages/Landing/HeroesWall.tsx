@@ -40,10 +40,10 @@ const HeroesWall = () => {
     }
   }, []);
 
-  useEffect(() => {
-    // Reload the page on every visit
-    window.location.reload();
-  }, []);
+  // useEffect(() => {
+  //   // Reload the page on every visit
+  //   window.location.reload();
+  // }, []);
 
   useEffect(() => {
     loadHeroesWall();

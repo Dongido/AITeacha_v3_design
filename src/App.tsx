@@ -76,11 +76,11 @@ function App() {
         element={<AIEducation />}
       />
       <Route path="/upgrade/support" element={<UpgradeSupport />} />
-
+      <Route path="/dashboard" element={<DashboardHandler />} />
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard/*" element={<Dashboard />} />
         <Route path="/classroom/s/*" element={<RoleBasedRedirect />} />
-        <Route path="/dashboard" element={<DashboardHandler />} />
+
         <Route
           path="/student"
           element={<Navigate to="/student/home" replace />}
