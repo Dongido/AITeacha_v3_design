@@ -230,9 +230,7 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
             onClick={(event) => {
               event.preventDefault();
               try {
-                const googleAuthUrl = `https://vd.aiteacha.com/api/auth/google?redirect_uri=${encodeURIComponent(
-                  window.location.origin + "/auth/callback"
-                )}`;
+                const googleAuthUrl = `https://vd.aiteacha.com/api/auth/google`;
                 window.location.href = googleAuthUrl;
               } catch (error: any) {
                 console.log(error);

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import { fetchHeroesWall } from "../../api/heroeswall";
@@ -29,28 +29,25 @@ const HeroesWall = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const loadHeroesWall = async () => {
-      try {
-        const data = await fetchHeroesWall();
-        setHeroes(data);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const loadHeroesWall = useCallback(async () => {
+    try {
+      const data = await fetchHeroesWall();
+      setHeroes(data);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
+  useEffect(() => {
+    // Reload the page on every visit
+    window.location.reload();
+  }, []);
+
+  useEffect(() => {
     loadHeroesWall();
-  }, []);
-
-  useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://platform.twitter.com/widgets.js";
-    script.async = true;
-    script.charset = "utf-8";
-    document.body.appendChild(script);
-  }, []);
+  }, [loadHeroesWall]);
 
   const renderEmbed = (wall: HeroesWall) => {
     const { source, post_url } = wall;
@@ -79,6 +76,16 @@ const HeroesWall = () => {
       </div>
     );
   };
+
+  useEffect(() => {
+    // Lazy load Twitter widgets script
+    const script = document.createElement("script");
+    script.src = "https://platform.twitter.com/widgets.js";
+    script.async = true;
+    script.charset = "utf-8";
+    document.body.appendChild(script);
+    script.onload = () => window.twttr.widgets.load(); // Ensure widgets load after script is loaded
+  }, []);
 
   return (
     <div>
