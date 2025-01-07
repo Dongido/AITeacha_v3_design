@@ -52,7 +52,6 @@ const Classroom = () => {
 
   useEffect(() => {
     const userDetailsFromStorage = localStorage.getItem("ai-teacha-user");
-
     if (userDetailsFromStorage) {
       const parsedDetails = JSON.parse(userDetailsFromStorage);
       setUserDetails(parsedDetails);
@@ -166,8 +165,10 @@ const Classroom = () => {
 
   const currentMessages = messages[selectedTool || "main"] || [];
   const welcomeMessage = selectedTool
-    ? `Hi👋 ${userDetails.firstname}, welcome to <strong>${selectedTool}</strong>. Start your conversation here!`
-    : `Hi👋  ${userDetails.firstname}, welcome to class "<strong>${
+    ? `Hi👋 ${
+        userDetails?.firstname || "there"
+      }, welcome to <strong>${selectedTool}</strong>. Start your conversation here!`
+    : `Hi👋 ${userDetails?.firstname || "there"}, welcome to class "<strong>${
         classroom?.classroom_name || "the classroom"
       }</strong>." Start your conversation here!`;
 
