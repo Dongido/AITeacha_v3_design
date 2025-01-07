@@ -22,6 +22,12 @@ import { Button } from "../../components/ui/Button";
 import { checkEligibility } from "../../api/tools";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/swiper-bundle.css";
+import SwiperCore from "swiper";
+import { Navigation, Pagination, Autoplay, A11y } from "swiper/modules";
+
+SwiperCore.use([Navigation, Pagination, Autoplay, A11y]);
 
 const Home = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -152,20 +158,33 @@ const Home = () => {
                 <h2 className="text-xl font-bold text-gray-900 mb-4 px-2">
                   Popular Tools
                 </h2>
-                <div className="relative w-full">
-                  <div
-                    className="flex gap-4 animate-marquee whitespace-nowrap"
-                    style={{ animation: "marquee 20s linear infinite" }}
-                  >
-                    {tools
-                      .filter((tool) => tool.tag === "popular")
-                      .map((tool) => (
+                <Swiper
+                  slidesPerView={3} // Show only 2 cards
+                  spaceBetween={30} // Increased space between cards
+                  navigation
+                  pagination={{ clickable: true }}
+                  autoplay={{ delay: 3000 }}
+                  breakpoints={{
+                    0: { slidesPerView: 1, spaceBetween: 20 },
+                    640: { slidesPerView: 1, spaceBetween: 20 },
+                    768: { slidesPerView: 3, spaceBetween: 50 },
+                    1024: { slidesPerView: 3, spaceBetween: 70 },
+                  }}
+                  className="popular-tools-swiper"
+                >
+                  {tools
+                    .filter((tool) => tool.tag === "popular")
+                    .map((tool) => (
+                      <SwiperSlide key={tool.id}>
                         <div
                           onClick={() => handleToolClick(tool.id, tool.slug)}
-                          key={tool.id}
-                          className="flex-none w-72 border border-gray-300 px-4 py-3 rounded-3xl bg-white hover:bg-gray-50 cursor-pointer transition duration-500 ease-in-out transform hover:scale-105"
+                          className="flex items-center w-80 h-28 border border-gray-300 px-4 py-4 rounded-3xl bg-white hover:bg-gray-50 cursor-pointer transition duration-500 ease-in-out transform hover:scale-105"
+                          style={{
+                            background: "rgba(232, 121, 249, 0.15)", // Reduced opacity here
+                            transition: "background 0.3s ease",
+                          }}
                         >
-                          <div className="text-primary text-2xl mr-4">
+                          <div className="text-primary text-2xl mr-3">
                             {tool.thumbnail ? (
                               <img
                                 src={
@@ -174,28 +193,28 @@ const Home = () => {
                                     : `https://${tool.thumbnail}`
                                 }
                                 alt={tool.name || "Tool Thumbnail"}
-                                className="w-16 h-16 object-cover rounded-lg"
+                                className="w-20 h-20 object-cover rounded-lg"
                               />
                             ) : (
-                              <FaHeart className="text-purple-500 w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center" />
+                              <FaHeart className="text-purple-500 w-20 h-20 rounded-lg bg-gray-100 flex items-center justify-center" />
                             )}
                           </div>
 
                           <div className="text-left">
-                            <h3 className="text-base capitalize font-semibold text-gray-900">
+                            <h3 className="text-lg capitalize font-semibold text-gray-900">
                               {tool.name === "math calculator"
                                 ? "Solver"
                                 : tool.name}
                             </h3>
-                            <p className="text-gray-700 text-sm truncate">
+                            <p className="text-gray-700 text-sm ">
                               {tool.description.charAt(0).toUpperCase() +
                                 tool.description.slice(1)}
                             </p>
                           </div>
                         </div>
-                      ))}
-                  </div>
-                </div>
+                      </SwiperSlide>
+                    ))}
+                </Swiper>
               </div>
             )}
 
