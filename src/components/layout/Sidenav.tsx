@@ -129,7 +129,7 @@ export function Sidenav({
         {routes.map(({ layout, title, pages }, key) => (
           <ul key={key} className="mb-4 flex flex-col gap-1">
             {title && !isCollapsed && (
-              <li className="mx-3.5 mt-4 mb-2">
+              <li className="mx-3.5 mt-4 mb-2 list-none">
                 <Text
                   variant="small"
                   color={sidenavType === "dark" ? "white" : "blue-gray"}
@@ -159,7 +159,7 @@ export function Sidenav({
               const isPremium = name.toLowerCase().includes("premium");
 
               return (
-                <li key={name} className="menu-item">
+                <li key={name} className="menu-item list-none">
                   <NavLink
                     to={!submenu ? fullPath : "#"} // Submenu parent is not navigable
                     onClick={() => {

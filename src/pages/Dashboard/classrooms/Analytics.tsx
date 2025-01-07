@@ -7,7 +7,7 @@ import { Button } from "../../../components/ui/Button";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { Undo2 } from "lucide-react";
 import { Skeleton } from "../../../components/ui/Skeleton";
-
+import MarkdownRenderer from "../_components/MarkdownRenderer";
 const Analytics = () => {
   const navigate = useNavigate();
   const { id: classroomId, studentId } = useParams<{
@@ -64,65 +64,7 @@ const Analytics = () => {
       ) : analyticsData ? (
         <div>
           <div className="mt-4 space-y-3">
-            <div>
-              <h3 className="font-bold">Time Spent in the Classroom</h3>
-              <p>
-                {analyticsData.data.includes("Time Spent")
-                  ? analyticsData.data.split("\n\n")[0].split(": ")[1]
-                  : "No Data Available"}
-              </p>
-            </div>
-
-            <div>
-              <h3 className="font-bold">Questions Answered Correctly</h3>
-              <p>
-                {analyticsData.data.includes("Number of Questions")
-                  ? analyticsData.data.split("\n\n")[1].split(": ")[1]
-                  : "No Data Available"}
-              </p>
-            </div>
-
-            <div>
-              <h3 className="font-bold">Understanding of the Concept</h3>
-              <p>
-                {analyticsData.data.includes("Understanding of the Concept")
-                  ? analyticsData.data.split("\n\n")[2].split(": ")[1]
-                  : "No Data Available"}
-              </p>
-            </div>
-            <div>
-              <h3 className="font-bold">Conceptual Understanding</h3>
-              <p>
-                {analyticsData.data.includes("Conceptual Understanding")
-                  ? analyticsData.data.split("\n\n")[2].split(": ")[1]
-                  : "No Data Available"}
-              </p>
-            </div>
-
-            <div>
-              <h3 className="font-bold">Areas for Improvement</h3>
-              <p>
-                {analyticsData.data.includes("Areas for Improvement")
-                  ? analyticsData.data.split("\n\n")[2].split(": ")[1]
-                  : "No Data Available"}
-              </p>
-            </div>
-            <div>
-              <h3 className="font-bold">Engagement with AI Tools</h3>
-              <p>
-                {analyticsData.data.includes("Engagement with AI Tools")
-                  ? analyticsData.data.split("\n\n")[2].split(": ")[1]
-                  : "No Data Available"}
-              </p>
-            </div>
-            <div>
-              <h3 className="font-bold">Active Participation</h3>
-              <p>
-                {analyticsData.data.includes("Active Participation")
-                  ? analyticsData.data.split("\n\n")[2].split(": ")[1]
-                  : "No Data Available"}
-              </p>
-            </div>
+            <MarkdownRenderer content={analyticsData.data} />
           </div>
         </div>
       ) : (

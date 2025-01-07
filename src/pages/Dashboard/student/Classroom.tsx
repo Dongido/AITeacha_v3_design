@@ -17,12 +17,16 @@ import Drawer from "react-modern-drawer";
 import "react-modern-drawer/dist/index.css";
 import greyImg from "../../../assets/img/greyimg.avif";
 
+import MarkdownRenderer from "../_components/MarkdownRenderer";
+
 const Classroom = () => {
   const [inputText, setInputText] = useState("");
   const [selectedTool, setSelectedTool] = useState<string | null>(null);
   const [messages, setMessages] = useState<{
     [key: string]: { text: string; fromUser: boolean; isLoading?: boolean }[];
   }>({ main: [] });
+  const [userDetails, setUserDetails] = useState<any>(null);
+
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
@@ -46,6 +50,14 @@ const Classroom = () => {
     }
   }, [messages, selectedTool]);
 
+  useEffect(() => {
+    const userDetailsFromStorage = localStorage.getItem("ai-teacha-user");
+
+    if (userDetailsFromStorage) {
+      const parsedDetails = JSON.parse(userDetailsFromStorage);
+      setUserDetails(parsedDetails);
+    }
+  }, []);
   const handleSend = async () => {
     if (!inputText.trim()) return;
 
@@ -154,28 +166,32 @@ const Classroom = () => {
 
   const currentMessages = messages[selectedTool || "main"] || [];
   const welcomeMessage = selectedTool
-    ? `Hi👋, welcome to <strong>${selectedTool}</strong>. Start your conversation here!`
-    : `Hi👋, welcome to class "<strong>${
+    ? `Hi👋 ${userDetails.firstname}, welcome to <strong>${selectedTool}</strong>. Start your conversation here!`
+    : `Hi👋  ${userDetails.firstname}, welcome to class "<strong>${
         classroom?.classroom_name || "the classroom"
       }</strong>." Start your conversation here!`;
 
   return (
     <div className="mt-6">
-      <div className="flex items-center mb-4 justify-between flex-col sm:flex-row">
-        <Button
-          className="flex items-center bg-white rounded-md text-black w-fit h-full gap-3 py-2"
-          onClick={() => navigate(-1)}
-        >
-          <Undo2 size={"1.1rem"} color="black" />
-          Back
-        </Button>
+      <Button
+        className="flex items-center bg-white rounded-md text-black w-fit h-full gap-3 py-2"
+        onClick={() => navigate(-1)}
+      >
+        <Undo2 size={"1.1rem"} color="black" />
+        Back
+      </Button>
 
+      <div className="flex items-center mb-4 justify-between flex-col sm:flex-row">
         <div className="mx-auto text-center mt-4 sm:mt-0">
           <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">
             {classroom?.classroom_name}
           </h2>
-          <p className="text-sm sm:text-md font-medium text-gray-900">
-            {classroom?.classroom_description}
+          <p className="text-sm sm:text-md font-medium  max-w-xl text-gray-900">
+            {classroom?.classroom_description
+              ? classroom.classroom_description.length > 170
+                ? `${classroom.classroom_description.slice(0, 170)}...`
+                : classroom.classroom_description
+              : ""}
           </p>
           {selectedTool && (
             <p className="text-primary text-sm font-bold">
@@ -203,16 +219,15 @@ const Classroom = () => {
                   message.fromUser ? "justify-end" : "justify-start"
                 }`}
               >
-                <div
+                <MarkdownRenderer
                   className={`max-w-xs p-3 text-sm ${
                     message.fromUser
                       ? "bg-primary text-white rounded-tl-lg"
                       : "bg-gray-200 text-black rounded-tr-lg"
                   }`}
+                  content={message.text}
                   style={{ wordWrap: "break-word", whiteSpace: "pre-wrap" }}
-                >
-                  {message.text}
-                </div>
+                />
               </motion.div>
             ))
           )}

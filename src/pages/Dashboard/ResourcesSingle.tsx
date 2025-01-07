@@ -6,6 +6,7 @@ import { loadUserResourceById } from "../../store/slices/teamResourcesSlice";
 import { Skeleton } from "../../components/ui/Skeleton";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import MarkdownRenderer from "./_components/MarkdownRenderer";
 
 const ResourceSingle: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -48,12 +49,10 @@ const ResourceSingle: React.FC = () => {
           <div className="bg-white   p-6 w-full">
             <p className="text-gray-800 mb-6 ">
               <span className="font-bold text-lg">AI Response:</span> <br />
-              <ReactMarkdown
+              <MarkdownRenderer
                 className="w-full rounded-md resize-none markdown overflow-auto"
-                remarkPlugins={[remarkGfm]}
-              >
-                {selectedResource.returned_answer}
-              </ReactMarkdown>
+                content={selectedResource.returned_answer}
+              />
             </p>
 
             <p className="text-gray-500 text-sm">

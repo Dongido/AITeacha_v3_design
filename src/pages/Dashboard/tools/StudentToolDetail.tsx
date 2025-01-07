@@ -8,6 +8,7 @@ import { Input } from "../../../components/ui/Input";
 import { Label } from "../../../components/ui/Label";
 import { Button } from "../../../components/ui/Button";
 import { Undo2 } from "lucide-react";
+import MarkdownRenderer from "../_components/MarkdownRenderer";
 import {
   submitToolData,
   saveResource,
@@ -587,9 +588,10 @@ const StudentToolDetail = () => {
                                 : "bg-gray-200 text-black rounded-tr-lg"
                             }`}
                           >
-                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                              {msg.text}
-                            </ReactMarkdown>
+                            <MarkdownRenderer
+                              content={msg.text}
+                              className="markdown-content"
+                            />
                           </div>
                         </div>
                       ))}

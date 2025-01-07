@@ -8,6 +8,8 @@ import { Input } from "../../../components/ui/Input";
 import { Label } from "../../../components/ui/Label";
 import { Button } from "../../../components/ui/Button";
 import { Undo2 } from "lucide-react";
+import parse from "html-react-parser";
+
 import {
   submitToolData,
   saveResource,
@@ -54,13 +56,14 @@ import {
 import "primereact/resources/primereact.css";
 import "primereact/resources/themes/saga-blue/theme.css";
 import { pdf, Document, Page, Text, StyleSheet } from "@react-pdf/renderer";
+
 const gradeOptions = [
   "Pre School",
   "Early Years",
   "Nursery 1",
   "Nursery 2",
   ...Array.from({ length: 12 }, (_, i) => `Grade ${i + 1}`),
-  "University",
+  ...Array.from({ length: 5 }, (_, i) => `higher institution year ${i + 1}`),
 ];
 
 interface FormField {
@@ -92,7 +95,7 @@ const ToolDetail = () => {
   });
   const [formFields, setFormFields] = useState<FormField[]>([]);
   const [formLabels, setFormLabels] = useState<{ [key: string]: string }>({});
-  const [responseMessage, setResponseMessage] = useState<any | null>(null);
+  const [responseMessage, setResponseMessage] = useState<any | "">("");
   const [tunedResponseMessage, setTunedResponseMessage] = useState<any | null>(
     null
   );
@@ -161,7 +164,7 @@ const ToolDetail = () => {
               };
             });
 
-            console.log(fields);
+            //   console.log(fields);
             setFormFields(fields);
           }
         } catch (error) {
@@ -235,8 +238,9 @@ const ToolDetail = () => {
 
       const response = await submitToolData(formDataToSubmit);
       const plainTextResponse = await markdownToPlainText(response.data.data);
-
-      setResponseMessage(response.data.data);
+      const markedResponse = marked(response.data.data);
+      console.log(response.data.data);
+      setResponseMessage(markedResponse);
       setTunedResponseMessage(plainTextResponse);
       const imageUrl = plainTextResponse;
       const quotedImageUrl = `${imageUrl}`;
@@ -1139,11 +1143,17 @@ const ToolDetail = () => {
               </div>
             ) : (
               <>
-                <ReactMarkdown className="w-full p-3 border border-gray-300 bg-white rounded-md resize-none markdown overflow-auto max-h-96">
-                  {isSubmitting
-                    ? "AI Teacha is Typing..."
-                    : responseMessage || "No response yet."}
-                </ReactMarkdown>
+                <div className="w-full p-3 border border-gray-300 bg-white rounded-md resize-none markdown overflow-auto max-h-[700px]">
+                  {isSubmitting ? (
+                    "AI Teacha is Typing..."
+                  ) : (
+                    <div>
+                      {responseMessage
+                        ? parse(responseMessage)
+                        : responseMessage || "No response available."}
+                    </div>
+                  )}
+                </div>
                 {responseMessage && (
                   <div className="flex gap-4 mt-4">
                     <button

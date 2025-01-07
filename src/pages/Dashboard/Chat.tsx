@@ -5,6 +5,7 @@ import { marked } from "marked";
 import { motion } from "framer-motion";
 import { sendChatMessage } from "../../api/chat";
 import greyImg from "../../assets/img/greyimg.avif";
+import MarkdownRenderer from "./_components/MarkdownRenderer";
 const Chat = () => {
   const [inputText, setInputText] = useState("");
   const [messages, setMessages] = useState<
@@ -88,16 +89,15 @@ const Chat = () => {
                   message.fromUser ? "justify-end" : "justify-start"
                 }`}
               >
-                <div
+                <MarkdownRenderer
+                  content={message.text}
                   className={`max-w-xs p-3 text-sm ${
                     message.fromUser
                       ? "bg-primary text-white rounded-tl-lg"
                       : "bg-gray-200 text-black rounded-tr-lg"
                   }`}
                   style={{ wordWrap: "break-word", whiteSpace: "pre-wrap" }}
-                >
-                  {message.text}
-                </div>
+                />
               </motion.div>
             ))
           )}

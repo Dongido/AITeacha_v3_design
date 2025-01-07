@@ -142,7 +142,14 @@ const ClassroomDetail = () => {
             <h2 className="text-2xl font-bold mt-2">
               {classroom?.classroom_name}
             </h2>
-            <p className="text-lg mt-1">{classroom?.classroom_description}</p>
+            <p className="text-lg mt-1">
+              {" "}
+              {classroom?.classroom_description
+                ? classroom.classroom_description.length > 270
+                  ? `${classroom.classroom_description.slice(0, 270)}...`
+                  : classroom.classroom_description
+                : ""}
+            </p>
             <p className="text-lg">Status: {classroom?.status}</p>
 
             <div className="flex flex-col sm:flex-row items-center mt-2 justify-between sm:space-x-4">

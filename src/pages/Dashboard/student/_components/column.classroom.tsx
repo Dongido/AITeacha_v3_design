@@ -38,14 +38,20 @@ export const classroomColumns = [
       <span className="capitalize whitespace-nowrap">{info.getValue()}</span>
     ),
   }),
+
   classroomColumnHelper.accessor("description", {
     header: ({ column }) => <Header title="Description" column={column} />,
     sortingFn: "text",
-    cell: (info) => (
-      <span className="whitespace-nowrap">{info.getValue()}</span>
-    ),
-  }),
+    cell: (info) => {
+      const description = info.getValue();
+      const truncatedDescription =
+        description && description.length > 50
+          ? `${description.slice(0, 50)}...`
+          : description;
 
+      return <span className="whitespace-nowrap">{truncatedDescription}</span>;
+    },
+  }),
   classroomColumnHelper.accessor("grade", {
     header: ({ column }) => <Header title="Grade" column={column} />,
     sortingFn: "text",

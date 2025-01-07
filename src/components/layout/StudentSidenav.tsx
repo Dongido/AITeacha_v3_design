@@ -127,7 +127,7 @@ export function Sidenav({
         {routes.map(({ layout, title, pages }, key) => (
           <ul key={key} className="mb-4 flex flex-col gap-1">
             {title && !isCollapsed && (
-              <li className="mx-3.5 mt-4 mb-2">
+              <li className="mx-3.5 mt-4 mb-2 list-none">
                 <Text
                   variant="small"
                   color={sidenavType === "dark" ? "white" : "blue-gray"}
@@ -140,7 +140,7 @@ export function Sidenav({
             {pages.map(({ icon, name, path, adminOnly }) => {
               if (adminOnly && !isAdmin) return null;
               return (
-                <li key={name}>
+                <li key={name} className="list-none">
                   <NavLink to={`/${layout}${path}`}>
                     {({ isActive }) => (
                       <Button

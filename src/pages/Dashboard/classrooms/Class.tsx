@@ -11,7 +11,6 @@ import { useNavigate } from "react-router-dom";
 import { Classroom } from "../../../api/interface";
 import { Link } from "react-router-dom";
 import RestrictedPage from "./RestrictionPage";
-
 const Classrooms = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { classrooms, loading, error } = useSelector(

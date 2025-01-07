@@ -20,6 +20,7 @@ import {
 } from "../../../components/ui/Dialogue";
 import { Editor, EditorState, RichUtils, ContentState } from "draft-js";
 import "draft-js/dist/Draft.css";
+import MarkdownRenderer from "../_components/MarkdownRenderer";
 
 const StudentAnalytics = () => {
   const navigate = useNavigate();
@@ -147,7 +148,9 @@ const StudentAnalytics = () => {
               <h3 className="font-semibold text-gray-900">
                 Teacher's Feedback
               </h3>
-              <p>{teachersFeedback || "No feedback provided yet."}</p>
+              <MarkdownRenderer
+                content={teachersFeedback || "No feedback provided yet."}
+              />
             </div>
 
             <Button
