@@ -152,19 +152,18 @@ const Home = () => {
                 <h2 className="text-xl font-bold text-gray-900 mb-4 px-2">
                   Popular Tools
                 </h2>
-                <motion.div
-                  className="flex gap-4"
-                  whileTap={{ cursor: "grabbing" }}
-                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                >
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 text-center mx-auto">
+                <div className="relative w-full">
+                  <div
+                    className="flex gap-4 animate-marquee whitespace-nowrap"
+                    style={{ animation: "marquee 20s linear infinite" }}
+                  >
                     {tools
                       .filter((tool) => tool.tag === "popular")
                       .map((tool) => (
                         <div
                           onClick={() => handleToolClick(tool.id, tool.slug)}
                           key={tool.id}
-                          className="flex items-center border border-gray-300 px-4 py-3 rounded-3xl bg-white hover:bg-gray-50 cursor-pointer transition duration-500 ease-in-out transform hover:scale-105"
+                          className="flex-none w-72 border border-gray-300 px-4 py-3 rounded-3xl bg-white hover:bg-gray-50 cursor-pointer transition duration-500 ease-in-out transform hover:scale-105"
                         >
                           <div className="text-primary text-2xl mr-4">
                             {tool.thumbnail ? (
@@ -188,7 +187,7 @@ const Home = () => {
                                 ? "Solver"
                                 : tool.name}
                             </h3>
-                            <p className="text-gray-700 text-sm">
+                            <p className="text-gray-700 text-sm truncate">
                               {tool.description.charAt(0).toUpperCase() +
                                 tool.description.slice(1)}
                             </p>
@@ -196,7 +195,7 @@ const Home = () => {
                         </div>
                       ))}
                   </div>
-                </motion.div>
+                </div>
               </div>
             )}
 

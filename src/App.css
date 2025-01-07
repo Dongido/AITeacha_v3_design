@@ -20,6 +20,14 @@
 .submenu-item {
   margin-top: 0.5rem;
 }
+@keyframes marquee {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
 
 @keyframes scroll {
   0% {
