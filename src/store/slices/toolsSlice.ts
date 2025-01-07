@@ -13,6 +13,7 @@ interface Tool {
   is_customizable: number;
   req_param: string;
   label: string;
+  tag: string;
   created_at: string;
   updated_at: string;
 }

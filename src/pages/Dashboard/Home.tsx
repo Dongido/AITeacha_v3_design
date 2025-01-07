@@ -146,8 +146,60 @@ const Home = () => {
               </Link>
             </div>
           </div>
-
           <div className="mt-8 overflow-x-auto py-4">
+            {tools.some((tool) => tool.tag === "popular") && (
+              <div className="mb-8">
+                <h2 className="text-xl font-bold text-gray-900 mb-4 px-2">
+                  Popular Tools
+                </h2>
+                <motion.div
+                  className="flex gap-4"
+                  whileTap={{ cursor: "grabbing" }}
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                >
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 text-center mx-auto">
+                    {tools
+                      .filter((tool) => tool.tag === "popular")
+                      .map((tool) => (
+                        <div
+                          onClick={() => handleToolClick(tool.id, tool.slug)}
+                          key={tool.id}
+                          className="flex items-center border border-gray-300 px-4 py-3 rounded-3xl bg-white hover:bg-gray-50 cursor-pointer transition duration-500 ease-in-out transform hover:scale-105"
+                        >
+                          <div className="text-primary text-2xl mr-4">
+                            {tool.thumbnail ? (
+                              <img
+                                src={
+                                  tool.thumbnail.startsWith("http")
+                                    ? tool.thumbnail
+                                    : `https://${tool.thumbnail}`
+                                }
+                                alt={tool.name || "Tool Thumbnail"}
+                                className="w-16 h-16 object-cover rounded-lg"
+                              />
+                            ) : (
+                              <FaHeart className="text-purple-500 w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center" />
+                            )}
+                          </div>
+
+                          <div className="text-left">
+                            <h3 className="text-base capitalize font-semibold text-gray-900">
+                              {tool.name === "math calculator"
+                                ? "Solver"
+                                : tool.name}
+                            </h3>
+                            <p className="text-gray-700 text-sm">
+                              {tool.description.charAt(0).toUpperCase() +
+                                tool.description.slice(1)}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </motion.div>
+              </div>
+            )}
+
             <div className="flex justify-between items-center mb-4 px-2">
               <h2 className="text-xl font-bold text-gray-900">Tools</h2>
               <Link
@@ -160,6 +212,7 @@ const Home = () => {
                 </button>
               </Link>
             </div>
+
             <motion.div
               className="flex gap-4"
               whileTap={{ cursor: "grabbing" }}

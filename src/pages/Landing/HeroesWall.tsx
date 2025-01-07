@@ -77,15 +77,15 @@ const HeroesWall = () => {
     );
   };
 
-  useEffect(() => {
-    // Lazy load Twitter widgets script
-    const script = document.createElement("script");
-    script.src = "https://platform.twitter.com/widgets.js";
-    script.async = true;
-    script.charset = "utf-8";
-    document.body.appendChild(script);
-    script.onload = () => window.twttr.widgets.load(); // Ensure widgets load after script is loaded
-  }, []);
+  // useEffect(() => {
+  //   // Lazy load Twitter widgets script
+  //   const script = document.createElement("script");
+  //   script.src = "https://platform.twitter.com/widgets.js";
+  //   script.async = true;
+  //   script.charset = "utf-8";
+  //   document.body.appendChild(script);
+  //   script.onload = () => window.twttr.widgets.load(); // Ensure widgets load after script is loaded
+  // }, []);
 
   return (
     <div>
@@ -125,18 +125,18 @@ const HeroesWall = () => {
                   href={wall.post_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block bg-gradient-to-br from-[#9B5FA0] via-[#D565A7] to-[#FF8A95]
+                  className="block bg-gradient-to-br from-[#5c3cbb] via-[#D565A7] to-[#5c3cbb]
  text-white rounded-xl shadow-lg p-6 hover:shadow-2xl"
                 >
                   {renderEmbed(wall)}
-                  <div className="mt-4">
+                  {/* <div className="mt-4">
                     <p className="text-sm text-white font-medium">
                       Source: {wall.source}
                     </p>
                     <p className="text-xs text-gray-200">
                       Created: {new Date(wall.created_at).toLocaleDateString()}
                     </p>
-                  </div>
+                  </div> */}
                 </a>
               </li>
             ))}
