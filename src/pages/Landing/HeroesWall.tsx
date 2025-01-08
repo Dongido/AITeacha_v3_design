@@ -1,9 +1,15 @@
 import React, { useEffect, useState, useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import { fetchHeroesWall } from "../../api/heroeswall";
+import {
+  fetchHeroesWallThunk,
+  resetError,
+} from "../../store/slices/HeroesWallSlice";
+import { RootState } from "../../store";
 
-// Declare global window.twttr type
+import { AppDispatch } from "../../store";
+
 declare global {
   interface Window {
     twttr: {
@@ -24,68 +30,124 @@ export interface HeroesWall {
   updated_at: string;
 }
 
-const HeroesWall = () => {
-  const [heroes, setHeroes] = useState<HeroesWall[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+const LazyLoadPost: React.FC<{ postUrl: string; source: string }> = ({
+  postUrl,
+  source,
+}) => {
+  const postRef = React.useRef<HTMLDivElement | null>(null);
 
-  const loadHeroesWall = useCallback(async () => {
-    try {
-      const data = await fetchHeroesWall();
-      setHeroes(data);
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            if (window.twttr) {
+              window.twttr.widgets.load();
+            }
+            observer.disconnect(); // Stop observing once it's loaded
+          }
+        });
+      },
+      {
+        threshold: 0.5, // Load when 50% of the card is in view
+      }
+    );
+
+    if (postRef.current) {
+      observer.observe(postRef.current);
     }
+
+    return () => {
+      if (postRef.current) {
+        observer.unobserve(postRef.current);
+      }
+    };
   }, []);
 
-  // useEffect(() => {
-  //   // Reload the page on every visit
-  //   window.location.reload();
-  // }, []);
+  return (
+    <div
+      ref={postRef}
+      className="embed-container max-h-[500px] overflow-hidden rounded-md relative"
+    >
+      {source === "twitter" ||
+      source === "facebook" ||
+      source === "instagram" ||
+      source === "linkedin" ? (
+        <div
+          className="embed-content max-h-[500px] overflow-hidden text-ellipsis whitespace-normal break-words"
+          dangerouslySetInnerHTML={{ __html: postUrl }}
+        ></div>
+      ) : (
+        <a
+          href={postUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-500 underline"
+        >
+          Visit Post
+        </a>
+      )}
+      <div className="absolute bottom-0 left-0 right-0 h-[40px] bg-gradient-to-t from-white to-transparent"></div>
+    </div>
+  );
+};
+
+const HeroesWall = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { heroesWall, loading, error } = useSelector(
+    (state: RootState) => state.heroesWall
+  );
+  const [loaded, setLoaded] = useState(false);
+
+  const loadHeroesWall = useCallback(() => {
+    if (heroesWall.length === 0) {
+      dispatch(fetchHeroesWallThunk());
+    }
+  }, [dispatch, heroesWall]);
+
+  // Dynamically load Twitter widgets.js
+  useEffect(() => {
+    const loadTwitterScript = () => {
+      const script = document.createElement("script");
+      script.src = "https://platform.twitter.com/widgets.js";
+      script.async = true;
+      script.onload = () => {
+        if (window.twttr) {
+          window.twttr.widgets.load();
+        }
+      };
+      document.body.appendChild(script);
+    };
+
+    loadTwitterScript();
+  }, []);
 
   useEffect(() => {
     loadHeroesWall();
   }, [loadHeroesWall]);
 
-  const renderEmbed = (wall: HeroesWall) => {
-    const { source, post_url } = wall;
+  useEffect(() => {
+    if (!loading) {
+      setTimeout(() => {
+        setLoaded(true);
+      }, 3000);
+    }
+  }, [loading]);
 
-    return (
-      <div className="embed-container max-h-[500px] overflow-hidden rounded-md relative">
-        {source === "twitter" ||
-        source === "facebook" ||
-        source === "instagram" ||
-        source === "linkedin" ? (
-          <div
-            className="embed-content max-h-[500px] overflow-hidden text-ellipsis whitespace-normal break-words"
-            dangerouslySetInnerHTML={{ __html: post_url }}
-          ></div>
-        ) : (
-          <a
-            href={post_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-500 underline"
-          >
-            Visit Post
-          </a>
-        )}
-        <div className="absolute bottom-0 left-0 right-0 h-[40px] bg-gradient-to-t from-white to-transparent"></div>
-      </div>
-    );
-  };
+  useEffect(() => {
+    if (loaded && window.twttr) {
+      window.twttr.widgets.load(); // Ensure Twitter widgets are loaded
+    }
+  }, [loaded]);
 
-  // useEffect(() => {
-  //   // Lazy load Twitter widgets script
-  //   const script = document.createElement("script");
-  //   script.src = "https://platform.twitter.com/widgets.js";
-  //   script.async = true;
-  //   script.charset = "utf-8";
-  //   document.body.appendChild(script);
-  //   script.onload = () => window.twttr.widgets.load(); // Ensure widgets load after script is loaded
-  // }, []);
+  useEffect(() => {
+    if (error) {
+      // Reset error after some time
+      setTimeout(() => {
+        dispatch(resetError());
+      }, 5000);
+    }
+  }, [error, dispatch]);
 
   return (
     <div>
@@ -110,37 +172,34 @@ const HeroesWall = () => {
       {/* Cards Section */}
       <section className="container mx-auto p-4">
         {loading ? (
-          <p className="text-center text-gray-500">Loading...</p>
+          <div className="flex justify-center items-center">
+            <div className="spinner"></div>
+          </div>
         ) : error ? (
           <p className="text-center text-red-500">{error}</p>
         ) : (
-          <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {heroes.map((wall) => (
-              <li
-                key={wall.id}
-                className="transition-transform transform hover:scale-105"
-              >
-                {/* Card Design */}
-                <a
-                  href={wall.post_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block bg-gradient-to-br from-[#5c3cbb] via-[#D565A7] to-[#5c3cbb]
- text-white rounded-xl shadow-lg p-6 hover:shadow-2xl"
+          loaded && (
+            <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {heroesWall.map((wall: HeroesWall) => (
+                <li
+                  key={wall.id}
+                  className="transition-transform transform hover:scale-105"
                 >
-                  {renderEmbed(wall)}
-                  {/* <div className="mt-4">
-                    <p className="text-sm text-white font-medium">
-                      Source: {wall.source}
-                    </p>
-                    <p className="text-xs text-gray-200">
-                      Created: {new Date(wall.created_at).toLocaleDateString()}
-                    </p>
-                  </div> */}
-                </a>
-              </li>
-            ))}
-          </ul>
+                  <a
+                    href={wall.post_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block bg-gradient-to-br from-[#5c3cbb] via-[#D565A7] to-[#5c3cbb] text-white rounded-xl shadow-lg p-6 hover:shadow-2xl"
+                  >
+                    <LazyLoadPost
+                      postUrl={wall.post_url}
+                      source={wall.source}
+                    />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )
         )}
       </section>
 
