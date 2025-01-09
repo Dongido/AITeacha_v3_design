@@ -139,6 +139,7 @@ const VerifyEmail = () => {
         );
 
         setIsEmailVerified(true);
+        window.location.reload();
         navigate("/dashboard/home");
       }
     } catch (error) {

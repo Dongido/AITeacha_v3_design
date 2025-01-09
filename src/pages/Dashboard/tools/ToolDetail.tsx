@@ -163,8 +163,7 @@ const ToolDetail = () => {
                 placeholder: labels[label] || "",
               };
             });
-
-            //   console.log(fields);
+            console.log(fields);
             setFormFields(fields);
           }
         } catch (error) {
@@ -315,6 +314,29 @@ const ToolDetail = () => {
     link.href = URL.createObjectURL(blob);
     link.download = `${tool.service_id}response.pdf`;
     link.click();
+  };
+  const [subTopicInputList, setSubTopicInputList] = useState<string[]>([""]);
+
+  const handleAddSubTopic = () => {
+    setSubTopicInputList((prev) => [...prev, ""]); // Add a new empty input field
+  };
+
+  const handleSubTopicChange = (index: number, value: string) => {
+    setSubTopicInputList((prev) =>
+      prev.map((item, i) => (i === index ? value : item))
+    ); // Update the value of a specific input
+  };
+
+  const handleRemoveSubTopic = (index: number) => {
+    if (index === 0) return;
+    setSubTopicInputList((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleSaveSubTopics = () => {
+    setFormData((prev) => ({
+      ...prev,
+      subtopic: subTopicInputList.filter((subTopic) => subTopic.trim() !== ""),
+    }));
   };
 
   const capitalize = (str: string) => {
@@ -633,6 +655,78 @@ const ToolDetail = () => {
                       )}
                     </div>
                   )}
+                  {field.name === "subtopic" &&
+                    tool.req_param?.includes("subtopic") && (
+                      <div>
+                        <Label>{field.label}</Label>
+
+                        {/* Render the first (default) subtopic field */}
+                        <div className="flex gap-4 mb-4">
+                          <div className="w-full">
+                            <Input
+                              type="text"
+                              placeholder="Enter sub topic"
+                              value={subTopicInputList[0]}
+                              onChange={(
+                                e: React.ChangeEvent<HTMLInputElement>
+                              ) => handleSubTopicChange(0, e.target.value)}
+                              className="input-field w-full"
+                            />
+                          </div>
+                        </div>
+
+                        {/* Render dynamically created input fields (excluding the first one) */}
+                        {subTopicInputList.slice(1).map((subTopic, index) => (
+                          <div key={index + 1} className="flex gap-4 mb-4">
+                            <div className="w-full">
+                              <Input
+                                type="text"
+                                placeholder="Enter sub topic"
+                                value={subTopic}
+                                onChange={(
+                                  e: React.ChangeEvent<HTMLInputElement>
+                                ) =>
+                                  handleSubTopicChange(
+                                    index + 1,
+                                    e.target.value
+                                  )
+                                }
+                                className="input-field w-full"
+                              />
+                            </div>
+                            <Button
+                              type="button"
+                              onClick={() => handleRemoveSubTopic(index + 1)}
+                              className="text-red-500"
+                            >
+                              Remove
+                            </Button>
+                          </div>
+                        ))}
+
+                        <div className="flex gap-4">
+                          <div className="mt-4">
+                            <Button
+                              type="button"
+                              onClick={handleAddSubTopic}
+                              className="rounded-md bg-white border border-gray-300"
+                            >
+                              Add SubTopic
+                            </Button>
+                          </div>
+
+                          <div className="mt-4">
+                            <Button
+                              type="button"
+                              onClick={handleSaveSubTopics}
+                              className="bg-gray-800 rounded-md text-white"
+                            >
+                              Save SubTopics
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   {field.name === "sdg" && tool.req_param?.includes("sdg") && (
                     <div>
                       <Label>{field.label}</Label>
@@ -1037,6 +1131,7 @@ const ToolDetail = () => {
                     field.name != "curriculum_type" &&
                     field.name != "audio" &&
                     field.name != "mediaType" &&
+                    field.name != "subtopic" &&
                     field.name != "feedbackType" &&
                     field.name != "curriculum_focus" &&
                     field.name !== "activitytype" &&

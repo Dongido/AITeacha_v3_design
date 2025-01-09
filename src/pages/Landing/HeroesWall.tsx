@@ -7,8 +7,8 @@ import {
   resetError,
 } from "../../store/slices/HeroesWallSlice";
 import { RootState } from "../../store";
-
 import { AppDispatch } from "../../store";
+import { useLocation } from "react-router-dom";
 
 declare global {
   interface Window {
@@ -94,6 +94,7 @@ const LazyLoadPost: React.FC<{ postUrl: string; source: string }> = ({
 
 const HeroesWall = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const location = useLocation();
   const { heroesWall, loading, error } = useSelector(
     (state: RootState) => state.heroesWall
   );
@@ -104,6 +105,34 @@ const HeroesWall = () => {
       dispatch(fetchHeroesWallThunk());
     }
   }, [dispatch, heroesWall]);
+
+  // Handle page reload logic using localStorage
+  useEffect(() => {
+    const isLoaded = localStorage.getItem("isHeroesWallLoaded");
+
+    if (isLoaded !== "true") {
+      localStorage.setItem("isHeroesWallLoaded", "true");
+
+      setTimeout(() => {
+        window.location.reload();
+      }, 5000);
+    }
+  }, []);
+
+  useEffect(() => {
+    const resetOnLeave = () => {
+      if (location.pathname !== "/heroes-wall") {
+        localStorage.setItem("isHeroesWallLoaded", "false");
+      }
+    };
+
+    window.addEventListener("beforeunload", resetOnLeave);
+
+    return () => {
+      window.removeEventListener("beforeunload", resetOnLeave);
+      resetOnLeave();
+    };
+  }, [location.pathname]);
 
   // Dynamically load Twitter widgets.js
   useEffect(() => {
@@ -136,13 +165,12 @@ const HeroesWall = () => {
 
   useEffect(() => {
     if (loaded && window.twttr) {
-      window.twttr.widgets.load(); // Ensure Twitter widgets are loaded
+      window.twttr.widgets.load();
     }
   }, [loaded]);
 
   useEffect(() => {
     if (error) {
-      // Reset error after some time
       setTimeout(() => {
         dispatch(resetError());
       }, 5000);
@@ -169,7 +197,6 @@ const HeroesWall = () => {
         </section>
       </section>
 
-      {/* Cards Section */}
       <section className="container mx-auto p-4">
         {loading ? (
           <div className="flex justify-center items-center">
@@ -179,11 +206,11 @@ const HeroesWall = () => {
           <p className="text-center text-red-500">{error}</p>
         ) : (
           loaded && (
-            <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 list-none gap-6">
               {heroesWall.map((wall: HeroesWall) => (
                 <li
                   key={wall.id}
-                  className="transition-transform transform hover:scale-105"
+                  className="transition-transform transform list-none hover:scale-105"
                 >
                   <a
                     href={wall.post_url}

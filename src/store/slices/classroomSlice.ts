@@ -6,6 +6,7 @@ import {
   fetchClassroomById,
   removeStudentFromClassroom,
   fetchStudentsInClassroom,
+  editClassroom,
 } from "../../api/classrooms";
 import { Student, Classroom } from "../../api/interface";
 
@@ -16,6 +17,7 @@ interface ClassroomsState {
   loading: boolean;
   creating: boolean;
   deleting: boolean;
+  editing: boolean;
   fetchingClassroom: boolean;
   fetchingStudents: boolean;
   error: string | null;
@@ -28,6 +30,7 @@ const initialState: ClassroomsState = {
   loading: false,
   creating: false,
   fetchingClassroom: false,
+  editing: false,
   deleting: false,
   fetchingStudents: false,
   error: null,
@@ -58,7 +61,49 @@ export const fetchClassroomByIdThunk = createAsyncThunk(
     }
   }
 );
+export const editClassroomThunk = createAsyncThunk(
+  "classrooms/editClassroom",
+  async (
+    {
+      id,
+      data,
+      contentType = "multipart/form-data",
+    }: {
+      id: string;
+      data: {
+        user_id: number;
+        name: string;
+        description?: string;
+        grade: string;
+        status: string;
+        number_of_students: number;
+        scope_restriction: boolean;
 
+        resources: File[];
+      };
+      contentType?: string;
+    },
+    { rejectWithValue }
+  ) => {
+    try {
+      const formData = new FormData();
+      formData.append("user_id", data.user_id.toString());
+      formData.append("name", data.name);
+      if (data.description) formData.append("description", data.description);
+      formData.append("grade", data.grade);
+      formData.append("status", data.status);
+      formData.append("scope_restriction", data.scope_restriction.toString());
+      formData.append("number_of_students", data.number_of_students.toString());
+      data.resources.forEach((file) => {
+        formData.append("resources", file);
+      });
+      const updatedClassroom = await editClassroom(id, formData, contentType);
+      return updatedClassroom;
+    } catch (error: any) {
+      return rejectWithValue(error.message || "Failed to edit classroom.");
+    }
+  }
+);
 export const fetchStudentsForClassroomThunk = createAsyncThunk(
   "classrooms/fetchStudentsForClassroom",
   async (classroomId: number, { rejectWithValue }) => {
@@ -183,6 +228,33 @@ const classroomsSlice = createSlice({
       )
       .addCase(fetchClassroomByIdThunk.rejected, (state, action) => {
         state.fetchingClassroom = false;
+        state.error = action.payload as string;
+      })
+      // Edit classroom
+      .addCase(editClassroomThunk.pending, (state) => {
+        state.editing = true;
+        state.error = null;
+      })
+      .addCase(
+        editClassroomThunk.fulfilled,
+        (state, action: PayloadAction<Classroom>) => {
+          state.editing = false;
+          // Update the edited classroom in the state
+          state.classrooms = state.classrooms.map((classroom) =>
+            classroom.classroom_id === action.payload.classroom_id
+              ? action.payload
+              : classroom
+          );
+          if (
+            state.selectedClassroom &&
+            state.selectedClassroom.classroom_id === action.payload.classroom_id
+          ) {
+            state.selectedClassroom = action.payload;
+          }
+        }
+      )
+      .addCase(editClassroomThunk.rejected, (state, action) => {
+        state.editing = false;
         state.error = action.payload as string;
       })
       .addCase(fetchStudentsForClassroomThunk.pending, (state) => {

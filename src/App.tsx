@@ -1,4 +1,5 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { useEffect } from "react";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import "./App.css";
 import Dashboard from "./layouts/Dashboard";
 import StudentDashboard from "./layouts/StudentDashboard";
@@ -34,8 +35,24 @@ import DataPrivacy from "./pages/Landing/communities/DataPrivacy";
 import Resources from "./pages/Dashboard/Resources";
 import DashboardHandler from "./DashboardHandler";
 
-//Dashboard Routes
 function App() {
+  const location = useLocation();
+
+  useEffect(() => {
+    const resetOnLeave = () => {
+      if (location.pathname !== "/heroes-wall") {
+        localStorage.setItem("isHeroesWallLoaded", "false");
+      }
+    };
+
+    window.addEventListener("beforeunload", resetOnLeave);
+
+    return () => {
+      window.removeEventListener("beforeunload", resetOnLeave);
+      resetOnLeave();
+    };
+  }, [location.pathname]);
+
   return (
     <Routes>
       <Route path="/" element={<Home />} />

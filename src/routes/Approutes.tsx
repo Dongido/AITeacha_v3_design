@@ -57,7 +57,7 @@ import ResetForm from "../pages/Auth/ResetForm";
 import JoinClassroom from "../pages/Dashboard/classrooms/JoinClassroom";
 import ToolDetail from "../pages/Dashboard/tools/ToolDetail";
 import Onboard from "../pages/Auth/Onboard";
-
+import EditClassroom from "../pages/Dashboard/classrooms/EditClassroom";
 const icon = {
   className: "w-5 h-5 text-inherit",
 };
@@ -211,6 +211,12 @@ export const Paramroutes = [
         name: "classrooms",
         path: "/classrooms/create",
         element: <CreateOrEditClassroom isEdit={false} />,
+      },
+      {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "classrooms",
+        path: "/classrooms/edit/:id",
+        element: <EditClassroom />,
       },
 
       {

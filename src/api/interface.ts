@@ -32,7 +32,7 @@ export interface Classroom {
   join_code: string;
   author: string;
   tools: Tool[];
-  classroomresources: ClassroomResource[];
+  classroomresources: any[];
   resources: any[];
 }
 export interface ClassroomData {

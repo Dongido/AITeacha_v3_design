@@ -79,6 +79,35 @@ export const createClassroom = async (
     );
   }
 };
+
+export const editClassroom = async (
+  id: string,
+  data: any,
+  contentType: string = "multipart/form-data"
+): Promise<Classroom> => {
+  console.log("Using Content-Type:", contentType);
+  console.log(data);
+  try {
+    const response = await apiClient.put<{
+      status: string;
+      message: string;
+      data: Classroom;
+    }>(`/classroom/${id}`, data, {
+      headers: {
+        "Content-Type": contentType,
+      },
+    });
+    if (response.status !== 200) {
+      throw new Error("Failed to update classroom.");
+    }
+    return response.data.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data || "Failed to update classroom. Please try again."
+    );
+  }
+};
+
 export const fetchClassroomById = async (
   classroomId: number
 ): Promise<Classroom> => {
