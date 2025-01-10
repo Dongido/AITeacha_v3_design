@@ -50,7 +50,7 @@ const StudentReport = () => {
 
   const getCellColor = (grade: number) => {
     if (grade <= 4) return COLORS.Fail;
-    if (grade <= 8) return COLORS.Good;
+    if (grade <= 7.1) return COLORS.Good;
     return COLORS.Excellent;
   };
 
