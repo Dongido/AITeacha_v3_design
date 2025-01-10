@@ -6,7 +6,7 @@ import DeleteAssignmentDialog from "./DeleteAssignmentDialog";
 import { StatusType } from "../../../../lib/constants";
 import Status from "../../_components/Status";
 import { useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const assignmentColumnHelper = createColumnHelper<Assignment>();
 
@@ -40,15 +40,26 @@ export const assignmentColumns = [
     ),
   }),
   assignmentColumnHelper.accessor("assignment_description", {
-    header: ({ column }) => <Header title="Description" column={column} />,
+    header: ({ column }) => (
+      <Header title="Assignment Description" column={column} />
+    ),
     sortingFn: "text",
     cell: (info) => {
+      const assignmentId = info.row.original.assignment_id;
+
       const description = info.getValue();
       const truncatedDescription =
-        description.length > 20
-          ? `${description.slice(0, 20)}...`
+        description.length > 30
+          ? `${description.slice(0, 30)}...`
           : description;
-      return <span className="whitespace-nowrap">{truncatedDescription}</span>;
+      return (
+        <Link
+          to={`/dashboard/assignment/details/${assignmentId}`}
+          className="whitespace-nowrap text-primary"
+        >
+          {truncatedDescription}
+        </Link>
+      );
     },
   }),
   assignmentColumnHelper.accessor("grade", {

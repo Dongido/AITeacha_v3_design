@@ -61,6 +61,7 @@ import EditClassroom from "../pages/Dashboard/classrooms/EditClassroom";
 import EditClassroomTools from "../pages/Dashboard/classrooms/EditClassroomTools";
 import ReportData from "../pages/Dashboard/report/ReportData";
 import ReportDummy from "../pages/Dashboard/ReportDummy";
+import StudentReport from "../pages/Dashboard/report/StudentReport";
 const icon = {
   className: "w-5 h-5 text-inherit",
 };
@@ -121,17 +122,17 @@ export const routes = [
       },
       {
         icon: <DocumentTextIcon {...icon} />,
-        name: "report-test",
-        path: "/report-data",
-        element: <Report />,
-        adminOnly: true,
-      },
-      {
-        icon: <DocumentTextIcon {...icon} />,
         name: "report",
         path: "/report",
-        element: <ReportDummy />,
+        element: <Report />,
+        // adminOnly: true,
       },
+      // {
+      //   icon: <DocumentTextIcon {...icon} />,
+      //   name: "report",
+      //   path: "/report",
+      //   element: <ReportDummy />,
+      // },
       {
         icon: <UserGroupIcon {...icon} />,
         name: "Premium Features",
@@ -250,7 +251,7 @@ export const Paramroutes = [
       {
         icon: <AcademicCapIcon {...icon} />,
         name: "assignments",
-        path: "//assignments/edit/:id",
+        path: "/assignments/edit/:id",
         element: <CreateOrEditAssignment />,
       },
       {
@@ -258,6 +259,12 @@ export const Paramroutes = [
         name: "report",
         path: "/report/classroom/:id",
         element: <ReportData />,
+      },
+      {
+        icon: <DocumentTextIcon {...icon} />,
+        name: "report",
+        path: "/report/:reportId/:studentId",
+        element: <StudentReport />,
       },
       {
         icon: <AcademicCapIcon {...icon} />,
@@ -270,6 +277,12 @@ export const Paramroutes = [
         name: "classrooms",
         path: "/assignments/:id/students/:assignmentId",
         element: <AssignmentStudents />,
+      },
+      {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "classrooms",
+        path: "/assignments/joined",
+        element: <StudentAssignments />,
       },
       {
         icon: <AcademicCapIcon {...icon} />,
@@ -308,6 +321,20 @@ export const Paramroutes = [
         path: "/student/tools/:slug",
         element: <StudentToolDetail />,
       },
+
+      {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "classes",
+        path: "/assignments/attempt/:id",
+        element: <StudentAssignment />,
+      },
+      {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "classes",
+        path: "/assignments/:id/details/:assignmentId",
+        element: <AssignmentDetails />,
+      },
+
       {
         icon: <AcademicCapIcon {...icon} />,
         name: "profile",

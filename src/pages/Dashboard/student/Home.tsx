@@ -71,9 +71,7 @@ const Home = () => {
           ) : (
             <h2 className="text-2xl font-bold mt-2">Hi, there 👋</h2>
           )}
-          <p className="text-lg mt-1">
-            You have completed 2 assignments so far!
-          </p>
+          <p className="text-lg mt-1">You have some assignments!</p>
           <Link to={"#"}>
             <button className="mt-4 flex hover:bg-gray-200 items-center bg-white text-[#5C3CBB] font-semibold py-2 px-4 rounded-full text-sm">
               See All

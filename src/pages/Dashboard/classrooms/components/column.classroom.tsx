@@ -6,9 +6,17 @@ import DeleteClassroomDialog from "./DeleteClassroomDialogue";
 import { StatusType } from "../../../../lib/constants";
 import Status from "../../_components/Status";
 import { useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const classroomColumnHelper = createColumnHelper<Classroom>();
+const getRedirectPath = (role: number, classroomId: number) => {
+  if (role === 2) {
+    return `/dashboard/classrooms/details/${classroomId}`;
+  } else if (role === 3) {
+    return `/student/class/details/${classroomId}`;
+  }
+  return `/dashboard/classrooms/details/${classroomId}`;
+};
 
 export const classroomColumns = [
   classroomColumnHelper.accessor("classroom_id", {
@@ -35,9 +43,24 @@ export const classroomColumns = [
   classroomColumnHelper.accessor("classroom_name", {
     header: ({ column }) => <Header title="Classroom Name" column={column} />,
     sortingFn: "text",
-    cell: (info) => (
-      <span className="capitalize whitespace-nowrap">{info.getValue()}</span>
-    ),
+    cell: (info) => {
+      const classroomId = info.row.original.classroom_id;
+
+      const userDetails = JSON.parse(
+        localStorage.getItem("ai-teacha-user") || "{}"
+      );
+      const role = userDetails.role;
+      const redirectPath = getRedirectPath(role, classroomId);
+
+      return (
+        <Link
+          to={redirectPath}
+          className="capitalize text-primary whitespace-nowrap"
+        >
+          {info.getValue()}
+        </Link>
+      );
+    },
   }),
   classroomColumnHelper.accessor("classroom_description", {
     header: ({ column }) => <Header title="Description" column={column} />,

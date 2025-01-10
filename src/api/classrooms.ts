@@ -128,6 +128,30 @@ export const fetchReport = async (reportId: string): Promise<any> => {
   }
 };
 
+export const fetchStudentReport = async (
+  reportId: string,
+  studentId: string
+): Promise<any> => {
+  try {
+    const response = await apiClient.get<{
+      status: string;
+      message: string;
+      data: any;
+    }>(`/report/${reportId}/${studentId}`);
+
+    if (response.status !== 200) {
+      throw new Error("Failed to fetch the student report.");
+    }
+
+    return response.data.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data ||
+        "Failed to fetch the student report. Please try again."
+    );
+  }
+};
+
 export const editClassroomTools = async (toolsData: any): Promise<any[]> => {
   console.log("Tools Data:", toolsData);
 

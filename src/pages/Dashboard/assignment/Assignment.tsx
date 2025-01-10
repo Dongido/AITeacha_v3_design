@@ -37,6 +37,9 @@ const Assignment = () => {
   const handleLaunchNewAssignment = () => {
     navigate("/dashboard/assignments/create");
   };
+  const handleViewAssignment = () => {
+    navigate("/dashboard/assignments/joined");
+  };
 
   const renderError = () => {
     if (error === "Permission restricted for unverified email") {
@@ -131,6 +134,13 @@ const Assignment = () => {
               Your Assignments
             </h2>
             <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+              <Button
+                variant="gray"
+                className="flex items-center w-full sm:w-fit h-full gap-3 rounded-md"
+                onClick={handleViewAssignment}
+              >
+                View Your Assignments
+              </Button>
               <Button
                 variant="gradient"
                 className="flex items-center w-full sm:w-fit h-full gap-3 rounded-md"

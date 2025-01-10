@@ -89,6 +89,11 @@ const AssignmentColumnsComponent = () => {
         const assignmentId = info.row.original.assignment_id;
         const submissionStatus = info.row.original.submission_status;
 
+        const userDetails = JSON.parse(
+          localStorage.getItem("ai-teacha-user") || "{}"
+        );
+        const isRole2 = userDetails.role === 2;
+
         const deleteDialogRef = useRef<{ openDialog: () => void }>(null);
 
         return (
@@ -96,12 +101,20 @@ const AssignmentColumnsComponent = () => {
             <Actions
               attemptLink={
                 submissionStatus === "pending"
-                  ? `/student/assignments/attempt/${assignmentId}`
+                  ? `${
+                      isRole2
+                        ? `/dashboard/assignments/attempt/${assignmentId}`
+                        : `/student/assignments/attempt/${assignmentId}`
+                    }`
                   : undefined
               }
               viewLink={
                 submissionStatus === "submitted"
-                  ? `/student/assignments/${id}/details/${assignmentId}`
+                  ? `${
+                      isRole2
+                        ? `/dashboard/assignments/${userDetails.id}/details/${assignmentId}`
+                        : `/student/assignments/${userDetails.id}/details/${assignmentId}`
+                    }`
                   : undefined
               }
             />

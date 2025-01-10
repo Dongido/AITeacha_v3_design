@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
 import {
   Dialog,
   DialogContent,
@@ -17,55 +17,63 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../components/ui/Select";
-
+import { fetchStudentsInClassroom } from "../../api/classrooms";
 const Report = () => {
   const dispatch = useAppDispatch();
-  const navigate = useNavigate(); // Initialize navigate
+  const navigate = useNavigate();
+
   const { classrooms, loading, error } = useSelector(
     (state: any) => state.classrooms
   );
 
-  const [openAssignmentDialog, setOpenAssignmentDialog] = useState(false);
+  const [openStudentDialog, setOpenStudentDialog] = useState(false);
   const [openClassroomDialog, setOpenClassroomDialog] = useState(false);
-  const [selectedAssignment, setSelectedAssignment] = useState<string | null>(
-    null
-  );
-  const [selectedClassroom, setSelectedClassroom] = useState<string | null>(
-    null
-  );
-
-  const assignments = [
-    { id: "1", name: "Math Assignment 1" },
-    { id: "2", name: "History Essay" },
-    { id: "3", name: "Science Project" },
-  ];
+  const [selectedClassroomForStudents, setSelectedClassroomForStudents] =
+    useState<string | null>(null);
+  const [students, setStudents] = useState<any[]>([]);
+  const [loadingStudents, setLoadingStudents] = useState(false);
+  const [studentError, setStudentError] = useState<string | null>(null);
+  const [selectedStudent, setSelectedStudent] = useState<string | null>(null);
 
   useEffect(() => {
     if (openClassroomDialog) {
       dispatch(loadClassrooms());
     }
   }, [dispatch, openClassroomDialog]);
+  useEffect(() => {
+    if (openStudentDialog) {
+      dispatch(loadClassrooms());
+    }
+  }, [dispatch, openStudentDialog]);
 
   useEffect(() => {
-    if (selectedClassroom) {
-      navigate(`/dashboard/report/classroom/${selectedClassroom}`);
+    if (selectedClassroomForStudents) {
+      setLoadingStudents(true);
+      setStudentError(null);
+
+      fetchStudentsInClassroom(Number(selectedClassroomForStudents))
+        .then((data) => {
+          setStudents(data);
+          setLoadingStudents(false);
+        })
+        .catch((error) => {
+          setStudentError(error.message);
+          setLoadingStudents(false);
+        });
     }
-  }, [selectedClassroom, navigate]);
+  }, [selectedClassroomForStudents]);
+
+  useEffect(() => {
+    if (selectedStudent && selectedClassroomForStudents) {
+      navigate(
+        `/dashboard/report/${selectedClassroomForStudents}/${selectedStudent}`
+      );
+    }
+  }, [selectedStudent, selectedClassroomForStudents, navigate]);
 
   return (
     <div className="flex flex-col items-center justify-center space-y-6">
       <div className="flex flex-wrap justify-between items-center w-full h-screen gap-6">
-        {/* Assignment Report */}
-        <div
-          className="p-8 rounded-lg shadow-lg flex-1 cursor-pointer lg:max-w-[48%] min-h-[300px] bg-gradient-to-r from-pink-100 via-purple-100 to-indigo-100 hover:scale-105 transition-transform duration-300 flex justify-center items-center"
-          onClick={() => setOpenAssignmentDialog(true)}
-        >
-          <h2 className="text-gray-800 text-2xl font-extrabold text-center">
-            📘 Assignment Report
-          </h2>
-        </div>
-
-        {/* Classroom Report */}
         <div
           className="p-8 rounded-lg shadow-lg flex-1 cursor-pointer lg:max-w-[48%] min-h-[300px] bg-gradient-to-r from-teal-100 via-blue-100 to-indigo-100 hover:scale-105 transition-transform duration-300 flex justify-center items-center"
           onClick={() => setOpenClassroomDialog(true)}
@@ -74,53 +82,76 @@ const Report = () => {
             🏫 Classroom Report
           </h2>
         </div>
+        <div
+          className="p-8 rounded-lg shadow-lg flex-1 cursor-pointer lg:max-w-[48%] min-h-[300px] bg-gradient-to-r from-green-100 via-yellow-100 to-orange-100 hover:scale-105 transition-transform duration-300 flex justify-center items-center"
+          onClick={() => setOpenStudentDialog(true)}
+        >
+          <h2 className="text-gray-800 text-2xl font-extrabold text-center">
+            👨‍🎓 Student Report
+          </h2>
+        </div>
       </div>
-
-      <Dialog
-        open={openAssignmentDialog}
-        onOpenChange={setOpenAssignmentDialog}
-      >
+      <Dialog open={openStudentDialog} onOpenChange={setOpenStudentDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Assignment Report</DialogTitle>
+            <DialogTitle>Student Report</DialogTitle>
             <DialogDescription>
-              Select an assignment to view its report:
+              Select a classroom and then a student to view their report:
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">
-            <Select onValueChange={setSelectedAssignment}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select an assignment" />
+            <Select onValueChange={setSelectedClassroomForStudents}>
+              <SelectTrigger className="h-12">
+                <SelectValue placeholder="Select a classroom" />
               </SelectTrigger>
               <SelectContent>
-                {assignments.map((assignment) => (
-                  <SelectItem key={assignment.id} value={assignment.id}>
-                    {assignment.name}
+                {classrooms.map((classroom: any) => (
+                  <SelectItem
+                    key={classroom.classroom_id}
+                    value={classroom.classroom_id}
+                  >
+                    {classroom.classroom_name}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
 
-            {selectedAssignment && (
-              <div className="mt-4 p-4 bg-gray-100 rounded-md shadow-md">
-                <p>
-                  Selected Assignment:{" "}
-                  <span className="font-semibold">
-                    {
-                      assignments.find(
-                        (assignment) => assignment.id === selectedAssignment
-                      )?.name
-                    }
-                  </span>
-                </p>
-              </div>
+            <Select
+              onValueChange={setSelectedStudent}
+              disabled={!selectedClassroomForStudents || loadingStudents}
+            >
+              <SelectTrigger className="h-12">
+                <SelectValue
+                  placeholder={
+                    loadingStudents ? "Loading students..." : "Select a student"
+                  }
+                />
+              </SelectTrigger>
+              <SelectContent>
+                {students.map((student) => (
+                  <SelectItem
+                    key={student.student_id}
+                    value={student.student_id}
+                  >
+                    {student.firstname} {student.lastname}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {studentError && (
+              <p className="text-red-500">Error: {studentError}</p>
             )}
+            {!loadingStudents &&
+              selectedClassroomForStudents &&
+              students.length === 0 && (
+                <p>No students found in this classroom.</p>
+              )}
           </div>
         </DialogContent>
       </Dialog>
 
-      {/* Classroom Dialog */}
       <Dialog open={openClassroomDialog} onOpenChange={setOpenClassroomDialog}>
         <DialogContent>
           <DialogHeader>
@@ -134,7 +165,11 @@ const Report = () => {
             {loading && <p>Loading classrooms...</p>}
             {error && <p className="text-red-500">Error: {error}</p>}
             {!loading && classrooms.length > 0 && (
-              <Select onValueChange={setSelectedClassroom}>
+              <Select
+                onValueChange={(value) =>
+                  navigate(`/dashboard/report/classroom/${value}`)
+                }
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select a classroom" />
                 </SelectTrigger>

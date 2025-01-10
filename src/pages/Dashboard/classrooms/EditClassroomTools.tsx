@@ -131,7 +131,7 @@ const EditClassroomTools: React.FC = () => {
 
   return (
     <div className="mt-12">
-      <h1 className="text-2xl font-bold">Edit Classroom</h1>
+      <h1 className="text-2xl font-bold">Edit Classroom Tools</h1>
       <div className="flex w-full my-6 items-center justify-between">
         <Button
           onClick={() => navigate(-1)}

@@ -139,8 +139,10 @@ const VerifyEmail = () => {
         );
 
         setIsEmailVerified(true);
-        window.location.reload();
+
         navigate("/dashboard/home");
+
+        window.location.reload();
       }
     } catch (error) {
       setToastMessage("Verification failed. Please try again.");

@@ -26,7 +26,7 @@ const Resources = () => {
   useEffect(() => {
     dispatch(loadResources());
   }, [dispatch]);
-  
+
   useEffect(() => {
     const userDetailsFromStorage = localStorage.getItem("ai-teacha-user");
 
