@@ -19,9 +19,14 @@ export const fetchAssignmentsByUser = async (): Promise<Assignment[]> => {
 
     return response.data.data;
   } catch (error: any) {
-    throw new Error(
-      error.response?.data || "Failed to fetch assignments. Please try again."
-    );
+    if (error.response?.status === 403) {
+      throw new Error(
+        error.response?.data?.message ||
+          "Failed to fetch classrooms. Please try again."
+      );
+    } else {
+      throw new Error("Failed to fetch classrooms. Please try again.");
+    }
   }
 };
 

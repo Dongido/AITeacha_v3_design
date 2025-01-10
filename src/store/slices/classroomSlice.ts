@@ -7,6 +7,7 @@ import {
   removeStudentFromClassroom,
   fetchStudentsInClassroom,
   editClassroom,
+  editClassroomTools,
 } from "../../api/classrooms";
 import { Student, Classroom } from "../../api/interface";
 
@@ -61,6 +62,20 @@ export const fetchClassroomByIdThunk = createAsyncThunk(
     }
   }
 );
+export const editClassroomToolsThunk = createAsyncThunk(
+  "classrooms/editClassroomTools",
+  async (toolsData: any, { rejectWithValue }) => {
+    try {
+      const updatedTools = await editClassroomTools(toolsData);
+      return updatedTools;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.message || "Failed to edit classroom tools."
+      );
+    }
+  }
+);
+
 export const editClassroomThunk = createAsyncThunk(
   "classrooms/editClassroom",
   async (
@@ -283,6 +298,21 @@ const classroomsSlice = createSlice({
       })
       .addCase(removeStudentFromClassroomThunk.rejected, (state, action) => {
         state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(editClassroomToolsThunk.pending, (state) => {
+        state.editing = true;
+        state.error = null;
+      })
+      .addCase(editClassroomToolsThunk.fulfilled, (state, action) => {
+        state.editing = false;
+        // Assuming `selectedClassroom` contains tools
+        if (state.selectedClassroom) {
+          state.selectedClassroom.tools = action.payload;
+        }
+      })
+      .addCase(editClassroomToolsThunk.rejected, (state, action) => {
+        state.editing = false;
         state.error = action.payload as string;
       })
       .addCase(deleteClassroomThunk.pending, (state) => {

@@ -1,0 +1,109 @@
+{
+  "classroom": {
+    "id": "PYTHON101",
+    "topic": "Introduction to Python Programming",
+    "description": "A beginner-friendly course covering Python basics, including variables, data types, control structures, and functions. Students will learn through interactive coding exercises and AI-guided practice."
+  },
+  "students": [
+    {
+      "id": "ST001",
+      "name": "Alex Johnson",
+      "performance": {
+        "assignment_grade": 9,
+        "engagement_grade": 8,
+        "assessment_response_grade": 9,
+        "understanding_grade": 8.7
+      }
+    },
+    {
+      "id": "ST002",
+      "name": "Maria Garcia",
+      "performance": {
+        "assignment_grade": 10,
+        "engagement_grade": 10,
+        "assessment_response_grade": 9,
+        "understanding_grade": 9.7
+      }
+    },
+    {
+      "id": "ST003",
+      "name": "James Lee",
+      "performance": {
+        "assignment_grade": 6,
+        "engagement_grade": 7,
+        "assessment_response_grade": 7,
+        "understanding_grade": 6.7
+      }
+    },
+    {
+      "id": "ST004",
+      "name": "Sarah Wilson",
+      "performance": {
+        "assignment_grade": 9,
+        "engagement_grade": 9,
+        "assessment_response_grade": 8,
+        "understanding_grade": 8.7
+      }
+    },
+    {
+      "id": "ST005",
+      "name": "David Chen",
+      "performance": {
+        "assignment_grade": 5,
+        "engagement_grade": 4,
+        "assessment_response_grade": 6,
+        "understanding_grade": 5.0
+      }
+    },
+    {
+      "id": "ST006",
+      "name": "Emily Brown",
+      "performance": {
+        "assignment_grade": 8,
+        "engagement_grade": 9,
+        "assessment_response_grade": 8,
+        "understanding_grade": 8.3
+      }
+    },
+    {
+      "id": "ST007",
+      "name": "Michael Kim",
+      "performance": {
+        "assignment_grade": 4,
+        "engagement_grade": 5,
+        "assessment_response_grade": 5,
+        "understanding_grade": 4.7
+      }
+    },
+    {
+      "id": "ST008",
+      "name": "Lisa Martinez",
+      "performance": {
+        "assignment_grade": 7,
+        "engagement_grade": 8,
+        "assessment_response_grade": 7,
+        "understanding_grade": 7.3
+      }
+    },
+    {
+      "id": "ST009",
+      "name": "Ryan Thompson",
+      "performance": {
+        "assignment_grade": 9,
+        "engagement_grade": 7,
+        "assessment_response_grade": 8,
+        "understanding_grade": 8.0
+      }
+    },
+    {
+      "id": "ST010",
+      "name": "Amanda Patel",
+      "performance": {
+        "assignment_grade": 6,
+        "engagement_grade": 6,
+        "assessment_response_grade": 7,
+        "understanding_grade": 6.3
+      }
+    }
+  ]
+}

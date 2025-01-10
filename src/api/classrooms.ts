@@ -108,6 +108,49 @@ export const editClassroom = async (
   }
 };
 
+export const fetchReport = async (reportId: string): Promise<any> => {
+  try {
+    const response = await apiClient.get<{
+      status: string;
+      message: string;
+      data: any;
+    }>(`/report/${reportId}`);
+
+    if (response.status !== 200) {
+      throw new Error("Failed to fetch the report.");
+    }
+
+    return response.data.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data || "Failed to fetch the report. Please try again."
+    );
+  }
+};
+
+export const editClassroomTools = async (toolsData: any): Promise<any[]> => {
+  console.log("Tools Data:", toolsData);
+
+  try {
+    const response = await apiClient.put<{
+      status: string;
+      message: string;
+      data: any;
+    }>(`/classroom/tools/update`, toolsData);
+
+    if (response.status !== 200) {
+      throw new Error("Failed to update classroom tools.");
+    }
+
+    return response.data.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data ||
+        "Failed to update classroom tools. Please try again."
+    );
+  }
+};
+
 export const fetchClassroomById = async (
   classroomId: number
 ): Promise<Classroom> => {

@@ -58,6 +58,9 @@ import JoinClassroom from "../pages/Dashboard/classrooms/JoinClassroom";
 import ToolDetail from "../pages/Dashboard/tools/ToolDetail";
 import Onboard from "../pages/Auth/Onboard";
 import EditClassroom from "../pages/Dashboard/classrooms/EditClassroom";
+import EditClassroomTools from "../pages/Dashboard/classrooms/EditClassroomTools";
+import ReportData from "../pages/Dashboard/report/ReportData";
+import ReportDummy from "../pages/Dashboard/ReportDummy";
 const icon = {
   className: "w-5 h-5 text-inherit",
 };
@@ -118,9 +121,16 @@ export const routes = [
       },
       {
         icon: <DocumentTextIcon {...icon} />,
+        name: "report-test",
+        path: "/report-data",
+        element: <Report />,
+        adminOnly: true,
+      },
+      {
+        icon: <DocumentTextIcon {...icon} />,
         name: "report",
         path: "/report",
-        element: <Report />,
+        element: <ReportDummy />,
       },
       {
         icon: <UserGroupIcon {...icon} />,
@@ -218,6 +228,12 @@ export const Paramroutes = [
         path: "/classrooms/edit/:id",
         element: <EditClassroom />,
       },
+      {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "classrooms",
+        path: "/classrooms/edit-tools/:id",
+        element: <EditClassroomTools />,
+      },
 
       {
         icon: <AcademicCapIcon {...icon} />,
@@ -236,6 +252,12 @@ export const Paramroutes = [
         name: "assignments",
         path: "//assignments/edit/:id",
         element: <CreateOrEditAssignment />,
+      },
+      {
+        icon: <DocumentTextIcon {...icon} />,
+        name: "report",
+        path: "/report/classroom/:id",
+        element: <ReportData />,
       },
       {
         icon: <AcademicCapIcon {...icon} />,
