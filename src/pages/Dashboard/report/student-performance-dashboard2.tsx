@@ -11,6 +11,7 @@ import {
   PieChart,
   Pie,
   Cell as PieCell,
+  ResponsiveContainer,
 } from "recharts";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useParams } from "react-router-dom";
@@ -140,11 +141,11 @@ const StudentDashboard = () => {
   const totalPages = Math.ceil(students.length / studentsPerPage);
 
   return (
-    <div className="p-6 w-full mx-auto space-y-8">
-      <div className="bg-white rounded-lg shadow p-6 flex space-x-8">
-        <div className="w-1/2">
-          <h2 className="text-2xl font-bold mb-4">
-            Student Understanding Categories
+    <div className=" w-full mx-auto space-y-8">
+      <div className="bg-white rounded-lg shadow p-4 sm:p-6 flex flex-col lg:flex-row lg:space-x-8 space-y-6 lg:space-y-0">
+        <div className="lg:w-1/2">
+          <h2 className="text-xl lg:text-2xl font-bold mb-4">
+            Student Understanding
           </h2>
           {loading ? (
             <Skeleton className="h-96 w-full" />
@@ -153,29 +154,33 @@ const StudentDashboard = () => {
               Oops, no analytics available
             </p>
           ) : (
-            <BarChart
-              width={600}
-              height={300}
-              data={chartData}
-              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="value">
-                {chartData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Bar>
-            </BarChart>
+            <div className="h-96">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  width={600}
+                  height={300}
+                  data={chartData}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis domain={[0, 10]} ticks={[0, 2, 4, 6, 8, 10]} />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="value">
+                    {chartData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
           )}
         </div>
 
-        <div className="w-1/2">
-          <h2 className="text-2xl font-bold mb-4">
-            Student Engagement Categories
+        <div className="lg:w-1/2">
+          <h2 className="text-xl lg:text-2xl font-bold mb-4">
+            Student Engagement
           </h2>
           {loading ? (
             <Skeleton className="h-96 w-full" />
@@ -184,61 +189,69 @@ const StudentDashboard = () => {
               Oops, no analytics available
             </p>
           ) : (
-            <BarChart
-              width={600}
-              height={300}
-              data={engagementChartData}
-              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="value">
-                {engagementChartData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Bar>
-            </BarChart>
+            <div className="h-96">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  width={600}
+                  height={300}
+                  data={engagementChartData}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis domain={[0, 10]} ticks={[0, 2, 4, 6, 8, 10]} />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="value">
+                    {engagementChartData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
           )}
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow p-6 flex space-x-8">
-        <div className="w-1/2">
-          <h2 className="text-2xl font-bold mb-4">
-            Assignment Grade Distribution
+      <div className="bg-white rounded-lg  p-4 sm:p-6 flex flex-col lg:flex-row lg:space-x-8 space-y-6 lg:space-y-0">
+        <div className="lg:w-1/2">
+          <h2 className="text-xl lg:text-2xl font-bold mb-4">
+            Assignment Performance Distribution
           </h2>
           {loading ? (
             <Skeleton className="h-96 w-full" />
           ) : students.length === 0 ? (
             <p className="text-center text-gray-500">Oops, no data available</p>
           ) : (
-            <PieChart width={400} height={400}>
-              <Pie
-                data={assignmentChartData}
-                dataKey="value"
-                nameKey="name"
-                cx="50%"
-                cy="50%"
-                outerRadius={100}
-                fill="#8884d8"
-                label={({ name, percent }) =>
-                  `${name} ${(percent * 100).toFixed(0)}%`
-                }
-              >
-                {assignmentChartData.map((entry, index) => (
-                  <PieCell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Pie>
-              <Tooltip />
-            </PieChart>
+            <div className="h-96">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart width={400} height={400}>
+                  <Pie
+                    data={assignmentChartData}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={100}
+                    fill="#8884d8"
+                    label={({ name, percent }) =>
+                      `${name} ${(percent * 100).toFixed(0)}%`
+                    }
+                  >
+                    {assignmentChartData.map((entry, index) => (
+                      <PieCell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
           )}
         </div>
 
-        <div className="w-1/2">
-          <h2 className="text-2xl font-bold mb-4">
+        <div className="lg:w-1/2">
+          <h2 className="text-xl lg:text-2xl font-bold mb-4">
             Assessment Response Grade Distribution
           </h2>
           {loading ? (
@@ -246,30 +259,35 @@ const StudentDashboard = () => {
           ) : students.length === 0 ? (
             <p className="text-center text-gray-500">Oops, no data available</p>
           ) : (
-            <PieChart width={400} height={400}>
-              <Pie
-                data={assessmentChartData}
-                dataKey="value"
-                nameKey="name"
-                cx="50%"
-                cy="50%"
-                outerRadius={100}
-                fill="#82ca9d"
-                label={({ name, percent }) =>
-                  `${name} ${(percent * 100).toFixed(0)}%`
-                }
-              >
-                {assessmentChartData.map((entry, index) => (
-                  <PieCell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Pie>
-              <Tooltip />
-            </PieChart>
+            <div className="h-96">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart width={400} height={400}>
+                  <Pie
+                    data={assessmentChartData}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={100}
+                    fill="#82ca9d"
+                    label={({ name, percent }) =>
+                      `${name} ${(percent * 100).toFixed(0)}%`
+                    }
+                  >
+                    {assessmentChartData.map((entry, index) => (
+                      <PieCell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
           )}
         </div>
       </div>
+
       {/* Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-white rounded-lg shadow overflow-x-auto">
         <table className="min-w-full divide-y  text-center divide-gray-200">
           <thead className="bg-gray-50">
             <tr>

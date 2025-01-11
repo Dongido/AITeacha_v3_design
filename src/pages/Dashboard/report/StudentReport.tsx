@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { fetchStudentReport } from "../../../api/classrooms";
+import { useParams, useNavigate } from "react-router-dom";
+import {
+  fetchStudentReport,
+  fetchStudentsInClassroom,
+} from "../../../api/classrooms";
 import {
   BarChart,
   Bar,
@@ -21,22 +24,46 @@ const COLORS = {
 
 const StudentReport = () => {
   const { reportId, studentId } = useParams();
+  const [students, setStudents] = useState<any[]>([]);
+  const [selectedStudentId, setSelectedStudentId] = useState<string | null>(
+    studentId || null
+  );
   const [studentReport, setStudentReport] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
-    const fetchReport = async () => {
-      if (!reportId || !studentId) {
-        setError("Invalid report or student ID.");
+    const fetchStudents = async () => {
+      if (!reportId) {
+        setError("Invalid classroom ID.");
         return;
       }
+
+      try {
+        const studentList = await fetchStudentsInClassroom(Number(reportId));
+        setStudents(studentList);
+        if (studentList.length > 0 && !selectedStudentId) {
+          setSelectedStudentId(studentList[0].id);
+        }
+      } catch (err: any) {
+        setError(err.message || "Failed to fetch the list of students.");
+      }
+    };
+
+    fetchStudents();
+  }, [reportId, selectedStudentId]);
+
+  useEffect(() => {
+    const fetchReport = async () => {
+      if (!reportId || !selectedStudentId) return;
 
       setLoading(true);
       setError(null);
 
       try {
-        const report = await fetchStudentReport(reportId, studentId);
+        const report = await fetchStudentReport(reportId, selectedStudentId);
         setStudentReport(report);
       } catch (err: any) {
         setError(err.message || "Failed to fetch the student report.");
@@ -46,7 +73,7 @@ const StudentReport = () => {
     };
 
     fetchReport();
-  }, [reportId, studentId]);
+  }, [reportId, selectedStudentId]);
 
   const getCellColor = (grade: number) => {
     if (grade <= 4) return COLORS.Fail;
@@ -54,18 +81,11 @@ const StudentReport = () => {
     return COLORS.Excellent;
   };
 
-  const ColoredCell = ({ value }: { value: number }) => (
-    <td
-      className="p-2 border text-center"
-      style={{
-        backgroundColor: getCellColor(value),
-        color: "black",
-        fontWeight: "medium",
-      }}
-    >
-      {value}
-    </td>
-  );
+  const handleStudentChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newStudentId = e.target.value;
+    setSelectedStudentId(newStudentId);
+    navigate(`/dashboard/report/${reportId}/${newStudentId}`); // Update the URL when the student is changed
+  };
 
   if (loading) {
     return <p>Loading student report...</p>;
@@ -96,8 +116,26 @@ const StudentReport = () => {
   return (
     <div className="p-6 space-y-8">
       <div>
-        <h2 className="text-2xl font-bold">{classroom.name}</h2>
-        <p className="text-gray-700 mt-2">{classroom.description}</p>
+        <h2 className="text-2xl font-bold">{classroom?.name}</h2>
+        <p className="text-gray-700 mt-2">{classroom?.description}</p>
+      </div>
+
+      <div className="space-y-4">
+        <label htmlFor="studentSelect" className="text-lg font-semibold">
+          Change Student:
+        </label>
+        <select
+          id="studentSelect"
+          className="border p-2 rounded"
+          value={selectedStudentId || ""}
+          onChange={handleStudentChange}
+        >
+          {students.map((student) => (
+            <option key={student.student_id} value={student.student_id}>
+              {student.firstname} {student.lastname}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div>
@@ -163,7 +201,16 @@ const StudentReport = () => {
             {metrics.map((metric, index) => (
               <tr key={index}>
                 <td className="p-2 border">{metric.name}</td>
-                <ColoredCell value={metric.value} />
+                <td
+                  className="p-2 border text-center"
+                  style={{
+                    backgroundColor: getCellColor(metric.value),
+                    color: "black",
+                    fontWeight: "medium",
+                  }}
+                >
+                  {metric.value}
+                </td>
               </tr>
             ))}
           </tbody>

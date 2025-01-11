@@ -101,21 +101,26 @@ const Report = () => {
           </DialogHeader>
 
           <div className="space-y-4">
-            <Select onValueChange={setSelectedClassroomForStudents}>
-              <SelectTrigger className="h-12">
-                <SelectValue placeholder="Select a classroom" />
-              </SelectTrigger>
-              <SelectContent>
-                {classrooms.map((classroom: any) => (
-                  <SelectItem
-                    key={classroom.classroom_id}
-                    value={classroom.classroom_id}
-                  >
-                    {classroom.classroom_name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            {loading && <p>Loading classrooms...</p>}
+            {error && <p className="text-red-500">Error: {error}</p>}
+            {!loading && classrooms.length > 0 && (
+              <Select onValueChange={setSelectedClassroomForStudents}>
+                <SelectTrigger className="h-12">
+                  <SelectValue placeholder="Select a classroom" />
+                </SelectTrigger>
+                <SelectContent>
+                  {classrooms.map((classroom: any) => (
+                    <SelectItem
+                      key={classroom.classroom_id}
+                      value={classroom.classroom_id}
+                    >
+                      {classroom.classroom_name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+            {!loading && classrooms.length === 0 && <p>No classrooms found.</p>}
 
             <Select
               onValueChange={setSelectedStudent}
