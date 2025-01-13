@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { loadTools, loadStudentTools } from "../../store/slices/toolsSlice";
@@ -19,9 +19,10 @@ import {
   DialogTrigger,
 } from "../../components/ui/Dialogue";
 import { Button } from "../../components/ui/Button";
+
 const Tools = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const navigate = useNavigate(); // Initialize navigate
+  const navigate = useNavigate();
 
   const { tools, loading, error, studentTools, studentLoading, studentError } =
     useSelector((state: RootState) => state.tools);
@@ -42,7 +43,6 @@ const Tools = () => {
 
   useEffect(() => {
     const userDetailsFromStorage = localStorage.getItem("ai-teacha-user");
-
     if (userDetailsFromStorage) {
       const parsedDetails = JSON.parse(userDetailsFromStorage);
       setUserDetails(parsedDetails);
@@ -66,22 +66,17 @@ const Tools = () => {
       }
     } catch (error) {
       setIsDialogOpen(true);
-      //  alert("Failed to check eligibility. Please try again.");
     }
   };
 
-  useEffect(() => {
-    const userDetailsFromStorage = localStorage.getItem("ai-teacha-user");
-
-    if (userDetailsFromStorage) {
-      const parsedDetails = JSON.parse(userDetailsFromStorage);
-      setUserDetails(parsedDetails);
-      setIsEmailVerified(parsedDetails.is_email_verified);
-    }
-  }, []);
   const handleVerifyEmail = () => {
     navigate("/dashboard/verify-email");
   };
+
+  const filteredTools = showStudentTools ? studentTools : tools;
+
+  const popularTools = filteredTools.filter((tool) => tool.tag === "popular");
+  const otherTools = filteredTools.filter((tool) => tool.tag !== "popular");
 
   return (
     <div className="mt-4">
@@ -98,6 +93,7 @@ const Tools = () => {
           </span>
         </div>
       )}
+
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-medium text-gray-900">
           AI Tools to enhance your experience🤓
@@ -122,41 +118,91 @@ const Tools = () => {
           {showStudentTools ? studentError : error}
         </p>
       ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 text-center mx-auto">
-          {(showStudentTools ? studentTools : tools).map((tool) => (
-            <div
-              key={tool.id}
-              onClick={() => handleToolClick(tool.id, tool.slug)}
-              className="flex items-center border border-gray-300 px-4 py-3 rounded-3xl bg-white hover:bg-gray-50 cursor-pointer transition duration-500 ease-in-out transform hover:scale-105"
-            >
-              <div className="text-primary text-2xl mr-4">
-                {tool.thumbnail ? (
-                  <img
-                    src={
-                      tool.thumbnail.startsWith("http")
-                        ? tool.thumbnail
-                        : `https://${tool.thumbnail}`
-                    }
-                    alt={tool.name || "Tool Thumbnail"}
-                    className="w-16 h-16 object-cover rounded-lg"
-                    width={300}
-                    height={300}
-                  />
-                ) : (
-                  <FaHeart className="text-purple-500 w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center" />
-                )}
-              </div>
-
-              <div className="text-left">
-                <h3 className="text-base capitalize font-semibold text-gray-900">
-                  {tool.name === "math calculator" ? "Solver" : tool.name}
-                </h3>
-                {tool.description.charAt(0).toUpperCase() +
-                  tool.description.slice(1)}
+        <>
+          {popularTools.length > 0 && (
+            <div className="mb-8">
+              <h2 className="text-xl font-bold text-gray-900 mb-4 px-2">
+                Recommended Tools
+              </h2>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 text-center mx-auto">
+                {popularTools.map((tool) => (
+                  <div
+                    key={tool.id}
+                    onClick={() => handleToolClick(tool.id, tool.slug)}
+                    className="flex items-center border border-gray-300 px-4 py-3 rounded-3xl bg-white hover:bg-gray-50 cursor-pointer transition duration-500 ease-in-out transform hover:scale-105"
+                    style={{
+                      background: "rgba(232, 121, 249, 0.15)",
+                      transition: "background 0.3s ease",
+                    }}
+                  >
+                    <div className="text-primary text-2xl mr-4">
+                      {tool.thumbnail ? (
+                        <img
+                          src={
+                            tool.thumbnail.startsWith("http")
+                              ? tool.thumbnail
+                              : `https://${tool.thumbnail}`
+                          }
+                          alt={tool.name || "Tool Thumbnail"}
+                          className="w-16 h-16 object-cover rounded-lg"
+                        />
+                      ) : (
+                        <FaHeart className="text-purple-500 w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center" />
+                      )}
+                    </div>
+                    <div className="text-left">
+                      <h3 className="text-base capitalize font-semibold text-gray-900">
+                        {tool.name === "math calculator" ? "Solver" : tool.name}
+                      </h3>
+                      <p className="text-gray-700 text-sm">
+                        {tool.description.charAt(0).toUpperCase() +
+                          tool.description.slice(1)}
+                      </p>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-          ))}
-        </div>
+          )}
+
+          <h2 className="text-xl font-bold text-gray-900 mb-4 px-2">
+            More Tools
+          </h2>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 text-center mx-auto">
+            {otherTools.map((tool) => (
+              <div
+                key={tool.id}
+                onClick={() => handleToolClick(tool.id, tool.slug)}
+                className="flex items-center border border-gray-300 px-4 py-3 rounded-3xl bg-white hover:bg-gray-50 cursor-pointer transition duration-500 ease-in-out transform hover:scale-105"
+              >
+                <div className="text-primary text-2xl mr-4">
+                  {tool.thumbnail ? (
+                    <img
+                      src={
+                        tool.thumbnail.startsWith("http")
+                          ? tool.thumbnail
+                          : `https://${tool.thumbnail}`
+                      }
+                      alt={tool.name || "Tool Thumbnail"}
+                      className="w-16 h-16 object-cover rounded-lg"
+                    />
+                  ) : (
+                    <FaHeart className="text-purple-500 w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center" />
+                  )}
+                </div>
+                <div className="text-left">
+                  <h3 className="text-base capitalize font-semibold text-gray-900">
+                    {tool.name === "math calculator" ? "Solver" : tool.name}
+                  </h3>
+                  <p className="text-gray-700 text-sm">
+                    {tool.description.charAt(0).toUpperCase() +
+                      tool.description.slice(1)}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
       )}
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

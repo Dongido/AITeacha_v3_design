@@ -190,7 +190,7 @@ const StudentReport = () => {
       </div>
 
       <div className="overflow-x-auto mt-8">
-        <table className="w-full border-collapse">
+        <table className="w-full border-collapse ">
           <thead>
             <tr className="bg-gray-100">
               <th className="p-2 border">Metric</th>
@@ -215,6 +215,11 @@ const StudentReport = () => {
             ))}
           </tbody>
         </table>
+      </div>
+
+      <div className="">
+        <h1>Summary</h1>
+        <p className="bg-white p-4 rounded-md">{student.performance.summary}</p>
       </div>
     </div>
   );

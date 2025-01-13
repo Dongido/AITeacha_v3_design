@@ -262,7 +262,7 @@ const Home = () => {
             )}
 
             <div className="flex justify-between items-center mb-4 px-2">
-              <h2 className="text-xl font-bold text-gray-900">Tools</h2>
+              <h2 className="text-xl font-bold text-gray-900">All Tools</h2>
               <Link
                 to="/dashboard/tools"
                 className="text-sm text-blue-600 hover:underline"
