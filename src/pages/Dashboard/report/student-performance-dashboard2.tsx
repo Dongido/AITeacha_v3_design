@@ -17,7 +17,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { fetchReport } from "../../../api/classrooms";
 import { Skeleton } from "../../../components/ui/Skeleton";
-
+import StudentDashboardPerformance from "./Student performance ";
 const StudentDashboard = () => {
   const { id } = useParams<{ id?: string }>();
   const [students, setStudents] = useState<any[]>([]);
@@ -67,6 +67,18 @@ const StudentDashboard = () => {
     },
     { Excellent: 0, Good: 0, Fail: 0 }
   );
+  const getCategory = (grade: any) => {
+    if (grade <= 40) return "Fail";
+    if (grade <= 70) return "Good";
+    return "Excellent";
+  };
+
+  const categoryData = students.reduce((acc: any, student: any) => {
+    const category = getCategory(student.performance.understanding_grade);
+    const percentage = (acc[category] || 0) + (1 / students.length) * 100;
+    acc[category] = Math.round(percentage * 10) / 10;
+    return acc;
+  }, {});
 
   const assignmentCategories = students.reduce(
     (acc, student) => {
@@ -78,6 +90,13 @@ const StudentDashboard = () => {
     },
     { Excellent: 0, Good: 0, Fail: 0 }
   );
+
+  const engagementData = students.reduce((acc: any, student: any) => {
+    const category = getCategory(student.performance.engagement_grade);
+    const percentage = (acc[category] || 0) + (1 / students.length) * 100;
+    acc[category] = Math.round(percentage * 10) / 10;
+    return acc;
+  }, {});
 
   const assessmentCategories = students.reduce(
     (acc, student) => {
@@ -91,19 +110,19 @@ const StudentDashboard = () => {
   );
 
   const chartData = [
-    { name: "Excellent", value: categories.Excellent, color: "#5B8FF9" },
-    { name: "Good", value: categories.Good, color: "#9DBDFF" },
-    { name: "Fail", value: categories.Fail, color: "#D6E4FF" },
+    { name: "Excellent", value: categoryData.Excellent, color: "#5B8FF9" },
+    { name: "Good", value: categoryData.Good, color: "#9DBDFF" },
+    { name: "Fail", value: categoryData.Fail, color: "#D6E4FF" },
   ];
 
   const engagementChartData = [
     {
       name: "Excellent",
-      value: engagementCategories.Excellent,
+      value: engagementData.Excellent,
       color: "#f87c7c",
     },
-    { name: "Good", value: engagementCategories.Good, color: "#FFB6B6" },
-    { name: "Fail", value: engagementCategories.Fail, color: "#f7e9e9" },
+    { name: "Good", value: engagementData.Good, color: "#FFB6B6" },
+    { name: "Fail", value: engagementData.Fail, color: "#f7e9e9" },
   ];
 
   const assignmentChartData = [
@@ -180,7 +199,7 @@ const StudentDashboard = () => {
 
         <div className="lg:w-1/2">
           <h2 className="text-xl lg:text-2xl font-bold mb-4">
-            Student Engagement(%)
+            Student Engagement (%)
           </h2>
           {loading ? (
             <Skeleton className="h-96 w-full" />
