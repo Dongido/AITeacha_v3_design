@@ -595,15 +595,25 @@ const ToolDetail = () => {
                   {field.name === "file" &&
                     tool.req_param?.includes("file") && (
                       <div>
-                        <Label>Upload File (Optional)</Label>
+                        <Label>
+                          {tool.service_id === "transcribe"
+                            ? "Upload Audio"
+                            : "Upload File (Optional)"}
+                        </Label>
                         <input
                           type="file"
                           onChange={(e) => handleFileChange(e)}
-                          className="file-input bg-white "
-                          accept="application/pdf, image/png, image/jpeg, image/jpg"
+                          className="file-input bg-white"
+                          accept={
+                            tool.service_id === "transcribe"
+                              ? "audio/*"
+                              : "application/pdf, image/png, image/jpeg, image/jpg"
+                          }
+                          required={tool.service_id === "transcribe"}
                         />
                       </div>
                     )}
+
                   {field.name === "audio" &&
                     tool.req_param?.includes("audio") && (
                       <div>
