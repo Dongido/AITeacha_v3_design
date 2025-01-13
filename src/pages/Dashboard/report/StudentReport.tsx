@@ -218,8 +218,10 @@ const StudentReport = () => {
       </div>
 
       <div className="">
-        <h1>Summary</h1>
-        <p className="bg-white p-4 rounded-md">{student.performance.summary}</p>
+        <h1 className="text-2xl font-bold">Recommended Actions</h1>
+        <p className="bg-white p-4 rounded-md">
+          {student.performance.recommended_actions}
+        </p>
       </div>
     </div>
   );
