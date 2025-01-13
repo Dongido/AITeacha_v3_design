@@ -49,8 +49,8 @@ const StudentDashboard = () => {
   const categories = students.reduce(
     (acc, student) => {
       const understandingGrade = student.performance.understanding_grade;
-      if (understandingGrade >= 7.1) acc.Excellent++;
-      else if (understandingGrade >= 4.1) acc.Good++;
+      if (understandingGrade >= 70.1) acc.Excellent++;
+      else if (understandingGrade >= 40.1) acc.Good++;
       else acc.Fail++;
       return acc;
     },
@@ -60,8 +60,8 @@ const StudentDashboard = () => {
   const engagementCategories = students.reduce(
     (acc, student) => {
       const engagementGrade = student.performance.engagement_grade;
-      if (engagementGrade >= 7.1) acc.Excellent++;
-      else if (engagementGrade >= 4.1) acc.Good++;
+      if (engagementGrade >= 70.1) acc.Excellent++;
+      else if (engagementGrade >= 40.1) acc.Good++;
       else acc.Fail++;
       return acc;
     },
@@ -71,8 +71,8 @@ const StudentDashboard = () => {
   const assignmentCategories = students.reduce(
     (acc, student) => {
       const assignmentGrade = student.performance.assignment_grade;
-      if (assignmentGrade >= 7.1) acc.Excellent++;
-      else if (assignmentGrade >= 4.1) acc.Good++;
+      if (assignmentGrade >= 70.1) acc.Excellent++;
+      else if (assignmentGrade >= 40.1) acc.Good++;
       else acc.Fail++;
       return acc;
     },
@@ -82,8 +82,8 @@ const StudentDashboard = () => {
   const assessmentCategories = students.reduce(
     (acc, student) => {
       const assessmentGrade = student.performance.assessment_response_grade;
-      if (assessmentGrade >= 7.1) acc.Excellent++;
-      else if (assessmentGrade >= 4.1) acc.Good++;
+      if (assessmentGrade >= 70.1) acc.Excellent++;
+      else if (assessmentGrade >= 40.1) acc.Good++;
       else acc.Fail++;
       return acc;
     },

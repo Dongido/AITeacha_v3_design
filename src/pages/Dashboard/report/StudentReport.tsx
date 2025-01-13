@@ -76,8 +76,8 @@ const StudentReport = () => {
   }, [reportId, selectedStudentId]);
 
   const getCellColor = (grade: number) => {
-    if (grade <= 4) return COLORS.Fail;
-    if (grade <= 7.1) return COLORS.Good;
+    if (grade <= 40) return COLORS.Fail;
+    if (grade <= 70.1) return COLORS.Good;
     return COLORS.Excellent;
   };
 
