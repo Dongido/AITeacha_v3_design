@@ -145,7 +145,7 @@ const StudentDashboard = () => {
       <div className="bg-white rounded-lg shadow p-4 sm:p-6 flex flex-col lg:flex-row lg:space-x-8 space-y-6 lg:space-y-0">
         <div className="lg:w-1/2">
           <h2 className="text-xl lg:text-2xl font-bold mb-4">
-            Student Understanding
+            Student Understanding (%)
           </h2>
           {loading ? (
             <Skeleton className="h-96 w-full" />
@@ -164,7 +164,7 @@ const StudentDashboard = () => {
                 >
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" />
-                  <YAxis domain={[0, 10]} ticks={[0, 2, 4, 6, 8, 10]} />
+                  <YAxis domain={[0, 100]} ticks={[0, 20, 40, 60, 80, 100]} />
                   <Tooltip />
                   <Legend />
                   <Bar dataKey="value">
@@ -180,7 +180,7 @@ const StudentDashboard = () => {
 
         <div className="lg:w-1/2">
           <h2 className="text-xl lg:text-2xl font-bold mb-4">
-            Student Engagement
+            Student Engagement(%)
           </h2>
           {loading ? (
             <Skeleton className="h-96 w-full" />
@@ -199,7 +199,7 @@ const StudentDashboard = () => {
                 >
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" />
-                  <YAxis domain={[0, 10]} ticks={[0, 2, 4, 6, 8, 10]} />
+                  <YAxis domain={[0, 100]} ticks={[0, 20, 40, 60, 80, 100]} />
                   <Tooltip />
                   <Legend />
                   <Bar dataKey="value">
