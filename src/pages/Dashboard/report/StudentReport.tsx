@@ -218,9 +218,15 @@ const StudentReport = () => {
       </div>
 
       <div className="">
-        <h1 className="text-2xl font-bold">Recommended Actions</h1>
+        <h1 className="text-2xl font-bold">Report Summary</h1>
         <p className="bg-white p-4 rounded-md">
           {student.performance.recommended_actions}
+        </p>
+      </div>
+      <div className="">
+        <h1 className="text-2xl font-bold">Recommended Actions</h1>
+        <p className="bg-white p-4 rounded-md">
+          {student.performance.suggested_areas_of_improvement}
         </p>
       </div>
     </div>
