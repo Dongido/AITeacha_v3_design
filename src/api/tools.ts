@@ -154,7 +154,8 @@ export const submitToolData = async (
     return response;
   } catch (error: any) {
     throw new Error(
-      error.response?.data || "Failed to submit tool data. Please try again."
+      error.response?.data.message ||
+        "Failed to submit tool data. Please try again."
     );
   }
 };

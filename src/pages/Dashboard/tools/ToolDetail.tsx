@@ -249,7 +249,7 @@ const ToolDetail = () => {
     } catch (error: any) {
       setResponseMessage(error.message || "Failed to submit tool data.");
       console.log(error);
-      setToastMessage("Failed to submit tool data.");
+      setToastMessage(error.message || "Failed to submit tool data.");
       setToastVariant("destructive");
     } finally {
       setIsSubmitting(false);
