@@ -186,9 +186,9 @@ const HeroesWall = () => {
         <section>
           <figcaption className="desc z-10 relative">
             <h1 className="text-3xl md:text-4xl lg:text-6xl font-bold text-center my-6 text-white">
-              Heroes Wall
+              Heroes' Wall
             </h1>
-            <p className="text-center text-lg px-4 md:text-lg lg:text-xl font-bold text-gray-200">
+            <p className="text-center max-w-3xl text-lg px-4 md:text-lg lg:text-xl font-bold text-gray-200">
               Celebrate educators transforming classrooms with AI Teacha,
               showcasing their achievements, stories, and innovative teaching
               methods.

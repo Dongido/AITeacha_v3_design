@@ -24,7 +24,7 @@ const AIPolicy = () => {
         <div className="max-w-5xl mx-auto px-6">
           <h2 className="text-3xl md:text-4xl lg:text-4xl font-bold text-primary mt-6 text-center mb-6"></h2>
           <p className="text-lg leading-relaxed mb-8">
-            <span className="text-lg font-bold"> At AI Teacha</span>, AI Teacha
+            <span className="text-lg font-bold">AI Teacha</span>
             is committed to utilizing artificial intelligence (AI) responsibly
             and ethically to revolutionize education, empower educators, and
             enhance student learning outcomes. This AI Policy outlines our

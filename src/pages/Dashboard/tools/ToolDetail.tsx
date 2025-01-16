@@ -729,7 +729,8 @@ const ToolDetail = () => {
                             <Button
                               type="button"
                               onClick={handleSaveSubTopics}
-                              className="bg-gray-800 rounded-md text-white"
+                              variant={"gray"}
+                              className=" rounded-md text-white"
                             >
                               Save SubTopics
                             </Button>
@@ -1194,12 +1195,12 @@ const ToolDetail = () => {
               <>
                 <div className="p-2 bg-white border border-gray-300 rounded-md">
                   <img
-                    src={responseMessage}
+                    src={`${responseMessage}`}
                     alt="Generated Content"
                     className="max-w-full h-auto border border-gray-300 rounded-md"
                     onError={(e) => {
                       e.currentTarget.src =
-                        "https://via.placeholder.com/400?text=Image+Unavailable";
+                        "https://eagle-sensors.com/wp-content/uploads/unavailable-image.jpg";
                     }}
                   />
                 </div>

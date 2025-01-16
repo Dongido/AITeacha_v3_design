@@ -228,6 +228,7 @@ const CreateOrEditAssignment: React.FC = () => {
                   grade={selectedClassroom?.grade || ""}
                   description={getValues("description")}
                   onQuestionsGenerated={handleQuestionsGenerated}
+                  questionCount={questionsCount}
                 />
 
                 {Array.from({ length: questionsCount }, (_, index) => (

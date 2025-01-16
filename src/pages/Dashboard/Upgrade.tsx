@@ -463,6 +463,7 @@ import { changeUserPlan } from "../../api/subscription";
 import { FLUTTERWAVE_PUBLIC } from "../../lib/utils";
 import Logo from "../../assets/img/logo.png";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import {
   ToastProvider,
   Toast,
@@ -473,7 +474,8 @@ import {
 } from "../../components/ui/Toast";
 import PricingFaq from "../Landing/components/PricingFaq";
 import PaymentMethodDialog from "./UpgradeDialog";
-
+import Cookies from "js-cookie";
+import { Link } from "react-router-dom";
 interface UserDetails {
   id: string;
   email: string;
@@ -494,6 +496,7 @@ const Upgrade: React.FC = () => {
   >(null);
   const [loadingPlan, setLoadingPlan] = useState<null | string>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+
   useEffect(() => {
     const storedUser = localStorage.getItem("ai-teacha-user");
     if (storedUser) {
@@ -545,22 +548,33 @@ const Upgrade: React.FC = () => {
     },
   });
 
+  const packageMap = {
+    free: 1,
+    pro: 2,
+    premium: 3,
+    enterprise: 4,
+  };
+
   const handlePayment = async (
     method: "stripe" | "flutterwave",
     plan: "pro" | "premium" | "enterprise"
   ) => {
     setLoadingPlan(plan);
 
-    const config = getFlutterwaveConfig(plan);
+    const amount = prices[plan][currency][billingCycle];
+
     if (method === "flutterwave") {
+      const config = getFlutterwaveConfig(plan);
       const handleFlutterPayment = useFlutterwave(config);
 
       handleFlutterPayment({
         callback: async (response) => {
           console.log(response.status);
           if (response.status === "completed") {
+            const packageId = packageMap[plan];
+
             await changeUserPlan(
-              2,
+              packageId,
               parseInt(userDetails?.id || "0", 10),
               1,
               billingCycle,
@@ -573,11 +587,52 @@ const Upgrade: React.FC = () => {
         },
         onClose: () => setLoadingPlan(null),
       });
-    } else {
-      console.log("Stripe payment logic");
-      // Add Stripe payment handling logic here.
+    } else if (method === "stripe") {
+      const token = Cookies.get("at-refreshToken");
+      if (!token) {
+        console.error("No refresh token found");
+        return;
+      }
+      try {
+        const response = await axios.post(
+          "https://vd.aiteacha.com/api/payment/stripe/initiate",
+          {
+            user_id: parseInt(userDetails?.id || "0", 10),
+            package_id:
+              selectedPlan === "pro" ? 2 : selectedPlan === "premium" ? 3 : 4,
+            amount: amount,
+            currency: currency,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.data.status === "success") {
+          const paymentLink = response.data.data.paymentLink;
+          window.location.href = paymentLink;
+          const packageId = packageMap[plan];
+          await changeUserPlan(
+            packageId,
+            parseInt(userDetails?.id || "0", 10),
+            1,
+            billingCycle,
+            currency
+          );
+        } else {
+          console.error(
+            "Error creating Stripe session:",
+            response.data.message
+          );
+        }
+      } catch (error) {
+        console.error("Error initiating Stripe payment:", error);
+      }
     }
   };
+
   const getCurrencySign = (currency: "NGN" | "USD" | "GBP") => {
     if (currency === "NGN") {
       return "₦";
@@ -588,19 +643,18 @@ const Upgrade: React.FC = () => {
     }
     return "";
   };
+  const isPaymentPage = window.location.pathname === "/payment";
 
   return (
     <div className="mt-12">
       <div className="flex justify-between">
-        <h2 className="text-xl font-medium text-gray-900 mb-4">
-          Welcome Back! 👋
-        </h2>
+        <h2 className="text-xl font-bold text-gray-900 mb-4">Welcome! 👋</h2>
         <div className="w-60">
           <label className="text-gray-700 font-medium mb-2 block">
             Select Currency
           </label>
           <select
-            className="border rounded-md w-full py-2 px-3"
+            className="border border-[#4b2aad] rounded-md w-full py-2 px-3"
             value={currency}
             onChange={(e) =>
               setCurrency(e.target.value as "NGN" | "USD" | "GBP")
@@ -613,7 +667,7 @@ const Upgrade: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
         <div className="border rounded-lg p-6 bg-gray-50 shadow-sm flex flex-col">
           <h3 className="text-lg font-semibold mb-4">AI Teacha Free</h3>
           <p className="text-2xl font-bold mb-2">
@@ -809,26 +863,40 @@ const Upgrade: React.FC = () => {
             pricing and exclusive discounts for your institution.
           </li>
         </ul>
-        <Button
-          onClick={() => navigate("/dashboard/upgrade/support")}
-          disabled={
-            loadingPlan === "enterprise" ||
-            userDetails?.package === "Ai Teacha Enterprise"
-          }
-          className={`bg-primary text-white w-full py-2 rounded-md transition mt-auto text-center ${
-            userDetails?.package === "Ai Teacha Enterprise"
-              ? "bg-gray-300 text-gray-700 cursor-not-allowed"
-              : "hover:bg-[#4a2fa3]"
-          }`}
-        >
-          {" "}
-          {userDetails?.package === "Ai Teacha Enterprise"
-            ? "Current Plan"
-            : loadingPlan === "enterprise"
-            ? "Processing..."
-            : "Contact Support"}{" "}
-        </Button>{" "}
+        <center>
+          <Button
+            onClick={() => navigate("/dashboard/upgrade/support")}
+            disabled={
+              loadingPlan === "enterprise" ||
+              userDetails?.package === "Ai Teacha Enterprise"
+            }
+            className={`bg-primary text-white w-full lg:w-1/4  py-2 rounded-md transition mt-auto text-center ${
+              userDetails?.package === "Ai Teacha Enterprise"
+                ? "bg-gray-300 text-gray-700 cursor-not-allowed"
+                : "hover:bg-[#4a2fa3]"
+            }`}
+          >
+            {" "}
+            {userDetails?.package === "Ai Teacha Enterprise"
+              ? "Current Plan"
+              : loadingPlan === "enterprise"
+              ? "Processing..."
+              : "Contact Support"}{" "}
+          </Button>
+        </center>{" "}
       </div>
+      {isPaymentPage && (
+        <center>
+          <Link to="/dashboard/home">
+            <Button
+              variant={"outlined"}
+              className="bg-black text-white w-1/4 rounded-md my-4"
+            >
+              <span className="text-white"> Pay Later</span>
+            </Button>
+          </Link>
+        </center>
+      )}
       <div className="mt-12">
         <PricingFaq />
       </div>

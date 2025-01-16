@@ -167,3 +167,23 @@ export const submitStudentToolData = async (data: SubmitToolData) => {
     return error.response || "Network Error";
   }
 };
+export const fetchToolsReport = async (): Promise<any> => {
+  try {
+    const response = await apiClient.get<{
+      status: string;
+      message: string;
+      data: any;
+    }>("/report/get/tools/report");
+
+    if (response.status !== 200) {
+      throw new Error("Failed to fetch the tools report.");
+    }
+
+    return response.data.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data ||
+        "Failed to fetch the tools report. Please try again."
+    );
+  }
+};

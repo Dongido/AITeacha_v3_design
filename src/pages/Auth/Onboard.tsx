@@ -5,7 +5,7 @@ import { FaCheck } from "react-icons/fa";
 import { updateUserRole } from "../../api/profile";
 import { useNavigate } from "react-router-dom";
 
-type Role = "student" | "lecturer" | "teacher";
+type Role = "student" | "lecturer" | "teacher" | "school";
 
 const Onboard = () => {
   const [selectedRole, setSelectedRole] = useState<Role | null>("teacher");
@@ -67,8 +67,25 @@ const Onboard = () => {
         </svg>
       ),
     },
+    {
+      id: "school",
+      label: "School",
+      icon: (
+        <svg
+          width="46"
+          height="30"
+          viewBox="0 0 56 46"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M28 0L56 20.5L28 41L0 20.5L28 0ZM28 8L11 20.5L28 33L45 20.5L28 8ZM28 38.625L9.25 25.375L0 31V43.5L28 46L56 43.5V31L46.75 25.375L28 38.625Z"
+            fill={selectedRole === "school" ? "#E8EAED" : "#5C3CBB"}
+          />
+        </svg>
+      ),
+    },
   ];
-
   const handleSelectRole = (role: Role) => {
     setSelectedRole(role);
   };
@@ -79,7 +96,16 @@ const Onboard = () => {
 
       localStorage.setItem("selectedRole", selectedRole);
 
-      const roleId = selectedRole === "student" ? 3 : 2;
+      let roleId;
+      if (selectedRole === "student") {
+        roleId = 3;
+      } else if (selectedRole === "school") {
+        roleId = 4;
+      } else {
+        roleId = 2;
+      }
+
+      localStorage.setItem("roleId", roleId.toString());
       try {
         //   await updateUserRole(roleId);
         if (selectedRole === "student") {
@@ -97,21 +123,21 @@ const Onboard = () => {
   };
 
   return (
-    <div className="w-full h-screen flex flex-col items-center justify-center">
-      <div className="absolute top-8 left-8 flex gap-1 text-black text-2xl font-bold">
+    <div className="w-full flex flex-col items-center my-3 justify-center">
+      <div className=" top-8 left-8 flex gap-1 text-black text-2xl font-bold mb-8">
         <img className="h-8 w-auto" src={Logo} alt="AI-Teacha Logo" />
         <span>AI Teacha</span>
       </div>
 
-      <h2 className="text-3xl text-center font-bold mb-6">
+      <h2 className="text-2xl lg:text-3xl text-center max-w-2xl font-bold mb-6">
         What are you joining AI Teacha as:
       </h2>
-      <div className="mt-8 px-3 flex justify-center w-full">
-        <div className="flex gap-4 overflow-x-auto w-full max-w-3xl">
+      <div className="mt-8 flex items-center justify-center w-full">
+        <div className="grid grid-cols-2 md:grid-cols-2 gap-2 w-full max-w-3xl pl-2">
           {roles.map((role) => (
             <div
               key={role.id}
-              className={`relative w-64 h-80 flex items-center justify-center rounded-lg cursor-pointer transition-all duration-300 ${
+              className={`relative w-48 lg:w-56 h-40 flex items-center justify-center rounded-lg cursor-pointer transition-all duration-300 ${
                 selectedRole === role.id
                   ? "bg-primary text-white"
                   : "bg-white text-black"

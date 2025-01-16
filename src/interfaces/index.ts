@@ -26,7 +26,7 @@ export interface DecodedToken {
   role: number;
   iat: number;
   exp: number;
-  package: string;
+  package: string | number;
   firstname: string;
   is_email_verified: number;
   imageurl: string;

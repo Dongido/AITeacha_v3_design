@@ -177,13 +177,18 @@ export const checkIfStudentInAssignment = async (
 };
 export const generateQuestion = async (
   topic: string,
-  grade: string
+  grade: string,
+  no_of_question: string
 ): Promise<any> => {
   try {
     const response = await apiClient.post<{
       status: string;
       data: any;
-    }>("/assistant/suggest/assignment/question", { topic, grade });
+    }>("/assistant/suggest/assignment/question", {
+      topic,
+      grade,
+      no_of_question,
+    });
 
     return response.data.data;
   } catch (error: any) {

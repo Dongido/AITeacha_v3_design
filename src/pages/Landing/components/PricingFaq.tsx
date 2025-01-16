@@ -66,8 +66,8 @@ const FaqsCard: React.FC<FaqsCardProps> = ({ faqsList, idx }) => {
         className="duration-300"
         style={state ? { height: answerH } : { height: "0px" }}
       >
-        <div>
-          <p className="text-gray-600">{faqsList.a}</p>
+        <div className="bg-gray-200 p-2 rounded-md">
+          <p className="text-gray-900">{faqsList.a}</p>
         </div>
       </div>
     </div>

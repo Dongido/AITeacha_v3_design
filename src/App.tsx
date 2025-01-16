@@ -34,7 +34,9 @@ import StudentDataPolicy from "./pages/Landing/communities/StudentDataPolicy";
 import DataPrivacy from "./pages/Landing/communities/DataPrivacy";
 import Resources from "./pages/Dashboard/Resources";
 import DashboardHandler from "./DashboardHandler";
-
+import ScrollToTop from "./ScrollToTop";
+import Payment from "./pages/Auth/components/payment";
+import AITeachaOnboarding from "./pages/Landing/communities/AITeachaOnboarding";
 function App() {
   const location = useLocation();
 
@@ -59,6 +61,10 @@ function App() {
       <Route
         path="/communities/pioneer-program"
         element={<PioneersProgram />}
+      />
+      <Route
+        path="/education-trainer-program"
+        element={<AITeachaOnboarding />}
       />
       <Route path="/communities/pioneers" element={<Pioneers />} />
       <Route path="/educator-tools" element={<EducatorTools />} />
@@ -96,6 +102,7 @@ function App() {
       <Route path="/dashboard" element={<DashboardHandler />} />
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard/*" element={<Dashboard />} />
+        <Route path="/payment" element={<Payment />} />
         <Route path="/classroom/s/*" element={<RoleBasedRedirect />} />
 
         <Route

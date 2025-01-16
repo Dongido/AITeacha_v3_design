@@ -108,11 +108,16 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
         const redirectPath = localStorage.getItem("redirectPath");
         console.log("Redirect path after login:", redirectPath);
 
-        if (decodedToken.role === 3) {
+        if (
+          decodedToken.role === 4 &&
+          decodedToken.package === "AI Teacha Free"
+        ) {
+          navigate("/payment");
+        } else if (decodedToken.role === 3) {
           navigate("/student/home");
         } else if (decodedToken.role === 2) {
           navigate("/dashboard/home");
-        } else if (decodedToken.role === 4) {
+        } else if (decodedToken.role === 5) {
           navigate("/auth/onboarding");
         } else if (redirectPath) {
           localStorage.removeItem("redirectPath");

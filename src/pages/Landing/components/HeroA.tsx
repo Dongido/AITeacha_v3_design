@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
-import dashboardImg from "../../../assets/img/IMG_4968.gif";
+import { useState, useEffect, useRef } from "react";
+// import dashboardImg from "../../../assets/img/dashboardvideo.mp4";
+
 import Header from "./Header";
 import Navbar from "./Navbar";
 import { motion, AnimatePresence } from "framer-motion";
@@ -24,6 +25,7 @@ export default () => {
     "Generate Beautiful Newsletters with",
     "Create AI Powered Classroom with",
   ];
+
   useEffect(() => {
     const interval = setInterval(() => {
       setText((prevText) => {
@@ -147,10 +149,15 @@ export default () => {
           </span>
         </div>
         <div className="mt-14">
-          <img
+          <video
             className="w-full shadow-lg rounded-lg border"
-            src={dashboardImg}
-          ></img>
+            src={"/dashboardvideo.mp4"}
+            controls
+            autoPlay
+            muted
+          >
+            Your browser does not support the video tag.
+          </video>
         </div>
       </div>
       <div className="py-12">

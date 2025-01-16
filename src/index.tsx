@@ -8,6 +8,7 @@ import { BrowserRouter } from "react-router-dom";
 import ErrorBoundary from "./ErrorBoundary";
 import { Provider } from "react-redux";
 import store from "./store";
+import ScrollToTop from "./ScrollToTop";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -17,6 +18,7 @@ root.render(
   <React.StrictMode>
     <Provider store={store}>
       <BrowserRouter>
+        <ScrollToTop />
         <ThemeProvider>
           <MaterialTailwindControllerProvider>
             <ErrorBoundary>

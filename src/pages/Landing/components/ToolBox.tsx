@@ -30,6 +30,7 @@ const ToolboxPage: React.FC = () => {
 
         if (response.data.status === "success") {
           const toolsWithoutLastItem = response.data.data.slice(0, -1);
+          console.log(toolsWithoutLastItem);
           setToolboxItems(toolsWithoutLastItem);
         }
       } catch (error) {

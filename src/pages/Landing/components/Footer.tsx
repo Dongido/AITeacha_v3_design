@@ -25,7 +25,7 @@ const Footer: React.FC = () => {
           )}
           <span className="text-center text-3xl text-white">AI Teacha</span>
         </div>
-        <h2 className="text-white text-lg md:text-xl lg:text-2xl md:text-4xl lg:text-5xl">
+        <h2 className="text-white text-lg  md:text-3xl lg:text-4xl">
           Teachers Are Truly Heroes
         </h2>
 
@@ -36,7 +36,7 @@ const Footer: React.FC = () => {
         <button className="text-primary font-bold mb-8 bg-white rounded-full p-2 px-4 ">
           Try AI Teacha 100% Free
         </button>
-        <ul className="flex flex-wrap justify-center items-center mb-6 text-gray-300">
+        <ul className="flex flex-wrap justify-center items-center mb-6 text-gray-300 list-none">
           {footerLinks.map((link, index) => (
             <li key={index}>
               <Link to={link.href} className="mr-4 hover:underline md:mr-6">

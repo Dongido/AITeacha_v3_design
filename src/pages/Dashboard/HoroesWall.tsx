@@ -21,6 +21,7 @@ import {
 import { AppDispatch } from "../../store";
 import { Button } from "../../components/ui/Button";
 import { Plus, Trash, Edit } from "lucide-react";
+import { TextArea } from "../../components/ui/TextArea";
 
 const HeroesWallAdmin = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -219,9 +220,9 @@ const HeroesWallAdmin = () => {
             </DialogDescription>
           </DialogHeader>
           <form>
-            <input
-              type="text"
+            <TextArea
               placeholder="Post URL"
+              rows={6}
               className="w-full p-2 border rounded-md mb-2"
               value={formData.post_url}
               onChange={(e) =>
@@ -281,9 +282,9 @@ const HeroesWallAdmin = () => {
             </DialogDescription>
           </DialogHeader>
           <form>
-            <input
-              type="text"
+            <TextArea
               placeholder="Post URL"
+              rows={6}
               className="w-full p-2 border rounded-md mb-2"
               value={formData.post_url}
               onChange={(e) =>

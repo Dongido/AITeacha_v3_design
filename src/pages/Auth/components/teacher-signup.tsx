@@ -136,12 +136,16 @@ export function TeacherSignupForm({ className, ...props }: SignupFormProps) {
     }
     setIsLoading(true);
     try {
+      const roleId = localStorage.getItem("roleId")
+        ? parseInt(localStorage.getItem("roleId")!)
+        : 2;
+
       const res: SignupResponse = await registerUser(
         data.email,
         data.firstName,
         data.lastName,
         data.password,
-        2,
+        roleId,
         data.acceptTerms,
         data.receiveNewsletters,
         data.phone,

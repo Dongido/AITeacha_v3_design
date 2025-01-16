@@ -5,10 +5,10 @@ import {
   FaCheckSquare,
   FaChalkboardTeacher,
 } from "react-icons/fa";
-import lessonImg from "../../../assets/img/lessnPlan.png";
-import handoutImg from "../../../assets/img/handout gen.png";
-import textImg from "../../../assets/img/text gen.png";
-import curImg from "../../../assets/img/curiculumGen.png";
+import lessonImg from "../../../assets/img/lessonpanner.png";
+import handoutImg from "../../../assets/img/handoutg.png";
+import textImg from "../../../assets/img/imageGen.png";
+import curImg from "../../../assets/img/curriculum.png";
 
 const WhatSetsUsApart: React.FC = () => {
   const [activeTab, setActiveTab] = useState("Lesson Note Generator");
@@ -45,7 +45,7 @@ const WhatSetsUsApart: React.FC = () => {
     <section className="   px-4 text-center text-white">
       <section className="relative pb-8 px-4 text-center">
         <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-black relative">
-          Unique AI Tools To Teach Smarter Not Harder
+          Unique AI Tools to Teach Smarter, Not Harder.
         </h2>
 
         <span className="absolute bottom-6 left-0">

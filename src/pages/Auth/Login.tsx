@@ -47,7 +47,7 @@ const Login = () => {
               Enter your details to continue
             </p>
             <LoginForm />
-            <div className="w-full bg-white p-6 py-0 rounded-lg shadow-md">
+            <div className="w-full bg-white p-6 py-0 rounded-lg ">
               <p className="text-center text-gray-900 mt-4">
                 Don’t have an account?{" "}
                 <Link

@@ -70,7 +70,7 @@ const Pricing = () => {
                 {" "}
                 Simple & Transparent Pricing for Educators & Schools
               </p>
-              <div className="flex justify-center items-center mx-auto text-center text-gray-400 max-w-xl mb-6">
+              <div className="flex justify-center items-center mx-auto text-center text-gray-400 max-w-4xl mb-6">
                 <span>
                   <h2>
                     We offer a Free plan for educators with limited access, a
@@ -96,12 +96,12 @@ const Pricing = () => {
             />
             <span className="text-xl font-medium text-gray-800">Yearly</span>
           </div>
-          <div className="w-60 my-4">
-            <label className="text-gray-700 font-medium mb-2 block">
+          <div className="w-60 my-4 p-4 rounded-lg shadow-lg bg-gradient-to-r from-[#9e7eff] to-[#7a5cd7]">
+            <label className="text-white font-semibold mb-3 block text-lg">
               Select Currency
             </label>
             <select
-              className="border rounded-md w-full py-2 px-3"
+              className="border rounded-md w-full py-3 px-4 text-lg bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300"
               value={currency}
               onChange={handleCurrencyChange}
             >

@@ -16,6 +16,7 @@ interface GenerateQuestionsDialogProps {
   classroomId: string | number;
   grade: string;
   description: string;
+  questionCount: any;
   onQuestionsGenerated: (questions: { assignment_question: string }[]) => void;
 }
 
@@ -23,6 +24,7 @@ const GenerateQuestionsDialog: React.FC<GenerateQuestionsDialogProps> = ({
   classroomId,
   description,
   grade,
+  questionCount,
   onQuestionsGenerated,
 }) => {
   const [loading, setLoading] = useState(false);
@@ -34,7 +36,11 @@ const GenerateQuestionsDialog: React.FC<GenerateQuestionsDialogProps> = ({
     if (!classroomId || !description) return;
     setLoading(true);
     try {
-      const data: string = await generateQuestion(description, grade);
+      const data: string = await generateQuestion(
+        description,
+        grade,
+        questionCount
+      );
       console.log(data);
 
       const parsedQuestions = data
