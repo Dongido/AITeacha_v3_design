@@ -19,7 +19,6 @@ import {
 } from "../../components/ui/Toast";
 import { FiEdit } from "react-icons/fi";
 import { generateReferralCode } from "../../api/profile";
-
 import { TextArea } from "../../components/ui/TextArea";
 
 const Profile: React.FC = () => {
@@ -139,6 +138,17 @@ const Profile: React.FC = () => {
     setEditMode(false);
   };
 
+  const handleRefreshProfile = async () => {
+    try {
+      await dispatch(loadUserProfile()).unwrap();
+      setToastMessage("Profile refreshed successfully!");
+    } catch (err) {
+      setToastMessage("Failed to refresh profile: " + err);
+    } finally {
+      setToastVisible(true);
+    }
+  };
+
   return (
     <ToastProvider>
       <div className="container mx-auto mt-3 bg-white p-3 shadow-sm rounded-md">
@@ -171,6 +181,14 @@ const Profile: React.FC = () => {
                   Wallet Details
                 </button>
               )}
+
+              <Button
+                onClick={handleRefreshProfile}
+                variant={"outline"}
+                className="bg-purple-50 font-bold py-2 px-4 mx-4 rounded"
+              >
+                Refresh Profile
+              </Button>
             </div>
 
             {activeTab === "profile" && (

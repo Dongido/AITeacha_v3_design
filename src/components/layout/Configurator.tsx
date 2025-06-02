@@ -14,8 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { loadUserProfile, selectUser } from "../../store/slices/profileSlice";
 import { AppDispatch } from "../../store";
-import { ThunkDispatch } from "@reduxjs/toolkit"; // Import ThunkDispatch if you are using Redux Thunk
-
+import { ThunkDispatch } from "@reduxjs/toolkit";
 function formatNumber(number: number, decPlaces: number): string {
   const dec = Math.pow(10, decPlaces);
   const abbrev = ["K", "M", "B", "T"];
@@ -42,8 +41,7 @@ export function Configurator() {
   const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
   const userDetails = useSelector(selectUser);
-  const [isRefreshingProfile, setIsRefreshingProfile] = useState(false); // New loading state
-
+  const [isRefreshingProfile, setIsRefreshingProfile] = useState(false);
   useEffect(() => {
     fetch(
       "https://api.github.com/repos/creativetimofficial/material-tailwind-dashboard-react"
@@ -76,13 +74,13 @@ export function Configurator() {
   };
 
   const handleRefreshProfile = async () => {
-    setIsRefreshingProfile(true); // Set loading to true
+    setIsRefreshingProfile(true);
     try {
-      await dispatch(loadUserProfile() as any); // Dispatch the action. Cast to 'any' if TypeScript complains about ThunkAction.
+      await dispatch(loadUserProfile() as any);
     } catch (error) {
       console.error("Failed to refresh user profile:", error);
     } finally {
-      setIsRefreshingProfile(false); // Set loading to false regardless of success or failure
+      setIsRefreshingProfile(false);
     }
   };
 
