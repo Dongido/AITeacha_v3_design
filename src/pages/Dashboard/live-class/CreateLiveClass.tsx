@@ -83,7 +83,7 @@ const CreateLiveClass = () => {
       setToastVariant("default");
       setToastOpen(true);
 
-      navigate("/dashboard/liveclass");
+      navigate(`/dashboard/liveclass/${meetingId}`);
     } catch (err: any) {
       setError(err.message || "Failed to create live class. Please try again.");
       setToastMessage("Error");

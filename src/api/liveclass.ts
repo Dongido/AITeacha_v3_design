@@ -112,8 +112,9 @@ export const suggestAssessment = async (transcript_content: any) => {
 };
 
 export const sendLiveClassroomAssessmentAnswers = async (submissionData: {
+  liveclassroom_id: string;
   classroom_id: number;
-  submitted_answers: any[];
+  answers: any[];
 }) => {
   try {
     const response = await apiClient.post(

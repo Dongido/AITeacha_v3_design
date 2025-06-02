@@ -42,6 +42,7 @@ export interface Classroom {
   resource_accessibility?: boolean | null;
   classroomresources_link?: string[] | null;
   liveclassroomassessments: any[];
+  liveclassroom_id: string;
 }
 export interface ClassroomData {
   id: number;

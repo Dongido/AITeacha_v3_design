@@ -576,8 +576,9 @@ const Classroom = () => {
 
     try {
       const response = await sendLiveClassroomAssessmentAnswers({
+        liveclassroom_id: classroom.liveclassroom_id,
         classroom_id: classroom.classroom_id,
-        submitted_answers: allAnswers,
+        answers: allAnswers,
       });
 
       console.log("Live class assessment answers sent:", response);
