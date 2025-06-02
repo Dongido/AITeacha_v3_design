@@ -18,6 +18,8 @@ import {
 } from "../../../api/classrooms";
 import { ClassroomData } from "../../../api/interface";
 import { Link } from "react-router-dom";
+import { verifyPayment } from "../../../api/subscription";
+import { FLUTTERWAVE_PUBLIC } from "../../../lib/utils";
 const JoinClassroom = () => {
   const { id: joinCode } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -36,7 +38,7 @@ const JoinClassroom = () => {
       try {
         const classroomData = await fetchClassroomByJoinCode(joinCode!);
         setClassroom(classroomData);
-
+        console.log(classroomData);
         const studentStatus = await checkIfStudentInClassroom(classroomData.id);
         setIsInClassroom(studentStatus);
       } catch (error: any) {
@@ -54,9 +56,124 @@ const JoinClassroom = () => {
   const userDetails = JSON.parse(
     localStorage.getItem("ai-teacha-user") || "{}"
   );
+  const handlePayment = async () => {
+    if (!classroom) return;
+
+    const userEmail = userDetails.email || "default@email.com";
+    const userName = `${userDetails.firstName} ${userDetails.lastName}`;
+
+    const paymentConfig = {
+      public_key: FLUTTERWAVE_PUBLIC,
+      tx_ref: `classroom_${classroom.id}_${Date.now()}`,
+      amount: classroom.amount,
+      currency: classroom.currency || "USD",
+      payment_options: "card, mobilemoney, ussd",
+      customer: {
+        email: userEmail,
+        name: userName,
+      },
+      customizations: {
+        title: "Classroom Payment",
+        description: `Payment for ${classroom.name}`,
+      },
+    };
+
+    const flutterwaveWindow = window.open("", "_blank", "width=800,height=600");
+
+    if (!flutterwaveWindow) {
+      alert("Popup blocked! Please allow popups for this site.");
+      return;
+    }
+    flutterwaveWindow.document.write(`
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <title>Flutterwave Payment</title>
+            <script src="https://checkout.flutterwave.com/v3.js"></script>
+        </head>
+        <body>
+            <script>
+                const config = ${JSON.stringify(paymentConfig)};
+
+                function makePayment() {
+                    FlutterwaveCheckout({
+                        ...config,
+                        callback: async (response) => {
+                            console.log(response);
+                            if (response.status === "completed" || response.status === "success" || response.status === "successful") {
+                                window.opener.postMessage({ status: "completed", transaction_id: response.transaction_id }, "*");
+                            } else {
+                                console.error("Payment failed");
+                                window.opener.postMessage({ status: "failed" }, "*");
+                            }
+                            window.close();
+                        },
+                        onclose: () => {
+                            console.log("Payment modal closed");
+                            window.opener.postMessage({ status: "closed" }, "*");
+                            window.close();
+                        }
+                    });
+                }
+
+                makePayment();
+            </script>
+        </body>
+        </html>
+    `);
+
+    // Listen for the payment result from the child window
+    window.addEventListener("message", async (event) => {
+      if (event.origin !== window.location.origin) return;
+
+      const { status, transaction_id } = event.data;
+
+      if (
+        status === "completed" ||
+        status === "success" ||
+        status === "successful"
+      ) {
+        try {
+          await verifyPayment(
+            transaction_id,
+            classroom,
+            userDetails.id,
+            userDetails.email,
+            "classroom_payment"
+          );
+
+          await joinClassroom(classroom.join_url, classroom.join_code!);
+
+          setToastMessage("Payment successful! You have joined the classroom.");
+          setToastVariant("default");
+          setShowToast(true);
+
+          setTimeout(() => {
+            navigate(navigateToClassroom);
+          }, 2000);
+        } catch (error) {
+          setToastMessage("Payment verification failed.");
+          setToastVariant("destructive");
+          setShowToast(true);
+        }
+      } else if (status === "failed") {
+        setToastMessage("Payment failed. Please try again.");
+        setToastVariant("destructive");
+        setShowToast(true);
+      } else if (status === "closed") {
+        setToastMessage("Payment process was closed.");
+        setToastVariant("default");
+        setShowToast(true);
+      }
+    });
+  };
 
   const handleJoinClassroom = async () => {
-    if (classroom) {
+    if (!classroom) return;
+
+    if (classroom.class_type === "Paid") {
+      handlePayment();
+    } else {
       setIsJoining(true);
       try {
         const currentUrl = window.location.href;
@@ -92,8 +209,8 @@ const JoinClassroom = () => {
   };
   const navigateToClassroom =
     userDetails.role === 3
-      ? `/student/class/class-details/${classroom?.id}`
-      : `/dashboard/classrooms/class-details/${classroom?.id}`;
+      ? `/class/classrooms/class-details/${classroom?.id}`
+      : `/class/classrooms/class-details/${classroom?.id}`;
 
   if (loading) {
     return <p>Loading classroom...</p>;

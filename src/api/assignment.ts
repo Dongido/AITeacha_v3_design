@@ -196,6 +196,25 @@ export const generateQuestion = async (
   }
 };
 
+export const generateOutlineQuestion = async (
+  topic: string,
+  grade: string
+): Promise<any> => {
+  try {
+    const response = await apiClient.post<{
+      status: string;
+      data: any;
+    }>("/assistant/suggest/outline/assessment", {
+      topic,
+      grade,
+    });
+
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data || "Failed to Generate Questions.");
+  }
+};
+
 export const addStudentToAssignment = async (
   assignmentId: number
 ): Promise<{ status: string; message: string }> => {

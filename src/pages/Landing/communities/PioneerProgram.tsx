@@ -18,7 +18,7 @@ const PioneersProgram = () => {
               </h2>
               <p className="text-gray-100 mb-8 px-2 max-w-2xl text-sm md:text-lg xl:text-lg text-center">
                 Are you an educator committed to transforming teaching with
-                innovative technology? The AI Teacha Pioneers Program is your
+                innovative technology? The AiTeacha Pioneers Program is your
                 opportunity to lead the charge in revolutionizing education
                 across Nigeria and Africa.
               </p>
@@ -32,7 +32,7 @@ const PioneersProgram = () => {
           <div className="space-y-6">
             <div>
               <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                Why Join the AI Teacha Pioneers Program?
+                Why Join the AiTeacha Pioneers Program?
               </h3>
               <ul className="list-disc pl-6 space-y-2 text-gray-700">
                 <li>
@@ -42,8 +42,8 @@ const PioneersProgram = () => {
                 </li>
                 <li>
                   <span className="font-bold">Be a Leader:</span> Shape the
-                  future of AI Teacha by providing valuable insights and
-                  feedback to improve the platform for educators.
+                  future of AiTeacha by providing valuable insights and feedback
+                  to improve the platform for educators.
                 </li>
                 <li>
                   <span className="font-bold">Exclusive Benefits:</span> Receive
@@ -65,9 +65,9 @@ const PioneersProgram = () => {
               <ul className="list-disc pl-6 space-y-2 text-gray-700">
                 <li>
                   <span className="font-bold">
-                    AI Teacha Certification Level 1:
+                    AiTeacha Certification Level 1:
                   </span>{" "}
-                  Complete the AI Teacha Level 1 Certification and upload proof
+                  Complete the AiTeacha Level 1 Certification and upload proof
                   of certification (a screenshot of your certificate). Haven’t
                   completed the certification?{" "}
                   <a
@@ -98,7 +98,7 @@ const PioneersProgram = () => {
                 Application Process
               </h3>
               <ol className="list-decimal pl-6 space-y-2 text-gray-700">
-                <li>Complete your AI Teacha Level 1 Certification.</li>
+                <li>Complete your AiTeacha Level 1 Certification.</li>
                 <li>
                   Fill out the application form with the following required
                   details:
@@ -126,9 +126,9 @@ const PioneersProgram = () => {
                     </li>
                     <li>
                       <span className="font-bold">
-                        Favorite AI Teacha Tools:
+                        Favorite AiTeacha Tools:
                       </span>{" "}
-                      Tell us your favorite tools on AI Teacha and why you love
+                      Tell us your favorite tools on AiTeacha and why you love
                       them.
                     </li>
                   </ul>
@@ -164,7 +164,7 @@ const PioneersProgram = () => {
 
             <div>
               <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                Your Role as an AI Teacha Pioneer
+                Your Role as an AiTeacha Pioneer
               </h3>
               <p className="text-gray-700">
                 As a Pioneer, you’ll lead by example, showcasing how AI can
@@ -176,7 +176,7 @@ const PioneersProgram = () => {
                   classrooms.
                 </li>
                 <li>
-                  Provide feedback to enhance AI Teacha tools and features.
+                  Provide feedback to enhance AiTeacha tools and features.
                 </li>
                 <li>
                   Collaborate with a global community of educators passionate
@@ -190,7 +190,7 @@ const PioneersProgram = () => {
                 href="https://docs.google.com/forms/d/1brhKX9Zbe9AtsFrfu0Z6iAoQ7gBbnmaH5PA29LC878c/edit#response=ACYDBNgfiJqvMIjmWKW5diq2zmQDa13coA_zQPeZmw51wKqTu3w2eKDmkg0EgjmhfxOCjJk"
                 className="inline-block bg-primary text-white py-3 px-6 rounded-full text-lg font-semibold hover:bg-blue-700 transition"
               >
-                Apply Now to Join the AI Teacha Pioneers Program
+                Apply Now to Join the AiTeacha Pioneers Program
               </a>
             </div>
           </div>

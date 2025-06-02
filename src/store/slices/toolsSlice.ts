@@ -1,5 +1,9 @@
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchTools, fetchStudentTools } from "../../api/tools";
+import {
+  fetchTools,
+  fetchStudentTools,
+  fetchToolsCategory,
+} from "../../api/tools";
 
 interface Tool {
   id: number;
@@ -7,33 +11,42 @@ interface Tool {
   description: string;
   service_id: string;
   prompt: string | null;
+  purpose?: string;
   thumbnail: string;
   assign_to: string;
   slug: string;
   is_customizable: number;
   req_param: string;
+  category: string;
   label: string;
   tag: string;
   created_at: string;
+  editable: string;
   updated_at: string;
 }
 
 interface ToolsState {
   tools: Tool[];
   studentTools: Tool[];
+  categories: any[];
   loading: boolean;
   studentLoading: boolean;
   error: string | null;
   studentError: string | null;
+  categoryError: string | null;
+  categoryLoading: boolean;
 }
 
 const initialState: ToolsState = {
   tools: [],
   studentTools: [],
   studentLoading: false,
+  categories: [],
   loading: false,
   error: null,
   studentError: null,
+  categoryLoading: false,
+  categoryError: null,
 };
 
 export const loadTools = createAsyncThunk("tools/loadTools", async () => {
@@ -49,6 +62,13 @@ export const loadStudentTools = createAsyncThunk(
   }
 );
 
+export const loadToolsCategory = createAsyncThunk(
+  "tools/loadToolsCategory",
+  async () => {
+    const categories = await fetchToolsCategory();
+    return categories;
+  }
+);
 const toolsSlice = createSlice({
   name: "tools",
   initialState,
@@ -82,6 +102,22 @@ const toolsSlice = createSlice({
         state.studentLoading = false;
         state.studentError =
           action.error.message || "Failed to load student tools.";
+      })
+      .addCase(loadToolsCategory.pending, (state) => {
+        state.categoryLoading = true;
+        state.categoryError = null;
+      })
+      .addCase(
+        loadToolsCategory.fulfilled,
+        (state, action: PayloadAction<any[]>) => {
+          state.categoryLoading = false;
+          state.categories = action.payload;
+        }
+      )
+      .addCase(loadToolsCategory.rejected, (state, action) => {
+        state.categoryLoading = false;
+        state.categoryError =
+          action.error.message || "Failed to load tools categories.";
       });
   },
 });

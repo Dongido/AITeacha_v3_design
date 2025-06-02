@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { marked } from "marked";
-import parse from "html-react-parser";
+import parse, { Element } from "html-react-parser";
 
 interface MarkdownRendererProps {
   content: string | Promise<string>;
@@ -17,18 +17,54 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
 
   useEffect(() => {
     const processContent = async () => {
-      const resolvedContent =
-        typeof content === "string" ? content : await content;
+      const resolvedContent = await (typeof content === "string"
+        ? Promise.resolve(content)
+        : content);
+
       const parsedHtml = marked(resolvedContent);
-      setHtmlContent(parsedHtml as string);
+
+      const decodedHtml = decodeHtml(parsedHtml as string);
+
+      setHtmlContent(decodedHtml);
     };
 
     processContent();
   }, [content]);
 
+  const decodeHtml = (html: string) => {
+    const txt = document.createElement("textarea");
+    txt.innerHTML = html;
+    return txt.value;
+  };
+
+  const renderHtml = (html: string) => {
+    return parse(html, {
+      replace: (domNode) => {
+        if (
+          (domNode as Element).name === "iframe" &&
+          (domNode as Element).attribs
+        ) {
+          const { width, height, src, frameborder, allow } = (
+            domNode as Element
+          ).attribs;
+          return (
+            <iframe
+              width={width}
+              height={height}
+              src={src}
+              frameBorder={frameborder || "0"}
+              allow={allow}
+              allowFullScreen
+            ></iframe>
+          );
+        }
+      },
+    });
+  };
+
   return (
     <div className={className} style={style}>
-      {parse(htmlContent)}
+      {renderHtml(htmlContent)}
     </div>
   );
 };

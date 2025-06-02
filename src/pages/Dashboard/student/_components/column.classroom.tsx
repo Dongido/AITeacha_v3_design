@@ -80,11 +80,11 @@ export const classroomColumns = [
 
       const getRedirectPath = () => {
         if (userDetails.role === 2) {
-          return `/dashboard/classrooms/class-details/${classroomId}`;
-        } else if (userDetails.role === 3) {
-          return `/student/class/class-details/${classroomId}`;
+          return `/class/classrooms/class-details/${classroomId}`;
+        } else if (userDetails.role === 3 || userDetails.role_id === 3) {
+          return `/class/class-details/${classroomId}`;
         }
-        return `/dashboard/classrooms/class-details/${classroomId}`;
+        return `/class/classrooms/class-details/${classroomId}`;
       };
       return (
         <div className="flex items-center gap-2">

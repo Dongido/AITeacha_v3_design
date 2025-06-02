@@ -45,7 +45,7 @@ const WhatSetsUsApart: React.FC = () => {
     <section className="   px-4 text-center text-white">
       <section className="relative pb-8 px-4 text-center">
         <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-black relative">
-          Unique AI Tools to Teach Smarter, Not Harder.
+          Unique AI Tools to teach Smarter, not Harder.
         </h2>
 
         <span className="absolute bottom-6 left-0">

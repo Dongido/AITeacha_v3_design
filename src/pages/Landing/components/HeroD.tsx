@@ -27,7 +27,7 @@ const HeroD = () => {
                 <span className="bg-gradient-to-r from-[#FF16D4] to-[#5C3CBB] bg-clip-text text-transparent mr-2">
                   10x
                 </span>{" "}
-                Your Teaching Goals With AI Teacha
+                Your Teaching Goals With AiTeacha
               </h2>
               <p>
                 Built with all AI tools to aid teachers day-to-day tasks to

@@ -13,7 +13,7 @@ const CTA: React.FC = () => {
             </p>
             <p className="text-gray-800 text-xl">
               Create a classroom, upload a Curriculum or Teaching content, add
-              your Students and let AI Teacha do the rest.
+              your Students and let AiTeacha do the rest.
             </p>
             <div className="mt-4">
               <Link
@@ -53,7 +53,7 @@ const CTA: React.FC = () => {
               <div className="text-center lg:text-left">
                 <div className="mb-10 lg:mb-0">
                   <h1 className="mt-0 mb-3 text-3xl font-bold leading-tight text-white sm:text-4xl md:text-[40px]">
-                    AI Teacha is 100% Free for all Students Worldwide, Forever
+                    AiTeacha is 100% Free for all Students Worldwide, Forever
                   </h1>
                   <p className="w-full text-base font-medium leading-relaxed text-white sm:text-lg">
                     Inspire your students with AI-powered classrooms, streamline
@@ -69,7 +69,7 @@ const CTA: React.FC = () => {
                   className="font-semibold rounded-full mx-auto inline-flex items-center justify-center bg-white py-4 px-9 hover:bg-opacity-90"
                   to={"/auth/onboarding"}
                 >
-                  Join AI Teacha
+                  Join AiTeacha
                 </Link>
               </div>
             </div>

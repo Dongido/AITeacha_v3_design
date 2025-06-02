@@ -98,50 +98,52 @@ export function DashboardNavbar() {
           >
             <Bars3Icon strokeWidth={3} className="h-6 w-6 text-blue-gray-500" />
           </Button>
-          <Link to="/dashboard/profile">
-            <Button variant="text" color="blue-gray" className="grid mb-2">
-              <img
-                src={imageURL}
-                alt="Profile"
-                className="h-8 w-8 rounded-full object-cover border border-gray-300"
-              />
-            </Button>
-          </Link>
-
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="text" color="blue-gray" aria-label="Logout">
-                <ArrowRightEndOnRectangleIcon className="h-5 w-5 text-blue-gray-500" />
+          <div className="flex items-center gap-4 ml-auto">
+            <Link to="/dashboard/profile">
+              <Button variant="text" color="blue-gray" className="grid mb-2">
+                <img
+                  src={imageURL}
+                  alt="Profile"
+                  className="h-8 w-8 rounded-full object-cover border border-gray-300"
+                />
               </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Confirm Logout</DialogTitle>
-              </DialogHeader>
-              <p>Are you sure you want to logout?</p>
-              <DialogFooter>
-                <Button
-                  variant="destructive"
-                  className="rounded-md"
-                  onClick={handleLogout}
-                >
-                  Yes, Logout
-                </Button>
-                <DialogClose asChild>
-                  <Button variant="text">Cancel</Button>
-                </DialogClose>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+            </Link>
 
-          <Button
-            variant="text"
-            color="blue-gray"
-            onClick={() => setOpenConfigurator(uiDispatch, true)}
-            aria-label="Open configurator"
-          >
-            <Cog6ToothIcon className="h-5 w-5 text-blue-gray-500" />
-          </Button>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="text" color="blue-gray" aria-label="Logout">
+                  <ArrowRightEndOnRectangleIcon className="h-5 w-5 text-blue-gray-500" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Confirm Logout</DialogTitle>
+                </DialogHeader>
+                <p>Are you sure you want to logout?</p>
+                <DialogFooter>
+                  <Button
+                    variant="destructive"
+                    className="rounded-md"
+                    onClick={handleLogout}
+                  >
+                    Yes, Logout
+                  </Button>
+                  <DialogClose asChild>
+                    <Button variant="text">Cancel</Button>
+                  </DialogClose>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
+            <Button
+              variant="text"
+              color="blue-gray"
+              onClick={() => setOpenConfigurator(uiDispatch, true)}
+              aria-label="Open configurator"
+            >
+              <Cog6ToothIcon className="h-5 w-5 text-blue-gray-500" />
+            </Button>
+          </div>
         </div>
       </div>
     </div>

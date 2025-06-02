@@ -147,6 +147,9 @@ const examTypeList = [
   { label: "TOEFL", value: "TOEFL" },
   { label: "IELTS", value: "IELTS" },
   { label: "GMAT", value: "GMAT" },
+  { label: "IGCSE", value: "IGCSE" },
+  { label: "WAEC", value: "WAEC" },
+  { label: "JAMB", value: "JAMB" },
 ];
 const appraisalTypeList = [
   { label: "Performance appraisal", value: "performance appraisal" },

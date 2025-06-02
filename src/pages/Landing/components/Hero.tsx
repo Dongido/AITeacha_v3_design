@@ -12,7 +12,7 @@ const Hero = () => {
   const [textIndex, setTextIndex] = useState(0);
   // const [isDeleting, setIsDeleting] = useState(false);
   // const [displayText, setDisplayText] = useState("");
-  // const fullText = "AI Teacha";
+  // const fullText = "AiTeacha";
   // const typingSpeed = isDeleting ? 50 : 150;
   // const pauseDuration = 1000;
 
@@ -63,7 +63,7 @@ const Hero = () => {
             animate={{ opacity: 1 }}
             transition={{ duration: 1 }}
           >
-            {"AI Teacha"}
+            {"AiTeacha"}
           </motion.span>
         </h1>
         <p className="mb-8 text-lg font-normal text-gray-800 lg:text-xl sm:px-16 xl:px-48 dark:text-gray-400">

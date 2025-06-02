@@ -77,68 +77,68 @@ const FaqsCard: React.FC<FaqsCardProps> = ({ faqsList, idx }) => {
 const PricingFaq: React.FC = () => {
   const faqsList: Faq[] = [
     {
-      q: "Is AI Teacha still free for teachers?",
-      a: "Yes! AI Teacha offers the AI Teacha Free plan, which is free forever. This plan ensures that teachers across Nigeria and Africa can access essential tools to enhance teaching and learning at no cost.",
+      q: "Is AiTeacha still free for teachers?",
+      a: "Yes! AiTeacha offers the AiTeacha Free plan, which is free forever. This plan ensures that teachers across Nigeria and Africa can access essential tools to enhance teaching and learning at no cost.",
     },
     {
-      q: "How can I access all the features of AI Teacha Pro, Premium, and Enterprise?",
-      a: "To unlock advanced features such as in-depth analytics, administrative controls, and customizations, you can upgrade to AI Teacha Pro or AI Teacha Premium as an individual educator. For schools or districts, the AI Teacha Enterprise plan offers tailored solutions. Request a quote to explore how it fits your institution's needs.",
+      q: "How can I access all the features of AiTeacha Pro, Premium, and Enterprise?",
+      a: "To unlock advanced features such as in-depth analytics, administrative controls, and customizations, you can upgrade to AiTeacha Pro or AiTeacha Premium as an individual educator. For schools or districts, the AiTeacha Enterprise plan offers tailored solutions. Request a quote to explore how it fits your institution's needs.",
     },
     {
       q: "Can I still get premium features if my school doesn’t have an Enterprise license?",
-      a: "Absolutely! If your school hasn’t adopted AI Teacha Enterprise, you can subscribe to either AI Teacha Pro or AI Teacha Premium as an individual. These plans provide access to premium tools instantly. Simply click 'Upgrade' in the app to subscribe.",
+      a: "Absolutely! If your school hasn’t adopted AiTeacha Enterprise, you can subscribe to either AiTeacha Pro or AiTeacha Premium as an individual. These plans provide access to premium tools instantly. Simply click 'Upgrade' in the app to subscribe.",
     },
     {
-      q: "What are the costs for AI Teacha plans?",
-      a: "AI Teacha Free: Free Forever\nAI Teacha Pro (Individual Educators):\n- Billed Monthly: ₦5,000 per month\n- Billed Yearly (8% Discount): ₦55,000 per year\nAI Teacha Premium (Individual Educators):\n- Billed Monthly: ₦20,000 per month\n- Billed Yearly (17% Discount): ₦200,000 per year\nAI Teacha Enterprise (Schools and Districts):\nPricing is customized based on the number of users and features required. Request a quote to get a tailored plan.",
+      q: "What are the costs for AiTeacha plans?",
+      a: "AiTeacha Free: Free Forever\nAiTeacha Pro (Individual Educators):\n- Billed Monthly: ₦5,000 per month\n- Billed Yearly (8% Discount): ₦55,000 per year\nAiTeacha Premium (Individual Educators):\n- Billed Monthly: ₦20,000 per month\n- Billed Yearly (17% Discount): ₦200,000 per year\nAiTeacha Enterprise (Schools and Districts):\nPricing is customized based on the number of users and features required. Request a quote to get a tailored plan.",
     },
     {
-      q: "How does AI Teacha’s pricing compare to other platforms?",
-      a: "AI Teacha is designed specifically for educators and students, offering affordable pricing tailored to African schools. Compared to general-purpose AI tools, AI Teacha provides superior value with tools and features optimized for education—all at significantly lower costs.",
+      q: "How does AiTeacha’s pricing compare to other platforms?",
+      a: "AiTeacha is designed specifically for educators and students, offering affordable pricing tailored to African schools. Compared to general-purpose AI tools, AiTeacha provides superior value with tools and features optimized for education—all at significantly lower costs.",
     },
     {
-      q: "What happens if I subscribe to AI Teacha Pro or Premium and my school later opts for Enterprise?",
-      a: "No problem! If your school transitions to an Enterprise license, we’ll offer a prorated refund for your AI Teacha Pro or Premium subscription. Be sure to use your school email when signing up to simplify the process.",
+      q: "What happens if I subscribe to AiTeacha Pro or Premium and my school later opts for Enterprise?",
+      a: "No problem! If your school transitions to an Enterprise license, we’ll offer a prorated refund for your AiTeacha Pro or Premium subscription. Be sure to use your school email when signing up to simplify the process.",
     },
     {
       q: "Are there usage limits for free and paid plans?",
-      a: "Free Users: AI Teacha Free has usage limits to ensure equitable access for all. Most users won’t reach the limit until late in the month, but heavy users may experience earlier restrictions. Limits reset monthly, and you’ll receive a warning as you approach the limit. Pro, Premium, and Enterprise Users: Enjoy unlimited usage, except in rare cases for extreme usage (top 0.1% of users).",
+      a: "Free Users: AiTeacha Free has usage limits to ensure equitable access for all. Most users won’t reach the limit until late in the month, but heavy users may experience earlier restrictions. Limits reset monthly, and you’ll receive a warning as you approach the limit. Pro, Premium, and Enterprise Users: Enjoy unlimited usage, except in rare cases for extreme usage (top 0.1% of users).",
     },
     {
       q: "How will I know if I’m nearing my limit as a free user?",
-      a: "Free user limits adjust dynamically based on platform usage. Notifications will alert you as you approach your limit. For unlimited access, consider upgrading to AI Teacha Pro, AI Teacha Premium, or encouraging your school to adopt AI Teacha Enterprise.",
+      a: "Free user limits adjust dynamically based on platform usage. Notifications will alert you as you approach your limit. For unlimited access, consider upgrading to AiTeacha Pro, AiTeacha Premium, or encouraging your school to adopt AiTeacha Enterprise.",
     },
     {
-      q: "Is AI Teacha still free for teachers?",
-      a: "Yes! AI Teacha offers the AI Teacha Free plan, which is free forever. This plan ensures that teachers across Nigeria and Africa can access essential tools to enhance teaching and learning at no cost.",
+      q: "Is AiTeacha still free for teachers?",
+      a: "Yes! AiTeacha offers the AiTeacha Free plan, which is free forever. This plan ensures that teachers across Nigeria and Africa can access essential tools to enhance teaching and learning at no cost.",
     },
     {
-      q: "Who can benefit from AI Teacha?",
-      a: "Students, educators, schools, and parents can benefit from AI Teacha by accessing personalized learning solutions and resources.",
+      q: "Who can benefit from AiTeacha?",
+      a: "Students, educators, schools, and parents can benefit from AiTeacha by accessing personalized learning solutions and resources.",
     },
     {
-      q: "How does AI Teacha work?",
-      a: "AI Teacha uses advanced AI algorithms to analyze learning needs and provide tailored content to support diverse educational goals.",
+      q: "How does AiTeacha work?",
+      a: "AiTeacha uses advanced AI algorithms to analyze learning needs and provide tailored content to support diverse educational goals.",
     },
     {
-      q: "How can I get started with AI Teacha?",
-      a: "Getting started is easy! Simply sign up on the AI Teacha website, choose your subscription plan, and start exploring the features.",
+      q: "How can I get started with AiTeacha?",
+      a: "Getting started is easy! Simply sign up on the AiTeacha website, choose your subscription plan, and start exploring the features.",
     },
     {
-      q: "How secure is my data on AI Teacha?",
-      a: "Your data security is our priority. AI Teacha uses robust security measures to protect user data and ensure privacy.",
+      q: "How secure is my data on AiTeacha?",
+      a: "Your data security is our priority. AiTeacha uses robust security measures to protect user data and ensure privacy.",
     },
     {
-      q: "How does billing work on AI Teacha?",
-      a: "Billing on AI Teacha is subscription-based, with various plans available to suit different needs. Payments can be managed through your account settings.",
+      q: "How does billing work on AiTeacha?",
+      a: "Billing on AiTeacha is subscription-based, with various plans available to suit different needs. Payments can be managed through your account settings.",
     },
     {
       q: "Can I customize the generated content?",
-      a: "Yes, AI Teacha allows users to customize content to meet specific learning objectives and preferences.",
+      a: "Yes, AiTeacha allows users to customize content to meet specific learning objectives and preferences.",
     },
     {
       q: "Is AI customizable with different curriculum standards?",
-      a: "AI Teacha supports customization for various curriculum standards, making it adaptable for different educational frameworks.",
+      a: "AiTeacha supports customization for various curriculum standards, making it adaptable for different educational frameworks.",
     },
   ];
 
@@ -149,7 +149,7 @@ const PricingFaq: React.FC = () => {
           More About Pricing
         </h3>
         <h1 className="text-3xl md:text-4xl lg:text-5xl text-gray-900 font-semibold">
-          Pricing FAQ for AI Teacha Plans
+          Pricing FAQ for AiTeacha Plans
         </h1>
       </div>
       <div className="mt-14 max-w-2xl mx-auto">

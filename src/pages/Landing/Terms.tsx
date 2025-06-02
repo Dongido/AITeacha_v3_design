@@ -33,7 +33,7 @@ const Terms = () => {
 
       <div className="rounded-t-3xl max-w-4xl mx-auto px-8 py-6 mt-8">
         <p>
-          Welcome to AI Teacha, operated by ICEDT Consult Limited ("AI Teacha").
+          Welcome to AiTeacha, operated by ICEDT Consult Limited ("AiTeacha").
           Our platform provides educators, schools, and institutions across
           Nigeria and Africa with access to innovative AI-powered tools and
           resources designed to enhance teaching and learning experiences. These
@@ -80,7 +80,7 @@ const Terms = () => {
         <div className="mx-4">
           <h3 className="text-md mt-2 font-bold">2.1. License Grant:</h3>
           <p>
-            AI Teacha grants you a limited, non-exclusive, non-transferable, and
+            AiTeacha grants you a limited, non-exclusive, non-transferable, and
             revocable license to use our Services for educational purposes in
             accordance with these Terms.
           </p>
@@ -126,7 +126,7 @@ const Terms = () => {
           <p>
             Avoid sharing personal identifiable information (PII) of students or
             others when using our tools unless explicitly permitted and
-            protected under a Data Privacy Agreement with AI Teacha.
+            protected under a Data Privacy Agreement with AiTeacha.
           </p>
         </div>
 
@@ -134,7 +134,7 @@ const Terms = () => {
         <div className="mx-4">
           <h3 className="text-md mt-2 font-bold">4.1. Privacy Commitment:</h3>
           <p>
-            AI Teacha prioritizes data security and complies with relevant
+            AiTeacha prioritizes data security and complies with relevant
             regional laws, including the Nigeria Data Protection Regulation
             (NDPR) and applicable international laws.
           </p>
@@ -150,7 +150,7 @@ const Terms = () => {
           </h3>
           <p>
             Institutions using student-facing services must enter into a Data
-            Privacy Agreement with AI Teacha to ensure compliance with privacy
+            Privacy Agreement with AiTeacha to ensure compliance with privacy
             laws.
           </p>
         </div>
@@ -175,13 +175,13 @@ const Terms = () => {
         <div className="mx-4">
           <h3 className="text-md mt-2 font-bold">6.1. Ownership:</h3>
           <p>
-            AI Teacha retains ownership of all intellectual property rights
+            AiTeacha retains ownership of all intellectual property rights
             related to our Services, including software, design, and branding.
           </p>
 
           <h3 className="text-md mt-2 font-bold">6.2. User Content:</h3>
           <p>
-            By submitting content to our platform, you grant AI Teacha a
+            By submitting content to our platform, you grant AiTeacha a
             non-exclusive, worldwide license to use, modify, and distribute the
             content solely for the purpose of providing and improving our
             Services.
@@ -196,7 +196,7 @@ const Terms = () => {
           </p>
 
           <h3 className="text-md mt-2 font-bold">
-            7.2. Termination by AI Teacha:
+            7.2. Termination by AiTeacha:
           </h3>
           <p>
             We reserve the right to suspend or terminate your account for
@@ -216,7 +216,7 @@ const Terms = () => {
         <h2 className="text-xl mt-4 font-bold">8. Limitation of Liability</h2>
         <div className="mx-4">
           <p>
-            To the extent permitted by law, AI Teacha and its affiliates shall
+            To the extent permitted by law, AiTeacha and its affiliates shall
             not be liable for any indirect, incidental, or consequential damages
             arising from the use of our Services. Our total liability for any
             claims shall not exceed the amount paid for Services in the
@@ -226,7 +226,7 @@ const Terms = () => {
         <h2 className="text-xl mt-4 font-bold">9. Indemnification</h2>
         <div className="mx-4">
           <p>
-            You agree to indemnify and hold harmless AI Teacha, its officers,
+            You agree to indemnify and hold harmless AiTeacha, its officers,
             employees, and partners from any claims, damages, or expenses
             arising out of your use of the Services or violation of these Terms.
           </p>
@@ -248,7 +248,7 @@ const Terms = () => {
         <h2 className="text-xl mt-4 font-bold">11. Updates to Terms</h2>
         <div className="mx-4">
           <p>
-            AI Teacha may update these Terms from time to time. Users will be
+            AiTeacha may update these Terms from time to time. Users will be
             notified of significant changes through email or in-app
             notifications. Continued use of the Services after updates
             constitutes acceptance of the revised Terms.
@@ -268,8 +268,7 @@ const Terms = () => {
           </ul>
 
           <p>
-            Thank you for choosing AI Teacha to empower your educational
-            journey!
+            Thank you for choosing AiTeacha to empower your educational journey!
           </p>
         </div>
       </div>

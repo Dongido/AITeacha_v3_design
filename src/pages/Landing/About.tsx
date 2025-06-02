@@ -16,12 +16,12 @@ const About = () => {
         <div className="rounded-t-3xl shadow-md max-w-3xl mx-auto px-8 py-6 mt-8">
           <span className="font-bold">
             {" "}
-            Discover the Future of Education with AI Teacha
+            Discover the Future of Education with AiTeacha
           </span>
           <br />
           <br />
-          Welcome to <span className="font-bold">AI Teacha</span>, your dynamic
-          gateway to a revolutionary era of education. At AI Teacha, we are
+          Welcome to <span className="font-bold">AiTeacha</span>, your dynamic
+          gateway to a revolutionary era of education. At AiTeacha, we are
           committed to reshaping the landscape of teaching and learning through
           cutting-edge artificial intelligence.
           <br />
@@ -29,12 +29,12 @@ const About = () => {
           Our mission is clear: empower educators with tools that transcend
           traditional boundaries. Imagine a world where lesson planning is a
           breeze, assessments are seamlessly generated, and communication with
-          students is effective and engaging. AI Teacha transforms this vision
+          students is effective and engaging. AiTeacha transforms this vision
           into reality, offering educators an innovative platform that
           simplifies tasks by up to 95%.
           <br />
           <br /> As pioneers in the educational technology sphere, we understand
-          the evolving needs of teachers. AI Teacha is not just a tool; it's a
+          the evolving needs of teachers. AiTeacha is not just a tool; it's a
           partner in your educational journey. Whether you're a seasoned
           educator or just starting, our platform adapts to your unique teaching
           style and enhances your impact in the classroom. <br />
@@ -44,7 +44,7 @@ const About = () => {
           <br />
           <span className="font-bold italics">
             {" "}
-            AI Teacha: Shaping the Future of Teaching, One Innovation at a Time.
+            AiTeacha: Shaping the Future of Teaching, One Innovation at a Time.
           </span>
         </div>
       </div>

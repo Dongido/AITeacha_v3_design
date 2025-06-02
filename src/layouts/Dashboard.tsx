@@ -15,6 +15,15 @@ import { RouteConfig } from "../interfaces";
 import Resources from "../pages/Dashboard/Resources";
 import Team from "../pages/Dashboard/Team";
 import ResourceSingle from "../pages/Dashboard/ResourcesSingle";
+import TeamClassroomPage from "../pages/Dashboard/team/TeamClassroom";
+import Training from "../pages/Dashboard/Training";
+import Community from "../pages/Dashboard/Community";
+import TrainingForm from "../pages/Dashboard/TrainingForm";
+import FreeUsers from "../pages/Dashboard/admin/FreeUsers";
+import AdminTools from "../pages/Dashboard/AdminTools";
+import PastUsers from "../pages/Dashboard/admin/PastUsers";
+import Subscribers from "../pages/Dashboard/admin/Subscribers";
+import ArchivedAssistants from "../pages/Dashboard/premium/Archive";
 
 export function Dashboard() {
   const navigate = useNavigate();
@@ -50,7 +59,7 @@ export function Dashboard() {
       />
       <div
         className={`p-4 transition-all duration-300 ${
-          isCollapsed ? "xl:ml-20" : "xl:ml-72"
+          isCollapsed ? "xl:ml-28" : "xl:ml-72"
         }`}
       >
         <DashboardNavbar />
@@ -94,7 +103,18 @@ export function Dashboard() {
         <Routes>
           <Route path="/premium/teams" element={<Team />} />
           <Route path="/premium/resources" element={<Resources />} />
+          <Route path="/premium/classrooms" element={<TeamClassroomPage />} />
+          <Route path="/premium/archive" element={<ArchivedAssistants />} />
           <Route path="/premium/resources/:id" element={<ResourceSingle />} />
+          <Route path="/resource/training" element={<Training />} />
+          <Route path="/resource/training/form" element={<TrainingForm />} />
+          <Route path="/resource/community" element={<Community />} />
+          <Route path="/admin/tools" element={<AdminTools />} />
+          <Route path="/admin/free-users" element={<FreeUsers />} />
+
+          <Route path="/admin/past-users" element={<PastUsers />} />
+
+          <Route path="/admin/subscribers" element={<Subscribers />} />
         </Routes>
         {/* <div className="text-blue-gray-600">
           <Footer />

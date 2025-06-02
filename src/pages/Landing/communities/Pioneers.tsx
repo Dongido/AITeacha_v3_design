@@ -1,8 +1,16 @@
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { Button } from "../../../components/ui/Button";
-
+import { useNavigate } from "react-router-dom";
 const Pioneers = () => {
+  const navigate = useNavigate();
+
+  const handleNavigate = () => {
+    localStorage.setItem("selectedRole", "school");
+
+    localStorage.setItem("roleId", "4");
+    navigate("/auth/sign-up");
+  };
   return (
     <div className="flex flex-col  min-h-screen bg-white">
       <section>
@@ -15,11 +23,11 @@ const Pioneers = () => {
             <figcaption className="desc z-10 relative px-2 text-center">
               <h1 className="text-3xl md:text-4xl lg:text-6xl font-bold text-center my-6 text-header text-white">
                 {" "}
-                Empower Your School with AI Teacha{" "}
+                Empower Your School with AiTeacha{" "}
               </h1>
               <center>
                 <h2 className="text-md md:text-lg text-center  lg:text-xl text-gray-100 max-w-3xl ">
-                  Discover the future of education with AI Teacha's Schools
+                  Discover the future of education with AiTeacha's Schools
                   Onboarding Program. Streamline teaching, boost student
                   engagement, and unlock access to innovative AI tools tailored
                   for your institution. Begin your transformation today!
@@ -43,18 +51,18 @@ const Pioneers = () => {
           <span className="text-lg font-medium  mb-8 text-gray-900">
             The{" "}
             <span className="font-bold">
-              AI Teacha AMS is the first AI Powered Academic Management System
+              AiTeacha AMS is the first AI Powered Academic Management System
             </span>{" "}
             for Schools and Institutions. Be the first to experience the power
-            of AI Teacha, the revolutionary AI Academic Management System
+            of AiTeacha, the revolutionary AI Academic Management System
             designed to simplify school operations, teaching, and learning.
             <br />
             <br />
             <span className="font-bold text-2xl">
-              Why Be a Pioneer School with AI Teacha?
+              Why Be a Pioneer School with AiTeacha?
             </span>
             <p>
-              AI Teacha empowers schools to streamline processes, enhance
+              AiTeacha empowers schools to streamline processes, enhance
               teaching, and improve learning outcomes with cutting-edge AI
               technology:
             </p>
@@ -77,7 +85,7 @@ const Pioneers = () => {
             <br />
             <span className="text-2xl pt-4 font-bold ">
               {" "}
-              Features That Set AI Teacha Apart
+              Features That Set AiTeacha Apart
             </span>
             <br />
             <ul className="list-disc list-inside ">
@@ -108,7 +116,7 @@ const Pioneers = () => {
                 who need extra help. Empowered Parents: Equip parents with AI
                 tools to support their children’s learning journey at home. And
                 So Much More: From classroom management to real-time analytics,
-                AI Teacha is designed to elevate every aspect of education.
+                AiTeacha is designed to elevate every aspect of education.
                 Benefits of Joining the First Tester Program Exclusive Access:
                 Be the first to use our innovative platform before its official
                 launch.
@@ -116,7 +124,7 @@ const Pioneers = () => {
               <br />
               <li>
                 <span className="font-bold text-lg">Custom Solutions:</span>{" "}
-                Receive tailored support to maximize the impact of AI Teacha in
+                Receive tailored support to maximize the impact of AiTeacha in
                 your school.
               </li>
               <br />
@@ -133,7 +141,7 @@ const Pioneers = () => {
                 <span className="font-bold text-lg">
                   Influence Development:
                 </span>{" "}
-                Share your insights to help us refine AI Teacha for schools
+                Share your insights to help us refine AiTeacha for schools
                 worldwide.
               </li>
             </ul>
@@ -189,7 +197,7 @@ const Pioneers = () => {
               </div>
               <h3 className="text-xl font-semibold">Onboard with Ease</h3>
               <p className="text-gray-700  text-center max-w-xs">
-                Receive hands-on support to set up AI Teacha for your school
+                Receive hands-on support to set up AiTeacha for your school
               </p>
             </div>
             <div className="flex flex-col items-center space-y-3">
@@ -223,7 +231,11 @@ const Pioneers = () => {
             </div>
           </div>
         </section>
-        <Button variant={"gradient"} className="rounded-md  w-64">
+        <Button
+          variant={"gradient"}
+          className="rounded-md  w-64"
+          onClick={handleNavigate}
+        >
           Apply here
         </Button>
       </div>

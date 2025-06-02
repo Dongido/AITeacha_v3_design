@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import {
   fetchClassroomsByUser,
+  fetchClassroomsByTeam,
   deleteClassroom,
   createClassroom,
   fetchClassroomById,
@@ -13,6 +14,7 @@ import { Student, Classroom } from "../../api/interface";
 
 interface ClassroomsState {
   classrooms: Classroom[];
+  teamClassrooms: Classroom[];
   selectedClassroom: Classroom | null;
   students: Student[];
   loading: boolean;
@@ -26,6 +28,7 @@ interface ClassroomsState {
 
 const initialState: ClassroomsState = {
   classrooms: [],
+  teamClassrooms: [],
   selectedClassroom: null,
   students: [],
   loading: false,
@@ -42,6 +45,17 @@ export const loadClassrooms = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const classrooms = await fetchClassroomsByUser();
+      return classrooms;
+    } catch (error: any) {
+      return rejectWithValue(error.message || "Failed to load classrooms.");
+    }
+  }
+);
+export const loadTeamClassrooms = createAsyncThunk(
+  "classrooms/loadTeamClassrooms",
+  async (_, { rejectWithValue }) => {
+    try {
+      const classrooms = await fetchClassroomsByTeam();
       return classrooms;
     } catch (error: any) {
       return rejectWithValue(error.message || "Failed to load classrooms.");
@@ -93,7 +107,6 @@ export const editClassroomThunk = createAsyncThunk(
         status: string;
         number_of_students: number;
         scope_restriction: boolean;
-
         resources: File[];
       };
       contentType?: string;
@@ -108,6 +121,7 @@ export const editClassroomThunk = createAsyncThunk(
       formData.append("grade", data.grade);
       formData.append("status", data.status);
       formData.append("scope_restriction", data.scope_restriction.toString());
+
       formData.append("number_of_students", data.number_of_students.toString());
       data.resources.forEach((file) => {
         formData.append("resources", file);
@@ -169,6 +183,9 @@ export const createClassroomThunk = createAsyncThunk(
       description?: string;
       grade: string;
       status: string;
+      class_type: string;
+      currency: string | undefined;
+      amount: any;
       number_of_students: number;
       scope_restriction: boolean;
       tools: {
@@ -178,6 +195,10 @@ export const createClassroomThunk = createAsyncThunk(
         additional_instruction: string | null;
       }[];
       resources: File[];
+      outlines: any;
+      resource_links: string[];
+      resource_accessibility: boolean;
+      end_date: string | null;
     },
     { rejectWithValue }
   ) => {
@@ -188,9 +209,21 @@ export const createClassroomThunk = createAsyncThunk(
       if (data.description) formData.append("description", data.description);
       formData.append("grade", data.grade);
       formData.append("status", data.status);
+      formData.append("class_type", data.class_type);
+      formData.append("currency", data.currency || "");
+      formData.append("amount", data.amount);
       formData.append("scope_restriction", data.scope_restriction.toString());
       formData.append("number_of_students", data.number_of_students.toString());
       formData.append("tools", JSON.stringify(data.tools));
+      formData.append("outlines", JSON.stringify(data.outlines));
+      formData.append(
+        "resource_accessibility",
+        data.resource_accessibility.toString()
+      );
+      formData.append("resource_links", JSON.stringify(data.resource_links));
+      if (data.end_date) {
+        formData.append("end_date", data.end_date);
+      }
       data.resources.forEach((file) => {
         formData.append("resources", file);
       });
@@ -227,6 +260,21 @@ const classroomsSlice = createSlice({
         }
       )
       .addCase(loadClassrooms.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(loadTeamClassrooms.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        loadTeamClassrooms.fulfilled,
+        (state, action: PayloadAction<Classroom[]>) => {
+          state.loading = false;
+          state.teamClassrooms = action.payload;
+        }
+      )
+      .addCase(loadTeamClassrooms.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       })

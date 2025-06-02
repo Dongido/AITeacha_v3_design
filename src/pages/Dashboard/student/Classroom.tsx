@@ -1,6 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { FiSend } from "react-icons/fi";
+import {
+  FiSend,
+  FiCopy,
+  FiMic,
+  FiVolume2,
+  FiPause,
+  FiX,
+  FiPaperclip,
+} from "react-icons/fi";
 import { Button } from "../../../components/ui/Button";
 import { TextArea } from "../../../components/ui/TextArea";
 import { Undo2 } from "lucide-react";
@@ -9,40 +17,347 @@ import { fetchClassroomByIdThunk } from "../../../store/slices/classroomSlice";
 import { RootState, AppDispatch } from "../../../store";
 import { motion } from "framer-motion";
 import {
+  listTranscripts,
+  getLiveClassById,
+  getTranscriptDetails,
+  getTranscriptAssessment,
+} from "../../../api/liveclass";
+import {
   sendClassroomMessage,
   sendClassroomToolMessage,
+  sendClassroomOutlineMessage,
 } from "../../../api/studentclassroom";
-import { marked } from "marked";
+import { sendClassroomOutlineAssessment } from "../../../api/studentassignment";
 import Drawer from "react-modern-drawer";
 import "react-modern-drawer/dist/index.css";
 import greyImg from "../../../assets/img/greyimg.avif";
-
+import {
+  SpeechRecognition,
+  SpeechRecognitionEvent,
+  SpeechRecognitionResultList,
+} from "../../../interfaces";
 import MarkdownRenderer from "../_components/MarkdownRenderer";
-
+import { useMaterialTailwindController } from "../../../context";
+import { Sidenav } from "../classrooms/components/Sidenav";
+import { markOutlineAsRead } from "../../../api/studentassignment";
+import { Routes, Route } from "react-router-dom";
+import { Cog6ToothIcon } from "@heroicons/react/24/solid";
+import {
+  DashboardNavbar,
+  Configurator,
+  Footer,
+} from "../../../components/layout";
+import { LightBulbIcon } from "@heroicons/react/24/outline";
+import { AssessmentReportItem } from "../classrooms/components/Sidenav";
+import { getOutlineAssessmentReport } from "../../../api/studentassignment";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger,
+} from "../../../components/ui/Dialogue";
+import { Skeleton } from "../../../components/ui/Skeleton";
+import {
+  loadClassroomChatHistory,
+  loadToolChatHistory,
+} from "../../../api/chat";
+import { sendLiveClassroomAssessmentAnswers } from "../../../api/liveclass";
 const Classroom = () => {
   const [inputText, setInputText] = useState("");
+  const [isRecording, setIsRecording] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const speechRef = useRef<SpeechSynthesisUtterance | null>(null);
   const [selectedTool, setSelectedTool] = useState<string | null>(null);
+  const [selectedOutline, setSelectedOutline] = useState<any>(null);
+  const [loadingHistory, setLoadingHistory] = useState(false);
+  const [errorHistory, setErrorHistory] = useState<string | null>(null);
+  const [historyPage, setHistoryPage] = useState(0);
+  const historyLimit = 40;
+  const [allHistoryLoaded, setAllHistoryLoaded] = useState(false);
+  const [loadingToolHistory, setLoadingToolHistory] = useState(false);
+  const [errorToolHistory, setErrorToolHistory] = useState<string | null>(null);
+  const [previouslySelectedTool, setPreviouslySelectedTool] = useState<
+    string | null
+  >(null);
+  const [loadedToolHistory, setLoadedToolHistory] = useState<string | null>(
+    null
+  );
+  const [toolHistoryPage, setToolHistoryPage] = useState(0);
+  const toolHistoryLimit = 40;
+  const [allToolHistoryLoaded, setAllToolHistoryLoaded] = useState(false);
+
   const [messages, setMessages] = useState<{
     [key: string]: { text: string; fromUser: boolean; isLoading?: boolean }[];
   }>({ main: [] });
-  const [userDetails, setUserDetails] = useState<any>(null);
 
+  const [previousCurrentMessages, setPreviousCurrentMessages] = useState<{
+    [key: string]: { text: string; fromUser: boolean; isLoading?: boolean }[];
+  }>({ main: [] });
+  const [totalClassroomHistoryPages, setTotalClassroomHistoryPages] =
+    useState(0);
+  const [totalToolHistoryPages, setTotalToolHistoryPages] = useState(0);
+
+  const [userDetails, setUserDetails] = useState<any>(null);
+  const [viewState, setViewState] = useState("classroom");
+  const [welcomeMessage, setWelcomeMessage] = useState("");
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const dispatch = useDispatch<AppDispatch>();
+  const [loading, setLoading] = useState(false);
+  const [selectedOverview, setSelectedOverview] = useState(true);
+  const [showDialog, setShowDialog] = React.useState(false);
+  const [showGradeDialog, setShowGradeDialog] = React.useState(false);
+  const [reportData, setReportData] = React.useState<
+    AssessmentReportItem[] | null
+  >(null);
+
+  const [loadingGrade, setLoadingGrade] = React.useState(false);
+  const [errorGrade, setErrorGrade] = React.useState<string | null>(null);
 
   const classroom = useSelector(
     (state: RootState) => state.classrooms.selectedClassroom
   );
   const tools = classroom?.tools || [];
+  const chatContainerRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { controller } = useMaterialTailwindController();
+  const { sidenavType } = controller;
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [currentLiveClass, setCurrentLiveClass] = useState<any | null>(null);
+  const [allTranscriptsWithAssessments, setAllTranscriptsWithAssessments] =
+    useState<any[]>([]);
+  const [loadingLiveClassData, setLoadingLiveClassData] =
+    useState<boolean>(false);
+  const [errorLiveClassData, setErrorLiveClassData] = useState<string | null>(
+    null
+  );
 
+  const [isEmailVerified, setIsEmailVerified] = useState<number>(0);
+  const [studentAnswers, setStudentAnswers] = useState<{
+    [questionId: number]: string;
+  }>({});
+
+  const [submittingAssessment, setSubmittingAssessment] = useState(false);
+  const [submissionSuccess, setSubmissionSuccess] = useState(false);
+  const [submissionError, setSubmissionError] = useState<string | null>(null);
+
+  const handleOverviewClick = () => {
+    setSelectedOverview(true);
+    console.log("selectedOverview set to true in handler");
+    console.log("selectedOverview", selectedOverview);
+  };
   useEffect(() => {
     if (id) {
       dispatch(fetchClassroomByIdThunk(Number(id)));
     }
   }, [dispatch, id]);
+
+  useEffect(() => {
+    let newMessage: string = classroom?.content || "";
+    console.log("selectedOverview", selectedOverview);
+    if (selectedOverview) {
+      console.log("niiice");
+      if (!newMessage) {
+        newMessage = `Hi👋 ${
+          userDetails?.firstname || "there"
+        }, welcome to class "<strong>${
+          classroom?.classroom_name || "the classroom"
+        }</strong>." Start your conversation here!`;
+      }
+    } else if (newMessage && selectedTool) {
+      newMessage = `Hi👋 ${
+        userDetails?.firstname || "there"
+      }, welcome to <strong>${selectedTool}</strong>. Start your conversation here!`;
+    } else if (newMessage && selectedOutline) {
+      newMessage = selectedOutline.path || "Welcome to the selected outline.";
+    } else if (!newMessage && selectedOutline) {
+      newMessage = selectedOutline.path || "Welcome to the selected outline.";
+    } else if (!newMessage) {
+      newMessage = `Hi👋 ${
+        userDetails?.firstname || "there"
+      }, welcome to class "<strong>${
+        classroom?.classroom_name || "the classroom"
+      }</strong>." Start your conversation here!`;
+    }
+
+    setWelcomeMessage(newMessage);
+  }, [selectedOutline, selectedTool, classroom, userDetails, selectedOverview]);
+  useEffect(() => {
+    const fetchClassroomHistory = async () => {
+      if (id && !selectedTool && !previouslySelectedTool && historyPage === 0) {
+        setLoadingHistory(true);
+        setErrorHistory(null);
+        try {
+          const historyData = await loadClassroomChatHistory(
+            Number(id),
+            historyLimit,
+            historyPage
+          );
+          if (historyData?.data && Array.isArray(historyData.data)) {
+            setMessages((prevMessages) => ({
+              ...prevMessages,
+              main: [
+                ...historyData.data.map((msg: any) => ({
+                  text: msg.content,
+                  fromUser: msg.label === "question",
+                })),
+                ...(prevMessages.main || []),
+              ],
+            }));
+            setTotalClassroomHistoryPages(historyData.count || 0);
+            if (
+              historyData.data.length < historyLimit ||
+              historyData.count <= 1
+            ) {
+              setAllHistoryLoaded(true);
+            }
+          } else if (historyData?.count === 0) {
+            setTotalClassroomHistoryPages(0);
+            setMessages((prevMessages) => ({ ...prevMessages, main: [] }));
+            setAllHistoryLoaded(true);
+          }
+        } catch (error: any) {
+          console.error("Error loading classroom chat history:", error);
+          setErrorHistory(error.message || "Failed to load chat history.");
+        } finally {
+          setLoadingHistory(false);
+        }
+      }
+    };
+
+    fetchClassroomHistory();
+  }, [id, historyPage, historyLimit, selectedTool, previouslySelectedTool]);
+
+  useEffect(() => {
+    const fetchToolHistory = async () => {
+      if (
+        id &&
+        selectedTool &&
+        selectedTool !== previouslySelectedTool &&
+        toolHistoryPage === 0
+      ) {
+        setLoadingToolHistory(true);
+        setErrorToolHistory(null);
+        try {
+          const tool = tools.find((t) => t.tool_name === selectedTool);
+          if (tool?.tool_id) {
+            const historyData = await loadToolChatHistory(
+              Number(id),
+              tool.tool_id,
+              toolHistoryLimit,
+              toolHistoryPage
+            );
+            if (historyData?.data && Array.isArray(historyData.data)) {
+              setMessages((prevMessages) => ({
+                ...prevMessages,
+                [selectedTool]: [
+                  ...historyData.data.map((msg: any) => ({
+                    text: msg.content,
+                    fromUser: msg.label === "question",
+                  })),
+                  ...(prevMessages[selectedTool] || []),
+                ],
+              }));
+              setPreviouslySelectedTool(selectedTool);
+              setTotalToolHistoryPages(historyData.count || 0);
+              if (
+                historyData.data.length < toolHistoryLimit ||
+                historyData.count <= 1
+              ) {
+                setAllToolHistoryLoaded(true);
+              }
+            } else if (historyData?.count === 0) {
+              setTotalToolHistoryPages(0);
+              setMessages((prevMessages) => ({
+                ...prevMessages,
+                [selectedTool]: [],
+              }));
+              setAllToolHistoryLoaded(true);
+            }
+          }
+        } catch (error: any) {
+          console.error(
+            `Error loading chat history for tool ${selectedTool}:`,
+            error
+          );
+          setErrorToolHistory(
+            error.message || `Failed to load chat history for ${selectedTool}.`
+          );
+          setMessages((prevMessages) => ({
+            ...prevMessages,
+            [selectedTool]: [],
+          }));
+          setPreviouslySelectedTool(null);
+        } finally {
+          setLoadingToolHistory(false);
+        }
+      } else if (id && !selectedTool) {
+        setPreviouslySelectedTool(null);
+        const { [getMessageKey()]: _, ...rest } = messages;
+        setMessages(rest);
+        setToolHistoryPage(0);
+        setAllToolHistoryLoaded(false);
+        setErrorToolHistory(null);
+        setLoadingToolHistory(false);
+        setTotalToolHistoryPages(0);
+      }
+    };
+
+    fetchToolHistory();
+  }, [
+    id,
+    selectedTool,
+    tools,
+    toolHistoryPage,
+    toolHistoryLimit,
+    previouslySelectedTool,
+  ]);
+
+  useEffect(() => {
+    setPreviousCurrentMessages(messages);
+  }, [messages]);
+
+  const sendAllAnswers = (assessments: any[]) => {
+    const answerData = {
+      classroom_id: classroom?.classroom_id,
+      outline_id: selectedOutline?.classroomoutline_id,
+      answers: assessments
+        .map((assessment) => {
+          const selectedAnswer = document.querySelector(
+            `input[name="${assessment.outlineassessment_id}"]:checked`
+          ) as HTMLInputElement;
+
+          return {
+            outline_assessment_id: assessment.outlineassessment_id,
+            question: assessment.outlineassessment_question,
+            student_answer: selectedAnswer?.value || null,
+          };
+        })
+        .filter((answer) => answer.student_answer !== null),
+    };
+
+    if (answerData.answers.length === 0) {
+      alert("Please select answers for all questions.");
+      return;
+    }
+
+    setLoading(true);
+
+    sendClassroomOutlineAssessment(answerData)
+      .then((response) => {
+        console.log("Answers sent:", response);
+        setLoading(false);
+        dispatch(fetchClassroomByIdThunk(Number(id)));
+        window.location.reload();
+      })
+      .catch((error) => {
+        console.error("Error sending answers:", error);
+        setLoading(false);
+      });
+  };
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -57,10 +372,64 @@ const Classroom = () => {
       setUserDetails(parsedDetails);
     }
   }, []);
+
+  interface MessageData {
+    classroom_id: number;
+    classname: string;
+    description: string;
+    scope_restriction: boolean;
+    grade: string;
+    student_message: string;
+    content_from: string;
+    file_content: any[];
+    tool_name?: string;
+    tool_id?: number;
+    tool_description?: string;
+    outline_content?: any;
+    outline_title?: any;
+  }
+
+  const getMessageKey = () => {
+    if (selectedOutline) {
+      return "outline";
+    }
+    return selectedTool || "main";
+  };
+
+  const currentMessages =
+    selectedOutline &&
+    (!messages["outline"] || messages["outline"].length === 0)
+      ? []
+      : messages[getMessageKey()] || [];
+
+  const previousMessages =
+    selectedOutline &&
+    (!previousCurrentMessages["outline"] ||
+      previousCurrentMessages["outline"].length === 0)
+      ? []
+      : previousCurrentMessages[getMessageKey()]?.slice(
+          0,
+          -currentMessages.length
+        ) || [];
+
+  const handleMarkAsRead = async (outlineId: number) => {
+    if (!classroom) return;
+
+    setLoading(true);
+    try {
+      await markOutlineAsRead(outlineId, classroom.classroom_id);
+      setSelectedOutline({ ...selectedOutline, mark_as_read: 1 });
+      window.location.reload();
+    } catch (error) {
+      console.error("Error marking outline as read:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
   const handleSend = async () => {
     if (!inputText.trim()) return;
-
-    const currentKey = selectedTool || "main";
+    setSelectedOutline(null);
+    const currentKey = selectedTool ? selectedTool : "main";
 
     setMessages((prev) => ({
       ...prev,
@@ -84,14 +453,7 @@ const Classroom = () => {
       ],
     }));
 
-    const markdownToPlainText = async (markdown: string): Promise<string> => {
-      const html = await marked(markdown);
-      const decodedHtml = new DOMParser().parseFromString(html, "text/html")
-        .body.innerText;
-      return decodedHtml.replace(/<[^>]*>?/gm, "");
-    };
-
-    const messageData = selectedTool
+    let messageData: MessageData = selectedTool
       ? {
           classroom_id: classroom?.classroom_id || 0,
           classname: classroom?.classroom_name || "",
@@ -118,27 +480,38 @@ const Classroom = () => {
           description: classroom?.classroom_description || "",
           grade: classroom?.grade || "",
           file_content: classroom?.classroomresources
-            ? classroom.classroomresources
-                .map((resource) => resource.file_content)
-                .join("\n\n")
-            : "",
+            ? classroom.classroomresources.map(
+                (resource) => resource.file_content
+              ) || []
+            : [],
           student_message: inputText,
           content_from: "classroom",
         };
 
-    try {
-      console.log(messageData);
-      const response = selectedTool
-        ? await sendClassroomToolMessage(messageData)
-        : await sendClassroomMessage(messageData);
+    if (selectedOutline) {
+      messageData = {
+        ...messageData,
+        outline_content: selectedOutline?.path || "",
+        outline_title: selectedOutline?.name || "",
+      };
+    }
 
-      const plainTextResponse = await markdownToPlainText(response.data);
+    let response: any;
+
+    try {
+      if (selectedOutline) {
+        response = await sendClassroomOutlineMessage(messageData);
+      } else {
+        response = selectedTool
+          ? await sendClassroomToolMessage(messageData)
+          : await sendClassroomMessage(messageData);
+      }
 
       setMessages((prev) => ({
         ...prev,
         [currentKey]: [
           ...(prev[currentKey] || []).filter((msg) => !msg.isLoading),
-          { text: plainTextResponse, fromUser: false },
+          { text: response.data, fromUser: false },
         ],
       }));
     } catch (error) {
@@ -156,6 +529,261 @@ const Classroom = () => {
     }
   };
 
+  const handleSubmitAssessment = async (liveAssessments: any[] | undefined) => {
+    if (
+      !classroom?.classroom_id ||
+      !liveAssessments ||
+      liveAssessments.length === 0
+    ) {
+      alert("No assessments or classroom ID available for submission.");
+      return;
+    }
+
+    const allAnswers: {
+      liveclassroomassessment_id: number;
+      question: string;
+      student_answer: string;
+      transcript_id?: number;
+    }[] = [];
+
+    liveAssessments.forEach((assessmentItem) => {
+      if (assessmentItem.assessment && assessmentItem.assessment.length > 0) {
+        assessmentItem.assessment.forEach((question: any) => {
+          const selectedAnswer = studentAnswers[question.id];
+
+          if (selectedAnswer) {
+            allAnswers.push({
+              liveclassroomassessment_id: question.id,
+              question: question.question,
+              student_answer: selectedAnswer,
+              transcript_id: assessmentItem.id,
+            });
+          }
+        });
+      }
+    });
+
+    if (allAnswers.length === 0) {
+      alert(
+        "Please select answers for at least one question before submitting."
+      );
+      return;
+    }
+
+    setSubmittingAssessment(true);
+    setSubmissionSuccess(false);
+    setSubmissionError(null);
+
+    try {
+      const response = await sendLiveClassroomAssessmentAnswers({
+        classroom_id: classroom.classroom_id,
+        submitted_answers: allAnswers,
+      });
+
+      console.log("Live class assessment answers sent:", response);
+      setSubmissionSuccess(true);
+    } catch (error: any) {
+      console.error("Error submitting live class assessment answers:", error);
+      setSubmissionError(
+        error.response?.data?.message ||
+          "Failed to submit live class assessment."
+      );
+    } finally {
+      setSubmittingAssessment(false);
+    }
+  };
+
+  const handleAnswerChange = (
+    questionId: number,
+    selectedOptionKey: string
+  ) => {
+    setStudentAnswers((prevAnswers) => ({
+      ...prevAnswers,
+      [questionId]: selectedOptionKey,
+    }));
+  };
+  const handleToggleView = () => {
+    setViewState((prev) => (prev === "classroom" ? "resources" : "classroom"));
+  };
+
+  const handleCopy = (text: string) => {
+    navigator.clipboard.writeText(text);
+    alert("Copied to clipboard!");
+  };
+  const preprocessText = (text: string) => {
+    return text.replace(/\*\*/g, "").replace(/###/g, "").replace(/\n/g, " ");
+  };
+
+  const toggleRecording = () => {
+    if (!("webkitSpeechRecognition" in window)) {
+      alert("Your browser does not support speech recognition.");
+      return;
+    }
+
+    if (isRecording) {
+      recognitionRef.current?.stop();
+      setIsRecording(false);
+      return;
+    }
+
+    const SpeechRecognition =
+      (window as any).webkitSpeechRecognition ||
+      (window as any).SpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.lang = "en-US";
+    recognition.interimResults = true;
+
+    recognition.onstart = () => setIsRecording(true);
+    recognition.onend = () => setIsRecording(false);
+
+    recognition.onresult = (
+      event: SpeechRecognitionEvent & {
+        resultIndex: number;
+        results: SpeechRecognitionResultList;
+      }
+    ) => {
+      let finalTranscript = "";
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          finalTranscript += transcript + " ";
+        }
+      }
+      console.log(finalTranscript);
+      setInputText((prev) => prev + finalTranscript);
+    };
+
+    recognitionRef.current = recognition;
+    recognition.start();
+  };
+
+  const handleTextToSpeech = (text: string) => {
+    const cleanText = preprocessText(text);
+    if (isSpeaking) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+      return;
+    }
+
+    const speech = new SpeechSynthesisUtterance(cleanText);
+    speech.lang = "en-US";
+
+    speech.onend = () => setIsSpeaking(false);
+    speechRef.current = speech;
+
+    window.speechSynthesis.speak(speech);
+    setIsSpeaking(true);
+  };
+
+  const handleViewGradesClick = () => {
+    setShowGradeDialog(true);
+    setLoadingGrade(true);
+    setErrorGrade(null);
+    setReportData(null);
+    const fetchGrade = async () => {
+      try {
+        if (id) {
+          const response = await getOutlineAssessmentReport(id);
+
+          setReportData(response.data);
+        } else {
+          setErrorGrade("Classroom ID not available.");
+        }
+      } catch (err: any) {
+        setErrorGrade(err.message || "Failed to fetch grades.");
+      } finally {
+        setLoadingGrade(false);
+      }
+    };
+    fetchGrade();
+  };
+  const handleLoadMore = async (event: React.MouseEvent) => {
+    event.preventDefault();
+    console.log("Fetching more data...");
+
+    if (!selectedTool && !loadingHistory) {
+      setLoadingHistory(true);
+      setErrorHistory(null);
+      try {
+        const historyData = await loadClassroomChatHistory(
+          Number(id),
+          historyLimit,
+          historyPage + 1
+        );
+        if (historyData?.data && Array.isArray(historyData.data)) {
+          setMessages((prevMessages) => ({
+            ...prevMessages,
+            main: [
+              ...historyData.data.map((msg: any) => ({
+                text: msg.content,
+                fromUser: msg.label === "question",
+              })),
+              ...(prevMessages.main || []),
+            ],
+          }));
+          setHistoryPage((prevPage) => prevPage + 1);
+          if (historyPage + 2 > totalClassroomHistoryPages) {
+            setAllHistoryLoaded(true);
+          }
+        }
+      } catch (error: any) {
+        console.error("Error loading more classroom chat history:", error);
+        setErrorHistory(error.message || "Failed to load more chat history.");
+      } finally {
+        setLoadingHistory(false);
+      }
+    } else if (selectedTool && !loadingToolHistory) {
+      setLoadingToolHistory(true);
+      setErrorToolHistory(null);
+      try {
+        const tool = tools.find((t) => t.tool_name === selectedTool);
+        if (tool?.tool_id) {
+          const historyData = await loadToolChatHistory(
+            Number(id),
+            tool.tool_id,
+            toolHistoryLimit,
+            toolHistoryPage + 1
+          );
+          if (historyData?.data && Array.isArray(historyData.data)) {
+            setMessages((prevMessages) => ({
+              ...prevMessages,
+              [selectedTool]: [
+                ...historyData.data.map((msg: any) => ({
+                  text: msg.content,
+                  fromUser: msg.label === "question",
+                })),
+                ...(prevMessages[selectedTool] || []),
+              ],
+            }));
+            setToolHistoryPage((prevPage) => prevPage + 1);
+            if (toolHistoryPage + 2 > totalToolHistoryPages) {
+              setAllToolHistoryLoaded(true);
+            }
+          }
+        }
+      } catch (error: any) {
+        console.error(
+          `Error loading more chat history for tool ${selectedTool}:`,
+          error
+        );
+        setErrorToolHistory(
+          error.message ||
+            `Failed to load more chat history for ${selectedTool}.`
+        );
+      } finally {
+        setLoadingToolHistory(false);
+      }
+    }
+  };
+  const showLoadMoreButton =
+    (!selectedTool && totalClassroomHistoryPages > historyPage + 1) ||
+    (selectedTool && totalToolHistoryPages > toolHistoryPage + 1);
+
+  const handleCloseGradeDialog = () => {
+    setShowGradeDialog(false);
+    setReportData(null);
+    setErrorGrade(null);
+  };
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -163,179 +791,806 @@ const Classroom = () => {
     }
   };
 
-  const currentMessages = messages[selectedTool || "main"] || [];
-  const welcomeMessage = selectedTool
-    ? `Hi👋 ${
-        userDetails?.firstname || "there"
-      }, welcome to <strong>${selectedTool}</strong>. Start your conversation here!`
-    : `Hi👋 ${userDetails?.firstname || "there"}, welcome to class "<strong>${
-        classroom?.classroom_name || "the classroom"
-      }</strong>." Start your conversation here!`;
-
   return (
-    <div className="mt-6">
-      <Button
-        className="flex items-center bg-white rounded-md text-black w-fit h-full gap-3 py-2"
-        onClick={() => navigate(-1)}
+    <div className="min-h-screen bg-[#F1F1F1]">
+      <Sidenav
+        brandName="AiTeacha"
+        outlines={(classroom?.classroomoutlines || []).map((outline) => ({
+          name: outline.classroomoutline_title,
+          path: outline.classroomoutline_content || "#",
+          classroomoutline_id: outline.classroomoutline_id,
+          assessmentStatus: outline.assessment_status,
+          assessments: outline.assessments,
+          mark_as_read: outline.mark_as_read,
+        }))}
+        tools={tools}
+        selectedTool={selectedTool}
+        onSelectTool={setSelectedTool}
+        onToggle={(collapsed) => setIsCollapsed(collapsed)}
+        selectedOutline={selectedOutline}
+        onSelectOutline={setSelectedOutline}
+        selectedOverview={selectedOverview}
+        setSelectedOverview={setSelectedOverview}
+        onOverviewClick={handleOverviewClick}
+        classroomId={id}
+        viewState={viewState}
+        onToggleView={handleToggleView}
+      />
+      <div
+        className={`flex-1 transition-all duration-300 px-2  ${
+          isCollapsed ? "xl:ml-28" : "xl:ml-72"
+        }`}
       >
-        <Undo2 size={"1.1rem"} color="black" />
-        Back
-      </Button>
-
-      <div className="flex items-center mb-4 justify-between flex-col sm:flex-row">
-        <div className="mx-auto text-center mt-4 sm:mt-0">
-          <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">
-            {classroom?.classroom_name}
-          </h2>
-          <p className="text-sm sm:text-md font-medium  max-w-xl text-gray-900">
-            {classroom?.classroom_description
-              ? classroom.classroom_description.length > 170
-                ? `${classroom.classroom_description.slice(0, 170)}...`
-                : classroom.classroom_description
-              : ""}
-          </p>
-          {selectedTool && (
-            <p className="text-primary text-sm font-bold">
-              In use: {selectedTool}
-            </p>
-          )}
-        </div>
-      </div>
-
-      <div className="flex flex-col h-[calc(100vh-260px)] lg:flex-row">
-        <div className="flex-grow overflow-y-auto bg-gray-50 border border-gray-300 rounded-lg shadow-inner space-y-2 mb-4 p-4">
-          {currentMessages.length === 0 ? (
-            <div
-              className="text-md sm:text-md text-gray-800 italic"
-              dangerouslySetInnerHTML={{ __html: welcomeMessage }}
-            />
-          ) : (
-            currentMessages.map((message, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3, delay: index * 0.1 }}
-                className={`flex items-start space-x-4 mb-2 ${
-                  message.fromUser ? "justify-end" : "justify-start"
-                }`}
+        <DashboardNavbar />
+        <div className="mt-4 md:mt-6 lg:mt-10">
+          <div className="flex items-center  justify-between flex-col sm:flex-row">
+            <div className="mt-4 ml-4 sm:mt-0 flex items-center justify-between w-full">
+              <div className="text-left">
+                <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
+                  {classroom?.classroom_name}
+                  {selectedTool && (
+                    <>
+                      /
+                      <p className="text-primary text-sm font-bold">
+                        In use: {selectedTool}
+                      </p>
+                    </>
+                  )}
+                </h2>
+              </div>
+            </div>
+            {classroom?.isLiveclassroom && viewState !== "liveclass" && (
+              <Button
+                variant={"gradient"}
+                className="rounded-full mt-4"
+                onClick={() => setViewState("liveclass")}
               >
-                <MarkdownRenderer
-                  className={`max-w-xs p-3 text-sm ${
-                    message.fromUser
-                      ? "bg-primary text-white rounded-tl-lg"
-                      : "bg-gray-200 text-black rounded-tr-lg"
-                  }`}
-                  content={message.text}
-                  style={{ wordWrap: "break-word", whiteSpace: "pre-wrap" }}
-                />
-              </motion.div>
-            ))
-          )}
-          <div ref={messagesEndRef} />
-        </div>
-
-        <div className="lg:ml-4 mt-4 lg:mt-0 lg:w-1/4 flex-shrink-0 hidden lg:block">
-          <div className="bg-gray-100 rounded-lg border border-gray-300 p-4 lg:sticky lg:top-16">
-            <h3 className="text-lg font-semibold mb-2">Class Tools</h3>
-            <ul className="space-y-2">
-              <li
-                key="main"
-                className={`border cursor-pointer px-4 py-3 rounded-lg ${
-                  selectedTool === null ? "bg-primary text-white" : ""
-                }`}
-                onClick={() => setSelectedTool(null)}
+                Preview Live Class
+              </Button>
+            )}
+            {classroom?.isLiveclassroom && viewState !== "classroom" && (
+              <Button
+                variant={"gradient"}
+                className="rounded-md mt-4"
+                onClick={() => setViewState("classroom")}
               >
-                Main Classroom
-              </li>
-              {tools.map((tool) => (
-                <li
-                  key={tool.tool_id}
-                  className={`capitalize border cursor-pointer px-4 py-3 rounded-lg ${
-                    selectedTool === tool.tool_name
-                      ? "bg-primary text-white"
-                      : ""
-                  }`}
-                  onClick={() => setSelectedTool(tool.tool_name)}
+                Back to Classroom
+              </Button>
+            )}
+          </div>
+
+          {viewState === "classroom" ? (
+            <>
+              <div className="relative flex flex-col lg:flex-row max-h-[550px]  overflow-y-auto pb-[100px] lg:pb-[70px]">
+                <div
+                  ref={chatContainerRef}
+                  className="flex-grow overflow-y-auto bg-gray-50 border border-gray-300 rounded-lg shadow-inner space-y-2 m-4 p-4 max-h-[450px]"
                 >
-                  {tool.tool_name}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </div>
+                  {selectedOverview ? (
+                    <MarkdownRenderer
+                      content={welcomeMessage}
+                      className="text-sm lg:text-md text-gray-800"
+                    />
+                  ) : currentMessages.length === 0 ? (
+                    <>
+                      <MarkdownRenderer
+                        content={welcomeMessage}
+                        className="text-sm lg:text-md text-gray-800"
+                      />
+                      {selectedOutline && selectedOutline.mark_as_read === 0 ? (
+                        <Button
+                          onClick={() =>
+                            handleMarkAsRead(
+                              selectedOutline.classroomoutline_id
+                            )
+                          }
+                          variant={"gradient"}
+                          className="rounded-md"
+                          disabled={loading}
+                        >
+                          {loading ? "Marking..." : "Mark as Read"}
+                        </Button>
+                      ) : selectedOutline &&
+                        selectedOutline.mark_as_read === 1 ? (
+                        <Button
+                          variant={"gray"}
+                          className="rounded-md"
+                          disabled
+                        >
+                          Completed
+                        </Button>
+                      ) : null}
+                      {selectedOutline &&
+                        selectedOutline.assessments &&
+                        selectedOutline.assessments.length > 0 &&
+                        selectedOutline.assessmentStatus === "pending" && (
+                          <>
+                            <hr />
+                            <br />
+                            <h2>Take Assessments:</h2>
+                            <br />
+                            {selectedOutline.assessments.map(
+                              (assessment: any, index: any) => (
+                                <div key={assessment.outlineassessment_id}>
+                                  Question {index + 1}:{" "}
+                                  {assessment.outlineassessment_question}
+                                  <br />
+                                  {(() => {
+                                    try {
+                                      const options = JSON.parse(
+                                        assessment.outlineassessment_options
+                                      );
+                                      if (Array.isArray(options)) {
+                                        return (
+                                          <>
+                                            {options.map((option, index) => (
+                                              <div
+                                                key={`${assessment.outlineassessment_id}-${index}`}
+                                              >
+                                                <input
+                                                  type="radio"
+                                                  id={`${assessment.outlineassessment_id}-${index}`}
+                                                  name={
+                                                    assessment.outlineassessment_id
+                                                  }
+                                                  value={option}
+                                                />
+                                                &ensp;
+                                                <label
+                                                  htmlFor={`${assessment.outlineassessment_id}-${index}`}
+                                                >
+                                                  {option}
+                                                </label>
+                                                <br />
+                                              </div>
+                                            ))}
+                                            <br />
+                                            <br />
+                                          </>
+                                        );
+                                      } else {
+                                        return `Options: ${assessment.outlineassessment_options}<br><br>`;
+                                      }
+                                    } catch (e) {
+                                      return `Options: ${assessment.outlineassessment_options}<br><br>`;
+                                    }
+                                  })()}
+                                </div>
+                              )
+                            )}
+                            <Button
+                              onClick={() =>
+                                sendAllAnswers(selectedOutline.assessments)
+                              }
+                              variant={"gradient"}
+                              className="rounded-md mt-4"
+                              disabled={loading}
+                            >
+                              {loading ? "Submitting..." : "Submit All Answers"}
+                            </Button>
+                          </>
+                        )}
+                      {selectedOutline &&
+                        selectedOutline.assessments &&
+                        selectedOutline.assessments.length > 0 &&
+                        selectedOutline.assessmentStatus !== "pending" && (
+                          <>
+                            <hr />
+                            <h2>Assessment Taken</h2>
+                          </>
+                        )}
+                    </>
+                  ) : (
+                    <>
+                      {loadingHistory && !selectedTool && historyPage === 0 && (
+                        <div className="flex justify-center items-center h-full">
+                          <svg
+                            className="animate-spin h-6 w-6 text-primary"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            ></circle>
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            ></path>
+                          </svg>
+                        </div>
+                      )}
+                      {errorHistory && !selectedTool && (
+                        <div className="text-center text-red-400">
+                          Error loading history: {errorHistory}
+                        </div>
+                      )}
+                      {loadingToolHistory &&
+                        selectedTool &&
+                        toolHistoryPage === 0 && (
+                          <div className="flex justify-center items-center h-full">
+                            <svg
+                              className="animate-spin h-6 w-6 text-primary"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                              ></circle>
+                              <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                              ></path>
+                            </svg>
+                          </div>
+                        )}
+                      {errorToolHistory && selectedTool && (
+                        <div className="text-center text-red-400">
+                          Error loading tool history: {errorToolHistory}
+                        </div>
+                      )}
 
-      <div className="fixed bottom-0 left-0 w-full bg-white  border-t lg:flex lg:w-[calc(100%-5rem)] lg:ml-[5rem] flex-col lg:flex-row">
-        <div className="flex justify-between items-center gap-24 w-full">
-          <div
-            className="w-64 h-20 bg-cover bg-center relative hidden lg:block"
-            style={{ backgroundImage: `url(${greyImg})` }}
-          >
-            <span className="absolute inset-0 flex items-center text-sm italic justify-center text-white text-lg font-bold bg-black bg-opacity-20">
-              Powered By <span className="text-lg ml-1"> Zyra</span>
-            </span>
-          </div>
+                      {showLoadMoreButton && (
+                        <div className=" bg-gray-50 py-2 flex justify-center">
+                          {!loadingHistory && !loadingToolHistory && (
+                            <button
+                              onClick={(event) => handleLoadMore(event)}
+                              className="text-primary hover:underline text-sm"
+                            >
+                              Load More
+                            </button>
+                          )}
+                          {loadingHistory &&
+                            !selectedTool &&
+                            historyPage > 0 && (
+                              <div className="text-gray-500 text-sm">
+                                Loading more history...
+                              </div>
+                            )}
+                          {loadingToolHistory &&
+                            selectedTool &&
+                            toolHistoryPage > 0 && (
+                              <div className="text-gray-500 text-sm">
+                                Loading more tool history...
+                              </div>
+                            )}
+                        </div>
+                      )}
+                      {currentMessages.map((message, index) => (
+                        <motion.div
+                          key={index}
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ duration: 0.3, delay: index * 0.1 }}
+                          className={`flex flex-col mb-2 ${
+                            message.fromUser ? "items-end" : "items-start"
+                          }`}
+                        >
+                          {!message.fromUser && (
+                            <div className="flex justify-end space-x-4 mb-1">
+                              <button
+                                onClick={() => handleCopy(message.text)}
+                                className="text-gray-600 hover:text-gray-800 flex gap-1"
+                              >
+                                <FiCopy /> <span className="text-sm">Copy</span>
+                              </button>
+                              <button
+                                onClick={() => handleTextToSpeech(message.text)}
+                                className="text-gray-600 hover:text-gray-800 flex gap-1"
+                              >
+                                {isSpeaking ? <FiPause /> : <FiVolume2 />}
+                                <span className="text-sm">
+                                  {isSpeaking ? "Pause" : "Voice"}
+                                </span>
+                              </button>
+                            </div>
+                          )}
+                          <MarkdownRenderer
+                            content={message.text}
+                            className={`p-3 text-sm ${
+                              message.fromUser
+                                ? "bg-primary max-w-xs text-white rounded-tl-lg"
+                                : "bg-gray-200 max-w-xl text-black rounded-tr-lg"
+                            }`}
+                            style={{
+                              wordWrap: "break-word",
+                              whiteSpace: "pre-wrap",
+                            }}
+                          />
+                        </motion.div>
+                      ))}
+                    </>
+                  )}
+                  <div ref={messagesEndRef} />
+                </div>
+              </div>
 
-          <div className="relative p-2 lg:-ml-24 flex items-center w-full">
-            <TextArea
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Type your message..."
-              className="flex-grow pr-16 px-3 py-2 border text-md rounded-lg"
-            />
-            <button
-              onClick={handleSend}
-              aria-label="Send Message"
-              disabled={inputText.trim().length === 0}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 p-2 bg-primary text-white rounded-full"
-            >
-              <FiSend className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
+              <div className="fixed bottom-0 left-0 w-full bg-white  border-t lg:flex lg:w-[calc(100%-5rem)] lg:ml-[5rem] flex-col lg:flex-row">
+                <div className="flex justify-between items-center gap-24 w-full">
+                  <div
+                    className="w-64 h-20 bg-cover bg-center relative hidden lg:block"
+                    style={{ backgroundImage: `url(${greyImg})` }}
+                  >
+                    <span className="absolute inset-0 flex items-center text-sm italic justify-center text-white text-lg font-bold bg-black bg-opacity-20">
+                      Powered By <span className="text-lg ml-1"> Zyra</span>
+                    </span>
+                  </div>
 
-        <Button
-          onClick={() => setIsDrawerOpen(true)}
-          variant={"gradient"}
-          className="flex items-center bg-white w-full rounded-md text-black lg:hidden mt-2 mx-auto"
-        >
-          View Tools
-        </Button>
-      </div>
+                  <div className="relative p-2 lg:-ml-24 flex items-center w-full">
+                    <TextArea
+                      value={inputText}
+                      onChange={(e) => setInputText(e.target.value)}
+                      onKeyDown={handleKeyDown}
+                      placeholder="Type your message..."
+                      className="flex-grow pr-16 px-3 py-2 border text-md rounded-lg"
+                    />
+                    <button
+                      onClick={toggleRecording}
+                      className={`absolute right-16 top-1/2 transform -translate-y-1/2 p-3 rounded-full ${
+                        isRecording
+                          ? "bg-red-500 text-white"
+                          : "bg-gray-200 text-black"
+                      }`}
+                    >
+                      <FiMic />
+                    </button>
+                    <button
+                      onClick={handleSend}
+                      aria-label="Send Message"
+                      disabled={inputText.trim().length === 0}
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 p-2 bg-primary text-white rounded-full mr-4"
+                    >
+                      <FiSend className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
 
-      <Drawer
-        open={isDrawerOpen}
-        onClose={() => setIsDrawerOpen(false)}
-        direction="bottom"
-        className="lg:hidden"
-      >
-        <div className="p-4">
-          <h3 className="text-xl font-semibold">Class Tools</h3>
-          <ul className="space-y-4 mt-4">
-            <li
-              className={`cursor-pointer px-4 py-2 rounded-lg ${
-                selectedTool === null ? "bg-primary text-white" : ""
-              }`}
-              onClick={() => setSelectedTool(null)}
-            >
-              Main Classroom
-            </li>
-            {tools.map((tool) => (
-              <li
-                key={tool.tool_id}
-                className={`capitalize cursor-pointer px-4 py-2 rounded-lg ${
-                  selectedTool === tool.tool_name ? "bg-primary text-white" : ""
-                }`}
-                onClick={() => setSelectedTool(tool.tool_name)}
+                <Button
+                  onClick={() => setIsDrawerOpen(true)}
+                  variant={"gradient"}
+                  className="flex items-center bg-white w-full rounded-md text-black lg:hidden mt-2 mx-auto"
+                >
+                  View Tools
+                </Button>
+              </div>
+            </>
+          ) : viewState === "liveclass" ? (
+            <div className="liveclass-div">
+              <div className="my-8 p-6 bg-gradient-to-r from-gray-50 to-purple-50 border border-purple-200 rounded-lg shadow-sm">
+                {/* Directly check for the presence of liveclassroomassessments */}
+                {classroom?.liveclassroomassessments &&
+                classroom.liveclassroomassessments.length > 0 ? (
+                  <>
+                    <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-800 mb-6 text-center">
+                      Live Class Assessments
+                    </h2>
+                    {classroom.liveclassroomassessments.map(
+                      (assessmentItem: any, itemIndex: number) =>
+                        assessmentItem.assessment &&
+                        assessmentItem.assessment.length > 0 ? (
+                          <div
+                            key={assessmentItem.id || `item-${itemIndex}`}
+                            className="mb-8 p-4 border rounded-lg bg-white shadow-sm"
+                          >
+                            <h3 className="text-xl font-semibold text-gray-700 mb-4">
+                              Assessment Set {itemIndex + 1}
+                            </h3>
+                            {assessmentItem.assessment.map(
+                              (question: any, qIndex: number) => (
+                                <div
+                                  key={
+                                    question.id || `q-${itemIndex}-${qIndex}`
+                                  }
+                                  className="mb-6 p-4 border border-gray-200 rounded-md bg-gray-50"
+                                >
+                                  <p className="text-lg font-medium text-gray-800 mb-3">
+                                    {qIndex + 1}. {question.question}
+                                  </p>
+                                  <div className="space-y-2">
+                                    {Object.entries(question.options).map(
+                                      ([optionKey, optionValue]: [
+                                        string,
+                                        any
+                                      ]) => (
+                                        <label
+                                          key={optionKey}
+                                          className="flex items-center space-x-2 cursor-pointer p-2 rounded-md hover:bg-gray-100"
+                                        >
+                                          <input
+                                            type="radio"
+                                            name={`question-${question.id}`}
+                                            value={optionKey}
+                                            checked={
+                                              studentAnswers[question.id] ===
+                                              optionKey
+                                            }
+                                            onChange={() =>
+                                              handleAnswerChange(
+                                                question.id,
+                                                optionKey
+                                              )
+                                            }
+                                            className="form-radio h-4 w-4 text-purple-600 focus:ring-purple-500"
+                                          />
+                                          <span className="text-gray-700">
+                                            {optionKey}. {optionValue}
+                                          </span>
+                                        </label>
+                                      )
+                                    )}
+                                  </div>
+                                </div>
+                              )
+                            )}
+                          </div>
+                        ) : null
+                    )}
+                    <div className="mt-8 text-center">
+                      <Button
+                        onClick={() =>
+                          handleSubmitAssessment(
+                            classroom.liveclassroomassessments
+                          )
+                        }
+                        disabled={submittingAssessment}
+                        className="mt-2 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700"
+                        variant={"gradient"}
+                      >
+                        {submittingAssessment
+                          ? "Submitting..."
+                          : "Submit Answers"}
+                      </Button>
+                      {submissionSuccess && (
+                        <p className="text-green-600 mt-2">
+                          Assessment submitted successfully!
+                        </p>
+                      )}
+                      {submissionError && (
+                        <p className="text-red-600 mt-2">{submissionError}</p>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-center">
+                    <LightBulbIcon className="w-16 h-16 text-yellow-500 mb-4 animate-pulse mx-auto" />
+                    <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-800 mb-2">
+                      No Live Class Assessments Available Yet!
+                    </h2>
+                    <p className="text-md sm:text-lg text-gray-600 max-w-prose mx-auto">
+                      It looks like the{" "}
+                      <span className="font-bold">
+                        assessment for this live session isn't ready yet.
+                      </span>{" "}
+                      Please check back later or join the live session if it's
+                      ongoing.
+                    </p>
+                    {classroom?.meeting_url && (
+                      <div className="mt-6">
+                        <p className="text-gray-700 text-lg mb-4">
+                          Ready to dive into the learning?
+                        </p>
+                        <Button
+                          onClick={() =>
+                            window.open(classroom.meeting_url, "_blank")
+                          }
+                          className="mt-2 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+                          variant={"gradient"}
+                        >
+                          🚀 Join the Live Session Now!
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className="bg-white border border-gray-200 rounded-lg shadow-md p-6 mt-6 space-y-6">
+              <h2 className="text-xl font-semibold text-primary">
+                Explore Classroom Resources
+              </h2>
+
+              <div>
+                <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 inline-block mr-2 text-primary"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H10a2 2 0 01-2-2v-4a2 2 0 012-2h4v-2a2 2 0 012-2h1m-2 8H9a2 2 0 00-2 2v4a2 2 0 002 2h1m2-8h2m-2 8H9"
+                    />
+                  </svg>
+                  Uploaded Files
+                </h3>
+                {classroom?.classroomresources &&
+                classroom.classroomresources.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {classroom.classroomresources.map((resource) => (
+                      <div
+                        key={resource.resources_id}
+                        className="bg-gray-50 border border-gray-300 rounded-md p-4 flex flex-col items-center justify-between"
+                      >
+                        <div className="flex items-center w-full">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-6 w-6 mr-2 text-gray-600"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M12 16v-4m0 0l-2-2m2 2l2-2m12-8v14l-4-4H8l-4 4V4h16z"
+                            />
+                          </svg>
+                          <p className="text-sm font-medium text-gray-800 truncate">
+                            {resource.resources_filename}
+                          </p>
+                        </div>
+                        <div className="mt-2 w-full flex justify-center">
+                          <Button
+                            onClick={() => {
+                              const fullUrl = `https://${resource.resources_path}`;
+                              window.open(fullUrl, "_blank");
+                            }}
+                            className="text-primary hover:underline mr-2"
+                          >
+                            View
+                          </Button>
+                          <Button
+                            onClick={() => {
+                              const fullUrl = `https://${resource.resources_path}`;
+                              window.open(fullUrl, "_blank");
+                            }}
+                            variant="outline"
+                            size="sm"
+                            className="rounded-md text-primary border-indigo-300 hover:bg-indigo-50"
+                          >
+                            Download
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-500 italic">No files uploaded yet.</p>
+                )}
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 inline-block mr-2 text-primary"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.99a4 4 0 005.656 0l4-4a4 4 0 10-5.656-5.656l-1.1 1.1"
+                    />
+                  </svg>
+                  External Links
+                </h3>
+                {classroom?.classroomresources_link &&
+                Array.isArray(classroom.classroomresources_link) &&
+                classroom.classroomresources_link.length > 0 ? (
+                  <ul className="space-y-2">
+                    {classroom.classroomresources_link.map(
+                      (link: string, index: number) => (
+                        <li key={index}>
+                          <a
+                            href={link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-indigo-600 hover:text-indigo-800 hover:underline text-sm"
+                          >
+                            {link || "No link provided"}
+                          </a>
+                        </li>
+                      )
+                    )}
+                  </ul>
+                ) : (
+                  <p className="text-gray-500 italic">
+                    No external links provided.
+                  </p>
+                )}
+              </div>
+              <hr className="my-6 border-t border-gray-600" />
+
+              <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 inline-block mr-2 text-green-500"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                Grades & Certification
+              </h3>
+
+              {classroom?.classroomoutlines &&
+              classroom.classroomoutlines.every(
+                (outline) => outline.mark_as_read === 1
+              ) &&
+              classroom.classroomoutlines.some(
+                (outline) =>
+                  outline.assessments && outline.assessments.length > 0
+              ) ? (
+                <Button
+                  className="mt-4  flex justify-center rounded-md"
+                  onClick={handleViewGradesClick}
+                  variant={"gray"}
+                >
+                  View Grades
+                </Button>
+              ) : (
+                <Button
+                  className="mt-4 flex justify-center rounded-md"
+                  variant={"gray"}
+                  disabled
+                >
+                  View Grades (Complete All Assessments)
+                </Button>
+              )}
+
+              {!classroom?.classroomoutlines?.some(
+                (outline) =>
+                  outline.assessments && outline.assessments.length > 0
+              ) && (
+                <p className="text-sm text-gray-500 mt-2 italic">
+                  No assessments available for this classroom.
+                </p>
+              )}
+              <Button
+                onClick={handleToggleView}
+                variant="outline"
+                className="rounded-md text-indigo-600 border-indigo-300 hover:bg-indigo-50"
               >
-                {tool.tool_name}
-              </li>
-            ))}
-          </ul>
+                Back to Classroom
+              </Button>
+            </div>
+          )}
+
+          <Drawer
+            open={isDrawerOpen}
+            onClose={() => setIsDrawerOpen(false)}
+            direction="bottom"
+            className="lg:hidden"
+          >
+            <div className="p-4">
+              <h3 className="text-xl font-semibold">Class Tools</h3>
+              <ul className="space-y-4 mt-4">
+                <li
+                  className={`cursor-pointer px-4 py-2 rounded-lg ${
+                    selectedTool === null ? "bg-primary text-white" : ""
+                  }`}
+                  onClick={() => setSelectedTool(null)}
+                >
+                  Main Classroom
+                </li>
+                {tools.map((tool) => (
+                  <li
+                    key={tool.tool_id}
+                    className={`capitalize cursor-pointer px-4 py-2 rounded-lg ${
+                      selectedTool === tool.tool_name
+                        ? "bg-primary text-white"
+                        : ""
+                    }`}
+                    onClick={() => setSelectedTool(tool.tool_name)}
+                  >
+                    {tool.tool_name}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </Drawer>
         </div>
-      </Drawer>
+      </div>
+
+      <Dialog open={showGradeDialog} onOpenChange={setShowGradeDialog}>
+        <DialogContent className="max-w-3xl">
+          <DialogTitle>Assessment Grades</DialogTitle>
+          <DialogDescription>
+            {loadingGrade ? (
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 text-center mx-auto">
+                {[...Array(6)].map((_, index) => (
+                  <Skeleton key={index} className="h-24 w-full rounded-md" />
+                ))}
+              </div>
+            ) : errorGrade ? (
+              <p className="text-red-500">{errorGrade}</p>
+            ) : reportData && reportData.length > 0 ? (
+              <div className="mt-4 overflow-x-auto">
+                <table className="min-w-full divide-y text-left divide-gray-200 shadow-md rounded-md bg-white">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Outline
+                      </th>
+                      <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Total Score
+                      </th>
+                      <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        No. of Questions
+                      </th>
+                      <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Passed
+                      </th>
+                      <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Failed
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {reportData.map((item, index) => (
+                      <tr
+                        key={index}
+                        className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
+                      >
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {item.outline}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {item.total_score}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {item.no_of_question}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {item.passed}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {item.failed}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <p>No assessment grade details available.</p>
+            )}
+          </DialogDescription>
+          <div className="mt-4 flex justify-end">
+            <Button variant="secondary" onClick={handleCloseGradeDialog}>
+              Close
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

@@ -14,6 +14,7 @@ import {
   IconTwo,
   IconMission,
   IconPrivacy,
+  IconTeam,
 } from "./HeaderComponents";
 import Drawer from "react-modern-drawer";
 import "react-modern-drawer/dist/index.css";
@@ -44,9 +45,9 @@ const Navbar = () => {
 
   const getDashboardPath = () => {
     // const currentPath = location.pathname;
-    if (userDetails?.role === 2) {
+    if (userDetails?.role === 2 || userDetails?.role_id === 2) {
       return `/dashboard`;
-    } else if (userDetails?.role === 3) {
+    } else if (userDetails?.role === 3 || userDetails?.role_id === 3) {
       return `/student/home`;
     }
     return `/dashboard`;
@@ -138,13 +139,13 @@ const Navbar = () => {
   ];
   const about = [
     {
-      name: "AI Teacha Mission",
+      name: "AiTeacha Mission",
       description: "Discover how we aim to revolutionize education with AI.",
       to: "/mission",
       icon: IconMission,
     },
     {
-      name: "AI Teacha Privacy",
+      name: "AiTeacha Privacy",
       description:
         "Understand how we protect and use your data responsibly,and learn about the guidelines and agreements for using our services responsibly and securely.",
       to: "/legal-terms",
@@ -164,6 +165,13 @@ const Navbar = () => {
         "Explore articles and updates about education and technology.",
       to: "/blogs",
       icon: IconBlog,
+    },
+    {
+      name: "Team AiTeacha",
+      description:
+        "Explore articles and updates about education and technology.",
+      to: "https://icedt.org/team_icedt",
+      icon: IconTeam,
     },
     {
       name: "Contact Us",
@@ -188,10 +196,10 @@ const Navbar = () => {
               <img
                 src={brandImg}
                 className="mr-2 h-6 sm:h-9"
-                alt="AI Teacha Logo"
+                alt="AiTeacha Logo"
               />
               <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">
-                AI Teacha
+                AiTeacha
               </span>
             </Link>
           </div>
@@ -226,7 +234,7 @@ const Navbar = () => {
                     leaveFrom="opacity-100 translate-y-0"
                     leaveTo="opacity-0 translate-y-1"
                   >
-                    <Popover.Panel className="absolute z-10 mt-2 p-4 w-48 bg-white shadow-lg rounded-lg">
+                    <Popover.Panel className="absolute z-10 mt-8 p-4 w-48 bg-white shadow-lg rounded-lg">
                       {communities.map((item) => (
                         <Link
                           key={item.name}
@@ -288,7 +296,7 @@ const Navbar = () => {
                     leaveFrom="opacity-100 translate-y-0"
                     leaveTo="opacity-0 translate-y-1"
                   >
-                    <Popover.Panel className="absolute z-10 mt-2 p-4 w-48 bg-white shadow-lg rounded-lg">
+                    <Popover.Panel className="absolute z-10 mt-8 p-4 w-48 bg-white shadow-lg rounded-lg">
                       {resources.map((item) => (
                         <Link
                           key={item.name}
@@ -326,7 +334,7 @@ const Navbar = () => {
                     }`}
                     onClick={() => handleClick(open)}
                   >
-                    About AI Teacha
+                    About AiTeacha
                     <ChevronDownIcon className="ml-1 h-5 w-5" />
                   </Popover.Button>
                   <Transition
@@ -339,11 +347,16 @@ const Navbar = () => {
                     leaveFrom="opacity-100 translate-y-0"
                     leaveTo="opacity-0 translate-y-1"
                   >
-                    <Popover.Panel className="absolute z-10 mt-2 w-64 p-4 bg-white shadow-lg rounded-lg">
+                    <Popover.Panel className="absolute z-10 mt-8 w-64 p-4 bg-white shadow-lg rounded-lg">
                       {about.map((item) => (
                         <Link
                           key={item.name}
                           to={item.to}
+                          target={
+                            item.to === "https://icedt.org/team_icedt"
+                              ? "_blank"
+                              : undefined
+                          }
                           className="-m-3 flex items-center rounded-lg p-2 transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus-visible:ring focus-visible:ring-orange-500/50"
                         >
                           <div className="flex h-10 w-10 shrink-0 items-center justify-center text-white sm:h-12 sm:w-12">
@@ -439,7 +452,7 @@ const Navbar = () => {
                     leaveFrom="opacity-100 translate-y-0"
                     leaveTo="opacity-0 translate-y-1"
                   >
-                    <Popover.Panel className="absolute z-10 mt-2 p-4 w-48 bg-white shadow-lg rounded-lg">
+                    <Popover.Panel className="absolute z-10 mt-8 p-4 w-48 bg-white shadow-lg rounded-lg">
                       {communities.map((item) => (
                         <Link
                           key={item.name}
@@ -538,7 +551,7 @@ const Navbar = () => {
                     }`}
                     onClick={() => handleClick(open)}
                   >
-                    About AI Teacha
+                    About AiTeacha
                     <ChevronDownIcon className="ml-1 h-5 w-5" />
                   </Popover.Button>
                   <Transition
@@ -556,6 +569,11 @@ const Navbar = () => {
                         <Link
                           key={item.name}
                           to={item.to}
+                          target={
+                            item.to === "https://icedt.org/team_icedt"
+                              ? "_blank"
+                              : undefined
+                          }
                           className="-m-3 flex items-center rounded-lg p-2 transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus-visible:ring focus-visible:ring-orange-500/50"
                         >
                           <div className="flex h-10 w-10 shrink-0 items-center justify-center text-white sm:h-12 sm:w-12">

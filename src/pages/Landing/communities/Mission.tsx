@@ -12,7 +12,7 @@ const AITeachaMission = () => {
             <figcaption className="desc z-10 relative">
               <h1 className="text-6xl font-bold text-center my-6 text-header text-white">
                 {" "}
-                AI Teacha Mission
+                AiTeacha Mission
               </h1>
               <p className="text-gray-100 mb-8 px-2 text-sm md:text-lg xl:text-lg text-center">
                 Saving educators time, ensuring they have the tools and
@@ -25,7 +25,7 @@ const AITeachaMission = () => {
         <div className="max-w-5xl mx-auto px-6">
           <h2 className="text-3xl md:text-4xl lg:text-4xl font-bold text-primary mt-6 text-center mb-6"></h2>
           <p className="text-lg leading-relaxed mb-8">
-            <span className="text-lg font-bold"> Our Mission</span>
+            <span className="text-lg font-bold"> Our Mission &nbsp;</span>
             is to revolutionize education by empowering educators with
             innovative AI-powered tools that simplify teaching, enhance
             personalized learning, and make quality educational resources
@@ -33,7 +33,7 @@ const AITeachaMission = () => {
             learning experiences across Africa and beyond.
           </p>
           <p className="text-lg leading-relaxed mb-8">
-            At AI Teacha, we recognize the unique challenges facing educators in
+            At AiTeacha, we recognize the unique challenges facing educators in
             Nigeria and across Africa. Teaching is not just a profession; it is
             a commitment to nurturing young minds and shaping the future.
             However, the burdens of administrative tasks, lesson planning, and
@@ -51,7 +51,7 @@ const AITeachaMission = () => {
             often limited.
           </p>
           <p className="text-lg leading-relaxed mb-8">
-            AI Teacha was created to alleviate this burden and empower educators
+            AiTeacha was created to alleviate this burden and empower educators
             to excel where it matters most—in the classroom. By providing
             innovative AI-powered tools, we simplify the repetitive tasks, save
             time, and enable teachers to focus their passion and expertise on

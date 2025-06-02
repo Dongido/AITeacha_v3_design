@@ -14,6 +14,12 @@ import {
   UserGroupIcon,
   WrenchScrewdriverIcon,
   ArrowUpIcon,
+  BookOpenIcon,
+  FolderIcon,
+  ArchiveBoxIcon,
+  ClockIcon,
+  EnvelopeIcon,
+  ShieldCheckIcon,
 } from "@heroicons/react/24/solid";
 import Dashboard from "../pages/Dashboard/Home";
 import Team from "../pages/Dashboard/Team";
@@ -40,12 +46,18 @@ import AssignmentStudents from "../pages/Dashboard/assignment/Students";
 import StudentAssignment from "../pages/Dashboard/student/Assignment";
 import StudentAnalytics from "../pages/Dashboard/assignment/StudentAnalytics";
 import AssignmentDetails from "../pages/Dashboard/student/AssignmentDetails";
-
+import TeamClassroomPage from "../pages/Dashboard/team/TeamClassroom";
+import FreeUsers from "../pages/Dashboard/admin/FreeUsers";
+import PastUsers from "../pages/Dashboard/admin/PastUsers";
+import Subscribers from "../pages/Dashboard/admin/Subscribers";
 import HeroesWallAdmin from "../pages/Dashboard/HoroesWall";
+import Training from "../pages/Dashboard/Training";
+import Community from "../pages/Dashboard/Community";
 import Home from "../pages/Dashboard/student/Home";
 import History from "../pages/Dashboard/student/History";
 import Classes from "../pages/Dashboard/student/Classes";
 import Classroom from "../pages/Dashboard/student/Classroom";
+import OutlineAssessmentReportPage from "../pages/Dashboard/student/ClassroomReport";
 import Analytics from "../pages/Dashboard/classrooms/Analytics";
 import VerifyEmail from "../pages/Dashboard/VerifyEmail";
 import UpgradeSupport from "../pages/Dashboard/UpgradeSupport";
@@ -62,6 +74,32 @@ import EditClassroomTools from "../pages/Dashboard/classrooms/EditClassroomTools
 import ReportData from "../pages/Dashboard/report/ReportData";
 import ReportDummy from "../pages/Dashboard/ReportDummy";
 import StudentReport from "../pages/Dashboard/report/StudentReport";
+import HiddenDisability from "../pages/Dashboard/tools/HiddenDisability";
+import StaffWorkloadManagementForm from "../pages/Dashboard/tools/StaffWorkloadManagement";
+import ReportGenerator from "../pages/Dashboard/tools/ReportGenerator";
+import CareerGuidanceForm from "../pages/Dashboard/tools/CareerGuidance";
+import LabSimulator from "../pages/Dashboard/tools/LabSimulator";
+import ArchivedAssistants from "../pages/Dashboard/premium/Archive";
+import Wallet from "../pages/Dashboard/Wallet";
+
+import CreateTest from "../pages/Dashboard/test/CreateTest";
+import TestPage from "../pages/Dashboard/test/Test";
+import TestDetailsPage from "../pages/Dashboard/test/TestDetails";
+import StudentExaminationsPage from "../pages/Dashboard/test/student/StudentTests";
+import TestStudentsPage from "../pages/Dashboard/test/TestStudents";
+import JoinTest from "../pages/Dashboard/test/JoinTest";
+import ExamPage from "../pages/Dashboard/test/TestPage";
+import ExamSubmitted from "../pages/Dashboard/test/Submitted";
+import TestView from "../pages/Dashboard/test/TestView";
+import StudentTestReport from "../pages/Dashboard/test/StudentReport";
+import TestReport from "../pages/Dashboard/report/TestReport";
+import LiveClass from "../pages/Dashboard/live-class/LiveClass";
+import CreateLiveClass from "../pages/Dashboard/live-class/CreateLiveClass";
+import LiveClassDetailsPage from "../pages/Dashboard/live-class/LiveClassDetailsPage";
+import GoogleMeetIframe from "../pages/Dashboard/live-class/LiveClassPreview";
+import JitsiMeetingPage from "../pages/Dashboard/live-class/LiveclassJitsi";
+import TranscriptDetailsPage from "../pages/Dashboard/live-class/TranscriptDetails";
+import SuccessPage from "../pages/Dashboard/SuccessPage";
 const icon = {
   className: "w-5 h-5 text-inherit",
 };
@@ -107,6 +145,13 @@ export const routes = [
         path: "/assignment",
         element: <Assignment />,
       },
+
+      {
+        icon: <DocumentTextIcon {...icon} />,
+        name: "Test & Exam",
+        path: "/test",
+        element: <TestPage />,
+      },
       {
         icon: <BellIcon {...icon} />,
         name: "notifications",
@@ -151,8 +196,21 @@ export const routes = [
             path: "/premium/resources",
             element: <Resources />,
           },
+          {
+            icon: <BookOpenIcon {...icon} />,
+            name: "Institution Archive",
+            path: "/premium/archive",
+            element: <ArchivedAssistants />,
+          },
+          {
+            icon: <AcademicCapIcon {...icon} />,
+            name: "Classrooms",
+            path: "/premium/classrooms",
+            element: <TeamClassroomPage />,
+          },
         ],
       },
+
       {
         icon: <ArrowUpIcon {...icon} />,
         name: "upgrade",
@@ -160,12 +218,59 @@ export const routes = [
         element: <Upgrade />,
       },
       {
-        icon: <WrenchScrewdriverIcon {...icon} />,
-        name: "Admin Tools",
-        path: "/admin-tools",
+        icon: <BookOpenIcon {...icon} />,
+        name: "Resources",
+        path: "/resource",
+        element: <Training />,
+        submenu: [
+          {
+            icon: <ArchiveBoxIcon {...icon} />,
+            name: "Training",
+            path: "/resource/training",
+            element: <Training />,
+          },
+          {
+            icon: <FolderIcon {...icon} />,
+            name: "Community",
+            path: "/resource/community",
+            element: <Community />,
+          },
+        ],
+      },
+      {
+        icon: <ShieldCheckIcon {...icon} />,
+        name: "Admin",
+        path: "/admin",
         element: <AdminTools />,
         adminOnly: true,
+        submenu: [
+          {
+            icon: <WrenchScrewdriverIcon {...icon} />,
+            name: "Tools",
+            path: "/admin/tools",
+            element: <AdminTools />,
+          },
+          {
+            icon: <UsersIcon {...icon} />,
+            name: "Free users",
+            path: "/admin/free-users",
+            element: <FreeUsers />,
+          },
+          {
+            icon: <UsersIcon {...icon} />,
+            name: "Past users",
+            path: "/admin/past-users",
+            element: <PastUsers />,
+          },
+          {
+            icon: <UsersIcon {...icon} />,
+            name: "Subscribers",
+            path: "/admin/subscribers",
+            element: <Subscribers />,
+          },
+        ],
       },
+
       {
         icon: <WrenchScrewdriverIcon {...icon} />,
         name: "Heroes Wall",
@@ -214,7 +319,13 @@ export const Paramroutes = [
       {
         icon: <AcademicCapIcon {...icon} />,
         name: "classrooms",
-        path: "/classrooms/class-details/:id",
+        path: "/class/class-details/:id",
+        element: <Classroom />,
+      },
+      {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "classrooms",
+        path: "/class/class-report/:id",
         element: <Classroom />,
       },
       {
@@ -239,8 +350,56 @@ export const Paramroutes = [
       {
         icon: <AcademicCapIcon {...icon} />,
         name: "classrooms",
-        path: "/classrooms/class-details/:id",
+        path: "/class/class-details/:id",
         element: <Classroom />,
+      },
+      {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "classrooms",
+        path: "/test/attempt/:id",
+        element: <ExamPage />,
+      },
+      {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "classrooms",
+        path: "/test/submitted",
+        element: <ExamSubmitted />,
+      },
+      {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "classrooms",
+        path: "/test/submitted-details/:id",
+        element: <TestView />,
+      },
+      {
+        icon: <DocumentTextIcon {...icon} />,
+        name: "test",
+        path: "/create-test",
+        element: <CreateTest />,
+      },
+      {
+        icon: <DocumentTextIcon {...icon} />,
+        name: "test",
+        path: "/create-exam",
+        element: <CreateTest />,
+      },
+      {
+        icon: <DocumentTextIcon {...icon} />,
+        name: "test",
+        path: "/test/details/:id",
+        element: <TestDetailsPage />,
+      },
+      {
+        icon: <DocumentTextIcon {...icon} />,
+        name: "test",
+        path: "/test/joined",
+        element: <StudentExaminationsPage />,
+      },
+      {
+        icon: <DocumentTextIcon {...icon} />,
+        name: "test",
+        path: "/test/students/:id",
+        element: <TestStudentsPage />,
       },
       {
         icon: <AcademicCapIcon {...icon} />,
@@ -248,6 +407,7 @@ export const Paramroutes = [
         path: "/assignments/create",
         element: <CreateOrEditAssignment />,
       },
+
       {
         icon: <AcademicCapIcon {...icon} />,
         name: "assignments",
@@ -262,9 +422,45 @@ export const Paramroutes = [
       },
       {
         icon: <DocumentTextIcon {...icon} />,
+        name: "hidden",
+        path: "/student-support-screening-assistant",
+        element: <HiddenDisability />,
+      },
+      {
+        icon: <DocumentTextIcon {...icon} />,
+        name: "hidden",
+        path: "/staff-work-management",
+        element: <StaffWorkloadManagementForm />,
+      },
+      {
+        icon: <DocumentTextIcon {...icon} />,
+        name: "hidden",
+        path: "/report-generator",
+        element: <ReportGenerator />,
+      },
+      {
+        icon: <DocumentTextIcon {...icon} />,
+        name: "hidden",
+        path: "/career-guidance",
+        element: <CareerGuidanceForm />,
+      },
+      {
+        icon: <DocumentTextIcon {...icon} />,
+        name: "hidden",
+        path: "/virtual-lab-simulator",
+        element: <LabSimulator />,
+      },
+      {
+        icon: <DocumentTextIcon {...icon} />,
         name: "report",
         path: "/report/:reportId/:studentId",
         element: <StudentReport />,
+      },
+      {
+        icon: <DocumentTextIcon {...icon} />,
+        name: "report",
+        path: "/test/:testId/students/:studentId",
+        element: <StudentTestReport />,
       },
       {
         icon: <AcademicCapIcon {...icon} />,
@@ -298,9 +494,21 @@ export const Paramroutes = [
       },
       {
         icon: <AcademicCapIcon {...icon} />,
+        name: "classrooms",
+        path: "/test-report/:examId",
+        element: <TestReport />,
+      },
+      {
+        icon: <AcademicCapIcon {...icon} />,
         name: "Join classroom",
         path: "/classroom/s/:id",
         element: <JoinClassroom />,
+      },
+      {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "Join Test",
+        path: "/classroom/cbt/:id",
+        element: <JoinTest />,
       },
       {
         icon: <AcademicCapIcon {...icon} />,
@@ -341,11 +549,60 @@ export const Paramroutes = [
         path: "/profile",
         element: <Profile />,
       },
+
+      {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "wallet",
+        path: "/wallet",
+        element: <Wallet />,
+      },
       {
         icon: <AcademicCapIcon {...icon} />,
         name: "verify",
         path: "/verify-email",
         element: <VerifyEmail />,
+      },
+      {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "liveclass",
+        path: "/liveclass/:classroomId",
+        element: <LiveClass />,
+      },
+      {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "liveclass",
+        path: "/liveclass/create/:meetingId",
+        element: <CreateLiveClass />,
+      },
+      {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "liveclass",
+        path: "/liveclass/details/:meetingId",
+        element: <LiveClassDetailsPage />,
+      },
+      {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "liveclass",
+        path: "/liveclass/current",
+        element: <GoogleMeetIframe />,
+      },
+      {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "liveclass",
+        path: "/liveclass/meeting/live/:meetingId",
+        element: <JitsiMeetingPage />,
+      },
+      {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "liveclass",
+        path: "/transcripts/details/:liveclassroom_id/:transcriptId",
+        element: <TranscriptDetailsPage />,
+      },
+      {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "success",
+        path: "/success",
+        element: <SuccessPage />,
       },
     ],
   },
@@ -368,16 +625,16 @@ export const Studentroutes = [
         element: <Classes />,
       },
       {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "Test & Exam",
+        path: "/test",
+        element: <StudentExaminationsPage />,
+      },
+      {
         icon: <DocumentTextIcon {...icon} />,
         name: "assignments",
         path: "/assignments",
         element: <StudentAssignments />,
-      },
-      {
-        icon: <GlobeAltIcon {...icon} />,
-        name: "work history",
-        path: "/history",
-        element: <History />,
       },
     ],
   },
@@ -391,6 +648,24 @@ export const StudentParamroutes = [
         name: "classes",
         path: "/class/class-details/:id",
         element: <Classroom />,
+      },
+      {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "classrooms",
+        path: "/test/attempt/:id",
+        element: <ExamPage />,
+      },
+      {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "classrooms",
+        path: "/test/submitted",
+        element: <ExamSubmitted />,
+      },
+      {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "classrooms",
+        path: "/test/submitted-details/:id",
+        element: <TestView />,
       },
 
       {
@@ -417,6 +692,12 @@ export const StudentParamroutes = [
         name: "Join classroom",
         path: "/classroom/s/:id",
         element: <JoinClassroom />,
+      },
+      {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "Join test",
+        path: "/classroom/cbt/:id",
+        element: <JoinTest />,
       },
       {
         icon: <AcademicCapIcon {...icon} />,

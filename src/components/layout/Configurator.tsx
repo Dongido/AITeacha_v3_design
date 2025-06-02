@@ -9,6 +9,12 @@ import {
 import { Button } from "../ui/Button";
 import Text from "../ui/Text";
 import { Link } from "react-router-dom";
+import Cookies from "js-cookie";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { loadUserProfile, selectUser } from "../../store/slices/profileSlice";
+import { AppDispatch } from "../../store";
+import { ThunkDispatch } from "@reduxjs/toolkit"; // Import ThunkDispatch if you are using Redux Thunk
 
 function formatNumber(number: number, decPlaces: number): string {
   const dec = Math.pow(10, decPlaces);
@@ -29,19 +35,14 @@ function formatNumber(number: number, decPlaces: number): string {
 }
 
 export function Configurator() {
-  const { controller, dispatch } = useMaterialTailwindController();
-  const { openConfigurator, sidenavColor, sidenavType, fixedNavbar } =
-    controller;
+  const { controller, dispatch: contextDispatch } =
+    useMaterialTailwindController();
+  const { openConfigurator } = controller;
   const [stars, setStars] = useState<string>("");
-
-  const sidenavColors: Record<string, string> = {
-    white: "from-gray-100 to-gray-100 border-gray-200",
-    dark: "from-black to-black border-gray-200",
-    green: "from-green-400 to-green-600",
-    orange: "from-orange-400 to-orange-600",
-    red: "from-red-400 to-red-600",
-    pink: "from-pink-400 to-pink-600",
-  };
+  const navigate = useNavigate();
+  const dispatch: AppDispatch = useDispatch();
+  const userDetails = useSelector(selectUser);
+  const [isRefreshingProfile, setIsRefreshingProfile] = useState(false); // New loading state
 
   useEffect(() => {
     fetch(
@@ -55,6 +56,35 @@ export function Configurator() {
       })
       .catch((error) => console.error("Failed to fetch star count:", error));
   }, []);
+
+  const getUpgradeText = () => {
+    if (userDetails?.package === "AiTeacha Pro") {
+      return "Upgrade to Premium";
+    }
+    return "Upgrade to Pro";
+  };
+
+  const upgradeText = getUpgradeText();
+  const upgradeLink = "/dashboard/upgrade";
+
+  const handleLogout = () => {
+    Cookies.remove("at-accessToken");
+    Cookies.remove("at-refreshToken");
+    localStorage.removeItem("ai-teacha-user");
+    localStorage.removeItem("redirectPath");
+    navigate("/auth/login");
+  };
+
+  const handleRefreshProfile = async () => {
+    setIsRefreshingProfile(true); // Set loading to true
+    try {
+      await dispatch(loadUserProfile() as any); // Dispatch the action. Cast to 'any' if TypeScript complains about ThunkAction.
+    } catch (error) {
+      console.error("Failed to refresh user profile:", error);
+    } finally {
+      setIsRefreshingProfile(false); // Set loading to false regardless of success or failure
+    }
+  };
 
   return (
     <aside
@@ -71,34 +101,53 @@ export function Configurator() {
         <Button
           variant="text"
           color="blue-gray"
-          onClick={() => setOpenConfigurator(dispatch, false)}
+          onClick={() => setOpenConfigurator(contextDispatch, false)}
           aria-label="Close configurator"
         >
           <XMarkIcon strokeWidth={2.5} className="h-5 w-5" />
         </Button>
       </div>
-      <Link to={"/"}>
-        <Button className="px-4">Go to Home</Button>
-      </Link>
 
-      {/* <div className="py-4 px-6">
-        <div className="mb-12">
-          <hr />
-          <div className="flex items-center justify-between py-5">
-            <Text variant="small" color="blue-gray">
-              Navbar Fixed
-            </Text>
-            <Switch
-              id="navbar-fixed"
-              thumbColor="purple"
-              border={true}
-              checked={fixedNavbar}
-              onCheckedChange={(checked) => setFixedNavbar(dispatch, checked)}
-            />
-          </div>
-          <hr />
-        </div>
-      </div> */}
+      <div className="flex flex-col gap-4 px-6">
+        <Link to={"/"}>
+          <Button className="w-full hover:bg-gray-100 transition duration-300">
+            Go to Home
+          </Button>
+        </Link>
+
+        {userDetails?.role !== 3 && (
+          <Link to={"/dashboard/wallet"}>
+            <Button className="w-full hover:bg-gray-100 transition duration-300">
+              Wallet Settings
+            </Button>
+          </Link>
+        )}
+
+        {upgradeText && (
+          <Link to={upgradeLink}>
+            <Button className="flex hover:bg-pink-200 items-center bg-pink-100 text-black font-semibold py-2 px-4 rounded-md text-sm w-full">
+              {upgradeText}
+            </Button>
+          </Link>
+        )}
+
+        <Button
+          className="w-full hover:bg-gray-100 transition duration-300"
+          onClick={handleRefreshProfile}
+          disabled={isRefreshingProfile} // Disable button while loading
+        >
+          {isRefreshingProfile ? "Refreshing..." : "Refresh Profile"}{" "}
+          {/* Change text based on loading state */}
+        </Button>
+
+        <Button
+          className="w-full text-white hover:bg-gray-800 rounded-md transition duration-300"
+          variant={"destructive"}
+          onClick={handleLogout}
+        >
+          Logout
+        </Button>
+      </div>
     </aside>
   );
 }

@@ -14,82 +14,35 @@ import {
   SelectContent,
   SelectItem,
 } from "../../components/ui/Select";
+import PaymentMethodDialog from "./UpgradeDialog";
+import { changeUserPlan, verifyCouponCode } from "../../api/subscription";
+import Cookies from "js-cookie";
+import axios from "axios";
+import Logo from "../../assets/img/logo.png";
+import { FLUTTERWAVE_PUBLIC } from "../../lib/utils";
 
 const UpgradeSupport = () => {
   const [userDetails, setUserDetails] = useState<any>(null);
   const [isEmailVerified, setIsEmailVerified] = useState<number>(0);
-  const [numberOfTeachers, setNumberOfTeachers] = useState<number>(1);
+  const [numberOfTeachers, setNumberOfTeachers] = useState<number>(16);
   const [duration, setDuration] = useState<string>("1");
   const [unit, setUnit] = useState<string>("monthly"); // Store unit (monthly/yearly)
   const [calculatedPrice, setCalculatedPrice] = useState<number | null>(null);
-
-  const contactMethods = [
-    {
-      icon: (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-          className="w-6 h-6"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"
-          />
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"
-          />
-        </svg>
-      ),
-      contact: "65, Gbasemo Street, Aga Ikorodu, Lagos Nigeria",
-      title: "Our office",
-    },
-    {
-      icon: (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-          className="w-6 h-6"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"
-          />
-        </svg>
-      ),
-      contact: "+234 803-8563-171, +234 708-9115-000",
-      title: "Phone",
-    },
-    {
-      icon: (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-          className="w-6 h-6"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"
-          />
-        </svg>
-      ),
-      contact: "info@aiteacha.com",
-      title: "Email",
-    },
-  ];
+  const [currency, setCurrency] = useState<string>(
+    localStorage.getItem("selectedCurrency") || "NGN"
+  );
+  const [billingCycle, setBillingCycle] = useState("monthly");
+  const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+  const [couponCode, setCouponCode] = useState<string>("");
+  const [discountPercentage, setDiscountPercentage] = useState<number>(0);
+  const [couponApplied, setCouponApplied] = useState<boolean>(false); // Initialize to false
+  const [loadingCoupon, setLoadingCoupon] = useState<boolean>(false);
+  const [couponVerificationMessage, setCouponVerificationMessage] =
+    useState<string>("");
+  const [teacherCountError, setTeacherCountError] = useState<string | null>(
+    null
+  ); // New state for error message
 
   const durations = [
     { value: "1", label: "1 Month", unit: "monthly" },
@@ -119,10 +72,60 @@ const UpgradeSupport = () => {
     }
   };
 
+  const extractDiscountPercentage = (code: string) => {
+    const lastTwoDigits = code.slice(-2);
+    const discount = parseInt(lastTwoDigits, 10);
+    return isNaN(discount) ? 0 : discount;
+  };
+
+  const handleVerifyCoupon = async () => {
+    setLoadingCoupon(true);
+    setCouponVerificationMessage("");
+
+    if (couponApplied) {
+      setCouponVerificationMessage("Coupon code has already been applied.");
+      setLoadingCoupon(false);
+      return;
+    }
+
+    try {
+      const response = await verifyCouponCode(couponCode);
+      console.log(response);
+      if (response.status === "success") {
+        const discount = extractDiscountPercentage(couponCode);
+        setDiscountPercentage(discount);
+        setCouponApplied(true);
+        setCouponVerificationMessage("Coupon code applied successfully!");
+        // Recalculate price with discount
+        calculatePrice();
+      } else {
+        setCouponVerificationMessage(
+          response.message || "Invalid coupon code."
+        );
+        setDiscountPercentage(0);
+        setCouponApplied(false);
+        // Recalculate price without discount
+        calculatePrice();
+      }
+    } catch (error: any) {
+      setCouponVerificationMessage("Invalid coupon code");
+      setDiscountPercentage(0);
+      setCouponApplied(false);
+      // Recalculate price without discount
+      calculatePrice();
+    } finally {
+      setLoadingCoupon(false);
+    }
+  };
+
   const calculatePrice = () => {
-    const pricePerTeacherPerMonth = 2000;
+    const pricePerTeacherPerMonth = 1300;
     const months = parseInt(duration, 10);
-    const totalPrice = numberOfTeachers * pricePerTeacherPerMonth * months;
+    let totalPrice = numberOfTeachers * pricePerTeacherPerMonth * months;
+
+    if (couponApplied && discountPercentage > 0) {
+      totalPrice = totalPrice * (1 - discountPercentage / 100);
+    }
     setCalculatedPrice(totalPrice);
   };
 
@@ -134,9 +137,192 @@ const UpgradeSupport = () => {
     } else if (duration === "36") {
       setDuration("3");
     }
-    console.log("Duration: ", duration);
-    console.log("Unit: ", unit);
-    console.log("Price: ₦", calculatedPrice?.toLocaleString());
+
+    if (numberOfTeachers < 16) {
+      setTeacherCountError("Number of teachers must be 16 or more.");
+      return;
+    }
+    calculatePrice();
+    setIsPaymentDialogOpen(true);
+  };
+
+  const getFlutterwaveConfig = (
+    plan: "pro" | "premium" | "enterprise" | "admin"
+  ) => ({
+    public_key: FLUTTERWAVE_PUBLIC,
+    tx_ref: `TX_${billingCycle}_4_${Date.now()}`,
+    amount: calculatedPrice,
+    currency: currency,
+    payment_options: "card, banktransfer, ussd",
+    customer: {
+      email: userDetails?.email || "default@email.com",
+      phone_number: "08012345678",
+      name: userDetails?.firstname || "Default User",
+    },
+    meta: {
+      package_id: 4,
+      unit: billingCycle,
+      duration: 1,
+      no_of_seat: numberOfTeachers,
+      coupon_code: couponApplied ? couponCode : null,
+      discount_percentage: couponApplied ? discountPercentage : 0,
+    },
+    customizations: {
+      title: `${plan.charAt(0).toUpperCase() + plan.slice(1)} Plan`,
+      description: `Upgrade to ${
+        plan.charAt(0).toUpperCase() + plan.slice(1)
+      } Plan`,
+      logo: Logo,
+    },
+  });
+
+  const handlePayment = async (
+    method: "stripe" | "flutterwave",
+    plan: "pro" | "premium" | "enterprise" | "admin"
+  ) => {
+    if (numberOfTeachers < 16) {
+      setTeacherCountError("Number of teachers must be 16 or more.");
+      return;
+    }
+    setLoadingPlan(plan);
+
+    const amount = calculatedPrice;
+    console.log("Selected Payment Method:", method);
+
+    if (method === "flutterwave") {
+      const config = getFlutterwaveConfig("enterprise");
+
+      const flutterwaveWindow = window.open("", "_blank");
+
+      if (!flutterwaveWindow) {
+        console.error("Failed to open new window for Flutterwave");
+        setLoadingPlan(null);
+        return;
+      }
+
+      flutterwaveWindow.document.write(`
+        <!DOCTYPE html>
+        <html lang="en">
+          <head>
+            <title>Flutterwave Payment</title>
+            <script src="https://checkout.flutterwave.com/v3.js"></script>
+          </head>
+          <body>
+            <script>
+              const config = ${JSON.stringify(config)};
+
+              function makePayment() {
+                FlutterwaveCheckout({
+                  ...config,
+                  callback: async (response) => {
+                    console.log(response);
+                    if (response.status === "completed" || response.status === "success" || response.status === "successful") {
+                      window.opener.postMessage({ status: "completed" }, "*");
+                      window.opener.postMessage({ status: "success" }, "*");
+                      window.opener.postMessage({ status: "successful" }, "*");
+                    } else {
+                      console.error("Payment failed");
+                      window.opener.postMessage({ status: "failed" }, "*");
+                    }
+                    window.close();
+                  },
+                  onclose: () => {
+                    console.log("Payment modal closed");
+                    window.opener.postMessage({ status: "closed" }, "*");
+                    window.close();
+                  }
+                });
+              }
+
+              makePayment();
+            </script>
+          </body>
+        </html>
+      `);
+
+      window.addEventListener("message", (event) => {
+        console.log(event);
+        if (
+          event.data?.status === "completed" ||
+          event.data?.status === "success" ||
+          event.data?.status === "successful"
+        ) {
+          const packageId = 4;
+          changeUserPlan(
+            packageId,
+            parseInt(userDetails?.id || "0", 10),
+            1,
+            billingCycle,
+            currency,
+            numberOfTeachers
+          )
+            .then(() => {
+              console.log("User plan updated successfully");
+              // Optionally reset coupon state here if needed for the session
+              // setCouponApplied(false);
+              // setDiscountPercentage(0);
+              window.location.reload();
+            })
+            .catch((err) => console.error("Error updating user plan:", err));
+        } else if (event.data?.status === "failed") {
+          console.error("Payment failed in Flutterwave");
+        } else {
+          console.log("Payment process canceled or closed");
+        }
+        setLoadingPlan(null);
+      });
+    } else if (method === "stripe") {
+      const token = Cookies.get("at-refreshToken");
+      if (!token) {
+        console.error("No refresh token found");
+        setLoadingPlan(null);
+        return;
+      }
+
+      try {
+        const response = await axios.post(
+          "https://vd.aiteacha.com/api/payment/stripe/initiate",
+          {
+            user_id: parseInt(userDetails?.id || "0", 10),
+            package_id: 4,
+            amount: amount,
+            currency: currency,
+            interval: billingCycle,
+            coupon_code: couponApplied ? couponCode : null, // Send coupon code
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.data.status === "success") {
+          const paymentLink = response.data.data.paymentLink;
+          window.open(paymentLink, "_blank");
+        } else {
+          console.error(
+            "Error creating Stripe session:",
+            response.data.message
+          );
+        }
+      } catch (error) {
+        console.error("Error initiating Stripe payment:", error);
+      } finally {
+        setLoadingPlan(null);
+      }
+    }
+  };
+
+  const getCurrencySign = (currency: string) => {
+    if (currency === "NGN") {
+      return "₦";
+    } else if (currency === "USD") {
+      return "$";
+    } else if (currency === "GBP") {
+      return "£";
+    }
+    return "";
   };
 
   return (
@@ -155,94 +341,163 @@ const UpgradeSupport = () => {
         </div>
       )}
 
-      <div className="flex justify-end gap-2">
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button
-              variant={"gradient"}
-              className="flex items-center w-fit h-full max-h-10 gap-3 py-2 rounded-md"
-            >
-              Price Calculator
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogTitle className="text-center">
-              AI Teacha Enterprise Calculator
-            </DialogTitle>
-            <p>
-              The AI Teacha Enterprise Plan Calculator offers personalized
-              pricing for schools with 15+ educators, considering specific
-              needs. Generate custom quotes easily and unlock premium features,
-              tools, and dedicated support to revolutionize education at scale.
-            </p>
-            <div className="mt-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Number of Teachers
-              </label>
-              <Input
-                type="number"
-                min="1"
-                value={numberOfTeachers}
-                onChange={(e) => setNumberOfTeachers(Number(e.target.value))}
-                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-purple-500"
-              />
-            </div>
-            <div className="mt-4">
-              <label className="block text-sm font-medium text-gray-700 mb-4">
-                Duration
-              </label>
-              <Select value={duration} onValueChange={handleValueChange}>
-                <SelectTrigger className="-my-4">
-                  <SelectValue placeholder="Select Duration" />
-                </SelectTrigger>
-                <SelectContent>
-                  {durations.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center gap-2">
+          <Input
+            type="text"
+            placeholder="Enter coupon code"
+            value={couponCode}
+            onChange={(e) => setCouponCode(e.target.value)}
+            className="w-full sm:w-1/2"
+          />
+          <Button
+            variant="gray"
+            onClick={handleVerifyCoupon}
+            disabled={loadingCoupon || couponApplied}
+            className="rounded-md"
+          >
+            {loadingCoupon
+              ? "Verifying..."
+              : couponApplied
+              ? "Applied"
+              : "Apply Coupon"}
+          </Button>
+        </div>
+        {couponVerificationMessage && (
+          <p
+            className={
+              couponApplied ? "text-green-500 text-sm" : "text-red-500 text-sm"
+            }
+          >
+            {couponVerificationMessage}
+          </p>
+        )}
 
-            <div className="mt-4">
+        <div className="flex justify-end gap-2">
+          <Dialog>
+            <DialogTrigger asChild>
               <Button
-                variant="gradient"
-                onClick={calculatePrice}
-                className="w-full rounded-md"
+                variant={"gradient"}
+                className="flex items-center w-fit h-full max-h-10 gap-3 py-2 rounded-md"
               >
-                Calculate Price
+                Price Calculator
               </Button>
-            </div>
-            {calculatedPrice !== null && (
-              <div className="">
-                <div className="mt-4">
-                  <p className="text-xl font-semibold">
-                    Calculated Price: ₦{" "}
-                    {calculatedPrice
-                      ? calculatedPrice.toLocaleString()
-                      : "Not Calculated"}
+            </DialogTrigger>
+            <DialogContent>
+              <DialogTitle className="text-center">
+                AiTeacha Enterprise Calculator
+              </DialogTitle>
+              <p>
+                The AiTeacha Enterprise Plan Calculator offers personalized
+                pricing for schools with 15+ educators, considering specific
+                needs. Generate custom quotes easily and unlock premium
+                features, tools, and dedicated support to revolutionize
+                education at scale.
+              </p>
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Number of Teachers
+                </label>
+                <Input
+                  type="number"
+                  min="16"
+                  value={numberOfTeachers}
+                  onChange={(e) => {
+                    const value = Number(e.target.value);
+                    setNumberOfTeachers(value);
+                    if (value < 16) {
+                      setTeacherCountError(
+                        "Number of teachers must be 16 or more."
+                      );
+                    } else {
+                      setTeacherCountError(null);
+                    }
+                  }}
+                  className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-purple-500"
+                />
+
+                {teacherCountError && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {teacherCountError}
                   </p>
-                </div>
-                <div className="mt-4">
-                  <Button
-                    onClick={initiatePayment}
-                    className="w-full rounded-md bg-blue-600"
-                  >
-                    Initiate Payment
-                  </Button>
-                </div>
+                )}
               </div>
-            )}
-          </DialogContent>
-        </Dialog>
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700 mb-4">
+                  Duration
+                </label>
+                <Select value={duration} onValueChange={handleValueChange}>
+                  <SelectTrigger className="-my-4">
+                    <SelectValue placeholder="Select Duration" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {durations.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="mt-4">
+                <Button
+                  variant="gradient"
+                  onClick={calculatePrice}
+                  className="w-full rounded-md"
+                >
+                  Calculate Price
+                </Button>
+              </div>
+              {calculatedPrice !== null && (
+                <div className="">
+                  <div className="mt-4">
+                    <p className="text-xl font-semibold">
+                      Calculated Price: {getCurrencySign(currency)}
+                      {calculatedPrice
+                        ? calculatedPrice.toLocaleString()
+                        : "Not Calculated"}
+                      {couponApplied && discountPercentage > 0 && (
+                        <span className="text-green-500 ml-2">
+                          (-{discountPercentage}%)
+                        </span>
+                      )}
+                    </p>
+                    {couponApplied && discountPercentage > 0 && (
+                      <p className="text-sm text-gray-500">
+                        Original Price: {getCurrencySign(currency)}
+                        {(
+                          calculatedPrice /
+                          (1 - discountPercentage / 100)
+                        ).toLocaleString()}
+                      </p>
+                    )}
+                  </div>
+                  <div className="mt-4">
+                    <Button
+                      onClick={initiatePayment}
+                      className="w-full rounded-md bg-blue-600"
+                    >
+                      Continue to Payment
+                    </Button>
+                    {!couponApplied && couponCode && (
+                      <p className="text-yellow-900 text-sm mt-2">
+                        Please apply the coupon code to get the discount.
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
       <div className="flex items-center text-xl mt-6 font-bold rounded-md text-black w-full gap-12">
         <main className="w-1/2">
           <div className="max-w-screen-xl mx-auto px-4 text-gray-600 md:px-8">
             <div className="max-w-xl space-y-3">
               <h3 className="text-primary font-semibold">
-                Request an AI Teacha quote!
+                Request an AiTeacha quote!
               </h3>
               <p className="text-gray-800 text-3xl font-semibold sm:text-4xl">
                 We are so excited to be partnering with you!
@@ -278,7 +533,7 @@ const UpgradeSupport = () => {
               <ul className="list-disc space-y-2">
                 <li>Your name</li>
                 <li>Email</li>
-                <li>Number of schools you want AI Teacha for</li>
+                <li>Number of schools you want AiTeacha for</li>
                 <li>Your school's name</li>
                 <li>Your district's name</li>
                 <li>Your role at your school/district</li>
@@ -291,6 +546,14 @@ const UpgradeSupport = () => {
           </div>
         </div>
       </div>
+
+      <PaymentMethodDialog
+        planName={"enterprise"}
+        onSelectPaymentMethod={handlePayment}
+        isOpen={isPaymentDialogOpen}
+        onClose={() => setIsPaymentDialogOpen(false)}
+        currency={currency}
+      />
     </div>
   );
 };

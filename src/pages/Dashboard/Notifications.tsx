@@ -56,11 +56,11 @@ const Notifications = () => {
           Oops! No notifications found.
         </p>
       ) : (
-        <ul className="w-full  mt-6">
+        <ul className="w-full  mt-6 list-none">
           {notifications.map((notification: any) => (
             <li
               key={notification.id}
-              className="p-4 mb-4 bg-gray-100 border border-gray-200 rounded-md shadow-sm"
+              className="p-4 mb-4 bg-gray-100 border border-gray-200 list-none rounded-md shadow-sm"
             >
               <h3 className="text-lg font-semibold text-gray-800">
                 {notification.subject}

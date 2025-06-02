@@ -29,7 +29,7 @@ export const sharedResourceColumns = [
   }),
 
   resourceColumnHelper.accessor("shared_to", {
-    header: ({ column }) => <Header title="Sharsssed To" column={column} />,
+    header: ({ column }) => <Header title="Shared To" column={column} />,
     sortingFn: "text",
     cell: (info) => (
       <span className="capitalize whitespace-nowrap">{info.getValue()}</span>

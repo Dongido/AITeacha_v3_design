@@ -22,6 +22,27 @@ export const fetchClassroomsByUser = async (): Promise<Classroom[]> => {
   }
 };
 
+export const fetchClassroomsByTeam = async (): Promise<Classroom[]> => {
+  try {
+    const response = await apiClient.get<{
+      status: string;
+      message: string;
+      data: Classroom[];
+    }>(`/classroom/team/classes`);
+
+    return response.data.data;
+  } catch (error: any) {
+    if (error.response?.status === 403) {
+      throw new Error(
+        error.response?.data?.message ||
+          "Failed to fetch classrooms. Please try again."
+      );
+    } else {
+      throw new Error("Failed to fetch classrooms. Please try again.");
+    }
+  }
+};
+
 export const deleteClassroom = async (classroomId: number): Promise<void> => {
   try {
     const response = await apiClient.delete(`/classroom/${classroomId}`);
@@ -124,6 +145,29 @@ export const fetchReport = async (reportId: string): Promise<any> => {
   } catch (error: any) {
     throw new Error(
       error.response?.data || "Failed to fetch the report. Please try again."
+    );
+  }
+};
+
+export const fetchClassroomOutlineReport = async (
+  classroomId: string
+): Promise<any> => {
+  try {
+    const response = await apiClient.get<{
+      status: string;
+      message: string;
+      data: any;
+    }>(`/report/get/outlineassessment/${classroomId}`);
+
+    if (response.status !== 200) {
+      throw new Error("Failed to fetch the classroom outline report.");
+    }
+
+    return response.data.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data ||
+        "Failed to fetch the classroom outline report. Please try again."
     );
   }
 };
@@ -367,5 +411,82 @@ export const fetchStudentAnalytics = async (
     throw new Error(
       error.response?.data?.message || "Failed to fetch student analytics."
     );
+  }
+};
+export const suggestClassroomTopics = async (
+  name: string,
+  grade: string
+): Promise<any> => {
+  try {
+    const response = await apiClient.post<{
+      status: string;
+      message: string;
+      data: any;
+    }>("/assistant/suggest/classroom/topics", {
+      name,
+      grade,
+    });
+
+    if (response.status !== 200) {
+      throw new Error("Failed to suggest classroom topics.");
+    }
+
+    return response.data.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data ||
+        "Failed to suggest classroom topics. Please try again."
+    );
+  }
+};
+
+export const suggestClassroomOutlines = async (
+  description: string,
+  grade: string
+): Promise<any> => {
+  try {
+    const response = await apiClient.post<{
+      status: string;
+      message: string;
+      data: any;
+    }>("/assistant/suggest/classroom/courseoutline", {
+      description,
+      grade,
+    });
+
+    if (response.status !== 200) {
+      throw new Error("Failed to suggest classroom outline.");
+    }
+
+    return response.data.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data ||
+        "Failed to suggest classroom topics. Please try again."
+    );
+  }
+};
+export const toggleClassroomStatus = async (
+  classroomId: number
+): Promise<void> => {
+  try {
+    const response = await apiClient.put<{
+      status: string;
+      message: string;
+    }>(`/classroom/activate/${classroomId}`);
+
+    if (response.data.status !== "success") {
+      throw new Error(
+        response.data.message || "Failed to change classroom status ."
+      );
+    }
+  } catch (error: any) {
+    if (error.response?.status === 400 || error.response?.status === 404) {
+      throw new Error(
+        error.response?.data?.message || "Failed to change classroom status."
+      );
+    } else {
+      throw new Error("Failed to change classroom status. Please try again.");
+    }
   }
 };

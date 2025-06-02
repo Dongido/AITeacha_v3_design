@@ -7,7 +7,7 @@ import { StatusType } from "../../../../lib/constants";
 import Status from "../../_components/Status";
 import { useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
-
+import ActivateDeactivateDialog from "./ActivateDeactivateDialog";
 const classroomColumnHelper = createColumnHelper<Classroom>();
 const getRedirectPath = (role: number, classroomId: number) => {
   if (role === 2) {
@@ -82,6 +82,13 @@ export const classroomColumns = [
       <span className="capitalize whitespace-nowrap">{info.getValue()}</span>
     ),
   }),
+  classroomColumnHelper.accessor("class_type", {
+    header: ({ column }) => <Header title="Type" column={column} />,
+    sortingFn: "text",
+    cell: (info) => (
+      <span className="capitalize whitespace-nowrap">{info.getValue()}</span>
+    ),
+  }),
   classroomColumnHelper.accessor("status", {
     header: ({ column }) => <Header title="Status" column={column} />,
     sortingFn: "text",
@@ -108,29 +115,49 @@ export const classroomColumns = [
     sortingFn: "text",
     cell: (info) => {
       const navigate = useNavigate();
+      const classroom = info.row.original;
       const classroomId = info.row.original.classroom_id;
+      const status = classroom.status;
 
       // Set up a ref to the delete dialog for this row
       const deleteDialogRef = useRef<{ openDialog: () => void }>(null);
+      const activateDeactivateDialogRef = useRef<{ openDialog: () => void }>(
+        null
+      );
 
       return (
         <div className="flex items-center gap-2">
           <Actions
-            viewLink={`/dashboard/classrooms/details/${classroomId}`}
-            //  editLink={`/dashboard/classrooms/edit/${classroomId}`}
+            viewLink={
+              status === "inactive"
+                ? undefined
+                : `/dashboard/classrooms/details/${classroomId}`
+            }
             deleteFunction={async () => {
               deleteDialogRef.current?.openDialog();
               return Promise.resolve();
             }}
-            //  editFunction={async () => console.log("edited")}
+            activateFunction={
+              status === "inactive"
+                ? async () => {
+                    activateDeactivateDialogRef.current?.openDialog();
+                    return Promise.resolve();
+                  }
+                : undefined
+            }
           />
 
           <DeleteClassroomDialog
             ref={deleteDialogRef}
             classroomId={classroomId}
-            onSuccess={() => {
-              // Refresh or handle success state after deletion
-            }}
+            onSuccess={() => {}}
+          />
+
+          <ActivateDeactivateDialog
+            ref={activateDeactivateDialogRef}
+            classroomId={classroomId}
+            status={status}
+            onSuccess={() => {}}
           />
         </div>
       );

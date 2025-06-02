@@ -34,7 +34,7 @@ const DataPrivacy = () => {
               Teacha, a subsidiary of ICEDT Consult Ltd, Nigeria, and the
               Educational Institution, School, District, or organization
               (“Institution”) identified in the Agreement. This DPA governs the
-              processing of personal data through the AI Teacha Learning
+              processing of personal data through the AiTeacha Learning
               Management System (LMS) and ensures compliance with Nigerian,
               African, and global data protection laws.
             </p>
@@ -64,7 +64,7 @@ const DataPrivacy = () => {
                 </li>
                 <li>
                   <strong>Sub-processor:</strong> A third-party entity appointed
-                  by AI Teacha to process Personal Information on its behalf.
+                  by AiTeacha to process Personal Information on its behalf.
                 </li>
                 <li>
                   <strong>Security Breach:</strong> Unauthorized access, use,
@@ -76,7 +76,7 @@ const DataPrivacy = () => {
                 2. Scope of Processing
               </h2>
               <p className="text-gray-700">
-                AI Teacha will process Personal Information only:
+                AiTeacha will process Personal Information only:
               </p>
               <ul className="list-inside list-disc text-gray-700 space-y-2">
                 <li>To fulfill its obligations under the Agreement.</li>
@@ -93,7 +93,7 @@ const DataPrivacy = () => {
                 determining the purpose and means of data processing.
               </p>
               <p className="text-gray-700">
-                <strong>b. AI Teacha as Processor:</strong> AI Teacha processes
+                <strong>b. AiTeacha as Processor:</strong> AiTeacha processes
                 Personal Information solely on behalf of the Institution and in
                 accordance with its documented instructions.
               </p>
@@ -101,7 +101,7 @@ const DataPrivacy = () => {
               <h2 className="text-xl font-semibold text-primary">
                 4. Data Processing Requirements
               </h2>
-              <p className="text-gray-700">AI Teacha will:</p>
+              <p className="text-gray-700">AiTeacha will:</p>
               <ul className="list-inside list-disc text-gray-700 space-y-2">
                 <li>
                   Ensure all personnel handling Personal Information are bound
@@ -122,7 +122,7 @@ const DataPrivacy = () => {
                 5. Data Security Measures
               </h2>
               <p className="text-gray-700">
-                AI Teacha will implement administrative, technical, and physical
+                AiTeacha will implement administrative, technical, and physical
                 safeguards to protect Personal Information, including:
               </p>
               <ul className="list-inside list-disc text-gray-700 space-y-2">
@@ -138,7 +138,7 @@ const DataPrivacy = () => {
                 6. Security Breaches
               </h2>
               <p className="text-gray-700">
-                In the event of a Security Breach, AI Teacha will:
+                In the event of a Security Breach, AiTeacha will:
               </p>
               <ul className="list-inside list-disc text-gray-700 space-y-2">
                 <li>Notify the Institution without undue delay.</li>
@@ -156,7 +156,7 @@ const DataPrivacy = () => {
                 7. Sub-processors
               </h2>
               <p className="text-gray-700">
-                AI Teacha may engage Sub-processors for specific data processing
+                AiTeacha may engage Sub-processors for specific data processing
                 activities, subject to:
               </p>
               <ul className="list-inside list-disc text-gray-700 space-y-2">
@@ -175,7 +175,7 @@ const DataPrivacy = () => {
                 8. Data Transfers
               </h2>
               <p className="text-gray-700">
-                AI Teacha will not transfer Personal Information outside Nigeria
+                AiTeacha will not transfer Personal Information outside Nigeria
                 or Africa without ensuring:
               </p>
               <ul className="list-inside list-disc text-gray-700 space-y-2">
@@ -189,7 +189,7 @@ const DataPrivacy = () => {
               <h2 className="text-xl font-semibold text-primary">
                 9. Data Retention and Deletion
               </h2>
-              <p className="text-gray-700">AI Teacha will:</p>
+              <p className="text-gray-700">AiTeacha will:</p>
               <ul className="list-inside list-disc text-gray-700 space-y-2">
                 <li>
                   Retain Personal Information only as long as required to
@@ -207,7 +207,7 @@ const DataPrivacy = () => {
               </h2>
               <p className="text-gray-700">
                 The Institution, as the data controller, is responsible for
-                addressing data subject rights. AI Teacha will assist by:
+                addressing data subject rights. AiTeacha will assist by:
               </p>
               <ul className="list-inside list-disc text-gray-700 space-y-2">
                 <li>Providing mechanisms for data access and correction.</li>
@@ -220,7 +220,7 @@ const DataPrivacy = () => {
               <h2 className="text-xl font-semibold text-primary">
                 11. Audits and Compliance
               </h2>
-              <p className="text-gray-700">AI Teacha will:</p>
+              <p className="text-gray-700">AiTeacha will:</p>
               <ul className="list-inside list-disc text-gray-700 space-y-2">
                 <li>
                   Provide necessary documentation to demonstrate compliance with
@@ -236,7 +236,7 @@ const DataPrivacy = () => {
                 12. Changes to this Addendum
               </h2>
               <p className="text-gray-700">
-                AI Teacha may update this DPA to reflect changes in regulations
+                AiTeacha may update this DPA to reflect changes in regulations
                 or processing practices. Institutions will be notified 30 days
                 prior to any material changes.
               </p>
@@ -258,7 +258,7 @@ const DataPrivacy = () => {
               </p>
               <ul className="list-inside list-disc text-gray-700 space-y-2">
                 <li>
-                  <strong>AI Teacha</strong>
+                  <strong>AiTeacha</strong>
                 </li>
                 <li>
                   Email:{" "}

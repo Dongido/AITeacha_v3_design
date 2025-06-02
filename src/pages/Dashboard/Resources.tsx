@@ -12,7 +12,7 @@ import BaseTable from "../../components/table/BaseTable";
 import { sharedResourceColumns } from "./_components/column.sharedresource";
 import { Skeleton } from "../../components/ui/Skeleton";
 import { useNavigate } from "react-router-dom";
-import RestrictedPage from "./classrooms/RestrictionPage";
+import GeneralRestrictedPage from "./_components/GeneralRestrictedPage";
 const Resources = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -94,7 +94,7 @@ const Resources = () => {
             </span>
           </div>
         )}
-        <RestrictedPage error={error} />
+        <GeneralRestrictedPage error={error} />
       </div>
     );
   }

@@ -11,7 +11,7 @@ const UpgradeSupport = () => {
           <div className="max-w-screen-xl mx-auto px-4 text-gray-600 md:px-8">
             <div className="max-w-xl space-y-3">
               <h3 className="text-primary font-semibold">
-                Request an AI Teacha quote!
+                Request an AiTeacha quote!
               </h3>
               <p className="text-gray-800 text-3xl font-semibold sm:text-4xl">
                 We are so excited to be partnering with you!
@@ -34,7 +34,7 @@ const UpgradeSupport = () => {
               <ul className="list-disc space-y-2">
                 <li>Your name</li>
                 <li>Email</li>
-                <li>Number of schools you want AI Teacha for</li>
+                <li>Number of schools you want AiTeacha for</li>
                 <li>Your school's name</li>
                 <li>Your district's name</li>
                 <li>Your role at your school/district</li>

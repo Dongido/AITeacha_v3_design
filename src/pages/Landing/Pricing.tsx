@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "../../components/ui/Button";
 import { Switch } from "../../components/ui/Switch";
 import Navbar from "./components/Navbar";
@@ -11,9 +11,40 @@ const Pricing = () => {
     "monthly"
   );
   const [currency, setCurrency] = useState<"NGN" | "USD" | "GBP">("NGN");
+  const [userCountry, setUserCountry] = useState<string | null>(null);
 
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const fetchUserLocation = async () => {
+      try {
+        const ipResponse = await fetch("https://api.ipify.org?format=json");
+        const ipData = await ipResponse.json();
+
+        const geoResponse = await fetch(`https://ipapi.co/${ipData.ip}/json/`);
+        const geoData = await geoResponse.json();
+
+        setUserCountry(geoData.country);
+        switch (geoData.country) {
+          case "NG":
+            setCurrency("NGN");
+            break;
+          case "US":
+            setCurrency("USD");
+            break;
+          case "GB":
+            setCurrency("GBP");
+            break;
+          default:
+            setCurrency("USD");
+        }
+      } catch (error) {
+        console.error("Error fetching user location:", error);
+      }
+    };
+
+    fetchUserLocation();
+  }, []);
   const prices = {
     free: {
       NGN: { monthly: "₦0", yearly: "₦0" },
@@ -75,7 +106,7 @@ const Pricing = () => {
                   <h2>
                     We offer a Free plan for educators with limited access, a
                     Pro plan with more Pro tools and classroom features, a
-                    Premium plan with full AI Teacha suite for schools with
+                    Premium plan with full AiTeacha suite for schools with
                     maximum number of 15 educators and an Enterprise plan for
                     larger schools with more than 15 educators.
                   </h2>
@@ -105,7 +136,7 @@ const Pricing = () => {
               value={currency}
               onChange={handleCurrencyChange}
             >
-              <option value="NGN">NGN (Naira)</option>
+              {userCountry === "NG" && <option value="NGN">NGN (Naira)</option>}
               <option value="USD">USD (Dollar)</option>
               <option value="GBP">GBP (Pounds)</option>
             </select>
@@ -114,12 +145,12 @@ const Pricing = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div className="border rounded-lg p-6 bg-gray-50 shadow-sm flex flex-col">
-            <h3 className="text-lg font-semibold mb-4">AI Teacha Free</h3>
+            <h3 className="text-lg font-semibold mb-4">AiTeacha Free</h3>
             <p className="text-2xl font-bold mb-2">
               {prices.free[currency][billingCycle]}
             </p>
             <p className="mb-4 mt-2 text-sm text-gray-600">
-              Get started for Free, learn how AI Teacha saves you time and
+              Get started for Free, learn how AiTeacha saves you time and
               generates tailored resources.
             </p>
             <ul className="list-disc pl-5 space-y-2 mb-6 flex-grow">
@@ -137,13 +168,16 @@ const Pricing = () => {
               </li>
               <li>AI Image generation for educators and students</li>
             </ul>
-            <Button className="w-full py-2 rounded-md bg-primary text-white hover:bg-[#4a2fa3] transition mt-auto">
+            <Button
+              onClick={() => navigate("/auth/onboarding")}
+              className="w-full py-2 rounded-md bg-primary text-white hover:bg-[#4a2fa3] transition mt-auto"
+            >
               Sign Up for Free
             </Button>
           </div>
 
           <div className="border rounded-lg p-6 bg-gray-50 shadow-md flex flex-col">
-            <h3 className="text-lg font-semibold mb-4">AI Teacha Pro</h3>
+            <h3 className="text-lg font-semibold mb-4">AiTeacha Pro</h3>
             <p className="text-2xl font-bold mb-2">
               {getCurrencySign(currency)} {prices.pro[currency][billingCycle]}
               {currency === "USD" && billingCycle === "yearly" && (
@@ -168,7 +202,7 @@ const Pricing = () => {
               )}
             </p>
             <p className="mb-4 mt-2 text-sm text-gray-600">
-              Upgrade to AI Teacha Pro for unlimited access to all resources and
+              Upgrade to AiTeacha Pro for unlimited access to all resources and
               pro tools.
             </p>
             <ul className="list-disc pl-5 space-y-2 mb-6 flex-grow">
@@ -189,13 +223,16 @@ const Pricing = () => {
               </li>
               <li>Exclusive early access to new features and tools</li>
             </ul>
-            <Button className="w-full py-2 rounded-md bg-primary text-white hover:bg-[#4a2fa3] transition mt-auto">
+            <Button
+              onClick={() => navigate("/dashboard/upgrade")}
+              className="w-full py-2 rounded-md bg-primary text-white hover:bg-[#4a2fa3] transition mt-auto"
+            >
               Subscribe to Pro
             </Button>
           </div>
 
           <div className="border rounded-lg p-6 bg-gray-50 shadow-md flex flex-col">
-            <h3 className="text-lg font-semibold mb-4">AI Teacha Premium </h3>
+            <h3 className="text-lg font-semibold mb-4">AiTeacha Premium </h3>
             <p className="text-2xl font-bold mb-2">
               {getCurrencySign(currency)}{" "}
               {prices.premium[currency][billingCycle]}
@@ -227,7 +264,7 @@ const Pricing = () => {
               )}
             </p>
             <p className="mb-4 mt-2 text-sm text-gray-600">
-              Full AI Teacha suite for schools with classroom, assignment, and
+              Full AiTeacha suite for schools with classroom, assignment, and
               report features.
             </p>
             <ul className="list-disc pl-5 space-y-2 mb-6 flex-grow">
@@ -247,13 +284,16 @@ const Pricing = () => {
               <li>Unlimited number of educators</li>
               <li>Dedicated support for your school or institution</li>
             </ul>
-            <Button className="w-full py-2 rounded-md bg-primary text-white hover:bg-[#4a2fa3] transition mt-auto">
+            <Button
+              onClick={() => navigate("/dashboard/upgrade")}
+              className="w-full py-2 rounded-md bg-primary text-white hover:bg-[#4a2fa3] transition mt-auto"
+            >
               Subscribe to Premium
             </Button>
           </div>
         </div>
         <div className="border rounded-lg p-6 bg-gray-50 text-center mt-4 shadow-md flex flex-col">
-          <h3 className="text-lg font-semibold mb-4">AI Teacha Enterprise</h3>
+          <h3 className="text-lg font-semibold mb-4">AiTeacha Enterprise</h3>
 
           <p className="mb-4 mt-2 text-sm text-gray-600">
             Custom discounted pricing for schools, districts, institutions, and
@@ -263,8 +303,8 @@ const Pricing = () => {
             <strong>Everything in Premium, Plus...</strong>
             <li>Designed for large schools and institutions</li>
             <li>
-              The AI Teacha Enterprise Plan is tailored for organizations with
-              15 or more educators seeking comprehensive AI solutions
+              The AiTeacha Enterprise Plan is tailored for organizations with 15
+              or more educators seeking comprehensive AI solutions
             </li>
             <li>
               Contact us today or use our Quote Calculator to receive customized
@@ -272,7 +312,7 @@ const Pricing = () => {
             </li>
           </ul>
           <Button
-            onClick={() => navigate("/upgrade/support")}
+            onClick={() => navigate("/dashboard/upgrade/support")}
             className="w-full py-2 rounded-md bg-primary text-white hover:bg-[#4a2fa3] transition mt-auto"
           >
             Get a Quote
