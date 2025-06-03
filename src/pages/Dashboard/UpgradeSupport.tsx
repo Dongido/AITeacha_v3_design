@@ -20,14 +20,18 @@ import Cookies from "js-cookie";
 import axios from "axios";
 import Logo from "../../assets/img/logo.png";
 import { FLUTTERWAVE_PUBLIC } from "../../lib/utils";
+import { useFlutterwave, closePaymentModal } from "flutterwave-react-v3";
+import { useNavigate } from "react-router-dom";
+import { verifyTransaction } from "../../api/subscription";
 
 const UpgradeSupport = () => {
+  const navigate = useNavigate();
   const [userDetails, setUserDetails] = useState<any>(null);
   const [isEmailVerified, setIsEmailVerified] = useState<number>(0);
   const [numberOfTeachers, setNumberOfTeachers] = useState<number>(16);
   const [duration, setDuration] = useState<string>("1");
   const [unit, setUnit] = useState<string>("monthly"); // Store unit (monthly/yearly)
-  const [calculatedPrice, setCalculatedPrice] = useState<number | null>(null);
+  const [calculatedPrice, setCalculatedPrice] = useState<number | 0>(0);
   const [currency, setCurrency] = useState<string>(
     localStorage.getItem("selectedCurrency") || "NGN"
   );
@@ -145,7 +149,6 @@ const UpgradeSupport = () => {
     calculatePrice();
     setIsPaymentDialogOpen(true);
   };
-
   const getFlutterwaveConfig = (
     plan: "pro" | "premium" | "enterprise" | "admin"
   ) => ({
@@ -162,7 +165,7 @@ const UpgradeSupport = () => {
     meta: {
       package_id: 4,
       unit: billingCycle,
-      duration: 1,
+      duration: parseInt(duration, 10),
       no_of_seat: numberOfTeachers,
       coupon_code: couponApplied ? couponCode : null,
       discount_percentage: couponApplied ? discountPercentage : 0,
@@ -190,86 +193,92 @@ const UpgradeSupport = () => {
     console.log("Selected Payment Method:", method);
 
     if (method === "flutterwave") {
-      const config = getFlutterwaveConfig("enterprise");
-
-      const flutterwaveWindow = window.open("", "_blank");
-
-      if (!flutterwaveWindow) {
-        console.error("Failed to open new window for Flutterwave");
+      if (calculatedPrice === null) {
+        console.error(
+          "Calculated price is null. Cannot initiate Flutterwave payment."
+        );
         setLoadingPlan(null);
         return;
       }
 
-      flutterwaveWindow.document.write(`
-        <!DOCTYPE html>
-        <html lang="en">
-          <head>
-            <title>Flutterwave Payment</title>
-            <script src="https://checkout.flutterwave.com/v3.js"></script>
-          </head>
-          <body>
-            <script>
-              const config = ${JSON.stringify(config)};
+      const currentConfig = getFlutterwaveConfig("enterprise");
 
-              function makePayment() {
-                FlutterwaveCheckout({
-                  ...config,
-                  callback: async (response) => {
-                    console.log(response);
-                    if (response.status === "completed" || response.status === "success" || response.status === "successful") {
-                      window.opener.postMessage({ status: "completed" }, "*");
-                      window.opener.postMessage({ status: "success" }, "*");
-                      window.opener.postMessage({ status: "successful" }, "*");
-                    } else {
-                      console.error("Payment failed");
-                      window.opener.postMessage({ status: "failed" }, "*");
-                    }
-                    window.close();
-                  },
-                  onclose: () => {
-                    console.log("Payment modal closed");
-                    window.opener.postMessage({ status: "closed" }, "*");
-                    window.close();
-                  }
-                });
+      const initiateFlutterwavePayment = useFlutterwave(currentConfig);
+
+      initiateFlutterwavePayment({
+        ...currentConfig,
+        callback: async (response) => {
+          console.log("Flutterwave Response:", response);
+          closePaymentModal();
+
+          if (response.transaction_id) {
+            try {
+              const verificationResponse = await verifyTransaction(
+                response.transaction_id
+              );
+              console.log(
+                "Transaction Verification Response:",
+                verificationResponse
+              );
+
+              if (
+                verificationResponse.status === "success" &&
+                verificationResponse.data.paymentStatus === "success"
+              ) {
+                const packageId = 4;
+                await changeUserPlan(
+                  packageId,
+                  parseInt(userDetails?.id || "0", 10),
+                  1,
+                  billingCycle,
+                  currency,
+                  numberOfTeachers
+                );
+                console.log(
+                  "User plan updated successfully after verification."
+                );
+                navigate("/dashboard/success?status=success"); // Success redirection
+              } else {
+                console.error(
+                  "Transaction verification failed:",
+                  verificationResponse.message ||
+                    verificationResponse.data.message ||
+                    "Unknown verification error."
+                );
+                navigate("/dashboard/success?status=failed"); // Failed verification redirection
               }
-
-              makePayment();
-            </script>
-          </body>
-        </html>
-      `);
-
-      window.addEventListener("message", (event) => {
-        console.log(event);
-        if (
-          event.data?.status === "completed" ||
-          event.data?.status === "success" ||
-          event.data?.status === "successful"
-        ) {
-          const packageId = 4;
-          changeUserPlan(
-            packageId,
-            parseInt(userDetails?.id || "0", 10),
-            1,
-            billingCycle,
-            currency,
-            numberOfTeachers
-          )
-            .then(() => {
-              console.log("User plan updated successfully");
-              // Optionally reset coupon state here if needed for the session
-              // setCouponApplied(false);
-              // setDiscountPercentage(0);
-              window.location.reload();
-            })
-            .catch((err) => console.error("Error updating user plan:", err));
-        } else if (event.data?.status === "failed") {
-          console.error("Payment failed in Flutterwave");
-        } else {
-          console.log("Payment process canceled or closed");
-        }
-        setLoadingPlan(null);
+            } catch (err) {
+              console.error(
+                "Error during transaction verification or plan update:",
+                err
+              );
+              navigate("/dashboard/success?status=failed"); // Error during verification/update redirection
+            }
+          } else {
+            console.warn(
+              "Flutterwave response received with no transaction ID:",
+              response
+            );
+            if (
+              response.status === "cancelled" ||
+              response.status === "failed"
+            ) {
+              console.error("Payment explicitly failed or cancelled by user.");
+              navigate("/dashboard/success?status=failed"); // Flutterwave reported failure redirection
+            } else {
+              console.warn(
+                "Unexpected Flutterwave status without transaction ID."
+              );
+              navigate("/dashboard/success?status=unknown"); // Unknown status redirection
+            }
+          }
+          setLoadingPlan(null);
+        },
+        onClose: () => {
+          console.log("Payment modal closed by user.");
+          setLoadingPlan(null);
+          navigate("/dashboard/success?status=closed"); // Modal closed by user redirection
+        },
       });
     } else if (method === "stripe") {
       const token = Cookies.get("at-refreshToken");
@@ -287,8 +296,10 @@ const UpgradeSupport = () => {
             package_id: 4,
             amount: amount,
             currency: currency,
-            interval: billingCycle,
-            coupon_code: couponApplied ? couponCode : null, // Send coupon code
+            interval: unit,
+            no_of_seat: numberOfTeachers,
+            coupon_code: couponApplied ? couponCode : null,
+            discount_percentage: couponApplied ? discountPercentage : 0,
           },
           {
             headers: {
@@ -300,14 +311,17 @@ const UpgradeSupport = () => {
         if (response.data.status === "success") {
           const paymentLink = response.data.data.paymentLink;
           window.open(paymentLink, "_blank");
+          navigate("/dashboard/success?status=pending-stripe");
         } else {
           console.error(
             "Error creating Stripe session:",
             response.data.message
           );
+          navigate("/dashboard/success?status=failed");
         }
       } catch (error) {
         console.error("Error initiating Stripe payment:", error);
+        navigate("/dashboard/success?status=failed");
       } finally {
         setLoadingPlan(null);
       }

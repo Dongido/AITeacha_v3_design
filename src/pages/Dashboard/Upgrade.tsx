@@ -23,7 +23,7 @@ import { verifyCouponCode } from "../../api/subscription";
 import { selectUser, loadUserProfile } from "../../store/slices/profileSlice";
 import { AppDispatch } from "../../store";
 import { useDispatch, useSelector } from "react-redux";
-
+import { verifyTransaction } from "../../api/subscription";
 interface UserDetails {
   id: string;
   email: string;
@@ -42,7 +42,7 @@ const initialPrices = {
     GBP: { month: 0, threeMonths: 0, year: 0 },
   },
   pro: {
-    NGN: { month: 5000, threeMonths: 15000, year: 55000 },
+    NGN: { month: 100, threeMonths: 15000, year: 55000 },
     USD: { month: 5, threeMonths: 15, year: 55 },
     GBP: { month: 4, threeMonths: 12, year: 50 },
   },
@@ -164,9 +164,13 @@ const Upgrade: React.FC = () => {
     enterprise: 4,
     admin: 2,
   };
-
   const getFlutterwaveConfig = (
-    plan: "pro" | "premium" | "enterprise" | "admin"
+    plan: "pro" | "premium" | "enterprise" | "admin",
+    userDetails: UserDetails | null,
+    billingCycle: "month" | "threeMonths" | "year",
+    currency: CurrencyType,
+    prices: typeof initialPrices,
+    noOfSeats: string
   ) => ({
     public_key: FLUTTERWAVE_PUBLIC,
     tx_ref: `TX_${billingCycle}_${packageMap[plan]}_${Date.now()}`,
@@ -201,92 +205,95 @@ const Upgrade: React.FC = () => {
     setSelectedPlan(plan);
 
     const amount = prices[plan][currency][billingCycle];
-    console.log("Selected Payment Method:", method);
 
     if (method === "flutterwave") {
-      const config = getFlutterwaveConfig(plan);
+      const currentConfig = getFlutterwaveConfig(
+        plan,
+        userDetails,
+        billingCycle,
+        currency,
+        prices,
+        noOfSeats
+      );
 
-      const flutterwaveWindow = window.open("", "_blank");
+      const handleFlutterwavePayment = useFlutterwave(currentConfig);
+      handleFlutterwavePayment({
+        ...currentConfig,
+        callback: async (response) => {
+          console.log("Flutterwave Response:", response);
+          closePaymentModal();
 
-      if (!flutterwaveWindow) {
-        console.error("Failed to open new window for Flutterwave");
-        setLoadingPlan(null);
-        return;
-      }
+          if (response.transaction_id) {
+            try {
+              const verificationResponse = await verifyTransaction(
+                response.transaction_id
+              );
+              console.log(
+                "Transaction Verification Response:",
+                verificationResponse
+              );
 
-      flutterwaveWindow.document.write(`
-        <!DOCTYPE html>
-        <html lang="en">
-          <head>
-            <title>Flutterwave Payment</title>
-            <script src="https://checkout.flutterwave.com/v3.js"></script>
-          </head>
-          <body>
-            <script>
-              const config = ${JSON.stringify(config)};
-              function makePayment() {
-                FlutterwaveCheckout({
-                  ...config,
-                  callback: async (response) => {
-                    console.log(response);
-                    if (response.status === "completed" || response.status === "success" || response.status === "successful") {
-                      window.opener.postMessage({ status: "completed" }, "*");
-                    } else {
-                      console.error("Payment failed");
-                      window.opener.postMessage({ status: "failed" }, "*");
-                    }
-                    window.close();
-                  },
-                  onclose: () => {
-                    console.log("Payment modal closed");
-                    window.opener.postMessage({ status: "closed" }, "*");
-                    window.close();
-                  }
-                });
+              if (
+                verificationResponse.status === "success" &&
+                verificationResponse.data.paymentStatus === "success"
+              ) {
+                const packageId = packageMap[plan];
+                const noOfSeats =
+                  plan === "pro" ? "1" : plan === "premium" ? "15" : "0";
+                await changeUserPlan(
+                  packageId,
+                  parseInt(userDetails?.id || "0", 10),
+                  1,
+                  billingCycle,
+                  currency,
+                  noOfSeats
+                );
+                console.log(
+                  "User plan updated successfully after verification."
+                );
+                dispatch(loadUserProfile());
+                if (user) {
+                  localStorage.setItem("ai-teacha-user", JSON.stringify(user));
+                }
+                navigate("/dashboard/success?status=success");
+              } else {
+                console.error(
+                  "Transaction verification failed:",
+                  verificationResponse.message ||
+                    verificationResponse.data.message ||
+                    "Unknown verification error."
+                );
+                navigate("/dashboard/success?status=failed");
               }
-              makePayment();
-            </script>
-          </body>
-        </html>
-      `);
-
-      window.addEventListener("message", async (event) => {
-        console.log(event);
-        if (
-          event.data?.status === "completed" ||
-          event.data?.status === "success" ||
-          event.data?.status === "successful"
-        ) {
-          try {
-            const packageId = packageMap[plan];
-            const noOfSeats =
-              plan === "pro" ? "1" : plan === "premium" ? "15" : "0";
-            await changeUserPlan(
-              packageId,
-              parseInt(userDetails?.id || "0", 10),
-              1,
-              billingCycle,
-              currency,
-              noOfSeats
-            );
-            console.log("User plan updated successfully");
-            dispatch(loadUserProfile());
-            if (user) {
-              localStorage.setItem("ai-teacha-user", JSON.stringify(user));
+            } catch (err) {
+              console.error(
+                "Error during transaction verification or plan update:",
+                err
+              );
+              navigate("/dashboard/success?status=failed");
             }
-            navigate("/dashboard/success?status=success");
-          } catch (err) {
-            console.error("Error updating user plan:", err);
+          } else if (
+            response.status === "cancelled" ||
+            response.status === "failed"
+          ) {
+            console.error(
+              "Payment explicitly failed in Flutterwave, no transaction ID to verify."
+            );
             navigate("/dashboard/success?status=failed");
+          } else {
+            console.warn(
+              "Received Flutterwave response with no transaction ID and non-failed status:",
+              response
+            );
+            navigate("/dashboard/success?status=unknown");
           }
-        } else if (event.data?.status === "failed") {
-          console.error("Payment failed in Flutterwave");
-          navigate("/dashboard/success?status=failed");
-        } else {
-          console.log("Payment process canceled or closed");
+          setLoadingPlan(null);
+        },
+        onClose: () => {
+          console.log("Payment modal closed by user.");
+          setLoadingPlan(null);
           navigate("/dashboard/success?status=closed");
-        }
-        setLoadingPlan(null);
+        },
       });
     } else if (method === "stripe") {
       const token = Cookies.get("at-refreshToken");

@@ -24,6 +24,19 @@ export const changeUserPlan = async (
     );
   }
 };
+export const verifyTransaction = async (transactionId: any): Promise<any> => {
+  try {
+    const response = await apiClient.get(
+      `/payment/flw/verify/transaction/${transactionId}`
+    );
+    return response.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data?.message ||
+        "Failed to verify transaction. Please try again."
+    );
+  }
+};
 
 export const verifyPayment = async (
   transaction_id: string,
