@@ -196,7 +196,6 @@ const Upgrade: React.FC = () => {
       logo: Logo,
     },
   });
-
   const handlePayment = async (
     method: "stripe" | "flutterwave",
     plan: "pro" | "premium" | "enterprise" | "admin"
@@ -238,15 +237,16 @@ const Upgrade: React.FC = () => {
                 verificationResponse.data.paymentStatus === "success"
               ) {
                 const packageId = packageMap[plan];
-                const noOfSeats =
-                  plan === "pro" ? "1" : plan === "premium" ? "15" : "0";
+                const noOfSeatsToUpdate =
+                  plan === "pro" ? "1" : plan === "premium" ? "15" : noOfSeats;
+
                 await changeUserPlan(
                   packageId,
                   parseInt(userDetails?.id || "0", 10),
                   1,
                   billingCycle,
                   currency,
-                  noOfSeats
+                  noOfSeatsToUpdate
                 );
                 console.log(
                   "User plan updated successfully after verification."
@@ -300,6 +300,7 @@ const Upgrade: React.FC = () => {
       if (!token) {
         console.error("No refresh token found");
         setLoadingPlan(null);
+        navigate("/login");
         return;
       }
 
@@ -312,6 +313,23 @@ const Upgrade: React.FC = () => {
             amount: amount,
             currency: currency,
             interval: billingCycle,
+            no_of_seat:
+              plan === "pro" ? "1" : plan === "premium" ? "15" : noOfSeats,
+            success_url: `${window.location.origin}/dashboard/success?status=success&session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${window.location.origin}/dashboard/success?status=cancelled`,
+            metadata: {
+              userId: userDetails?.id.toString(),
+              packageId: packageMap[plan].toString(),
+              plan: plan,
+              billingCycle: billingCycle,
+              currency: currency,
+              noOfSeats: (plan === "pro"
+                ? "1"
+                : plan === "premium"
+                ? "15"
+                : noOfSeats
+              ).toString(),
+            },
           },
           {
             headers: {
@@ -322,12 +340,7 @@ const Upgrade: React.FC = () => {
 
         if (response.data.status === "success") {
           const paymentLink = response.data.data.paymentLink;
-          window.open(paymentLink, "_blank");
-          dispatch(loadUserProfile());
-          if (user) {
-            localStorage.setItem("ai-teacha-user", JSON.stringify(user));
-          }
-          navigate("/dashboard/success?status=pending-stripe");
+          window.location.href = paymentLink;
         } else {
           console.error(
             "Error creating Stripe session:",

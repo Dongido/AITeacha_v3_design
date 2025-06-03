@@ -237,7 +237,7 @@ const UpgradeSupport = () => {
                 console.log(
                   "User plan updated successfully after verification."
                 );
-                navigate("/dashboard/success?status=success"); // Success redirection
+                navigate("/dashboard/success?status=success");
               } else {
                 console.error(
                   "Transaction verification failed:",
@@ -245,14 +245,14 @@ const UpgradeSupport = () => {
                     verificationResponse.data.message ||
                     "Unknown verification error."
                 );
-                navigate("/dashboard/success?status=failed"); // Failed verification redirection
+                navigate("/dashboard/success?status=failed");
               }
             } catch (err) {
               console.error(
                 "Error during transaction verification or plan update:",
                 err
               );
-              navigate("/dashboard/success?status=failed"); // Error during verification/update redirection
+              navigate("/dashboard/success?status=failed");
             }
           } else {
             console.warn(
@@ -264,12 +264,12 @@ const UpgradeSupport = () => {
               response.status === "failed"
             ) {
               console.error("Payment explicitly failed or cancelled by user.");
-              navigate("/dashboard/success?status=failed"); // Flutterwave reported failure redirection
+              navigate("/dashboard/success?status=failed");
             } else {
               console.warn(
                 "Unexpected Flutterwave status without transaction ID."
               );
-              navigate("/dashboard/success?status=unknown"); // Unknown status redirection
+              navigate("/dashboard/success?status=unknown");
             }
           }
           setLoadingPlan(null);
@@ -277,7 +277,7 @@ const UpgradeSupport = () => {
         onClose: () => {
           console.log("Payment modal closed by user.");
           setLoadingPlan(null);
-          navigate("/dashboard/success?status=closed"); // Modal closed by user redirection
+          navigate("/dashboard/success?status=closed");
         },
       });
     } else if (method === "stripe") {
@@ -299,7 +299,21 @@ const UpgradeSupport = () => {
             interval: unit,
             no_of_seat: numberOfTeachers,
             coupon_code: couponApplied ? couponCode : null,
+
             discount_percentage: couponApplied ? discountPercentage : 0,
+            success_url: `${window.location.origin}/dashboard/payment-status?status=success&session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${window.location.origin}/dashboard/payment-status?status=cancelled`,
+            metadata: {
+              userId: userDetails?.id.toString(),
+              packageId: "4",
+              duration: duration,
+              unit: unit,
+              noOfSeat: numberOfTeachers.toString(),
+              couponCode: couponApplied ? couponCode : "null",
+              discountPercentage: couponApplied
+                ? discountPercentage.toString()
+                : "0",
+            },
           },
           {
             headers: {
@@ -311,7 +325,6 @@ const UpgradeSupport = () => {
         if (response.data.status === "success") {
           const paymentLink = response.data.data.paymentLink;
           window.open(paymentLink, "_blank");
-          navigate("/dashboard/success?status=pending-stripe");
         } else {
           console.error(
             "Error creating Stripe session:",
