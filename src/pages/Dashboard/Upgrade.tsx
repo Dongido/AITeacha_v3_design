@@ -407,7 +407,7 @@ const Upgrade: React.FC = () => {
   );
   const isPaymentPage = window.location.pathname === "/payment";
   const role = 1;
-  const isAdmin = aitachaDetails.role === 1;
+  const isAdmin = aitachaDetails.role === 1 || aitachaDetails.role_id === 1;
 
   return (
     <div className="mt-12">
