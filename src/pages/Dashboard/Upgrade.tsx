@@ -57,7 +57,7 @@ const initialPrices = {
     GBP: { month: 96, threeMonths: 288, year: 1180 },
   },
   admin: {
-    NGN: { month: 20, threeMonths: 60, year: 50 },
+    NGN: { month: 100, threeMonths: 60, year: 50 },
     USD: { month: 1, threeMonths: 3, year: 1 },
     GBP: { month: 1, threeMonths: 3, year: 1 },
   },
