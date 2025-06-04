@@ -171,31 +171,36 @@ const Upgrade: React.FC = () => {
     currency: CurrencyType,
     prices: typeof initialPrices,
     noOfSeats: string
-  ) => ({
-    public_key: FLUTTERWAVE_PUBLIC,
-    tx_ref: `TX_${billingCycle}_${packageMap[plan]}_${Date.now()}`,
-    amount: prices[plan][currency][billingCycle],
-    currency: currency,
-    payment_options: "card, banktransfer, ussd",
-    customer: {
-      email: userDetails?.email || "default@email.com",
-      phone_number: "08012345678",
-      name: userDetails?.firstname || "Default User",
-    },
-    meta: {
-      package_id: packageMap[plan],
-      unit: billingCycle,
-      duration: 1,
-      no_of_seat: noOfSeats,
-    },
-    customizations: {
-      title: `${plan.charAt(0).toUpperCase() + plan.slice(1)} Plan`,
-      description: `Upgrade to ${
-        plan.charAt(0).toUpperCase() + plan.slice(1)
-      } Plan`,
-      logo: Logo,
-    },
-  });
+  ) => {
+    const unit = billingCycle === "threeMonths" ? "month" : billingCycle;
+    const duration = billingCycle === "threeMonths" ? 3 : 1;
+
+    return {
+      public_key: FLUTTERWAVE_PUBLIC,
+      tx_ref: `TX_${billingCycle}_${packageMap[plan]}_${Date.now()}`,
+      amount: prices[plan][currency][billingCycle],
+      currency: currency,
+      payment_options: "card, banktransfer, ussd",
+      customer: {
+        email: userDetails?.email || "default@email.com",
+        phone_number: "08012345678",
+        name: userDetails?.firstname || "Default User",
+      },
+      meta: {
+        package_id: packageMap[plan],
+        unit: unit,
+        duration: duration,
+        no_of_seat: noOfSeats,
+      },
+      customizations: {
+        title: `${plan.charAt(0).toUpperCase() + plan.slice(1)} Plan`,
+        description: `Upgrade to ${
+          plan.charAt(0).toUpperCase() + plan.slice(1)
+        } Plan`,
+        logo: Logo,
+      },
+    };
+  };
   const handlePayment = async (
     method: "stripe" | "flutterwave",
     plan: "pro" | "premium" | "enterprise" | "admin"
@@ -204,12 +209,14 @@ const Upgrade: React.FC = () => {
     setSelectedPlan(plan);
 
     const amount = prices[plan][currency][billingCycle];
+    const duration = billingCycle === "threeMonths" ? 3 : 1;
+    const unit = billingCycle === "threeMonths" ? "month" : billingCycle;
 
     if (method === "flutterwave") {
       const currentConfig = getFlutterwaveConfig(
         plan,
         userDetails,
-        billingCycle,
+        unit,
         currency,
         prices,
         noOfSeats
@@ -244,7 +251,7 @@ const Upgrade: React.FC = () => {
                   packageId,
                   parseInt(userDetails?.id || "0", 10),
                   1,
-                  billingCycle,
+                  unit,
                   currency,
                   noOfSeatsToUpdate
                 );
@@ -312,7 +319,7 @@ const Upgrade: React.FC = () => {
             package_id: packageMap[plan],
             amount: amount,
             currency: currency,
-            interval: billingCycle,
+            interval: unit,
             no_of_seat:
               plan === "pro" ? "1" : plan === "premium" ? "15" : noOfSeats,
             success_url: `${window.location.origin}/dashboard/success?status=success&session_id={CHECKOUT_SESSION_ID}`,
@@ -329,6 +336,7 @@ const Upgrade: React.FC = () => {
                 ? "15"
                 : noOfSeats
               ).toString(),
+              duration: duration,
             },
           },
           {

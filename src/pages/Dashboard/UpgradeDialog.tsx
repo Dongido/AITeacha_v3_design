@@ -47,25 +47,23 @@ const PaymentMethodDialog: React.FC<{
             />
           </Button>
 
-          {currency !== "NGN" && (
-            <div>
-              <Button
-                onClick={() => onSelectPaymentMethod("stripe", planName)}
-                className="w-full py-2 bg-white border text-2xl border-gray-300 rounded-md flex items-center justify-center"
-              >
-                <img
-                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Stripe_Logo%2C_revised_2016.svg/2560px-Stripe_Logo%2C_revised_2016.svg.png"
-                  alt="Stripe Logo"
-                  className="h-10 ml-2"
-                />
-              </Button>
-              <div className="flex items-center justify-end mt-0 space-x-4">
-                <span className="font-bold text-sm italic">
-                  Stripe does'nt support payment with Verve
-                </span>
-              </div>
+          <div>
+            <Button
+              onClick={() => onSelectPaymentMethod("stripe", planName)}
+              className="w-full py-2 bg-white border text-2xl border-gray-300 rounded-md flex items-center justify-center"
+            >
+              <img
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Stripe_Logo%2C_revised_2016.svg/2560px-Stripe_Logo%2C_revised_2016.svg.png"
+                alt="Stripe Logo"
+                className="h-10 ml-2"
+              />
+            </Button>
+            <div className="flex items-center justify-end mt-0 space-x-4">
+              <span className="font-bold text-sm italic">
+                Stripe does'nt support payment with Verve
+              </span>
             </div>
-          )}
+          </div>
         </div>
 
         <DialogFooter>
