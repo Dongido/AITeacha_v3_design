@@ -151,33 +151,37 @@ const UpgradeSupport = () => {
   };
   const getFlutterwaveConfig = (
     plan: "pro" | "premium" | "enterprise" | "admin"
-  ) => ({
-    public_key: FLUTTERWAVE_PUBLIC,
-    tx_ref: `TX_${billingCycle}_4_${Date.now()}`,
-    amount: calculatedPrice,
-    currency: currency,
-    payment_options: "card, banktransfer, ussd",
-    customer: {
-      email: userDetails?.email || "default@email.com",
-      phone_number: "08012345678",
-      name: userDetails?.firstname || "Default User",
-    },
-    meta: {
-      package_id: 4,
-      unit: billingCycle,
-      duration: parseInt(duration, 10),
-      no_of_seat: numberOfTeachers,
-      coupon_code: couponApplied ? couponCode : null,
-      discount_percentage: couponApplied ? discountPercentage : 0,
-    },
-    customizations: {
-      title: `${plan.charAt(0).toUpperCase() + plan.slice(1)} Plan`,
-      description: `Upgrade to ${
-        plan.charAt(0).toUpperCase() + plan.slice(1)
-      } Plan`,
-      logo: Logo,
-    },
-  });
+  ) => {
+    const unit = billingCycle === "threeMonths" ? "month" : billingCycle;
+
+    return {
+      public_key: FLUTTERWAVE_PUBLIC,
+      tx_ref: `TX_${unit}_4_${Date.now()}`,
+      amount: calculatedPrice,
+      currency: currency,
+      payment_options: "card, banktransfer, ussd",
+      customer: {
+        email: userDetails?.email || "default@email.com",
+        phone_number: "08012345678",
+        name: userDetails?.firstname || "Default User",
+      },
+      meta: {
+        package_id: 4,
+        unit: unit,
+        duration: parseInt(duration, 10),
+        no_of_seat: numberOfTeachers,
+        coupon_code: couponApplied ? couponCode : null,
+        discount_percentage: couponApplied ? discountPercentage : 0,
+      },
+      customizations: {
+        title: `${plan.charAt(0).toUpperCase() + plan.slice(1)} Plan`,
+        description: `Upgrade to ${
+          plan.charAt(0).toUpperCase() + plan.slice(1)
+        } Plan`,
+        logo: Logo,
+      },
+    };
+  };
 
   const handlePayment = async (
     method: "stripe" | "flutterwave",

@@ -177,7 +177,7 @@ const Upgrade: React.FC = () => {
 
     return {
       public_key: FLUTTERWAVE_PUBLIC,
-      tx_ref: `TX_${billingCycle}_${packageMap[plan]}_${Date.now()}`,
+      tx_ref: `TX_${unit}_${packageMap[plan]}_${Date.now()}`,
       amount: prices[plan][currency][billingCycle],
       currency: currency,
       payment_options: "card, banktransfer, ussd",
@@ -250,7 +250,7 @@ const Upgrade: React.FC = () => {
                 await changeUserPlan(
                   packageId,
                   parseInt(userDetails?.id || "0", 10),
-                  1,
+                  duration,
                   unit,
                   currency,
                   noOfSeatsToUpdate
