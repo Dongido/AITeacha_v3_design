@@ -1,4 +1,4 @@
-import { HTMLAttributes, useState } from "react";
+import { HTMLAttributes, useState, useEffect } from "react";
 import { z } from "zod";
 import {
   Form,
@@ -38,23 +38,42 @@ import { Checkbox } from "../../../components/ui/Checkbox";
 
 interface SignupFormProps extends HTMLAttributes<HTMLDivElement> {}
 
+const containsUrl = (text: string): boolean => {
+  if (!text) return false;
+  const urlRegex = /(https?:\/\/|www\.)[^\s]+/i;
+  return urlRegex.test(text);
+};
+
 const formSchema = z
   .object({
     firstName: z
       .string()
-      .min(3, { message: "first name must be at least 3 characters long" }),
+      .min(3, { message: "First name must be at least 3 characters long" })
+      .refine((val) => !containsUrl(val), {
+        message: "First name cannot contain URLs",
+      }),
     lastName: z
       .string()
-      .min(3, { message: "last name must be at least 3 characters long" }),
+      .min(3, { message: "Last name must be at least 3 characters long" })
+      .refine((val) => !containsUrl(val), {
+        message: "Last name cannot contain URLs",
+      }),
     email: z
       .string()
       .min(1, { message: "Please enter your email" })
       .email({ message: "Invalid email address" }),
-    phone: z.string(),
+    phone: z.string().refine((val) => !containsUrl(val), {
+      message: "Phone number cannot contain URLs",
+    }),
     password: z
       .string()
       .min(8, { message: "Password must be at least 7 characters long" }),
-    referred_by: z.string().optional(),
+    referred_by: z
+      .string()
+      .optional()
+      .refine((val) => !containsUrl(val || ""), {
+        message: "Referral code cannot contain URLs",
+      }),
     acceptTerms: z.boolean().refine((val) => val, {
       message: "You must accept the Terms & Policy",
     }),
@@ -86,12 +105,20 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
       lastName: "",
       email: "",
       phone: "",
+      referred_by: "",
       password: "",
       confirmPassword: "",
       acceptTerms: false,
       receiveNewsletters: false,
     },
   });
+
+  useEffect(() => {
+    const storedReferralCode = localStorage.getItem("referralCode");
+    if (storedReferralCode) {
+      form.setValue("referred_by", storedReferralCode);
+    }
+  }, [form]);
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true);
@@ -111,7 +138,13 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
         data.firstName,
         data.lastName,
         data.password,
-        role_id
+        role_id,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        data.referred_by
       );
       setToastMessage(res.message || "Signup successful! Redirecting...");
       setToastVariant("default");
@@ -202,7 +235,7 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
                       </FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="Enter Email"
+                          placeholder="Enter Phone Number"
                           className="rounded-full"
                           {...field}
                         />
@@ -282,12 +315,16 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
                             onCheckedChange={field.onChange}
                           />
                         </FormControl>
-                        <FormLabel
-                          htmlFor="acceptTerms"
-                          className="text-sm text-gray-700"
+
+                        <a
+                          href="/terms-of-service"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 underline"
                         >
                           Accept Terms & Policy
-                        </FormLabel>
+                        </a>
+
                         <FormMessage className="text-red-700" />
                       </FormItem>
                     )}
@@ -338,10 +375,10 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
         </Form>
         <div className="flex flex-col sm:flex-row justify-center mt-0 space-y-4 sm:space-y-0 sm:space-x-4">
           {/* <Button
-                          variant="outline"
-                          className="w-full flex items-center rounded-full justify-center"
+                            variant="outline"
+                            className="w-full flex items-center rounded-full justify-center"
                         >
-                          <FaFacebook className="mr-2" /> Facebook
+                            <FaFacebook className="mr-2" /> Facebook
                         </Button> */}
           <Button
             variant="outline"

@@ -24,14 +24,14 @@ const AIPolicy = () => {
         <div className="max-w-5xl mx-auto px-6">
           <h2 className="text-3xl md:text-4xl lg:text-4xl font-bold text-primary mt-6 text-center mb-6"></h2>
           <p className="text-lg leading-relaxed mb-8">
-            <span className="text-lg font-bold">AI Teacha</span>
+            <span className="text-lg font-bold">AiTeacha &nbsp;</span>
             is committed to utilizing artificial intelligence (AI) responsibly
             and ethically to revolutionize education, empower educators, and
             enhance student learning outcomes. This AI Policy outlines our
             principles, guidelines, and compliance measures to ensure the
-            responsible use of AI within the AI Teacha Learning Management
-            System (LMS). It adheres to global standards and is adapted to the
-            context of Nigeria, Africa, and other regions worldwide.
+            responsible use of AI within the AiTeacha Learning Management System
+            (LMS). It adheres to global standards and is adapted to the context
+            of Nigeria, Africa, and other regions worldwide.
           </p>
 
           <div className="p-6 md:p-10 space-y-6">
@@ -41,7 +41,7 @@ const AIPolicy = () => {
               </h2>
               <p>
                 This policy governs the use of artificial intelligence (AI)
-                technologies within the AI Teacha LMS. It ensures ethical,
+                technologies within the AiTeacha LMS. It ensures ethical,
                 transparent, and lawful application of AI tools while
                 prioritizing the rights, privacy, and welfare of all users,
                 including educators, students, parents, and administrators.
@@ -113,8 +113,8 @@ const AIPolicy = () => {
                 4. Data Collection and Privacy
               </h2>
               <p>
-                AI Teacha is committed to protecting user privacy and adhering
-                to global data protection standards:
+                AiTeacha is committed to protecting user privacy and adhering to
+                global data protection standards:
               </p>
               <ul className="list-disc list-inside mt-2">
                 <li>
@@ -145,7 +145,7 @@ const AIPolicy = () => {
                 5. AI Functionality Guidelines
               </h2>
               <p>
-                AI Teacha integrates AI functionalities to enhance learning
+                AiTeacha integrates AI functionalities to enhance learning
                 experiences:
               </p>
               <ul className="list-disc list-inside mt-2">
@@ -169,10 +169,10 @@ const AIPolicy = () => {
                 6. Child Protection Compliance
               </h2>
               <p>
-                AI Teacha adheres to Nigeria’s Child Rights Act, COPPA, and
-                other child protection laws. Enhanced safeguards ensure ethical
-                AI use for students, with parental or guardian consent required
-                for processing minors' data.
+                AiTeacha adheres to Nigeria’s Child Rights Act, COPPA, and other
+                child protection laws. Enhanced safeguards ensure ethical AI use
+                for students, with parental or guardian consent required for
+                processing minors' data.
               </p>
             </section>
 

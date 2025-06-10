@@ -13,6 +13,7 @@ import { loadStudentTools } from "../../../store/slices/toolsSlice";
 import { RootState, AppDispatch } from "../../../store";
 import { Button } from "../../../components/ui/Button";
 import CustomizeDialog from "./components/CustomizeDialogue";
+import { FaHeart } from "react-icons/fa";
 
 const formSchema = z.object({
   classroom_id: z.string().min(1, { message: "Classroom ID is required" }),
@@ -118,9 +119,10 @@ const EditClassroomTools: React.FC = () => {
     };
 
     try {
-      console.log("Classroom Data:", toolsData);
-      await dispatch(editClassroomToolsThunk(toolsData));
-      //navigate("/dashboard/classrooms");
+      //console.log("Classroom Data:", toolsData);
+      const res = await dispatch(editClassroomToolsThunk(toolsData));
+      console.log(res);
+      navigate(`/dashboard/classrooms/details/${id}`);
     } catch (error) {
       console.error("Failed to update classroom:", error);
     } finally {
@@ -153,7 +155,7 @@ const EditClassroomTools: React.FC = () => {
       <FormProvider {...formMethods}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="space-y-4">
-            <h2 className="text-lg font-bold text-gray-900">
+            <h2 className="text-xl lg:text-2xl font-bold text-gray-900">
               Select Tools Needed
             </h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 mt-4">
@@ -175,10 +177,29 @@ const EditClassroomTools: React.FC = () => {
                         if (!isSelected) handleToolSelect(tool);
                       }}
                     >
-                      <h3 className="font-semibold">{tool.name}</h3>
-                      <p className="text-sm text-gray-600">
-                        {tool.description}
-                      </p>
+                      <div className="flex ">
+                        <div className="text-primary text-2xl mr-4">
+                          {tool.thumbnail ? (
+                            <img
+                              src={
+                                tool.thumbnail.startsWith("http")
+                                  ? tool.thumbnail
+                                  : `https://${tool.thumbnail}`
+                              }
+                              alt={tool.name || "Tool Thumbnail"}
+                              className="w-16 h-20 object-cover rounded-lg"
+                            />
+                          ) : (
+                            <FaHeart className="text-purple-500 w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center" />
+                          )}
+                        </div>
+                        <div className="">
+                          <h3 className="font-semibold">{tool.name}</h3>
+                          <p className="text-sm text-gray-600">
+                            {tool.description}
+                          </p>
+                        </div>
+                      </div>
 
                       {isSelected && (
                         <div className="mt-2 space-y-2">

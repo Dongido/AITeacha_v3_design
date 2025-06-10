@@ -13,7 +13,7 @@ import { RootState, AppDispatch } from "../../../store";
 import { Skeleton } from "../../../components/ui/Skeleton";
 import { submitAssignmentAnswer } from "../../../api/studentassignment";
 import { submitAssignmentChatMessage } from "../../../api/studentassignment";
-
+import MarkdownRenderer from "../_components/MarkdownRenderer";
 interface ChatMessage {
   sender: "student" | "AI";
   message: string;
@@ -193,15 +193,15 @@ const StudentAssignment: React.FC = () => {
                   msg.sender === "student" ? "justify-end" : "justify-start"
                 } mb-2`}
               >
-                <div
-                  className={`p-3 rounded-lg max-w-[60%] ${
+                <MarkdownRenderer
+                  content={msg.message}
+                  className={`p-3 text-sm ${
                     msg.sender === "student"
-                      ? "bg-primary text-white"
-                      : "bg-gray-300 text-black"
+                      ? "bg-primary max-w-xs text-white rounded-tl-lg"
+                      : "bg-gray-200 max-w-xl text-black rounded-tr-lg"
                   }`}
-                >
-                  <p>{msg.message}</p>
-                </div>
+                  style={{ wordWrap: "break-word", whiteSpace: "pre-wrap" }}
+                />
               </div>
             ))}
 

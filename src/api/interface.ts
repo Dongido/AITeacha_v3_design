@@ -30,10 +30,19 @@ export interface Classroom {
   classroom_thumbnail: string | null;
   join_url: string;
   join_code: string;
+  content: string;
+  class_type?: string;
+  isLiveclassroom: any;
+  meeting_url: any;
   author: string;
   tools: Tool[];
+  classroomoutlines?: any[];
   classroomresources: any[];
   resources: any[];
+  resource_accessibility?: boolean | null;
+  classroomresources_link?: string[] | null;
+  liveclassroomassessments: any[];
+  liveclassroom_id: string;
 }
 export interface ClassroomData {
   id: number;
@@ -42,6 +51,9 @@ export interface ClassroomData {
   join_url: string;
   join_code: string;
   thumbnail: string | null;
+  class_type: string | null;
+  amount: number | null;
+  currency: string | null;
 }
 export interface Student {
   student_id: number;

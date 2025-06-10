@@ -34,7 +34,7 @@ const Privacy = () => {
           <div className="space-y-6">
             <div>
               <h2 className="text-lg font-semibold mb-2 text-gray-900">
-                1. Compliance with Data Privacy Laws AI Teacha complies with
+                1. Compliance with Data Privacy Laws AiTeacha complies with
                 applicable data privacy laws, including but not limited to:
               </h2>
               <div className="ml-4">
@@ -97,7 +97,7 @@ const Privacy = () => {
               4. Data Privacy and Management
             </h2>
             <div className="ml-4">
-              AI Teacha prioritizes privacy and ensures that:
+              AiTeacha prioritizes privacy and ensures that:
               <ul className="list-disc ml-6">
                 <li>
                   The platform is designed to minimize the collection of PII and
@@ -121,8 +121,8 @@ const Privacy = () => {
               5. Safeguards for Responsible AI Usage
             </h2>
             <div className="ml-4">
-              AI Teacha incorporates robust safeguards to promote responsible
-              use of AI in education, including:
+              AiTeacha incorporates robust safeguards to promote responsible use
+              of AI in education, including:
               <ul className="list-disc ml-6">
                 <li>
                   Built-in alerts to caution against sharing sensitive or
@@ -146,7 +146,7 @@ const Privacy = () => {
               6. Data Sharing and Disclosure
             </h2>
             <div className="ml-4">
-              AI Teacha only shares data under the following circumstances:
+              AiTeacha only shares data under the following circumstances:
               <ul className="list-disc ml-6">
                 <li>With explicit user consent.</li>
                 <li>
@@ -188,7 +188,7 @@ const Privacy = () => {
               8. Protecting Student Privacy
             </h2>
             <div className="ml-4">
-              AI Teacha is designed to protect student privacy by:
+              AiTeacha is designed to protect student privacy by:
               <ul className="list-disc ml-6">
                 <li>
                   Prohibiting the collection of student PII unless explicitly

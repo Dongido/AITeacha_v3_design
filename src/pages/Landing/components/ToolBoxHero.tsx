@@ -73,7 +73,7 @@ const HeroToolBox: React.FC = () => {
             <figcaption className="desc z-10 relative px-2">
               <h1 className="text-3xl md:text-4xl lg:text-6xl font-bold text-center my-6 text-header text-black">
                 {" "}
-                Over 37 Powerful tools
+                Over 46 Powerful tools
               </h1>
               <p className="text-center text-primary">
                 {" "}

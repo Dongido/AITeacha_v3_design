@@ -9,7 +9,7 @@ const VerifyForm = () => {
       <div className="flex-1 hidden lg:flex items-center justify-center h-full bg-gradient-to-r from-[#CEBDFF] to-[#7B7199] bg-cover bg-center bg-no-repeat relative">
         <div className="absolute top-8 left-8 flex gap-1 text-black text-2xl font-bold">
           <img className="h-8 w-auto" src={Logo} alt="AI-Teacha Logo" />
-          <span>AI Teacha</span>
+          <span>AiTeacha</span>
         </div>
 
         <div className="relative z-10 flex flex-col items-center justify-center text-center mt-16 space-y-6">
@@ -31,7 +31,7 @@ const VerifyForm = () => {
               className="flex items-center gap-1 text-black text-2xl font-bold"
             >
               <img className="h-8 w-auto" src={Logo} alt="AI-Teacha Logo" />
-              <span className="text-sm">AI Teacha</span>
+              <span className="text-sm">AiTeacha</span>
             </Link>
           </div>
 

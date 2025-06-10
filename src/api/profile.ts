@@ -18,6 +18,9 @@ export interface User {
   password_token: string;
   referral_code: string;
   active_status: string;
+  wallet_balance_usd?: string;
+  wallet_balance_ngn?: string;
+  wallet_balance_gbp?: string;
   created_at: string;
   updated_at: string;
 }
@@ -34,6 +37,19 @@ export const fetchUserDetails = async (userId: number): Promise<User> => {
     );
   }
 };
+
+export const fetchUserProfile = async (): Promise<any> => {
+  try {
+    const response = await apiClient.get<any>(`/profile/get/user`);
+    return response.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data?.message ||
+        "Failed to fetch user profile. Please try again."
+    );
+  }
+};
+
 export const fetchUserDetailsFromAuth = async (): Promise<User> => {
   try {
     const response = await apiClient.get<{ status: string; data: User[] }>(

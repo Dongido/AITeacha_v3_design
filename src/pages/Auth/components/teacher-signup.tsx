@@ -1,4 +1,4 @@
-import { HTMLAttributes, useState } from "react";
+import { HTMLAttributes, useState, useEffect } from "react";
 import { z } from "zod";
 import {
   Form,
@@ -114,6 +114,7 @@ export function TeacherSignupForm({ className, ...props }: SignupFormProps) {
       organization: "",
       country: "",
       city: "",
+      referred_by: "",
       password: "",
       confirmPassword: "",
       acceptTerms: false,
@@ -121,6 +122,12 @@ export function TeacherSignupForm({ className, ...props }: SignupFormProps) {
     },
   });
 
+  useEffect(() => {
+    const storedReferralCode = localStorage.getItem("referralCode");
+    if (storedReferralCode) {
+      form.setValue("referred_by", storedReferralCode);
+    }
+  }, [form]);
   async function onSubmit(data: z.infer<typeof formSchema>) {
     if (!selectedCountry?.label) {
       setToastMessage("Please select country");
@@ -177,6 +184,8 @@ export function TeacherSignupForm({ className, ...props }: SignupFormProps) {
     label: country.name,
   }));
 
+  const isRoleIdFour = localStorage.getItem("roleId") === "4";
+
   return (
     <ToastProvider swipeDirection="right">
       <div className={cn("grid gap-6", className)} {...props}>
@@ -190,6 +199,7 @@ export function TeacherSignupForm({ className, ...props }: SignupFormProps) {
                   render={({ field }) => (
                     <FormItem className="space-y-1 w-full">
                       <FormLabel className="font-semibold">
+                        {isRoleIdFour && <>Admin </>}
                         First Name
                       </FormLabel>
                       <FormControl>
@@ -208,7 +218,10 @@ export function TeacherSignupForm({ className, ...props }: SignupFormProps) {
                   name="lastName"
                   render={({ field }) => (
                     <FormItem className="space-y-1 w-full">
-                      <FormLabel className="font-semibold">Last Name</FormLabel>
+                      <FormLabel className="font-semibold">
+                        {" "}
+                        {isRoleIdFour && <>Admin </>}Last Name
+                      </FormLabel>
                       <FormControl>
                         <Input
                           placeholder="Enter Last Name"
@@ -392,12 +405,15 @@ export function TeacherSignupForm({ className, ...props }: SignupFormProps) {
                             onCheckedChange={field.onChange}
                           />
                         </FormControl>
-                        <FormLabel
-                          htmlFor="acceptTerms"
-                          className="text-sm text-gray-700"
+
+                        <a
+                          href="/terms-of-service"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 underline"
                         >
                           Accept Terms & Policy
-                        </FormLabel>
+                        </a>
                         <FormMessage className="text-red-700" />
                       </FormItem>
                     )}

@@ -226,3 +226,55 @@ export const submitAssignmentChatMessage = async (
     );
   }
 };
+
+export const sendClassroomOutlineAssessment = async (
+  data: any
+): Promise<any> => {
+  try {
+    const response = await apiClient.post<{
+      status: string;
+      data: any;
+    }>("/classroom/outline/assessment/submission", data);
+
+    return response.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data || "Failed to send Classroom Outline Assessment."
+    );
+  }
+};
+
+export const markOutlineAsRead = async (
+  outlineId: number,
+  classroomId: number
+): Promise<any> => {
+  try {
+    const response = await apiClient.post<{
+      status: string;
+      data: any;
+    }>("/classroom/outline/markasread", {
+      outline_id: outlineId,
+      classroom_id: classroomId,
+    });
+
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data || "Failed to mark outline as read.");
+  }
+};
+
+export const getOutlineAssessmentReport = async (
+  classroomId: string
+): Promise<any> => {
+  try {
+    const response = await apiClient.get(
+      `/report/get/student/outlineassessment/${classroomId}`
+    );
+    return response.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data ||
+        `Failed to fetch outline assessment report for classroom ID: ${classroomId}. Please try again.`
+    );
+  }
+};

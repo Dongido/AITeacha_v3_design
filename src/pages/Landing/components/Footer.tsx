@@ -23,7 +23,7 @@ const Footer: React.FC = () => {
           {brandImg && (
             <img src={brandImg} alt="Brand Logo" className="h-8 w-8 mr-2" />
           )}
-          <span className="text-center text-3xl text-white">AI Teacha</span>
+          <span className="text-center text-3xl text-white">AiTeacha</span>
         </div>
         <h2 className="text-white text-lg  md:text-3xl lg:text-4xl">
           Teachers Are Truly Heroes
@@ -34,7 +34,7 @@ const Footer: React.FC = () => {
           80%
         </p>
         <button className="text-primary font-bold mb-8 bg-white rounded-full p-2 px-4 ">
-          Try AI Teacha 100% Free
+          Try AiTeacha 100% Free
         </button>
         <ul className="flex flex-wrap justify-center items-center mb-6 text-gray-300 list-none">
           {footerLinks.map((link, index) => (
@@ -48,16 +48,18 @@ const Footer: React.FC = () => {
       </div>
       <div className="border-t border-gray-800 pt-6 flex flex-col items-center sm:flex-row sm:justify-between">
         <span className="text-sm text-gray-500 sm:text-center dark:text-gray-400">
-          © 2024{" "}
+          © 2025{" "}
           <a href="https://flowbite.com" className="hover:underline">
-            AI Teacha
+            AiTeacha
           </a>
           . All Rights Reserved.
         </span>
         <div className="flex mt-4 space-x-6 sm:justify-center sm:mt-0">
           <a
-            href="https://linkedin.com/in/aiteacha"
+            href="https://www.linkedin.com/in/aiteachaonline?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app"
             className="text-gray-500 hover:text-gray-900 dark:hover:text-white"
+            target="_blank"
+            rel="noopener noreferrer"
           >
             <svg
               width="26"
@@ -73,8 +75,10 @@ const Footer: React.FC = () => {
             </svg>
           </a>
           <a
-            href="https://facebook.com/@aiteacha"
+            href="https://www.facebook.com/profile.php?id=61572801435185&mibextid=wwXIfr&mibextid=wwXIfr"
             className="text-gray-500 hover:text-gray-900 dark:hover:text-white"
+            target="_blank"
+            rel="noopener noreferrer"
           >
             <svg
               width="26"
@@ -90,25 +94,29 @@ const Footer: React.FC = () => {
             </svg>
           </a>
           <a
-            href="https://youtube.com/"
+            href="https://www.tiktok.com/@aiteachaonline?_t=ZM-8vvrut7F1pG&_r=1"
             className="text-gray-500 hover:text-gray-900 dark:hover:text-white"
+            target="_blank"
+            rel="noopener noreferrer"
           >
             <svg
+              viewBox="0 0 48 48"
+              xmlns="http://www.w3.org/2000/svg"
               width="26"
               height="26"
-              viewBox="0 0 26 26"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
             >
+              {" "}
               <path
-                d="M23.3931 7.8031C23.2697 7.34528 23.0286 6.92777 22.6937 6.59211C22.3588 6.25645 21.9418 6.01436 21.4843 5.88993C19.7878 5.4241 13.0007 5.41651 13.0007 5.41651C13.0007 5.41651 6.21472 5.40893 4.51714 5.85418C4.05989 5.98434 3.64378 6.22985 3.30875 6.56716C2.97373 6.90446 2.73103 7.32223 2.60397 7.78035C2.15656 9.47685 2.15222 12.9955 2.15222 12.9955C2.15222 12.9955 2.14789 16.5315 2.59206 18.2107C2.84122 19.1391 3.57247 19.8725 4.50197 20.1228C6.21581 20.5886 12.9845 20.5962 12.9845 20.5962C12.9845 20.5962 19.7716 20.6038 21.4681 20.1596C21.9258 20.0354 22.3431 19.7938 22.6788 19.4589C23.0146 19.1239 23.2571 18.7071 23.3823 18.2497C23.8308 16.5543 23.8341 13.0367 23.8341 13.0367C23.8341 13.0367 23.8557 9.4996 23.3931 7.8031ZM10.8297 16.2553L10.8351 9.75526L16.4761 13.0107L10.8297 16.2553Z"
-                fill="#CCCCCC"
-              />
+                fill="white"
+                d="M41.5 15.4c-3.6-.1-7-1.5-9.5-3.9-1.7-1.7-3-3.8-3.6-6.1-.2-.8-.3-1.6-.4-2.4H23v29.7c0 2.1-1.7 3.9-3.9 3.9s-3.9-1.7-3.9-3.9 1.7-3.9 3.9-3.9c.6 0 1.2.1 1.7.4V22.4c-.6-.1-1.1-.1-1.7-.1-6.1 0-11.1 4.9-11.1 11s5 11.1 11.1 11.1 11.1-5 11.1-11.1V15.1c2.5 2 5.6 3.3 8.8 3.5v-3.2z"
+              />{" "}
             </svg>
           </a>
           <a
-            href="https://instagram.com/aiteachaonline"
+            href="https://www.instagram.com/aiteachaonline1?igsh=MXc1b3d2dWh1cGUxdg%3D%3D&utm_source=qr"
             className="text-gray-500 hover:text-gray-900 dark:hover:text-white"
+            target="_blank"
+            rel="noopener noreferrer"
           >
             <svg
               width="26"
@@ -128,8 +136,10 @@ const Footer: React.FC = () => {
             </svg>
           </a>
           <a
-            href="https://twitter.com/@aiteacha"
+            href="https://x.com/aiteacha_online?s=21"
             className="text-gray-500 hover:text-gray-900 dark:hover:text-white"
+            target="_blank"
+            rel="noopener noreferrer"
           >
             <svg
               width="19"

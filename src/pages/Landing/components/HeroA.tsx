@@ -97,7 +97,7 @@ export default () => {
                   backgroundPosition: "0% 50%",
                 }}
               >
-                AI Teacha
+                AiTeacha
               </motion.span>
             </motion.h2>
           </div>
@@ -155,6 +155,7 @@ export default () => {
             controls
             autoPlay
             muted
+            loop
           >
             Your browser does not support the video tag.
           </video>

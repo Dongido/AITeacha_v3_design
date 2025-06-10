@@ -29,7 +29,7 @@ export const resources = [
 ];
 export const about = [
   {
-    name: "AI Teacha Mission",
+    name: "AiTeacha Mission",
     description: "Discover how we aim to revolutionize education with AI.",
     href: "##",
     icon: IconMission,
@@ -218,3 +218,23 @@ export function IconBlog() {
   );
 }
 
+export function IconTeam() {
+  return (
+    <svg
+      width="48"
+      height="48"
+      viewBox="0 0 48 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect width="48" height="48" rx="8" fill="#E0F2FE" />
+      <path
+        d="M36 32C36 34.2091 34.2091 36 32 36H16C13.7909 36 12 34.2091 12 32V20C12 17.7909 13.7909 16 16 16H32C34.2091 16 36 17.7909 36 20V32Z"
+        fill="#60A5FA"
+      />
+      <circle cx="24" cy="12" r="4" fill="#3B82F6" />
+      <circle cx="18" cy="24" r="4" fill="#3B82F6" />
+      <circle cx="30" cy="24" r="4" fill="#3B82F6" />
+    </svg>
+  );
+}

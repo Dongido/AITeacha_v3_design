@@ -96,6 +96,23 @@ export const sendClassroomToolMessage = async (
   }
 };
 
+export const sendClassroomOutlineMessage = async (
+  data: any
+): Promise<messageResponse> => {
+  try {
+    const response = await apiClient.post<messageResponse>(
+      "/assistant/classoutlinechat",
+      data
+    );
+    return response.data;
+  } catch (error: any) {
+    const errorMessage =
+      error.response?.data ||
+      "Failed to fetch results from classroom. Please try again.";
+    throw new Error(errorMessage);
+  }
+};
+
 export const fetchClassrooms = async (): Promise<Classroom[]> => {
   try {
     const response = await apiClient.get<{

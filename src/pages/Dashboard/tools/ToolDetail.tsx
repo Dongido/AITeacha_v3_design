@@ -56,14 +56,16 @@ import {
 import "primereact/resources/primereact.css";
 import "primereact/resources/themes/saga-blue/theme.css";
 import { pdf, Document, Page, Text, StyleSheet } from "@react-pdf/renderer";
-
+import PropsDialog from "./PropsDialogue";
+import { setGlobalResponseMessage } from "../../../store/slices/responseSlice";
+import Cookies from "js-cookie";
 const gradeOptions = [
   "Pre School",
   "Early Years",
   "Nursery 1",
   "Nursery 2",
   ...Array.from({ length: 12 }, (_, i) => `Grade ${i + 1}`),
-  ...Array.from({ length: 5 }, (_, i) => `higher institution year ${i + 1}`),
+  ...Array.from({ length: 5 }, (_, i) => `Higher Institution Year ${i + 1}`),
 ];
 
 interface FormField {
@@ -91,14 +93,19 @@ const ToolDetail = () => {
   const [tool, setTool] = useState<any>(null);
   const [loadingTool, setLoadingTool] = useState(true);
   const [formData, setFormData] = useState<{ [key: string]: any }>({
-    grade: "University",
+    grade: "Pre School",
   });
   const [formFields, setFormFields] = useState<FormField[]>([]);
   const [formLabels, setFormLabels] = useState<{ [key: string]: string }>({});
   const [responseMessage, setResponseMessage] = useState<any | "">("");
+  const [powerUrl, setPowerUrl] = useState<any | "">("");
+  const [csvUrl, setCsvUrl] = useState<any | "">("");
   const [tunedResponseMessage, setTunedResponseMessage] = useState<any | null>(
     null
   );
+  const [showPropsDialog, setShowPropsDialog] = useState(false);
+  const [propsDialogContent, setPropsDialogContent] = useState<string>("");
+
   const [imageUrl, setImageUrl] = useState<string | "">("");
   const [visibleFieldPairs, setVisibleFieldPairs] = useState(1);
   const [countries, setCountries] = useState<string[]>([]);
@@ -110,7 +117,7 @@ const ToolDetail = () => {
   const [toastVariant, setToastVariant] = useState<"default" | "destructive">(
     "default"
   );
-
+  const [timeLeft, setTimeLeft] = useState<number | null>(null);
   interface Field {
     req_param: string;
     label: string;
@@ -129,6 +136,18 @@ const ToolDetail = () => {
 
     fetchData();
   }, [dispatch, tools.length]);
+
+  useEffect(() => {
+    if (responseMessage) {
+      setTimeLeft(20 * 60); // 20 minutes in seconds
+
+      const timer = setInterval(() => {
+        setTimeLeft((prev) => (prev && prev > 0 ? prev - 1 : 0));
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [responseMessage]);
 
   useEffect(() => {
     const countryList = Country.getAllCountries().map(
@@ -172,6 +191,12 @@ const ToolDetail = () => {
       }
     }
   }, [slug, tools, loadingTool]);
+
+  const formatTime = (seconds: number): string => {
+    const minutes = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${minutes}:${secs < 10 ? "0" : ""}${secs}`;
+  };
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -233,24 +258,30 @@ const ToolDetail = () => {
     setIsSubmitting(true);
     try {
       console.log(data);
-      console.log("FormData to submit:", formDataToSubmit);
+      // console.log("FormData to submit:", formDataToSubmit);
 
       const response = await submitToolData(formDataToSubmit);
       const plainTextResponse = await markdownToPlainText(response.data.data);
       const markedResponse = marked(response.data.data);
-      console.log(response.data.data);
       setResponseMessage(markedResponse);
+      setPowerUrl(response.data.data);
+      setCsvUrl(response.data.file);
       setTunedResponseMessage(plainTextResponse);
       const imageUrl = plainTextResponse;
       const quotedImageUrl = `${imageUrl}`;
       setImageUrl(quotedImageUrl);
-      setToastMessage("Submission successful!");
-      setToastVariant("default");
     } catch (error: any) {
-      setResponseMessage(error.message || "Failed to submit tool data.");
-      console.log(error);
-      setToastMessage(error.message || "Failed to submit tool data.");
-      setToastVariant("destructive");
+      const errorMessage = error.message || "Failed to submit tool data.";
+      if (errorMessage.includes("Limit")) {
+        setPropsDialogContent(errorMessage);
+        setShowPropsDialog(true);
+      } else {
+        setResponseMessage(errorMessage);
+        console.log(error);
+        setToastMessage(errorMessage);
+        setToastVariant("default");
+        setShowToast(true);
+      }
     } finally {
       setIsSubmitting(false);
       setShowToast(true);
@@ -262,11 +293,11 @@ const ToolDetail = () => {
     if (file) {
       const formData = new FormData();
 
-      formData.append("file", file);
+      formData.append("file", file, file.name);
 
       setFormData((prevData) => ({
         ...prevData,
-        file: formData,
+        file: formData.get("file"),
       }));
     }
   };
@@ -284,7 +315,7 @@ const ToolDetail = () => {
     const data = {
       category: tool.name,
       prompt_q,
-      returned_answer: responseMessage,
+      returned_answer: powerUrl,
     };
     try {
       await saveResource(data);
@@ -356,6 +387,19 @@ const ToolDetail = () => {
     { criteria: "criteria3", weightage: "weightage3" },
     { criteria: "criteria4", weightage: "weightage4" },
   ];
+
+  type TimetableDay = {
+    day: string;
+    classes: {
+      [key: string]: { time: string; subject: string }[];
+    };
+  };
+
+  const handleEditWithZyra = () => {
+    Cookies.set("prevPath", window.location.pathname, { expires: 1 / 288 });
+    dispatch(setGlobalResponseMessage(powerUrl));
+    navigate("/dashboard/chats");
+  };
 
   if (loading || loadingTool) {
     return (
@@ -606,7 +650,7 @@ const ToolDetail = () => {
                           className="file-input bg-white"
                           accept={
                             tool.service_id === "transcribe"
-                              ? "audio/*"
+                              ? "audio/*,audio/mpeg,audio/wav"
                               : "application/pdf, image/png, image/jpeg, image/jpg"
                           }
                           required={tool.service_id === "transcribe"}
@@ -622,7 +666,7 @@ const ToolDetail = () => {
                           type="file"
                           onChange={(e) => handleFileChange(e)}
                           className="file-input bg-white "
-                          accept=" video/mp4, video/quicktime"
+                          accept=" video/mp4, video/quicktime,audio/*,audio/mpeg,audio/wav"
                         />
                       </div>
                     )}
@@ -1160,11 +1204,16 @@ const ToolDetail = () => {
                           }
                           name={field.name}
                           required={
-                            field.name === "theme"
+                            field.name === "previous_knowledge"
+                              ? false
+                              : field.name === "theme"
                               ? false
                               : field.name === "description"
-                              ? tool.is_description_optional === 0
-                              : field.name !== "additionalNotes"
+                              ? tool.service_id === "transcribe"
+                                ? false
+                                : tool.is_description_optional === 0
+                              : field.name !== "additionalNotes" &&
+                                field.name !== "recommendations"
                           }
                           placeholder={
                             field.placeholder || `Enter ${field.label}`
@@ -1182,7 +1231,7 @@ const ToolDetail = () => {
                 className="text-white py-2 px-4 rounded-md w-full"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "AI Teacha is Typing..." : "Submit"}
+                {isSubmitting ? "AiTeacha is Typing..." : "Submit"}
               </Button>
             </form>
           </div>
@@ -1195,7 +1244,7 @@ const ToolDetail = () => {
               <>
                 <div className="p-2 bg-white border border-gray-300 rounded-md">
                   <img
-                    src={`${responseMessage}`}
+                    src={powerUrl}
                     alt="Generated Content"
                     className="max-w-full h-auto border border-gray-300 rounded-md"
                     onError={(e) => {
@@ -1208,7 +1257,7 @@ const ToolDetail = () => {
                   <button
                     onClick={() => {
                       const link = document.createElement("a");
-                      link.href = responseMessage;
+                      link.href = powerUrl;
                       link.download = "generated_image.png";
                       link.click();
                     }}
@@ -1223,7 +1272,7 @@ const ToolDetail = () => {
                 <button
                   onClick={() => {
                     const link = document.createElement("a");
-                    link.href = responseMessage;
+                    link.href = powerUrl;
                     link.download = "generated_slide.pptx";
                     link.click();
                   }}
@@ -1232,26 +1281,139 @@ const ToolDetail = () => {
                   Download Slide
                 </button>
               </div>
-            ) : tool.service_id === "text to speech" && responseMessage ? (
+            ) : tool.service_id === "school timetable generator" &&
+              responseMessage ? (
+              <>
+                <div className="mt-4 p-4 border rounded-md bg-white">
+                  {(() => {
+                    try {
+                      const timetableData: {
+                        schoolName: string;
+                        timetable: {
+                          weekDays: {
+                            day: string;
+                            classes: Record<
+                              string,
+                              { time: string; subject: string }[]
+                            >;
+                          }[];
+                        };
+                      } = JSON.parse(powerUrl);
+
+                      return (
+                        <>
+                          <h3 className="text-lg font-semibold mb-4">
+                            {timetableData.schoolName} Timetable
+                          </h3>
+                          <div className="max-h-72 overflow-y-auto">
+                            {timetableData.timetable.weekDays.map((day) => (
+                              <div key={day.day} className="mt-4">
+                                <h4 className="font-medium text-lg mb-2">
+                                  {day.day}
+                                </h4>
+                                <div className="overflow-x-auto">
+                                  <table className="min-w-full border border-gray-300">
+                                    <thead>
+                                      <tr className="bg-gray-200 text-gray-700">
+                                        <th className="border px-4 py-2 text-left">
+                                          Class
+                                        </th>
+                                        <th className="border px-4 py-2 text-left">
+                                          Time
+                                        </th>
+                                        <th className="border px-4 py-2 text-left">
+                                          Subject
+                                        </th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {Object.keys(day.classes).map(
+                                        (className) =>
+                                          day.classes[className].map(
+                                            (cls, index) => (
+                                              <tr
+                                                key={index}
+                                                className="odd:bg-gray-100"
+                                              >
+                                                <td className="border px-4 py-2">
+                                                  {className.toUpperCase()}
+                                                </td>
+                                                <td className="border px-4 py-2">
+                                                  {cls.time}
+                                                </td>
+                                                <td className="border px-4 py-2">
+                                                  {cls.subject}
+                                                </td>
+                                              </tr>
+                                            )
+                                          )
+                                      )}
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </>
+                      );
+                    } catch (error) {
+                      console.error("Error parsing timetable data:", error);
+                      return (
+                        <p className="text-red-500">Error loading timetable.</p>
+                      );
+                    }
+                  })()}
+                </div>
+
+                <div className="mt-4">
+                  <a
+                    href={`https://${csvUrl}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-black text-white py-2 px-4 rounded-md"
+                  >
+                    Download CSV
+                  </a>
+                </div>
+              </>
+            ) : tool.service_id == "text to speech" && responseMessage ? (
               <div className="mt-4">
+                {timeLeft !== null && (
+                  <div className="text-gray-900 mb-2">
+                    Time left to download: {formatTime(timeLeft)}
+                  </div>
+                )}
                 <button
                   onClick={() => {
-                    const link = document.createElement("a");
-                    link.href = responseMessage;
-                    link.target = "_blank";
-                    link.download = "generated_audio.mp3";
-                    link.click();
+                    if (timeLeft && timeLeft > 0) {
+                      const link = document.createElement("a");
+                      link.href = powerUrl;
+                      link.target = "_blank";
+                      link.download = "generated_audio.mp3";
+                      link.click();
+                    } else {
+                      alert("The download link has expired!");
+                    }
                   }}
-                  className="bg-green-500 text-white py-2 px-4 rounded-md"
+                  // onClick={() => {
+                  //   console.log(powerUrl);
+                  //   window.open(powerUrl, "_blank");
+                  // }}
+                  className={`py-2 px-4 rounded-md ${
+                    timeLeft && timeLeft > 0
+                      ? "bg-green-500 text-white"
+                      : "bg-gray-300 text-gray-500"
+                  }`}
+                  disabled={!timeLeft || timeLeft <= 0}
                 >
-                  Download Audio
+                  {timeLeft && timeLeft > 0 ? "Download Audio" : "Link Expired"}
                 </button>
               </div>
             ) : (
               <>
                 <div className="w-full p-3 border border-gray-300 bg-white rounded-md resize-none markdown overflow-auto max-h-[700px]">
                   {isSubmitting ? (
-                    "AI Teacha is Typing..."
+                    "AiTeacha is Typing..."
                   ) : (
                     <div>
                       {responseMessage
@@ -1276,6 +1438,15 @@ const ToolDetail = () => {
                     >
                       {saving ? "Saving..." : "Save to history"}
                     </Button>
+                    {responseMessage && tool.editable === "YES" && (
+                      <Button
+                        onClick={handleEditWithZyra}
+                        variant={"gray"}
+                        className="bg-white border border-[#5c3cbb] py-2 px-4 rounded-md"
+                      >
+                        Edit with Zyra
+                      </Button>
+                    )}
                   </div>
                 )}
               </>
@@ -1292,6 +1463,17 @@ const ToolDetail = () => {
             <ToastClose />
           </Toast>
         )}
+
+        {showPropsDialog && (
+          <PropsDialog
+            isOpen={showPropsDialog}
+            onClose={() => setShowPropsDialog(false)}
+            title="Error"
+            description="An error occurred while submitting the tool data."
+            content={propsDialogContent}
+          />
+        )}
+
         <ToastViewport />
       </div>
     </ToastProvider>

@@ -76,10 +76,10 @@ const Header = () => {
             <img
               src={brandImg}
               className="mr-2 h-6 sm:h-9"
-              alt="AI Teacha Logo"
+              alt="AiTeacha Logo"
             />
             <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">
-              AI Teacha
+              AiTeacha
             </span>
           </Link>
           <div className="flex items-center lg:order-2">

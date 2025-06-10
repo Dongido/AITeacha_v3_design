@@ -1,16 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Logo from "../../assets/img/logo.png";
 import { Button } from "../../components/ui/Button";
 import { FaCheck } from "react-icons/fa";
 import { updateUserRole } from "../../api/profile";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 type Role = "student" | "lecturer" | "teacher" | "school";
 
 const Onboard = () => {
   const [selectedRole, setSelectedRole] = useState<Role | null>("teacher");
   const [loading, setLoading] = useState<boolean>(false);
+  const [referralCode, setReferralCode] = useState<string | null>(null);
   const navigate = useNavigate();
+  const location = useLocation();
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const code = searchParams.get("referralCode");
+    setReferralCode(code);
+  }, [location]);
 
   const roles: { id: Role; label: string; icon: JSX.Element }[] = [
     {
@@ -106,6 +113,9 @@ const Onboard = () => {
       }
 
       localStorage.setItem("roleId", roleId.toString());
+      if (referralCode) {
+        localStorage.setItem("referralCode", referralCode);
+      }
       try {
         //   await updateUserRole(roleId);
         if (selectedRole === "student") {
@@ -123,17 +133,17 @@ const Onboard = () => {
   };
 
   return (
-    <div className="w-full flex flex-col items-center my-3 justify-center">
+    <div className="w-full flex flex-col items-center my-3 mt-3 lg:mt-32 justify-center">
       <div className=" top-8 left-8 flex gap-1 text-black text-2xl font-bold mb-8">
         <img className="h-8 w-auto" src={Logo} alt="AI-Teacha Logo" />
-        <span>AI Teacha</span>
+        <span>AiTeacha</span>
       </div>
 
       <h2 className="text-2xl lg:text-3xl text-center max-w-2xl font-bold mb-6">
-        What are you joining AI Teacha as:
+        What are you joining AiTeacha as:
       </h2>
-      <div className="mt-8 flex items-center justify-center w-full">
-        <div className="grid grid-cols-2 md:grid-cols-2 gap-2 w-full max-w-3xl pl-2">
+      <div className="mt-8  flex items-center justify-center w-full">
+        <div className="flex flex-wrap gap-4 justify-center lg:justify-between w-full max-w-5xl pl-2">
           {roles.map((role) => (
             <div
               key={role.id}

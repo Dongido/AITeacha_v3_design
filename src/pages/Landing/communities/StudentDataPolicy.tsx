@@ -24,7 +24,7 @@ const StudentDataPolicy = () => {
         <div className="max-w-5xl mx-auto px-6">
           <h2 className="text-3xl md:text-4xl lg:text-4xl font-bold text-primary mt-6 text-center mb-6"></h2>
           <p className="text-lg leading-relaxed mb-8">
-            <span className="text-lg font-bold"> AI Teacha</span>, is committed
+            <span className="text-lg font-bold"> AiTeacha</span>, is committed
             to protecting the privacy and security of student data processed
             within its Learning Management System (LMS). This Student Data
             Policy complements our broader Privacy Policy and provides specific
@@ -49,7 +49,7 @@ const StudentDataPolicy = () => {
                   information).
                 </li>
                 <li>
-                  Data collected or generated during the use of AI Teacha
+                  Data collected or generated during the use of AiTeacha
                   services (e.g., performance metrics, interaction logs).
                 </li>
               </ul>
@@ -75,8 +75,8 @@ const StudentDataPolicy = () => {
               </h2>
               <p>
                 Student data is owned and controlled by the educational
-                institution, which acts as the data controller, while AI Teacha
-                operates as a data processor. This means AI Teacha processes
+                institution, which acts as the data controller, while AiTeacha
+                operates as a data processor. This means AiTeacha processes
                 student data strictly based on the instructions and
                 authorizations provided by the institution.
               </p>
@@ -87,7 +87,7 @@ const StudentDataPolicy = () => {
                 3. Use of Student Data
               </h2>
               <p>
-                AI Teacha processes student data solely for authorized
+                AiTeacha processes student data solely for authorized
                 educational purposes, including:
               </p>
               <ul className="list-disc list-inside mt-2">
@@ -107,7 +107,7 @@ const StudentDataPolicy = () => {
               <h2 className="text-xl font-semibold border-b pb-2">
                 4. Prohibited Uses
               </h2>
-              <p>AI Teacha does not:</p>
+              <p>AiTeacha does not:</p>
               <ul className="list-disc list-inside mt-2">
                 <li>Use student data for targeted advertising.</li>
                 <li>
@@ -124,7 +124,7 @@ const StudentDataPolicy = () => {
                 5. Data Security and Privacy Measures
               </h2>
               <p>
-                AI Teacha employs robust security measures to safeguard student
+                AiTeacha employs robust security measures to safeguard student
                 data, including:
               </p>
               <ul className="list-disc list-inside mt-2">
@@ -168,15 +168,13 @@ const StudentDataPolicy = () => {
                 7. De-Identified Data Usage
               </h2>
               <p>
-                AI Teacha may use de-identified data (data stripped of
-                personally identifiable information) for:
+                AiTeacha may use de-identified data (data stripped of personally
+                identifiable information) for:
               </p>
               <ul className="list-disc list-inside mt-2">
                 <li>Research and development of educational technologies.</li>
                 <li>Improving AI algorithms and system functionality.</li>
-                <li>
-                  Demonstrating the effectiveness of AI Teacha's services.
-                </li>
+                <li>Demonstrating the effectiveness of AiTeacha's services.</li>
               </ul>
             </section>
 
@@ -185,7 +183,7 @@ const StudentDataPolicy = () => {
                 8. Data Retention Policy
               </h2>
               <p>
-                AI Teacha retains student data only for as long as necessary to
+                AiTeacha retains student data only for as long as necessary to
                 fulfill educational purposes. Retention policies include:
               </p>
               <ul className="list-disc list-inside mt-2">
@@ -217,7 +215,7 @@ const StudentDataPolicy = () => {
               </ul>
               <p>
                 Requests should be directed to the educational institution,
-                which can facilitate actions with AI Teacha.
+                which can facilitate actions with AiTeacha.
               </p>
             </section>
 
@@ -226,7 +224,7 @@ const StudentDataPolicy = () => {
                 10. Compliance and Transparency
               </h2>
               <p>
-                AI Teacha complies with applicable student data protection laws,
+                AiTeacha complies with applicable student data protection laws,
                 including NDPR and the Child Rights Act, and maintains a
                 transparent approach to data practices by:
               </p>
@@ -247,7 +245,7 @@ const StudentDataPolicy = () => {
                 11. Amendments to the Policy
               </h2>
               <p>
-                AI Teacha may update this policy to reflect changes in legal or
+                AiTeacha may update this policy to reflect changes in legal or
                 operational requirements. Educational institutions will be
                 notified of significant changes and provided the opportunity to
                 review and accept these changes before they take effect.
@@ -276,7 +274,7 @@ const StudentDataPolicy = () => {
                 Empowering Education Responsibly
               </p>
               <p>
-                AI Teacha is committed to creating a secure and innovative
+                AiTeacha is committed to creating a secure and innovative
                 learning environment that prioritizes the privacy and welfare of
                 students. By using our services, educational institutions and
                 users agree to the terms outlined in this policy.

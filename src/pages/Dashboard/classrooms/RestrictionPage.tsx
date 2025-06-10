@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "../../../components/ui/Button";
 import { useNavigate } from "react-router-dom";
 const LessonManagementIcon = () => (
@@ -71,6 +71,11 @@ interface RestrictedPageProps {
 
 const RestrictedPage: React.FC<RestrictedPageProps> = ({ error }) => {
   const navigate = useNavigate();
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+  const openPopup = () => setIsPopupOpen(true);
+  const closePopup = () => setIsPopupOpen(false);
+
   return (
     <div className="flex flex-col items-center justify-center">
       <div className="p-6 bg-gray-50 rounded-lg shadow-md">
@@ -143,6 +148,46 @@ const RestrictedPage: React.FC<RestrictedPageProps> = ({ error }) => {
         >
           Upgrade To Access Now
         </Button>
+        <Button
+          onClick={openPopup}
+          variant={"outline"}
+          className="flex items-center px-6 py-3 mt-4 bg-red-500 text-white text-lg font-medium rounded-lg shadow-lg   space-x-2"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-6 h-6"
+            viewBox="0 0 24 24"
+            fill="white"
+          >
+            <path d="M19.615 3.184c-1.88-.33-9.379-.33-11.258 0C6.018 3.516 5.1 4.437 4.77 6.212c-.33 1.775-.33 5.514 0 7.29.33 1.774 1.248 2.696 3.587 3.03 1.88.33 9.379.33 11.258 0 2.339-.333 3.256-1.255 3.587-3.03.33-1.776.33-5.515 0-7.29-.33-1.775-1.248-2.696-3.587-3.03zm-9.78 5.952l5.723 3.328-5.723 3.33V9.136z" />
+          </svg>
+          <span className="text-white">Classroom Walkthrough</span>
+        </Button>
+
+        {isPopupOpen && (
+          <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
+            <div className="relative bg-white rounded-lg shadow-lg w-[90%] max-w-3xl">
+              <button
+                onClick={closePopup}
+                className="absolute top-3 right-3 bg-red-500 text-gray-600 hover:bg-gray-300 p-2 rounded-full"
+              >
+                <span className="text-white"> ✕</span>
+              </button>
+
+              <div className="p-4">
+                <iframe
+                  width="100%"
+                  height="400"
+                  src="https://www.youtube.com/embed/o688vxKkcPw?si=CoKNScNo2C7XA8Dp"
+                  title="Community Preview"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                ></iframe>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

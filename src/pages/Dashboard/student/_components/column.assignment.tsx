@@ -92,7 +92,7 @@ const AssignmentColumnsComponent = () => {
         const userDetails = JSON.parse(
           localStorage.getItem("ai-teacha-user") || "{}"
         );
-        const isRole2 = userDetails.role === 2;
+        const isRole2 = userDetails.role_id === 2;
 
         const deleteDialogRef = useRef<{ openDialog: () => void }>(null);
 

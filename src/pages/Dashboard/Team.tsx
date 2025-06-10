@@ -18,7 +18,7 @@ import {
   ToastClose,
   ToastViewport,
 } from "../../components/ui/Toast";
-import RestrictedPage from "./classrooms/RestrictionPage";
+import GeneralRestrictedPage from "./_components/GeneralRestrictedPage";
 import { useNavigate } from "react-router-dom";
 
 const Team = () => {
@@ -115,7 +115,7 @@ const Team = () => {
             </span>
           </div>
         )}
-        <RestrictedPage error={error} />
+        <GeneralRestrictedPage error={error} />
       </div>
     );
   }

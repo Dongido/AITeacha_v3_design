@@ -77,44 +77,44 @@ const FaqsCard: React.FC<FaqsCardProps> = ({ faqsList, idx }) => {
 const FaqsSection: React.FC = () => {
   const faqsList: Faq[] = [
     {
-      q: "What is AI Teacha?",
-      a: "AI Teacha is an educational platform designed to enhance learning experiences through AI-powered tools and resources.",
+      q: "What is AiTeacha?",
+      a: "AiTeacha is an educational platform designed to enhance learning experiences through AI-powered tools and resources.",
     },
     {
-      q: "Who can benefit from AI Teacha?",
-      a: "Students, educators, schools, and parents can benefit from AI Teacha by accessing personalized learning solutions and resources.",
+      q: "Who can benefit from AiTeacha?",
+      a: "Students, educators, schools, and parents can benefit from AiTeacha by accessing personalized learning solutions and resources.",
     },
     {
-      q: "How does AI Teacha work?",
-      a: "AI Teacha uses advanced AI algorithms to analyze learning needs and provide tailored content to support diverse educational goals.",
+      q: "How does AiTeacha work?",
+      a: "AiTeacha uses advanced AI algorithms to analyze learning needs and provide tailored content to support diverse educational goals.",
     },
     {
-      q: "How can I get started with AI Teacha?",
-      a: "Getting started is easy! Simply sign up on the AI Teacha website, choose your subscription plan, and start exploring the features.",
+      q: "How can I get started with AiTeacha?",
+      a: "Getting started is easy! Simply sign up on the AiTeacha website, choose your subscription plan, and start exploring the features.",
     },
     {
-      q: "How secure is my data on AI Teacha?",
-      a: "Your data security is our priority. AI Teacha uses robust security measures to protect user data and ensure privacy.",
+      q: "How secure is my data on AiTeacha?",
+      a: "Your data security is our priority. AiTeacha uses robust security measures to protect user data and ensure privacy.",
     },
     {
-      q: "How does billing work on AI Teacha?",
-      a: "Billing on AI Teacha is subscription-based, with various plans available to suit different needs. Payments can be managed through your account settings.",
+      q: "How does billing work on AiTeacha?",
+      a: "Billing on AiTeacha is subscription-based, with various plans available to suit different needs. Payments can be managed through your account settings.",
     },
     {
       q: "Can I customize the generated content?",
-      a: "Yes, AI Teacha allows users to customize content to meet specific learning objectives and preferences.",
+      a: "Yes, AiTeacha allows users to customize content to meet specific learning objectives and preferences.",
     },
     {
       q: "Is AI customizable with different curriculum standards?",
-      a: "AI Teacha supports customization for various curriculum standards, making it adaptable for different educational frameworks.",
+      a: "AiTeacha supports customization for various curriculum standards, making it adaptable for different educational frameworks.",
     },
     {
-      q: "Is AI Teacha suitable for international educators?",
-      a: "Yes, AI Teacha is designed to support educators from around the world, with resources that cater to international standards and practices.",
+      q: "Is AiTeacha suitable for international educators?",
+      a: "Yes, AiTeacha is designed to support educators from around the world, with resources that cater to international standards and practices.",
     },
     {
-      q: "What support and resources are available to AI Teacha users?",
-      a: "AI Teacha provides extensive support resources, including tutorials, user guides, and a dedicated customer support team to assist users.",
+      q: "What support and resources are available to AiTeacha users?",
+      a: "AiTeacha provides extensive support resources, including tutorials, user guides, and a dedicated customer support team to assist users.",
     },
   ];
 

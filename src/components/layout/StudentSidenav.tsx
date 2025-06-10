@@ -38,7 +38,7 @@ interface SidenavProps {
 type SidenavType = "dark" | "white" | "transparent";
 
 export function Sidenav({
-  brandName = "AI Teacha",
+  brandName = "AiTeacha",
   routes,
   onToggle,
 }: SidenavProps) {
@@ -79,7 +79,7 @@ export function Sidenav({
       className={`${sidenavTypes[sidenavType]} ${
         openSidenav ? "translate-x-0" : "-translate-x-80"
       } fixed inset-0 z-50 h-[calc(100vh)] ${
-        isCollapsed ? "w-20" : "w-72"
+        isCollapsed ? "w-28" : "w-72"
       } transition-transform duration-300 xl:translate-x-0`}
     >
       <div className="relative flex items-center justify-between p-4">

@@ -18,25 +18,25 @@ const Pioneers = () => {
               className="w-full mb-2 rounded-3xl"
             />
             <h2 className="text-2xl mb-4 text-center font-bold">
-              Introducing AI Teacha for Schools:{" "}
+              Introducing AiTeacha for Schools:{" "}
             </h2>
           </div>
 
           <span className="text-lg font-medium  mb-8 text-gray-900">
             The{" "}
             <span className="font-bold">
-              AI Teacha AMS is the first AI Powered Academic Management System
+              AiTeacha AMS is the first AI Powered Academic Management System
             </span>{" "}
             for Schools and Institutions. Be the first to experience the power
-            of AI Teacha, the revolutionary AI Academic Management System
+            of AiTeacha, the revolutionary AI Academic Management System
             designed to simplify school operations, teaching, and learning.
             <br />
             <br />
             <span className="font-bold text-2xl">
-              Why Be a Pioneer School with AI Teacha?
+              Why Be a Pioneer School with AiTeacha?
             </span>
             <p>
-              AI Teacha empowers schools to streamline processes, enhance
+              AiTeacha empowers schools to streamline processes, enhance
               teaching, and improve learning outcomes with cutting-edge AI
               technology:
             </p>
@@ -59,7 +59,7 @@ const Pioneers = () => {
             <br />
             <span className="text-2xl pt-4 font-bold ">
               {" "}
-              Features That Set AI Teacha Apart
+              Features That Set AiTeacha Apart
             </span>
             <br />
             <ul className="list-disc list-inside ">
@@ -90,7 +90,7 @@ const Pioneers = () => {
                 who need extra help. Empowered Parents: Equip parents with AI
                 tools to support their children’s learning journey at home. And
                 So Much More: From classroom management to real-time analytics,
-                AI Teacha is designed to elevate every aspect of education.
+                AiTeacha is designed to elevate every aspect of education.
                 Benefits of Joining the First Tester Program Exclusive Access:
                 Be the first to use our innovative platform before its official
                 launch.
@@ -98,7 +98,7 @@ const Pioneers = () => {
               <br />
               <li>
                 <span className="font-bold text-lg">Custom Solutions:</span>{" "}
-                Receive tailored support to maximize the impact of AI Teacha in
+                Receive tailored support to maximize the impact of AiTeacha in
                 your school.
               </li>
               <br />
@@ -115,7 +115,7 @@ const Pioneers = () => {
                 <span className="font-bold text-lg">
                   Influence Development:
                 </span>{" "}
-                Share your insights to help us refine AI Teacha for schools
+                Share your insights to help us refine AiTeacha for schools
                 worldwide.
               </li>
             </ul>
@@ -171,7 +171,7 @@ const Pioneers = () => {
               </div>
               <h3 className="text-xl font-semibold">Onboard with Ease</h3>
               <p className="text-gray-700  text-center max-w-xs">
-                Receive hands-on support to set up AI Teacha for your school
+                Receive hands-on support to set up AiTeacha for your school
               </p>
             </div>
             <div className="flex flex-col items-center space-y-3">

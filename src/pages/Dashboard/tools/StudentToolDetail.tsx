@@ -43,7 +43,7 @@ const gradeOptions = [
   "Nursery 1",
   "Nursery 2",
   ...Array.from({ length: 12 }, (_, i) => `Grade ${i + 1}`),
-  "University",
+  ...Array.from({ length: 5 }, (_, i) => `Higher Institution Year ${i + 1}`),
 ];
 
 const activityList = [

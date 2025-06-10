@@ -161,7 +161,9 @@ const EditClassroom: React.FC = () => {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Enter Classroom Name</FormLabel>
+                  <FormLabel className="text-xl lg:text-2xl">
+                    Enter Classroom Name
+                  </FormLabel>
                   <FormControl>
                     <Input
                       type="text"
@@ -174,7 +176,7 @@ const EditClassroom: React.FC = () => {
               )}
             />
             <FormItem>
-              <FormLabel>
+              <FormLabel className="text-xl lg:text-2xl">
                 Upload Your Teaching Materials or Resources (e.g., Lesson plan,
                 syllabus, curriculum)
               </FormLabel>
@@ -189,7 +191,7 @@ const EditClassroom: React.FC = () => {
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
+                  <FormLabel className="text-xl lg:text-2xl">
                     Enter a detailed description of what this classroom is all
                     about
                   </FormLabel>
@@ -197,6 +199,8 @@ const EditClassroom: React.FC = () => {
                     <TextArea
                       placeholder="e.g. This course offers an introduction to web design concepts, tools, and techniques, tailored for beginners with no prior experience in designing websites"
                       {...field}
+                      className="text-xl"
+                      rows={8}
                     />
                   </FormControl>
                   <FormMessage className="text-red-300" />
@@ -216,7 +220,7 @@ const EditClassroom: React.FC = () => {
                         onCheckedChange={field.onChange}
                         name="scope_restriction"
                       />
-                      <FormLabel>
+                      <FormLabel className="text-xl lg:text-2xl">
                         Limit student to stay within the scope
                       </FormLabel>
                     </div>
@@ -231,12 +235,12 @@ const EditClassroom: React.FC = () => {
               name="grade"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Grade</FormLabel>
+                  <FormLabel className="text-xl lg:text-2xl">Grade</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="text-xl">
                       <SelectValue placeholder="Select grade" />
                     </SelectTrigger>
                     <SelectContent>
@@ -257,7 +261,9 @@ const EditClassroom: React.FC = () => {
               name="number_of_students"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Number of Students</FormLabel>
+                  <FormLabel className="text-xl lg:text-2xl">
+                    Number of Students
+                  </FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -278,12 +284,12 @@ const EditClassroom: React.FC = () => {
               name="status"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Status</FormLabel>
+                  <FormLabel className="text-xl lg:text-2xl">Status</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="text-xl">
                       <SelectValue placeholder="Select status" />
                     </SelectTrigger>
                     <SelectContent>

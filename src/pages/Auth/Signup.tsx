@@ -12,7 +12,7 @@ const SignUp = () => {
           className="absolute top-8 left-8 flex gap-1 text-black text-2xl font-bold"
         >
           <img className="h-8 w-auto" src={Logo} alt="AI-Teacha Logo" />
-          <span>AI Teacha</span>
+          <span>AiTeacha</span>
         </Link>
 
         <div className="relative z-10 flex flex-col items-center justify-center text-center mt-16 space-y-6">
@@ -34,12 +34,12 @@ const SignUp = () => {
               className="flex items-center gap-1 text-black text-2xl font-bold"
             >
               <img className="h-8 w-auto" src={Logo} alt="AI-Teacha Logo" />
-              <span className="text-sm">AI Teacha</span>
+              <span className="text-sm">AiTeacha</span>
             </Link>
           </div>
 
           <h1 className="text-2xl font-semibold text-gray-800 mt-24 text-center">
-            Start Your Journey With AI Teacha!
+            Start Your Journey With AiTeacha!
           </h1>
           <p className="text-center text-gray-600 mb-6">
             Create an account to get started

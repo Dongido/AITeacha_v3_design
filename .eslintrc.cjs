@@ -20,6 +20,7 @@ module.exports = {
     "@typescript-eslint/no-unused-expressions ": "off",
     "@typescript-eslint/no-empty-object-type": "off",
     "@typescript-eslint/no-unused-expressions": "off",
+    "@typescript-eslint/no-require-imports": "off",
     "react-hooks/rules-of-hooks": "off",
     "react-hooks/exhaustive-deps": "off",
     "@typescript-eslint/no-empty-function": "off",

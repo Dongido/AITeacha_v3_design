@@ -15,15 +15,34 @@ import {
 } from "recharts";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useParams } from "react-router-dom";
-import { fetchReport } from "../../../api/classrooms";
+import {
+  fetchReport,
+  fetchClassroomOutlineReport,
+} from "../../../api/classrooms";
 import { Skeleton } from "../../../components/ui/Skeleton";
 import StudentDashboardPerformance from "./Student performance ";
+import { Button } from "../../../components/ui/Button";
+interface ReportItem {
+  id: string;
+  name: string;
+  email: string;
+  performance: {
+    total_score: number;
+    outline: string;
+    no_of_question: number;
+    passed: number;
+    failed: number;
+  };
+}
+
 const StudentDashboard = () => {
   const { id } = useParams<{ id?: string }>();
   const [students, setStudents] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState(1);
   const studentsPerPage = 5;
+  const [reportData, setReportData] = useState<ReportItem[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) {
@@ -35,15 +54,43 @@ const StudentDashboard = () => {
       setLoading(true);
       try {
         const data = await fetchReport(id);
-        setStudents(data.students);
+        if (data.students && data.students.length > 0) {
+          setStudents(data.students);
+        } else {
+          setStudents([]);
+        }
       } catch (error) {
         console.error("Error fetching student data:", error);
+        setStudents([]);
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
+  }, [id]);
+
+  useEffect(() => {
+    if (!id) {
+      console.error("No reportId provided!");
+      return;
+    }
+    const getReport = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const data = await fetchClassroomOutlineReport(id);
+        setReportData(data);
+        console.log(data);
+      } catch (err: any) {
+        setError(err.message);
+        setReportData(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getReport();
   }, [id]);
 
   const categories = students.reduce(
@@ -158,7 +205,45 @@ const StudentDashboard = () => {
     indexOfLastStudent
   );
   const totalPages = Math.ceil(students.length / studentsPerPage);
+  const downloadCSV = () => {
+    if (!reportData || reportData.length === 0) {
+      alert("No data to download.");
+      return;
+    }
 
+    const headers = [
+      "S/N",
+      "Total Score",
+      "Outline",
+      "No. of Questions",
+      "Passed",
+      "Failed",
+    ];
+    const csvRows = [headers.join(",")];
+
+    reportData.forEach((report, index) => {
+      const row = [
+        index + 1,
+        report.performance.total_score,
+        report.performance.outline,
+        report.performance.no_of_question,
+        report.performance.passed,
+        report.performance.failed,
+      ];
+      csvRows.push(row.join(","));
+    });
+
+    const csvContent = csvRows.join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "student_assessment_report.csv";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
   return (
     <div className=" w-full mx-auto space-y-8">
       <div className="bg-white rounded-lg shadow p-4 sm:p-6 flex flex-col lg:flex-row lg:space-x-8 space-y-6 lg:space-y-0">
@@ -393,27 +478,116 @@ const StudentDashboard = () => {
             )}
           </tbody>
         </table>
+        <div className="flex justify-between items-center mt-4">
+          <button
+            onClick={() => setCurrentPage(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="text-gray-500 hover:text-gray-700"
+          >
+            <ChevronLeft size={20} />
+          </button>
+          <span className="text-gray-500">
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            onClick={() => setCurrentPage(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="text-gray-500 hover:text-gray-700"
+          >
+            <ChevronRight size={20} />
+          </button>
+        </div>
       </div>
 
-      {/* Pagination */}
-      <div className="flex justify-between items-center mt-4">
-        <button
-          onClick={() => setCurrentPage(currentPage - 1)}
-          disabled={currentPage === 1}
-          className="text-gray-500 hover:text-gray-700"
-        >
-          <ChevronLeft size={20} />
-        </button>
-        <span className="text-gray-500">
-          Page {currentPage} of {totalPages}
-        </span>
-        <button
-          onClick={() => setCurrentPage(currentPage + 1)}
-          disabled={currentPage === totalPages}
-          className="text-gray-500 hover:text-gray-700"
-        >
-          <ChevronRight size={20} />
-        </button>
+      <div className="bg-white rounded-lg shadow overflow-x-auto mt-4">
+        <div className="flex justify-between items-center m-4">
+          <h2 className="text-xl">Student Outline Assessment Report</h2>
+          {reportData && reportData.length > 0 && (
+            <Button
+              onClick={downloadCSV}
+              variant="gradient"
+              className="rounded-md"
+            >
+              Download as CSV
+            </Button>
+          )}
+        </div>
+        <table className="min-w-full divide-y text-center divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                S/N
+              </th>
+
+              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Total Score
+              </th>
+              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Outline
+              </th>
+              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                No. of Questions
+              </th>
+              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Passed
+              </th>
+              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Failed
+              </th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y text-center divide-gray-200">
+            {loading ? (
+              <tr>
+                <td colSpan={7}>
+                  <div className="flex justify-center items-center py-10">
+                    <Skeleton className="h-96 w-full" />
+                    <span className="ml-2">Loading Report...</span>
+                  </div>
+                </td>
+              </tr>
+            ) : error ? (
+              <tr>
+                <td
+                  colSpan={7}
+                  className="px-6 py-4 whitespace-nowrap text-red-500"
+                >
+                  Error: {error}
+                </td>
+              </tr>
+            ) : !reportData || reportData.length === 0 ? (
+              <tr>
+                <td
+                  colSpan={7}
+                  className="px-6 py-4 whitespace-nowrap text-gray-500"
+                >
+                  Oops, no report data available
+                </td>
+              </tr>
+            ) : (
+              reportData.map((report, index) => (
+                <tr key={report.id}>
+                  <td className="px-6 py-4 whitespace-nowrap">{index + 1}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {report.performance.total_score}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {report.performance.outline}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {report.performance.no_of_question}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {report.performance.passed}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {report.performance.failed}
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
       </div>
     </div>
   );

@@ -3,37 +3,75 @@ import { Button } from "./Button";
 
 interface FileUploadProps {
   onFilesChange: (files: File[]) => void;
+  multiple?: boolean;
+  maxFiles?: number;
+  onlyDocuments?: boolean;
 }
 
-const FileUpload: React.FC<FileUploadProps> = ({ onFilesChange }) => {
-  const [file, setFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+const FileUpload: React.FC<FileUploadProps> = ({
+  onFilesChange,
+  multiple = false,
+  maxFiles = 10,
+  onlyDocuments = false,
+}) => {
+  const [files, setFiles] = useState<File[]>([]);
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0];
-    if (!selectedFile) return;
+    const selectedFiles = Array.from(e.target.files || []);
+    if (selectedFiles.length === 0) return;
 
-    const validTypes = ["image/jpeg", "image/png", "application/pdf"];
-    if (!validTypes.includes(selectedFile.type)) {
-      alert("Please upload a valid image or PDF file.");
+    const validTypes = onlyDocuments
+      ? [
+          "application/pdf",
+          "application/msword",
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        ]
+      : ["image/jpeg", "image/png", "application/pdf"];
+    const newFiles: File[] = [];
+    const newPreviewUrls: string[] = [];
+
+    for (const selectedFile of selectedFiles) {
+      if (!validTypes.includes(selectedFile.type)) {
+        alert(
+          `File "${selectedFile.name}" is not a valid ${
+            onlyDocuments ? "PDF or Word" : "image or PDF"
+          } file.`
+        );
+        continue;
+      }
+      newFiles.push(selectedFile);
+      newPreviewUrls.push(URL.createObjectURL(selectedFile));
+    }
+
+    if (multiple && files.length + newFiles.length > maxFiles) {
+      alert(`You can upload a maximum of ${maxFiles} files.`);
       return;
     }
 
-    setFile(selectedFile);
-    setPreviewUrl(URL.createObjectURL(selectedFile));
-    onFilesChange([selectedFile]);
+    setFiles((prevFiles) => [...prevFiles, ...newFiles]);
+    setPreviewUrls((prevUrls) => [...prevUrls, ...newPreviewUrls]);
+    onFilesChange([...files, ...newFiles]);
   };
 
-  const handleRemoveFile = () => {
-    setFile(null);
-    setPreviewUrl(null);
-    onFilesChange([]);
+  const handleRemoveFile = (indexToRemove: number) => {
+    const updatedFiles = files.filter((_, index) => index !== indexToRemove);
+    const updatedPreviewUrls = previewUrls.filter(
+      (_, index) => index !== indexToRemove
+    );
+    setFiles(updatedFiles);
+    setPreviewUrls(updatedPreviewUrls);
+    onFilesChange(updatedFiles);
   };
 
   const handleBrowseClick = () => {
     fileInputRef.current?.click();
   };
+
+  const acceptedFileTypes = onlyDocuments
+    ? ".pdf, .doc, .docx"
+    : "image/*, .pdf";
 
   return (
     <div className="flex flex-col items-center space-y-4 p-4 border rounded-md bg-gray-50">
@@ -52,6 +90,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFilesChange }) => {
           >
             Browse Files
           </Button>
+          <p className="text-xs mt-1">Accepts: {acceptedFileTypes}</p>
         </div>
         <input
           ref={fileInputRef}
@@ -59,34 +98,50 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFilesChange }) => {
           type="file"
           onChange={handleFileChange}
           className="hidden"
-          accept="image/*,application/pdf"
+          accept={acceptedFileTypes}
+          multiple={multiple} // Enable multiple selection based on prop
         />
       </label>
 
-      {file && (
+      {files.length > 0 && (
         <div className="w-full mt-4 space-y-2">
-          <div className="flex items-center space-x-4">
-            {file.type.startsWith("image/") && previewUrl ? (
-              <img
-                src={previewUrl}
-                alt="Preview"
-                className="w-16 h-16 object-cover rounded-lg"
-              />
-            ) : (
-              <p className="text-gray-500">PDF ready to be uploaded</p>
-            )}
-            <p className="text-gray-700 font-semibold flex-1">{file.name}</p>
-            <Button
-              variant="outline"
-              onClick={(e) => {
-                e.preventDefault();
-                handleRemoveFile();
-              }}
-              className="text-red-500"
-            >
-              Remove
-            </Button>
-          </div>
+          {files.map((file, index) => (
+            <div key={index} className="flex items-center space-x-4">
+              {file.type.startsWith("image/") && previewUrls[index] ? (
+                <img
+                  src={previewUrls[index]}
+                  alt={`Preview ${index}`}
+                  className="w-16 h-16 object-cover rounded-lg"
+                />
+              ) : (
+                <p className="text-gray-500">
+                  {file.type === "application/pdf"
+                    ? "PDF ready to be uploaded"
+                    : file.type === "application/msword" ||
+                      file.type ===
+                        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    ? "Word document ready to be uploaded"
+                    : "File ready to be uploaded"}
+                </p>
+              )}
+              <p className="text-gray-700 font-semibold flex-1">{file.name}</p>
+              <Button
+                variant="outline"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleRemoveFile(index);
+                }}
+                className="text-red-500"
+              >
+                Remove
+              </Button>
+            </div>
+          ))}
+          {multiple && files.length >= maxFiles && (
+            <p className="text-yellow-500 text-sm mt-2">
+              Maximum of {maxFiles} files uploaded.
+            </p>
+          )}
         </div>
       )}
     </div>

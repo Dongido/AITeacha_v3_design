@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useEffect } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import {
   XMarkIcon,
@@ -15,7 +15,9 @@ import { Button } from "../ui/Button";
 import Text from "../ui/Text";
 import brandImg from "../../logo.png";
 import { setOpenConfigurator } from "../../context/index";
-
+import { useDispatch, useSelector } from "react-redux";
+import { loadUserProfile, selectUser } from "../../store/slices/profileSlice";
+import { AppDispatch } from "../../store";
 interface RoutePage {
   icon: React.ReactNode;
   name: string;
@@ -40,7 +42,7 @@ interface SidenavProps {
 type SidenavType = "dark" | "white" | "transparent";
 
 export function Sidenav({
-  brandName = "AI Teacha",
+  brandName = "AiTeacha",
   routes,
   onToggle,
 }: SidenavProps) {
@@ -51,11 +53,27 @@ export function Sidenav({
     openSidenav: boolean;
   };
 
+  const appdispatch = useDispatch<AppDispatch>();
+
+  const user = useSelector(selectUser);
+  const loading = useSelector((state: any) => state.profile.loading);
+  const error = useSelector((state: any) => state.profile.error);
+
   const userDetails = JSON.parse(
     localStorage.getItem("ai-teacha-user") || "{}"
   );
+
+  useEffect(() => {
+    if (!user) {
+      appdispatch(loadUserProfile());
+    }
+    if (user) {
+      localStorage.setItem("ai-teacha-user", JSON.stringify(user));
+    }
+  }, [dispatch, user]);
+
   console.log(userDetails.package);
-  const isAdmin = userDetails.role === 1;
+  const isAdmin = userDetails.role === 1 || userDetails.role_id === 1;
 
   const [isCollapsed, setIsCollapsed] = React.useState(false);
 
@@ -81,7 +99,7 @@ export function Sidenav({
       className={`${sidenavTypes[sidenavType]} ${
         openSidenav ? "translate-x-0" : "-translate-x-80"
       } fixed inset-0 z-50 h-[calc(100vh)] ${
-        isCollapsed ? "w-20" : "w-72"
+        isCollapsed ? "w-28 " : "w-72"
       } transition-transform duration-300 xl:translate-x-0`}
     >
       <div className="relative flex items-center justify-between p-4">
@@ -120,9 +138,9 @@ export function Sidenav({
 
       {/* Routes Section */}
       <div
-        className={`m-4 overflow-y-auto ${
+        className={`my-4 overflow-y-auto ${
           isCollapsed
-            ? "max-h-[calc(100vh-140px)]"
+            ? "max-h-[calc(100vh-140px)] "
             : "max-h-[calc(100vh-220px)]"
         }`}
       >
@@ -146,7 +164,6 @@ export function Sidenav({
               const [isExpanded, setIsExpanded] = React.useState(false);
               const location = useLocation();
 
-              // Automatically expand the submenu if the current path matches a submenu item
               React.useEffect(() => {
                 if (
                   submenu?.some(
@@ -156,12 +173,15 @@ export function Sidenav({
                   setIsExpanded(true);
                 }
               }, [location.pathname, submenu]);
-              const isPremium = name.toLowerCase().includes("premium");
+              const keywords = ["premium", "resource"];
+              const isPremium = keywords.some((keyword) =>
+                name.toLowerCase().includes(keyword)
+              );
 
               return (
                 <li key={name} className="menu-item list-none">
                   <NavLink
-                    to={!submenu ? fullPath : "#"} // Submenu parent is not navigable
+                    to={!submenu ? fullPath : "#"}
                     onClick={() => {
                       if (submenu) {
                         setIsExpanded(!isExpanded);
@@ -214,10 +234,10 @@ export function Sidenav({
 
                   {/* Render submenu */}
                   {submenu && isExpanded && (
-                    <ul className="submenu ml-6 mt-2">
+                    <ul className="submenu ml-0 mt-2">
                       {submenu.map(
                         ({ icon: subIcon, name: subName, path: subPath }) => (
-                          <li key={subName} className="submenu-item">
+                          <li key={subName} className="submenu-item list-none">
                             <NavLink
                               to={`/${layout}${subPath}`} // Full submenu path
                               onClick={() => {

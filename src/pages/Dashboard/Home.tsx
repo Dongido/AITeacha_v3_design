@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "../../store";
-import { loadTools } from "../../store/slices/toolsSlice";
+import { loadTools, loadToolsCategory } from "../../store/slices/toolsSlice";
 import { Skeleton } from "../../components/ui/Skeleton";
 import { ArrowRightIcon } from "@heroicons/react/24/solid";
 import dashImg from "../../assets/img/0e846ab4-992d-48b3-a818-d62a7803bd8e 1.png";
@@ -18,6 +18,13 @@ import {
   DialogClose,
   DialogTrigger,
 } from "../../components/ui/Dialogue";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "../../components/ui/Select";
 import { Button } from "../../components/ui/Button";
 import { checkEligibility } from "../../api/tools";
 import { useNavigate } from "react-router-dom";
@@ -33,17 +40,22 @@ const Home = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
-  const { tools, loading, error } = useSelector(
+  const { tools, loading, error, categories, categoryLoading } = useSelector(
     (state: RootState) => state.tools
   );
+
+  const [userDetails, setUserDetails] = useState<any>(null);
+  const [isEmailVerified, setIsEmailVerified] = useState<number>(0);
+  const [selectedCategory, setSelectedCategory] = useState("");
 
   useEffect(() => {
     if (tools.length === 0) {
       dispatch(loadTools());
     }
+    if (categories.length === 0) {
+      dispatch(loadToolsCategory());
+    }
   }, [dispatch, tools.length]);
-  const [userDetails, setUserDetails] = useState<any>(null);
-  const [isEmailVerified, setIsEmailVerified] = useState<number>(0);
 
   useEffect(() => {
     const userDetailsFromStorage = localStorage.getItem("ai-teacha-user");
@@ -57,6 +69,10 @@ const Home = () => {
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
+  const handleCategoryChange = (value: string) => {
+    setSelectedCategory(value);
+  };
+
   const handleToolClick = async (toolId: number, slug: string) => {
     try {
       const eligibility = await checkEligibility(toolId);
@@ -69,6 +85,25 @@ const Home = () => {
       setIsDialogOpen(true);
     }
   };
+  const getUpgradeText = () => {
+    if (userDetails?.package === "AI Teacha Enterprise") {
+      return "You're all set with AI Teacha Enterprise.";
+    } else if (userDetails?.package === "AI Teacha Pro") {
+      return "Upgrade to Premium";
+    } else {
+      return "Upgrade to Pro";
+    }
+  };
+
+  const upgradeText = getUpgradeText();
+  const upgradeLink = "/dashboard/upgrade";
+  const filteredTools =
+    selectedCategory && selectedCategory !== "all"
+      ? tools.filter((tool) => tool.category === selectedCategory)
+      : tools;
+
+  const popularTools = filteredTools.filter((tool) => tool.tag === "popular");
+  const otherTools = filteredTools.filter((tool) => tool.tag !== "popular");
 
   return (
     <div className="mt-4 ">
@@ -109,12 +144,21 @@ const Home = () => {
                 Empower your students and create meaningful learning experiences
                 today.
               </p>
-              <Link to={"/dashboard/classrooms/create"}>
-                <button className="mt-4 flex hover:bg-gray-200 items-center bg-white text-[#5C3CBB] font-semibold py-2 px-4 rounded-full text-sm">
-                  launch classroom
-                  <ArrowRightIcon className="h-5 w-5 ml-2" />
-                </button>
-              </Link>
+              <div className="mt-4 flex items-center gap-2">
+                <Link to={"/dashboard/classrooms/create"}>
+                  <button className="flex hover:bg-gray-200 items-center bg-white text-[#5C3CBB] font-semibold py-2 px-4 rounded-full text-sm">
+                    launch classroom
+                    <ArrowRightIcon className="h-5 w-5 ml-2" />
+                  </button>
+                </Link>
+                {upgradeText && (
+                  <Link to={upgradeLink}>
+                    <button className="flex hover:bg-pink-200 items-center bg-purple-100 text-black font-semibold py-2 px-4 rounded-full text-sm">
+                      {upgradeText}
+                    </button>
+                  </Link>
+                )}
+              </div>
             </div>
 
             <img
@@ -153,114 +197,85 @@ const Home = () => {
             </div>
           </div>
           <div className="mt-8 overflow-x-auto py-4">
-            {tools.some((tool) => tool.tag === "popular") && (
-              <div className="mb-8">
-                <h2 className="text-xl font-bold text-gray-900 mb-4 px-2">
-                  Popular Tools
-                </h2>
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 text-center mx-auto">
-                  {tools
-                    .filter((tool) => tool.tag === "popular")
-                    .map((tool) => (
-                      <div
-                        onClick={() => handleToolClick(tool.id, tool.slug)}
-                        key={tool.id}
-                        className="flex items-center border border-gray-300 px-4 py-3 rounded-3xl bg-white hover:bg-gray-50 cursor-pointer transition duration-500 ease-in-out transform hover:scale-105"
-                        style={{
-                          background: "rgba(232, 121, 249, 0.15)", // Reduced opacity here
-                          transition: "background 0.3s ease",
-                        }}
-                      >
-                        <div className="text-primary text-2xl mr-4">
-                          {tool.thumbnail ? (
-                            <img
-                              src={
-                                tool.thumbnail.startsWith("http")
-                                  ? tool.thumbnail
-                                  : `https://${tool.thumbnail}`
-                              }
-                              alt={tool.name || "Tool Thumbnail"}
-                              className="w-16 h-16 object-cover rounded-lg"
-                            />
-                          ) : (
-                            <FaHeart className="text-purple-500 w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center" />
-                          )}
-                        </div>
-
-                        <div className="text-left">
-                          <h3 className="text-base capitalize font-semibold text-gray-900">
-                            {tool.name === "math calculator"
-                              ? "Solver"
-                              : tool.name}
-                          </h3>
-                          <p className="text-gray-700 text-sm">
-                            {tool.description.charAt(0).toUpperCase() +
-                              tool.description.slice(1)}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                </div>
-                {/* <Swiper
-                  slidesPerView={3} // Show only 2 cards
-                  spaceBetween={30} // Increased space between cards
-                  navigation
-                  pagination={{ clickable: true }}
-                  autoplay={{ delay: 3000 }}
-                  breakpoints={{
-                    0: { slidesPerView: 1, spaceBetween: 20 },
-                    640: { slidesPerView: 1, spaceBetween: 20 },
-                    768: { slidesPerView: 3, spaceBetween: 50 },
-                    1024: { slidesPerView: 3, spaceBetween: 70 },
-                  }}
-                  className="popular-tools-swiper"
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-bold text-gray-900 mb-4 px-2">
+                Popular Tools
+              </h2>
+              <div className="mb-4">
+                <Select
+                  value={selectedCategory || "all"}
+                  onValueChange={handleCategoryChange}
                 >
-                  {tools
-                    .filter((tool) => tool.tag === "popular")
-                    .map((tool) => (
-                      <SwiperSlide key={tool.id}>
-                        <div
-                          onClick={() => handleToolClick(tool.id, tool.slug)}
-                          className="flex items-center w-80 h-28 border border-gray-300 px-4 py-4 rounded-3xl bg-white hover:bg-gray-50 cursor-pointer transition duration-500 ease-in-out transform hover:scale-105"
-                          style={{
-                            background: "rgba(232, 121, 249, 0.15)", // Reduced opacity here
-                            transition: "background 0.3s ease",
-                          }}
-                        >
-                          <div className="text-primary text-2xl mr-3">
-                            {tool.thumbnail ? (
-                              <img
-                                src={
-                                  tool.thumbnail.startsWith("http")
-                                    ? tool.thumbnail
-                                    : `https://${tool.thumbnail}`
-                                }
-                                alt={tool.name || "Tool Thumbnail"}
-                                className="w-20 h-20 object-cover rounded-lg"
-                              />
-                            ) : (
-                              <FaHeart className="text-purple-500 w-20 h-20 rounded-lg bg-gray-100 flex items-center justify-center" />
-                            )}
-                          </div>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All Categories" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Categories</SelectItem>
+                    {categoryLoading ? (
+                      <SelectItem value="loading" disabled>
+                        Loading...
+                      </SelectItem>
+                    ) : (
+                      categories.map((category) => (
+                        <SelectItem key={category.id} value={category.id}>
+                          {category.title}
+                        </SelectItem>
+                      ))
+                    )}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            {popularTools.length > 0 && (
+              <div className="mb-8">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 text-center mx-auto">
+                  {popularTools.map((tool) => (
+                    <div
+                      onClick={() => handleToolClick(tool.id, tool.slug)}
+                      key={tool.id}
+                      className="flex items-center border border-gray-300 px-4 py-3 rounded-3xl bg-white hover:bg-gray-50 cursor-pointer transition duration-500 ease-in-out transform hover:scale-105"
+                      style={{
+                        background: "rgba(232, 121, 249, 0.15)", // Reduced opacity
+                        transition: "background 0.3s ease",
+                      }}
+                    >
+                      <div className="text-primary text-2xl mr-4">
+                        {tool.thumbnail ? (
+                          <img
+                            src={
+                              tool.thumbnail.startsWith("http")
+                                ? tool.thumbnail
+                                : `https://${tool.thumbnail}`
+                            }
+                            alt={tool.name || "Tool Thumbnail"}
+                            className="w-16 h-16 object-cover rounded-lg"
+                          />
+                        ) : (
+                          <FaHeart className="text-purple-500 w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center" />
+                        )}
+                      </div>
 
-                          <div className="text-left">
-                            <h3 className="text-lg capitalize font-semibold text-gray-900">
-                              {tool.name === "math calculator"
-                                ? "Solver"
-                                : tool.name}
-                            </h3>
-                            <p className="text-gray-700 text-sm ">
-                              {tool.description.charAt(0).toUpperCase() +
-                                tool.description.slice(1)}
-                            </p>
-                          </div>
+                      <div className="text-left">
+                        <h3 className="text-base capitalize font-semibold text-gray-900">
+                          {tool.name === "math calculator"
+                            ? "Solver"
+                            : tool.name}
+                        </h3>
+                        <p className="text-gray-700 text-sm">
+                          {tool.description.charAt(0).toUpperCase() +
+                            tool.description.slice(1)}
+                        </p>
+                      </div>
+                      {tool.tag === "new" && (
+                        <div className="absolute bottom-2 right-2 bg-primary text-white text-xs font-semibold py-1 px-2 rounded-full">
+                          New
                         </div>
-                      </SwiperSlide>
-                    ))}
-                </Swiper> */}
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
-
             <div className="flex justify-between items-center mb-4 px-2">
               <h2 className="text-xl font-bold text-gray-900">All Tools</h2>
               <Link
@@ -280,7 +295,7 @@ const Home = () => {
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
             >
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 text-center mx-auto">
-                {tools.slice(0, 15).map((tool) => (
+                {otherTools.slice(0, 15).map((tool) => (
                   <div
                     onClick={() => handleToolClick(tool.id, tool.slug)}
                     key={tool.id}

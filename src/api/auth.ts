@@ -60,7 +60,6 @@ export const registerUser = async (
       firstname,
       lastname,
       password,
-
       role_id,
       confirm_policy,
       confirm_newsletter,

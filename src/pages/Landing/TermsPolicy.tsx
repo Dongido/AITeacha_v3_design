@@ -7,11 +7,11 @@ import { Link } from "react-router-dom";
 
 const TermsPolicy = () => {
   const policies = [
-    { name: "AI Teacha Terms of Service", href: "/terms-of-service" },
-    { name: "AI Teacha Privacy Policy", href: "/privacy-policy" },
+    { name: "AiTeacha Terms of Service", href: "/terms-of-service" },
+    { name: "AiTeacha Privacy Policy", href: "/privacy-policy" },
     { name: "AI Policy", href: "/ai-policy" },
-    { name: "AI Teacha Data Privacy Addendum (DPA)", href: "/data-privacy" },
-    { name: "AI Teacha Student Data Policy", href: "/student-policy" },
+    { name: "AiTeacha Data Privacy Addendum (DPA)", href: "/data-privacy" },
+    { name: "AiTeacha Student Data Policy", href: "/student-policy" },
   ];
   return (
     <div>
@@ -25,7 +25,7 @@ const TermsPolicy = () => {
               <figcaption className="desc z-10 relative px-2">
                 <h1 className="text-3xl md:text-4xl lg:text-6xl font-bold text-center my-6 text-white">
                   {" "}
-                  AI Teacha Privacy
+                  AiTeacha Privacy
                 </h1>
                 <p className="text-center text-gray-100 ">
                   {" "}

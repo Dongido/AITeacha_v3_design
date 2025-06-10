@@ -19,7 +19,7 @@ const HowItWorks: React.FC = () => {
           </div>
           <h3 className="text-2xl font-semibold">Sign Up</h3>
           <p className="text-gray-100 text-center text-xl max-w-sm">
-            Create your account to get started with AI Teacha.
+            Create your account to get started with AiTeacha.
           </p>
         </div>
         <div className="flex flex-col items-center space-y-3">
@@ -46,7 +46,7 @@ const HowItWorks: React.FC = () => {
           </div>
           <h3 className="text-2xl font-semibold">Engage Students</h3>
           <p className="text-gray-100 text-xl text-center max-w-sm">
-            Create classrooms and engage Students with AI Teacha
+            Create classrooms and engage Students with AiTeacha
           </p>
         </div>
       </div>

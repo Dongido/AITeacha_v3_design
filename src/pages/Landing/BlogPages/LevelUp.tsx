@@ -15,7 +15,7 @@ const LevelUp = () => {
             Course
           </h2>
           <h2 className="text-sm text-gray-600 text-center">
-            AI Teacha Admin / September 14, 2024
+            AiTeacha Admin / September 14, 2024
           </h2>
 
           <img

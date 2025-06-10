@@ -8,10 +8,12 @@ export interface Tool {
   prompt: string | null;
   thumbnail: string;
   assign_to: string;
+  category: string;
   slug: string;
   is_customizable: number;
   req_param: string;
   tag: string;
+  editable: string;
   label: string;
   created_at: string;
   updated_at: string;
@@ -43,6 +45,22 @@ export const fetchStudentTools = async (): Promise<Tool[]> => {
   } catch (error: any) {
     throw new Error(
       error.response?.data || "Failed to fetch student tools. Please try again."
+    );
+  }
+};
+
+export const fetchToolsCategory = async (): Promise<any[]> => {
+  try {
+    const response = await apiClient.get<{
+      status: string;
+      message: string;
+      data: any[];
+    }>("/tools/get/category");
+    return response.data.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data ||
+        "Failed to fetch tools  category. Please try again."
     );
   }
 };

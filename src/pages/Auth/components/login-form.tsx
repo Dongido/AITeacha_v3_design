@@ -110,7 +110,7 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
 
         if (
           decodedToken.role === 4 &&
-          decodedToken.package === "AI Teacha Free"
+          decodedToken.package === "AiTeacha Free"
         ) {
           navigate("/payment");
         } else if (decodedToken.role === 3) {
@@ -222,12 +222,6 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
         </Form>
 
         <div className="flex flex-col sm:flex-row justify-center mt-0 space-y-4 sm:space-y-0 sm:space-x-4">
-          {/* <Button
-                  variant="outline"
-                  className="w-full flex items-center rounded-full justify-center"
-                >
-                  <FaFacebook className="mr-2" /> Facebook
-                </Button> */}
           <Button
             variant="outline"
             type="button"

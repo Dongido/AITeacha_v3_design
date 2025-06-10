@@ -7,23 +7,46 @@
     <meta name="theme-color" content="#000000" />
     <meta
       name="description"
-      content="AI Teacha - Revolutionizing Education with AI-Powered Tools."
+      content="AiTeacha - Revolutionizing Education with AI-Powered Tools."
     />
-
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo.png" />
-
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-
-    <title>AI Teacha - Transforming Education with AI</title>
+    <title>AiTeacha - Transforming Education with AI</title>
     <meta
       property="og:description"
       content="Join the future of education with AI-powered teaching tools and personalized learning."
     />
+    <style>
+      /* Styles for the floating WhatsApp button */
+      .whatsapp-button {
+        position: fixed;
+        bottom: 80px; /* Shifted up */
+        right: 20px;
+        left: auto;
+        top: auto;
+        z-index: 1000;
+        cursor: grab;
+      }
+
+      .whatsapp-button img {
+        height: 50px;
+        width: auto;
+        cursor: pointer;
+        border-radius: 50%;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .whatsapp-button img:hover {
+        transform: scale(1.1);
+        transition: transform 0.2s ease-in-out;
+      }
+    </style>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-    <!-- Start of LiveChat (www.livechat.com) code -->
+
+    <!-- LiveChat -->
     <script>
       window.__lc = window.__lc || {};
       window.__lc.license = 18926525;
@@ -68,8 +91,8 @@
           (n.LiveChatWidget = n.LiveChatWidget || e);
       })(window, document, [].slice);
     </script>
-    <noscript
-      ><a href="https://www.livechat.com/chat-with/18926525/" rel="nofollow"
+    <noscript>
+      <a href="https://www.livechat.com/chat-with/18926525/" rel="nofollow"
         >Chat with us</a
       >, powered by
       <a
@@ -77,8 +100,10 @@
         rel="noopener nofollow"
         target="_blank"
         >LiveChat</a
-      ></noscript
-    >
+      >
+    </noscript>
+
+    <!-- Facebook Pixel -->
     <script>
       !(function (f, b, e, v, n, t, s) {
         if (f.fbq) return;
@@ -106,19 +131,19 @@
       fbq("init", "1120131269684414");
       fbq("track", "PageView");
     </script>
-    <noscript
-      ><img
+    <noscript>
+      <img
         height="1"
         width="1"
         style="display: none"
         src="https://www.facebook.com/tr?id=1120131269684414&ev=PageView&noscript=1"
-    /></noscript>
-    <!-- End Meta Pixel Code -->
+      />
+    </noscript>
 
-    <!-- Google tag (gtag.js) -->
+    <!-- Google Analytics -->
     <script
       async
-      src="https://www.googletagmanager.com/gtag/js?id=G-Y3VZZ37QQS"
+      src="https://www.googletagmanager.com/gtag/js?id=G-6T9VQ3Y4G0"
     ></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -126,10 +151,10 @@
         dataLayer.push(arguments);
       }
       gtag("js", new Date());
-
-      gtag("config", "G-Y3VZZ37QQS");
+      gtag("config", "G-6T9VQ3Y4G0");
     </script>
 
+    <!-- Twitter & Facebook SDK -->
     <script
       async
       src="https://platform.twitter.com/widgets.js"
@@ -141,6 +166,48 @@
       crossorigin="anonymous"
       src="https://connect.facebook.net/en_US/sdk.js"
     ></script>
-    <!-- End of LiveChat code -->
+
+    <!-- WhatsApp Button -->
+    <a
+      href="https://wa.link/wl8em8"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="whatsapp-button"
+    >
+      <img
+        src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/2048px-WhatsApp.svg.png"
+        alt="WhatsApp"
+      />
+    </a>
+
+    <!-- Draggable WhatsApp Script -->
+    <script>
+      const whatsappBtn = document.querySelector(".whatsapp-button");
+
+      let isDragging = false;
+      let offsetX, offsetY;
+
+      whatsappBtn.addEventListener("mousedown", function (e) {
+        isDragging = true;
+        offsetX = e.clientX - whatsappBtn.getBoundingClientRect().left;
+        offsetY = e.clientY - whatsappBtn.getBoundingClientRect().top;
+        whatsappBtn.style.transition = "none";
+      });
+
+      document.addEventListener("mousemove", function (e) {
+        if (isDragging) {
+          whatsappBtn.style.left = e.clientX - offsetX + "px";
+          whatsappBtn.style.top = e.clientY - offsetY + "px";
+          whatsappBtn.style.right = "auto";
+          whatsappBtn.style.bottom = "auto";
+          whatsappBtn.style.position = "fixed";
+        }
+      });
+
+      document.addEventListener("mouseup", function () {
+        isDragging = false;
+        whatsappBtn.style.transition = "";
+      });
+    </script>
   </body>
 </html>

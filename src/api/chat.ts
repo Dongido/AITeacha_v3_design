@@ -6,17 +6,55 @@ export interface messageResponse {
   message: string;
   data: string;
 }
-export const sendChatMessage = async (data: {
-  content: string;
-  content_from: string;
-}) => {
+export const sendChatMessage = async (data: FormData) => {
   try {
-    const response = await apiClient.post("/assistant/chat", data);
+    const response = await apiClient.post("/assistant/chat", data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     return response.data;
   } catch (error: any) {
     const errorMessage =
       error.response?.data ||
       "Failed to fetch chat response. Please try again.";
+    throw new Error(errorMessage);
+  }
+};
+
+export const loadClassroomChatHistory = async (
+  classroom_id: number,
+  limit: number,
+  page: number
+) => {
+  try {
+    const response = await apiClient.get(
+      `/assistant/classroom/chat/history/${classroom_id}/${limit}/${page}`
+    );
+    return response.data;
+  } catch (error: any) {
+    const errorMessage =
+      error.response?.data ||
+      "Failed to load classroom chat history. Please try again.";
+    throw new Error(errorMessage);
+  }
+};
+
+export const loadToolChatHistory = async (
+  classroom_id: number,
+  toolID: number,
+  limit: number,
+  page: number
+) => {
+  try {
+    const response = await apiClient.get(
+      `/assistant/classroomtools/chat/history/${classroom_id}/${toolID}/${limit}/${page}`
+    );
+    return response.data;
+  } catch (error: any) {
+    const errorMessage =
+      error.response?.data ||
+      "Failed to load tool chat history. Please try again.";
     throw new Error(errorMessage);
   }
 };

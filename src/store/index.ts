@@ -11,6 +11,13 @@ import notificationsReducer from "./slices/notificationsSlice";
 import teamReducer from "./slices/teamSlice";
 import teamResourcesReducer from "./slices/teamResourcesSlice";
 import heroesWallReducer from "./slices/HeroesWallSlice";
+import userReducer from "./slices/userSlice";
+import teamClassroomReducer from "./slices/teamClassroomSlice";
+import responseReducer from "./slices/responseSlice";
+import archivedAssistantsReducer from "./slices/archivedAssistantsSlice";
+import bankReducer from "./slices/bankSlice";
+import testReducer from "./slices/testSlice";
+import studentTestsReducer from "./slices/studentTestsSlice";
 const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -25,6 +32,13 @@ const store = configureStore({
     team: teamReducer,
     teamResources: teamResourcesReducer,
     heroesWall: heroesWallReducer,
+    users: userReducer,
+    teamClassroom: teamClassroomReducer,
+    response: responseReducer,
+    archivedAssistants: archivedAssistantsReducer,
+    bank: bankReducer,
+    tests: testReducer,
+    studentTests: studentTestsReducer,
   },
 });
 

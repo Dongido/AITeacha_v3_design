@@ -3,6 +3,7 @@ import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import "./App.css";
 import Dashboard from "./layouts/Dashboard";
 import StudentDashboard from "./layouts/StudentDashboard";
+import PaidLayout from "./layouts/PaidLayout";
 import Onboard from "./pages/Auth/Onboard";
 import Auth from "./layouts/Auth";
 import { ProtectedRoute } from "./ProtectedRoute";
@@ -37,6 +38,12 @@ import DashboardHandler from "./DashboardHandler";
 import ScrollToTop from "./ScrollToTop";
 import Payment from "./pages/Auth/components/payment";
 import AITeachaOnboarding from "./pages/Landing/communities/AITeachaOnboarding";
+import Training from "./pages/Dashboard/Training";
+import Ads from "./pages/Landing/communities/Ads";
+import Community from "./pages/Dashboard/Community";
+import AuthCallback from "./pages/Dashboard/live-class/AuthCallback";
+import CreateLiveClass from "./pages/Dashboard/live-class/CreateLiveClass";
+import ExamPage from "./pages/Dashboard/test/TestPage";
 function App() {
   const location = useLocation();
 
@@ -63,9 +70,10 @@ function App() {
         element={<PioneersProgram />}
       />
       <Route
-        path="/education-trainer-program"
+        path="/ai-in-education-trainer-program"
         element={<AITeachaOnboarding />}
       />
+      <Route path="/lagos-conference" element={<Ads />} />
       <Route path="/communities/pioneers" element={<Pioneers />} />
       <Route path="/educator-tools" element={<EducatorTools />} />
       <Route path="/student-tools" element={<StudentTools />} />
@@ -102,14 +110,21 @@ function App() {
       <Route path="/dashboard" element={<DashboardHandler />} />
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard/*" element={<Dashboard />} />
+        <Route path="/auth/oauth2callback" element={<AuthCallback />} />
+
+        {/* <Route path="/dashboard/resource/training" element={<Training />} />
+            <Route path="/dashboard/resource/community" element={<Community />} />  */}
         <Route path="/payment" element={<Payment />} />
         <Route path="/classroom/s/*" element={<RoleBasedRedirect />} />
+        <Route path="/classroom/cbt/*" element={<RoleBasedRedirect />} />
+        <Route path="/examination/attempt/:id" element={<ExamPage />} />
 
         <Route
           path="/student"
           element={<Navigate to="/student/home" replace />}
         />
         <Route path="/student/*" element={<StudentDashboard />} />
+        <Route path="/class/*" element={<PaidLayout />} />
       </Route>
 
       <Route element={<PublicRoute />}>

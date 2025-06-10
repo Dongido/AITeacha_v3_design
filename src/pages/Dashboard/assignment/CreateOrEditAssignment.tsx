@@ -35,15 +35,31 @@ import {
   ToastViewport,
 } from "../../../components/ui/Toast";
 
+const containsUrl = (text: string): boolean => {
+  if (!text) return false;
+  const urlRegex = /(https?:\/\/|www\.)[^\s]+/i;
+  return urlRegex.test(text);
+};
+
 const formSchema = z.object({
   user_id: z.number(),
   classroom_id: z.number().min(1, "Please select a valid classroom"),
-  description: z.string().nonempty("Description is required"),
+  description: z
+    .string()
+    .nonempty("Description is required")
+    .refine((val) => !containsUrl(val), {
+      message: "Description cannot contain URLs",
+    }),
   number_of_students: z.number(),
   grade: z.string(),
   questions: z.array(
     z.object({
-      assignment_question: z.string().nonempty("Question cannot be empty"),
+      assignment_question: z
+        .string()
+        .nonempty("Question cannot be empty")
+        .refine((val) => !containsUrl(val), {
+          message: "Question cannot contain URLs",
+        }),
     })
   ),
 });

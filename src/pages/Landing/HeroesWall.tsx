@@ -189,7 +189,7 @@ const HeroesWall = () => {
               Heroes' Wall
             </h1>
             <p className="text-center max-w-3xl text-lg px-4 md:text-lg lg:text-xl font-bold text-gray-200">
-              Celebrate educators transforming classrooms with AI Teacha,
+              Celebrate educators transforming classrooms with AiTeacha,
               showcasing their achievements, stories, and innovative teaching
               methods.
             </p>
@@ -216,7 +216,7 @@ const HeroesWall = () => {
                     href={wall.post_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block bg-gradient-to-br from-[#5c3cbb] via-[#D565A7] to-[#5c3cbb] text-white rounded-xl shadow-lg p-6 hover:shadow-2xl"
+                    className="block bg-gradient-to-br from-[#5c3cbb] via-[#D565A7] to-[#5c3cbb] text-white rounded-xl shadow-lg p-6 hover:shadow-2xl h-[600px] overflow-hidden"
                   >
                     <LazyLoadPost
                       postUrl={wall.post_url}
