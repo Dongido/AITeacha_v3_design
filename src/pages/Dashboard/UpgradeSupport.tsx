@@ -30,7 +30,7 @@ const UpgradeSupport = () => {
   const [isEmailVerified, setIsEmailVerified] = useState<number>(0);
   const [numberOfTeachers, setNumberOfTeachers] = useState<number>(16);
   const [duration, setDuration] = useState<string>("1");
-  const [unit, setUnit] = useState<string>("monthly"); // Store unit (monthly/yearly)
+  const [unit, setUnit] = useState<string>("monthly");
   const [calculatedPrice, setCalculatedPrice] = useState<number | 0>(0);
   const [currency, setCurrency] = useState<string>(
     localStorage.getItem("selectedCurrency") || "NGN"
@@ -40,13 +40,13 @@ const UpgradeSupport = () => {
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const [couponCode, setCouponCode] = useState<string>("");
   const [discountPercentage, setDiscountPercentage] = useState<number>(0);
-  const [couponApplied, setCouponApplied] = useState<boolean>(false); // Initialize to false
+  const [couponApplied, setCouponApplied] = useState<boolean>(false);
   const [loadingCoupon, setLoadingCoupon] = useState<boolean>(false);
   const [couponVerificationMessage, setCouponVerificationMessage] =
     useState<string>("");
   const [teacherCountError, setTeacherCountError] = useState<string | null>(
     null
-  ); // New state for error message
+  );
 
   const durations = [
     { value: "1", label: "1 Month", unit: "monthly" },
@@ -108,14 +108,12 @@ const UpgradeSupport = () => {
         );
         setDiscountPercentage(0);
         setCouponApplied(false);
-        // Recalculate price without discount
         calculatePrice();
       }
     } catch (error: any) {
       setCouponVerificationMessage("Invalid coupon code");
       setDiscountPercentage(0);
       setCouponApplied(false);
-      // Recalculate price without discount
       calculatePrice();
     } finally {
       setLoadingCoupon(false);
@@ -238,9 +236,7 @@ const UpgradeSupport = () => {
                   currency,
                   numberOfTeachers
                 );
-                console.log(
-                  "User plan updated successfully after verification."
-                );
+
                 navigate("/dashboard/success?status=success");
               } else {
                 console.error(
@@ -252,10 +248,6 @@ const UpgradeSupport = () => {
                 navigate("/dashboard/success?status=failed");
               }
             } catch (err) {
-              console.error(
-                "Error during transaction verification or plan update:",
-                err
-              );
               navigate("/dashboard/success?status=failed");
             }
           } else {
@@ -267,7 +259,6 @@ const UpgradeSupport = () => {
               response.status === "cancelled" ||
               response.status === "failed"
             ) {
-              console.error("Payment explicitly failed or cancelled by user.");
               navigate("/dashboard/success?status=failed");
             } else {
               console.warn(
@@ -279,7 +270,6 @@ const UpgradeSupport = () => {
           setLoadingPlan(null);
         },
         onClose: () => {
-          console.log("Payment modal closed by user.");
           setLoadingPlan(null);
           navigate("/dashboard/success?status=closed");
         },

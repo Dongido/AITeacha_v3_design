@@ -62,6 +62,7 @@ const Chat = () => {
   const [content, setContent] = useState("");
   const [prevPath, setPrevPath] = useState<string | null>(null);
   const [sentMessages, setSentMessages] = useState("");
+  const [copySuccess, setCopySuccess] = useState(false);
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -187,8 +188,18 @@ const Chat = () => {
   };
 
   const handleCopy = (text: string) => {
-    navigator.clipboard.writeText(text);
-    alert("Copied to clipboard!");
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        setCopySuccess(true);
+        setTimeout(() => {
+          setCopySuccess(false);
+        }, 2000);
+      })
+      .catch((err) => {
+        console.error("Failed to copy text: ", err);
+        alert("Failed to copy zyra response.");
+      });
   };
 
   const preprocessText = (text: string) => {
@@ -318,6 +329,17 @@ const Chat = () => {
                   >
                     <FiCopy /> <span className="text-sm">Copy</span>
                   </button>
+                  {copySuccess && (
+                    <motion.div
+                      className="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-purple-200 text-white py-2 px-4 rounded-md shadow-lg z-50"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 20 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      Zyra response copied!
+                    </motion.div>
+                  )}
                   <button
                     onClick={() => handleTextToSpeech(message.text)}
                     className="text-gray-600 hover:text-gray-800 flex gap-1"

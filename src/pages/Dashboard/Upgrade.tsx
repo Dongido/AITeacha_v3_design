@@ -6,14 +6,7 @@ import { FLUTTERWAVE_PUBLIC } from "../../lib/utils";
 import Logo from "../../assets/img/logo.png";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import {
-  ToastProvider,
-  Toast,
-  ToastTitle,
-  ToastDescription,
-  ToastViewport,
-  ToastClose,
-} from "../../components/ui/Toast";
+
 import PricingFaq from "../Landing/components/PricingFaq";
 import PaymentMethodDialog from "./UpgradeDialog";
 import Cookies from "js-cookie";
@@ -42,7 +35,7 @@ const initialPrices = {
     GBP: { month: 0, threeMonths: 0, year: 0 },
   },
   pro: {
-    NGN: { month: 5000, threeMonths: 15000, year: 55000 },
+    NGN: { month: 50, threeMonths: 15000, year: 55000 },
     USD: { month: 5, threeMonths: 15, year: 55 },
     GBP: { month: 4, threeMonths: 12, year: 50 },
   },
@@ -382,9 +375,7 @@ const Upgrade: React.FC = () => {
     }
     return "";
   };
-  const toggleBillingCycle = () => {
-    setBillingCycle((prev) => (prev === "month" ? "year" : "month"));
-  };
+
   type PlanType = keyof typeof prices;
   type CurrencyType = keyof (typeof prices)[PlanType];
 

@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { marked } from "marked";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import parse, { Element } from "html-react-parser";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { dark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 interface MarkdownRendererProps {
   content: string | Promise<string>;

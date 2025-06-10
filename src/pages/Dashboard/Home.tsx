@@ -85,9 +85,10 @@ const Home = () => {
       setIsDialogOpen(true);
     }
   };
-
   const getUpgradeText = () => {
-    if (userDetails?.package === "AiTeacha Pro") {
+    if (userDetails?.package === "AI Teacha Enterprise") {
+      return "You're all set with AI Teacha Enterprise.";
+    } else if (userDetails?.package === "AI Teacha Pro") {
       return "Upgrade to Premium";
     } else {
       return "Upgrade to Pro";
