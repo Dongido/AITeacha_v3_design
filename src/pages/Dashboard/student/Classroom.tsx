@@ -430,7 +430,7 @@ const Classroom = () => {
     if (!inputText.trim()) return;
     setSelectedOutline(null);
     const currentKey = selectedTool ? selectedTool : "main";
-
+    console.log(currentKey);
     setMessages((prev) => ({
       ...prev,
       [currentKey]: [
@@ -791,6 +791,32 @@ const Classroom = () => {
       handleSend();
     }
   };
+  const parseOptions = (optionsString: string): string[] => {
+    try {
+      let cleanString =
+        optionsString.startsWith('"') && optionsString.endsWith('"')
+          ? optionsString.substring(1, optionsString.length - 1)
+          : optionsString;
+
+      if (cleanString.startsWith("['") && cleanString.endsWith("']")) {
+        cleanString = cleanString.replace(/'/g, '"');
+      }
+
+      const parsed = JSON.parse(cleanString);
+
+      if (
+        Array.isArray(parsed) &&
+        parsed.every((item) => typeof item === "string")
+      ) {
+        return parsed;
+      }
+      return [];
+    } catch (error) {
+      console.error("Failed to parse options string:", optionsString, error);
+      return [];
+    }
+  };
+  const getOptionLetter = (index: number) => String.fromCharCode(65 + index);
 
   return (
     <div className="min-h-screen bg-[#F1F1F1]">
@@ -852,7 +878,7 @@ const Classroom = () => {
             {classroom?.isLiveclassroom && viewState !== "classroom" && (
               <Button
                 variant={"gradient"}
-                className="rounded-md mt-4"
+                className="rounded-full mt-4"
                 onClick={() => setViewState("classroom")}
               >
                 Back to Classroom
@@ -1171,7 +1197,6 @@ const Classroom = () => {
           ) : viewState === "liveclass" ? (
             <div className="liveclass-div">
               <div className="my-8 p-6 bg-gradient-to-r from-gray-50 to-purple-50 border border-purple-200 rounded-lg shadow-sm">
-                {/* Directly check for the presence of liveclassroomassessments */}
                 {classroom?.liveclassroomassessments &&
                 classroom.liveclassroomassessments.length > 0 ? (
                   <>
@@ -1179,65 +1204,61 @@ const Classroom = () => {
                       Live Class Assessments
                     </h2>
                     {classroom.liveclassroomassessments.map(
-                      (assessmentItem: any, itemIndex: number) =>
-                        assessmentItem.assessment &&
-                        assessmentItem.assessment.length > 0 ? (
+                      (question: any, qIndex: number) => {
+                        const options = parseOptions(
+                          question.liveclassroomassessment_options
+                        );
+
+                        return (
                           <div
-                            key={assessmentItem.id || `item-${itemIndex}`}
-                            className="mb-8 p-4 border rounded-lg bg-white shadow-sm"
+                            key={
+                              question.liveclassroomassessment_id ||
+                              `q-${qIndex}`
+                            }
+                            className="mb-6 p-4 border border-gray-200 rounded-md bg-gray-50"
                           >
-                            <h3 className="text-xl font-semibold text-gray-700 mb-4">
-                              Assessment Set {itemIndex + 1}
-                            </h3>
-                            {assessmentItem.assessment.map(
-                              (question: any, qIndex: number) => (
-                                <div
-                                  key={
-                                    question.id || `q-${itemIndex}-${qIndex}`
-                                  }
-                                  className="mb-6 p-4 border border-gray-200 rounded-md bg-gray-50"
-                                >
-                                  <p className="text-lg font-medium text-gray-800 mb-3">
-                                    {qIndex + 1}. {question.question}
-                                  </p>
-                                  <div className="space-y-2">
-                                    {Object.entries(question.options).map(
-                                      ([optionKey, optionValue]: [
-                                        string,
-                                        any
-                                      ]) => (
-                                        <label
-                                          key={optionKey}
-                                          className="flex items-center space-x-2 cursor-pointer p-2 rounded-md hover:bg-gray-100"
-                                        >
-                                          <input
-                                            type="radio"
-                                            name={`question-${question.id}`}
-                                            value={optionKey}
-                                            checked={
-                                              studentAnswers[question.id] ===
-                                              optionKey
-                                            }
-                                            onChange={() =>
-                                              handleAnswerChange(
-                                                question.id,
-                                                optionKey
-                                              )
-                                            }
-                                            className="form-radio h-4 w-4 text-purple-600 focus:ring-purple-500"
-                                          />
-                                          <span className="text-gray-700">
-                                            {optionKey}. {optionValue}
-                                          </span>
-                                        </label>
-                                      )
-                                    )}
-                                  </div>
-                                </div>
-                              )
-                            )}
+                            <p className="text-lg font-medium text-gray-800 mb-3">
+                              {qIndex + 1}.{" "}
+                              {question.liveclassroomassessment_question}
+                            </p>
+                            <div className="space-y-2">
+                              {options.map(
+                                (optionValue: string, optionIndex: number) => {
+                                  const optionKey =
+                                    getOptionLetter(optionIndex);
+                                  return (
+                                    <label
+                                      key={optionKey}
+                                      className="flex items-center space-x-2 cursor-pointer p-2 rounded-md hover:bg-gray-100"
+                                    >
+                                      <input
+                                        type="radio"
+                                        name={`question-${question.liveclassroomassessment_id}`}
+                                        value={optionKey}
+                                        checked={
+                                          studentAnswers[
+                                            question.liveclassroomassessment_id
+                                          ] === optionKey
+                                        }
+                                        onChange={() =>
+                                          handleAnswerChange(
+                                            question.liveclassroomassessment_id,
+                                            optionKey
+                                          )
+                                        }
+                                        className="form-radio h-4 w-4 text-purple-600 focus:ring-purple-500"
+                                      />
+                                      <span className="text-gray-700">
+                                        {optionKey}. {optionValue}
+                                      </span>
+                                    </label>
+                                  );
+                                }
+                              )}
+                            </div>
                           </div>
-                        ) : null
+                        );
+                      }
                     )}
                     <div className="mt-8 text-center">
                       <Button
@@ -1263,6 +1284,23 @@ const Classroom = () => {
                         <p className="text-red-600 mt-2">{submissionError}</p>
                       )}
                     </div>
+
+                    {classroom?.meeting_url && (
+                      <div className="mt-6">
+                        <p className="text-gray-700 text-lg mb-4">
+                          Ready to dive into the learning?
+                        </p>
+                        <Button
+                          onClick={() =>
+                            window.open(classroom.meeting_url, "_blank")
+                          }
+                          className="mt-2 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+                          variant={"gradient"}
+                        >
+                          🚀 Join the Live Session Now!
+                        </Button>
+                      </div>
+                    )}
                   </>
                 ) : (
                   <div className="text-center">
