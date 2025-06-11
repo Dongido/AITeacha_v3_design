@@ -100,6 +100,8 @@ import GoogleMeetIframe from "../pages/Dashboard/live-class/LiveClassPreview";
 import JitsiMeetingPage from "../pages/Dashboard/live-class/LiveclassJitsi";
 import TranscriptDetailsPage from "../pages/Dashboard/live-class/TranscriptDetails";
 import SuccessPage from "../pages/Dashboard/SuccessPage";
+
+import SchoolStudents from "../pages/Dashboard/school/SchoolStudents";
 const icon = {
   className: "w-5 h-5 text-inherit",
 };
@@ -603,6 +605,12 @@ export const Paramroutes = [
         name: "success",
         path: "/success",
         element: <SuccessPage />,
+      },
+      {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "school-students",
+        path: "/school/students",
+        element: <SchoolStudents />,
       },
     ],
   },
