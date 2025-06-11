@@ -867,23 +867,29 @@ const Classroom = () => {
 
   if (fetchingClassroom) {
     return (
-      <div className="border rounded-lg">
-        <div className="bg-[#5C3CBB] text-white p-8 rounded-lg overflow-hidden">
-          <Skeleton className="h-6 w-1/4 mb-4" />
-          <Skeleton className="h-8 w-3/4 mb-2" />
-          <Skeleton className="h-4 w-2/3 mb-4" />
-          <Skeleton className="h-4 w-1/2" />
-          <Skeleton className="h-10 w-32 mt-4" />
-        </div>
-        <Skeleton className="h-4 w-1/3 mt-4" />
-        <Skeleton className="h-4 w-1/4" />
-        <Skeleton className="h-4 w-1/2" />
-        <Skeleton className="h-4 w-1/3" />
-
-        <h3 className="mt-6 font-semibold">Tools:</h3>
-        <Skeleton className="h-4 w-full mt-2" />
-        <Skeleton className="h-4 w-3/4" />
-        <Skeleton className="h-4 w-5/6" />
+      <div className="overflow-x-auto">
+        <table className="min-w-full border-collapse">
+          <thead>
+            <tr>
+              {[...Array(5)].map((_, index) => (
+                <th key={index} className="p-4 border-b">
+                  <Skeleton className="h-4 w-16 rounded" />
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {[...Array(6)].map((_, rowIndex) => (
+              <tr key={rowIndex} className="border-b">
+                {[...Array(5)].map((_, colIndex) => (
+                  <td key={colIndex} className="p-4">
+                    <Skeleton className="h-4 w-full rounded" />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     );
   }
