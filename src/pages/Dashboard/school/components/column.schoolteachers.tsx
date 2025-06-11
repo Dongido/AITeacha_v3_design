@@ -57,14 +57,7 @@ export const schoolTeacherColumns = () => [
       return <div className=" w-1/2 text-black">{info.getValue()}</div>;
     },
   }),
-  studentColumnHelper.accessor("last_join", {
-    header: ({ column }) => <Header title="Last Joined" column={column} />,
-    sortingFn: "datetime",
-    cell: (info) => {
-      const lastJoin = new Date(info.getValue());
-      return <span>{lastJoin.toLocaleDateString()}</span>;
-    },
-  }),
+
   studentColumnHelper.accessor("student_id", {
     header: ({ column }) => <Header title="Actions" column={column} />,
     cell: (info) => {

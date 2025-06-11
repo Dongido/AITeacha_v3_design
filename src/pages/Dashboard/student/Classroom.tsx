@@ -63,10 +63,23 @@ import {
   loadToolChatHistory,
 } from "../../../api/chat";
 import { sendLiveClassroomAssessmentAnswers } from "../../../api/liveclass";
+import {
+  ToastProvider,
+  Toast,
+  ToastTitle,
+  ToastViewport,
+} from "../../../components/ui/Toast";
+
 const Classroom = () => {
   const [inputText, setInputText] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [toastOpen, setToastOpen] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastVariant, setToastVariant] = useState<"default" | "destructive">(
+    "default"
+  );
+
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const speechRef = useRef<SpeechSynthesisUtterance | null>(null);
   const [selectedTool, setSelectedTool] = useState<string | null>(null);
@@ -120,6 +133,9 @@ const Classroom = () => {
   const classroom = useSelector(
     (state: RootState) => state.classrooms.selectedClassroom
   );
+  const fetchingClassroom = useSelector(
+    (state: RootState) => state.classrooms.fetchingClassroom
+  );
   const tools = classroom?.tools || [];
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -143,6 +159,7 @@ const Classroom = () => {
   const [submittingAssessment, setSubmittingAssessment] = useState(false);
   const [submissionSuccess, setSubmissionSuccess] = useState(false);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
+  const [isAssessmentCompleted, setIsAssessmentCompleted] = useState(false);
 
   const handleOverviewClick = () => {
     setSelectedOverview(true);
@@ -154,6 +171,32 @@ const Classroom = () => {
       dispatch(fetchClassroomByIdThunk(Number(id)));
     }
   }, [dispatch, id]);
+
+  useEffect(() => {
+    if (!classroom) {
+      setIsAssessmentCompleted(false);
+      setStudentAnswers({});
+      return;
+    }
+    const completed = classroom.liveclassassessment_status === "submitted";
+    setIsAssessmentCompleted(completed);
+
+    if (
+      completed ||
+      classroom.liveclassroomassessments.some(
+        (q) => q.liveclassroomassessment_student_answer !== null
+      )
+    ) {
+      const initialAnswers: { [key: number]: string } = {};
+      classroom.liveclassroomassessments.forEach((q) => {
+        if (q.liveclassroomassessment_student_answer !== null) {
+          initialAnswers[q.liveclassroomassessment_id] =
+            q.liveclassroomassessment_student_answer;
+        }
+      });
+      setStudentAnswers(initialAnswers);
+    }
+  }, [classroom]);
 
   useEffect(() => {
     let newMessage: string = classroom?.content || "";
@@ -538,6 +581,7 @@ const Classroom = () => {
       alert("No assessments or classroom ID available for submission.");
       return;
     }
+    console.log(liveAssessments);
 
     const allAnswers: {
       liveclassroomassessment_id: number;
@@ -546,19 +590,16 @@ const Classroom = () => {
       transcript_id?: number;
     }[] = [];
 
-    liveAssessments.forEach((assessmentItem) => {
-      if (assessmentItem.assessment && assessmentItem.assessment.length > 0) {
-        assessmentItem.assessment.forEach((question: any) => {
-          const selectedAnswer = studentAnswers[question.id];
+    liveAssessments.forEach((question: any) => {
+      const selectedAnswer =
+        studentAnswers[question.liveclassroomassessment_id];
 
-          if (selectedAnswer) {
-            allAnswers.push({
-              liveclassroomassessment_id: question.id,
-              question: question.question,
-              student_answer: selectedAnswer,
-              transcript_id: assessmentItem.id,
-            });
-          }
+      if (selectedAnswer) {
+        allAnswers.push({
+          liveclassroomassessment_id: question.liveclassroomassessment_id,
+          question: question.liveclassroomassessment_question,
+          student_answer: selectedAnswer,
+          transcript_id: question.transcript_id,
         });
       }
     });
@@ -581,8 +622,12 @@ const Classroom = () => {
         answers: allAnswers,
       });
 
-      console.log("Live class assessment answers sent:", response);
       setSubmissionSuccess(true);
+
+      setToastMessage("Assessments submitted successfully!");
+      setToastVariant("default");
+      setToastOpen(true);
+      await dispatch(fetchClassroomByIdThunk(Number(id)));
     } catch (error: any) {
       console.error("Error submitting live class assessment answers:", error);
       setSubmissionError(
@@ -816,821 +861,975 @@ const Classroom = () => {
       return [];
     }
   };
-  const getOptionLetter = (index: number) => String.fromCharCode(65 + index);
+  const getOptionLetter = (index: number): string => {
+    return String.fromCharCode(65 + index);
+  };
 
+  if (fetchingClassroom) {
+    return (
+      <div className="border rounded-lg">
+        <div className="bg-[#5C3CBB] text-white p-8 rounded-lg overflow-hidden">
+          <Skeleton className="h-6 w-1/4 mb-4" />
+          <Skeleton className="h-8 w-3/4 mb-2" />
+          <Skeleton className="h-4 w-2/3 mb-4" />
+          <Skeleton className="h-4 w-1/2" />
+          <Skeleton className="h-10 w-32 mt-4" />
+        </div>
+        <Skeleton className="h-4 w-1/3 mt-4" />
+        <Skeleton className="h-4 w-1/4" />
+        <Skeleton className="h-4 w-1/2" />
+        <Skeleton className="h-4 w-1/3" />
+
+        <h3 className="mt-6 font-semibold">Tools:</h3>
+        <Skeleton className="h-4 w-full mt-2" />
+        <Skeleton className="h-4 w-3/4" />
+        <Skeleton className="h-4 w-5/6" />
+      </div>
+    );
+  }
   return (
-    <div className="min-h-screen bg-[#F1F1F1]">
-      <Sidenav
-        brandName="AiTeacha"
-        outlines={(classroom?.classroomoutlines || []).map((outline) => ({
-          name: outline.classroomoutline_title,
-          path: outline.classroomoutline_content || "#",
-          classroomoutline_id: outline.classroomoutline_id,
-          assessmentStatus: outline.assessment_status,
-          assessments: outline.assessments,
-          mark_as_read: outline.mark_as_read,
-        }))}
-        tools={tools}
-        selectedTool={selectedTool}
-        onSelectTool={setSelectedTool}
-        onToggle={(collapsed) => setIsCollapsed(collapsed)}
-        selectedOutline={selectedOutline}
-        onSelectOutline={setSelectedOutline}
-        selectedOverview={selectedOverview}
-        setSelectedOverview={setSelectedOverview}
-        onOverviewClick={handleOverviewClick}
-        classroomId={id}
-        viewState={viewState}
-        onToggleView={handleToggleView}
-      />
-      <div
-        className={`flex-1 transition-all duration-300 px-2  ${
-          isCollapsed ? "xl:ml-28" : "xl:ml-72"
-        }`}
-      >
-        <DashboardNavbar />
-        <div className="mt-4 md:mt-6 lg:mt-10">
-          <div className="flex items-center  justify-between flex-col sm:flex-row">
-            <div className="mt-4 ml-4 sm:mt-0 flex items-center justify-between w-full">
-              <div className="text-left">
-                <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
-                  {classroom?.classroom_name}
-                  {selectedTool && (
-                    <>
-                      /
-                      <p className="text-primary text-sm font-bold">
-                        In use: {selectedTool}
-                      </p>
-                    </>
-                  )}
-                </h2>
+    <ToastProvider>
+      <div className="min-h-screen bg-[#F1F1F1]">
+        <Sidenav
+          brandName="AiTeacha"
+          outlines={(classroom?.classroomoutlines || []).map((outline) => ({
+            name: outline.classroomoutline_title,
+            path: outline.classroomoutline_content || "#",
+            classroomoutline_id: outline.classroomoutline_id,
+            assessmentStatus: outline.assessment_status,
+            assessments: outline.assessments,
+            mark_as_read: outline.mark_as_read,
+          }))}
+          tools={tools}
+          selectedTool={selectedTool}
+          onSelectTool={setSelectedTool}
+          onToggle={(collapsed) => setIsCollapsed(collapsed)}
+          selectedOutline={selectedOutline}
+          onSelectOutline={setSelectedOutline}
+          selectedOverview={selectedOverview}
+          setSelectedOverview={setSelectedOverview}
+          onOverviewClick={handleOverviewClick}
+          classroomId={id}
+          viewState={viewState}
+          onToggleView={handleToggleView}
+        />
+        <div
+          className={`flex-1 transition-all duration-300 px-2  ${
+            isCollapsed ? "xl:ml-28" : "xl:ml-72"
+          }`}
+        >
+          <DashboardNavbar />
+          <div className="mt-4 md:mt-6 lg:mt-10">
+            <div className="flex items-center  justify-between flex-col sm:flex-row">
+              <div className="mt-4 ml-4 sm:mt-0 flex items-center justify-between w-full">
+                <div className="text-left">
+                  <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
+                    {classroom?.classroom_name}
+                    {selectedTool && (
+                      <>
+                        /
+                        <p className="text-primary text-sm font-bold">
+                          In use: {selectedTool}
+                        </p>
+                      </>
+                    )}
+                  </h2>
+                </div>
               </div>
-            </div>
-            {classroom?.isLiveclassroom && viewState !== "liveclass" && (
-              <Button
-                variant={"gradient"}
-                className="rounded-full mt-4"
-                onClick={() => setViewState("liveclass")}
-              >
-                Preview Live Class
-              </Button>
-            )}
-            {classroom?.isLiveclassroom && viewState !== "classroom" && (
-              <Button
-                variant={"gradient"}
-                className="rounded-full mt-4"
-                onClick={() => setViewState("classroom")}
-              >
-                Back to Classroom
-              </Button>
-            )}
-          </div>
-
-          {viewState === "classroom" ? (
-            <>
-              <div className="relative flex flex-col lg:flex-row max-h-[550px]  overflow-y-auto pb-[100px] lg:pb-[70px]">
-                <div
-                  ref={chatContainerRef}
-                  className="flex-grow overflow-y-auto bg-gray-50 border border-gray-300 rounded-lg shadow-inner space-y-2 m-4 p-4 max-h-[450px]"
+              {classroom?.isLiveclassroom && viewState !== "liveclass" && (
+                <Button
+                  variant={"gradient"}
+                  className="rounded-full mt-4"
+                  onClick={() => setViewState("liveclass")}
                 >
-                  {selectedOverview ? (
-                    <MarkdownRenderer
-                      content={welcomeMessage}
-                      className="text-sm lg:text-md text-gray-800"
-                    />
-                  ) : currentMessages.length === 0 ? (
-                    <>
+                  Preview Live Class
+                </Button>
+              )}
+              {classroom?.isLiveclassroom && viewState !== "classroom" && (
+                <Button
+                  variant={"gradient"}
+                  className="rounded-full mt-4"
+                  onClick={() => setViewState("classroom")}
+                >
+                  Back to Classroom
+                </Button>
+              )}
+            </div>
+
+            {viewState === "classroom" ? (
+              <>
+                <div className="relative flex flex-col lg:flex-row max-h-[550px]  overflow-y-auto pb-[100px] lg:pb-[70px]">
+                  <div
+                    ref={chatContainerRef}
+                    className="flex-grow overflow-y-auto bg-gray-50 border border-gray-300 rounded-lg shadow-inner space-y-2 m-4 p-4 max-h-[450px]"
+                  >
+                    {selectedOverview ? (
                       <MarkdownRenderer
                         content={welcomeMessage}
                         className="text-sm lg:text-md text-gray-800"
                       />
-                      {selectedOutline && selectedOutline.mark_as_read === 0 ? (
-                        <Button
-                          onClick={() =>
-                            handleMarkAsRead(
-                              selectedOutline.classroomoutline_id
-                            )
-                          }
-                          variant={"gradient"}
-                          className="rounded-md"
-                          disabled={loading}
-                        >
-                          {loading ? "Marking..." : "Mark as Read"}
-                        </Button>
-                      ) : selectedOutline &&
-                        selectedOutline.mark_as_read === 1 ? (
-                        <Button
-                          variant={"gray"}
-                          className="rounded-md"
-                          disabled
-                        >
-                          Completed
-                        </Button>
-                      ) : null}
-                      {selectedOutline &&
-                        selectedOutline.assessments &&
-                        selectedOutline.assessments.length > 0 &&
-                        selectedOutline.assessmentStatus === "pending" && (
-                          <>
-                            <hr />
-                            <br />
-                            <h2>Take Assessments:</h2>
-                            <br />
-                            {selectedOutline.assessments.map(
-                              (assessment: any, index: any) => (
-                                <div key={assessment.outlineassessment_id}>
-                                  Question {index + 1}:{" "}
-                                  {assessment.outlineassessment_question}
-                                  <br />
-                                  {(() => {
-                                    try {
-                                      const options = JSON.parse(
-                                        assessment.outlineassessment_options
-                                      );
-                                      if (Array.isArray(options)) {
-                                        return (
-                                          <>
-                                            {options.map((option, index) => (
-                                              <div
-                                                key={`${assessment.outlineassessment_id}-${index}`}
-                                              >
-                                                <input
-                                                  type="radio"
-                                                  id={`${assessment.outlineassessment_id}-${index}`}
-                                                  name={
-                                                    assessment.outlineassessment_id
-                                                  }
-                                                  value={option}
-                                                />
-                                                &ensp;
-                                                <label
-                                                  htmlFor={`${assessment.outlineassessment_id}-${index}`}
-                                                >
-                                                  {option}
-                                                </label>
-                                                <br />
-                                              </div>
-                                            ))}
-                                            <br />
-                                            <br />
-                                          </>
+                    ) : currentMessages.length === 0 ? (
+                      <>
+                        <MarkdownRenderer
+                          content={welcomeMessage}
+                          className="text-sm lg:text-md text-gray-800"
+                        />
+                        {selectedOutline &&
+                        selectedOutline.mark_as_read === 0 ? (
+                          <Button
+                            onClick={() =>
+                              handleMarkAsRead(
+                                selectedOutline.classroomoutline_id
+                              )
+                            }
+                            variant={"gradient"}
+                            className="rounded-md"
+                            disabled={loading}
+                          >
+                            {loading ? "Marking..." : "Mark as Read"}
+                          </Button>
+                        ) : selectedOutline &&
+                          selectedOutline.mark_as_read === 1 ? (
+                          <Button
+                            variant={"gray"}
+                            className="rounded-md"
+                            disabled
+                          >
+                            Completed
+                          </Button>
+                        ) : null}
+                        {selectedOutline &&
+                          selectedOutline.assessments &&
+                          selectedOutline.assessments.length > 0 &&
+                          selectedOutline.assessmentStatus === "pending" && (
+                            <>
+                              <hr />
+                              <br />
+                              <h2>Take Assessments:</h2>
+                              <br />
+                              {selectedOutline.assessments.map(
+                                (assessment: any, index: any) => (
+                                  <div key={assessment.outlineassessment_id}>
+                                    Question {index + 1}:{" "}
+                                    {assessment.outlineassessment_question}
+                                    <br />
+                                    {(() => {
+                                      try {
+                                        const options = JSON.parse(
+                                          assessment.outlineassessment_options
                                         );
-                                      } else {
+                                        if (Array.isArray(options)) {
+                                          return (
+                                            <>
+                                              {options.map((option, index) => (
+                                                <div
+                                                  key={`${assessment.outlineassessment_id}-${index}`}
+                                                >
+                                                  <input
+                                                    type="radio"
+                                                    id={`${assessment.outlineassessment_id}-${index}`}
+                                                    name={
+                                                      assessment.outlineassessment_id
+                                                    }
+                                                    value={option}
+                                                  />
+                                                  &ensp;
+                                                  <label
+                                                    htmlFor={`${assessment.outlineassessment_id}-${index}`}
+                                                  >
+                                                    {option}
+                                                  </label>
+                                                  <br />
+                                                </div>
+                                              ))}
+                                              <br />
+                                              <br />
+                                            </>
+                                          );
+                                        } else {
+                                          return `Options: ${assessment.outlineassessment_options}<br><br>`;
+                                        }
+                                      } catch (e) {
                                         return `Options: ${assessment.outlineassessment_options}<br><br>`;
                                       }
-                                    } catch (e) {
-                                      return `Options: ${assessment.outlineassessment_options}<br><br>`;
-                                    }
-                                  })()}
-                                </div>
-                              )
-                            )}
-                            <Button
-                              onClick={() =>
-                                sendAllAnswers(selectedOutline.assessments)
-                              }
-                              variant={"gradient"}
-                              className="rounded-md mt-4"
-                              disabled={loading}
-                            >
-                              {loading ? "Submitting..." : "Submit All Answers"}
-                            </Button>
-                          </>
-                        )}
-                      {selectedOutline &&
-                        selectedOutline.assessments &&
-                        selectedOutline.assessments.length > 0 &&
-                        selectedOutline.assessmentStatus !== "pending" && (
-                          <>
-                            <hr />
-                            <h2>Assessment Taken</h2>
-                          </>
-                        )}
-                    </>
-                  ) : (
-                    <>
-                      {loadingHistory && !selectedTool && historyPage === 0 && (
-                        <div className="flex justify-center items-center h-full">
-                          <svg
-                            className="animate-spin h-6 w-6 text-primary"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                          >
-                            <circle
-                              className="opacity-25"
-                              cx="12"
-                              cy="12"
-                              r="10"
-                              stroke="currentColor"
-                              strokeWidth="4"
-                            ></circle>
-                            <path
-                              className="opacity-75"
-                              fill="currentColor"
-                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                            ></path>
-                          </svg>
-                        </div>
-                      )}
-                      {errorHistory && !selectedTool && (
-                        <div className="text-center text-red-400">
-                          Error loading history: {errorHistory}
-                        </div>
-                      )}
-                      {loadingToolHistory &&
-                        selectedTool &&
-                        toolHistoryPage === 0 && (
-                          <div className="flex justify-center items-center h-full">
-                            <svg
-                              className="animate-spin h-6 w-6 text-primary"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                            >
-                              <circle
-                                className="opacity-25"
-                                cx="12"
-                                cy="12"
-                                r="10"
-                                stroke="currentColor"
-                                strokeWidth="4"
-                              ></circle>
-                              <path
-                                className="opacity-75"
-                                fill="currentColor"
-                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                              ></path>
-                            </svg>
-                          </div>
-                        )}
-                      {errorToolHistory && selectedTool && (
-                        <div className="text-center text-red-400">
-                          Error loading tool history: {errorToolHistory}
-                        </div>
-                      )}
-
-                      {showLoadMoreButton && (
-                        <div className=" bg-gray-50 py-2 flex justify-center">
-                          {!loadingHistory && !loadingToolHistory && (
-                            <button
-                              onClick={(event) => handleLoadMore(event)}
-                              className="text-primary hover:underline text-sm"
-                            >
-                              Load More
-                            </button>
-                          )}
-                          {loadingHistory &&
-                            !selectedTool &&
-                            historyPage > 0 && (
-                              <div className="text-gray-500 text-sm">
-                                Loading more history...
-                              </div>
-                            )}
-                          {loadingToolHistory &&
-                            selectedTool &&
-                            toolHistoryPage > 0 && (
-                              <div className="text-gray-500 text-sm">
-                                Loading more tool history...
-                              </div>
-                            )}
-                        </div>
-                      )}
-                      {currentMessages.map((message, index) => (
-                        <motion.div
-                          key={index}
-                          initial={{ opacity: 0, scale: 0.9 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          transition={{ duration: 0.3, delay: index * 0.1 }}
-                          className={`flex flex-col mb-2 ${
-                            message.fromUser ? "items-end" : "items-start"
-                          }`}
-                        >
-                          {!message.fromUser && (
-                            <div className="flex justify-end space-x-4 mb-1">
-                              <button
-                                onClick={() => handleCopy(message.text)}
-                                className="text-gray-600 hover:text-gray-800 flex gap-1"
-                              >
-                                <FiCopy /> <span className="text-sm">Copy</span>
-                              </button>
-                              <button
-                                onClick={() => handleTextToSpeech(message.text)}
-                                className="text-gray-600 hover:text-gray-800 flex gap-1"
-                              >
-                                {isSpeaking ? <FiPause /> : <FiVolume2 />}
-                                <span className="text-sm">
-                                  {isSpeaking ? "Pause" : "Voice"}
-                                </span>
-                              </button>
-                            </div>
-                          )}
-                          <MarkdownRenderer
-                            content={message.text}
-                            className={`p-3 text-sm ${
-                              message.fromUser
-                                ? "bg-primary max-w-xs text-white rounded-tl-lg"
-                                : "bg-gray-200 max-w-xl text-black rounded-tr-lg"
-                            }`}
-                            style={{
-                              wordWrap: "break-word",
-                              whiteSpace: "pre-wrap",
-                            }}
-                          />
-                        </motion.div>
-                      ))}
-                    </>
-                  )}
-                  <div ref={messagesEndRef} />
-                </div>
-              </div>
-
-              <div className="fixed bottom-0 left-0 w-full bg-white  border-t lg:flex lg:w-[calc(100%-5rem)] lg:ml-[5rem] flex-col lg:flex-row">
-                <div className="flex justify-between items-center gap-24 w-full">
-                  <div
-                    className="w-64 h-20 bg-cover bg-center relative hidden lg:block"
-                    style={{ backgroundImage: `url(${greyImg})` }}
-                  >
-                    <span className="absolute inset-0 flex items-center text-sm italic justify-center text-white text-lg font-bold bg-black bg-opacity-20">
-                      Powered By <span className="text-lg ml-1"> Zyra</span>
-                    </span>
-                  </div>
-
-                  <div className="relative p-2 lg:-ml-24 flex items-center w-full">
-                    <TextArea
-                      value={inputText}
-                      onChange={(e) => setInputText(e.target.value)}
-                      onKeyDown={handleKeyDown}
-                      placeholder="Type your message..."
-                      className="flex-grow pr-16 px-3 py-2 border text-md rounded-lg"
-                    />
-                    <button
-                      onClick={toggleRecording}
-                      className={`absolute right-16 top-1/2 transform -translate-y-1/2 p-3 rounded-full ${
-                        isRecording
-                          ? "bg-red-500 text-white"
-                          : "bg-gray-200 text-black"
-                      }`}
-                    >
-                      <FiMic />
-                    </button>
-                    <button
-                      onClick={handleSend}
-                      aria-label="Send Message"
-                      disabled={inputText.trim().length === 0}
-                      className="absolute right-2 top-1/2 transform -translate-y-1/2 p-2 bg-primary text-white rounded-full mr-4"
-                    >
-                      <FiSend className="w-5 h-5" />
-                    </button>
-                  </div>
-                </div>
-
-                <Button
-                  onClick={() => setIsDrawerOpen(true)}
-                  variant={"gradient"}
-                  className="flex items-center bg-white w-full rounded-md text-black lg:hidden mt-2 mx-auto"
-                >
-                  View Tools
-                </Button>
-              </div>
-            </>
-          ) : viewState === "liveclass" ? (
-            <div className="liveclass-div">
-              <div className="my-8 p-6 bg-gradient-to-r from-gray-50 to-purple-50 border border-purple-200 rounded-lg shadow-sm">
-                {classroom?.liveclassroomassessments &&
-                classroom.liveclassroomassessments.length > 0 ? (
-                  <>
-                    <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-800 mb-6 text-center">
-                      Live Class Assessments
-                    </h2>
-                    {classroom.liveclassroomassessments.map(
-                      (question: any, qIndex: number) => {
-                        const options = parseOptions(
-                          question.liveclassroomassessment_options
-                        );
-
-                        return (
-                          <div
-                            key={
-                              question.liveclassroomassessment_id ||
-                              `q-${qIndex}`
-                            }
-                            className="mb-6 p-4 border border-gray-200 rounded-md bg-gray-50"
-                          >
-                            <p className="text-lg font-medium text-gray-800 mb-3">
-                              {qIndex + 1}.{" "}
-                              {question.liveclassroomassessment_question}
-                            </p>
-                            <div className="space-y-2">
-                              {options.map(
-                                (optionValue: string, optionIndex: number) => {
-                                  const optionKey =
-                                    getOptionLetter(optionIndex);
-                                  return (
-                                    <label
-                                      key={optionKey}
-                                      className="flex items-center space-x-2 cursor-pointer p-2 rounded-md hover:bg-gray-100"
-                                    >
-                                      <input
-                                        type="radio"
-                                        name={`question-${question.liveclassroomassessment_id}`}
-                                        value={optionKey}
-                                        checked={
-                                          studentAnswers[
-                                            question.liveclassroomassessment_id
-                                          ] === optionKey
-                                        }
-                                        onChange={() =>
-                                          handleAnswerChange(
-                                            question.liveclassroomassessment_id,
-                                            optionKey
-                                          )
-                                        }
-                                        className="form-radio h-4 w-4 text-purple-600 focus:ring-purple-500"
-                                      />
-                                      <span className="text-gray-700">
-                                        {optionKey}. {optionValue}
-                                      </span>
-                                    </label>
-                                  );
-                                }
+                                    })()}
+                                  </div>
+                                )
                               )}
+                              <Button
+                                onClick={() =>
+                                  sendAllAnswers(selectedOutline.assessments)
+                                }
+                                variant={"gradient"}
+                                className="rounded-md mt-4"
+                                disabled={loading}
+                              >
+                                {loading
+                                  ? "Submitting..."
+                                  : "Submit All Answers"}
+                              </Button>
+                            </>
+                          )}
+                        {selectedOutline &&
+                          selectedOutline.assessments &&
+                          selectedOutline.assessments.length > 0 &&
+                          selectedOutline.assessmentStatus !== "pending" && (
+                            <>
+                              <hr />
+                              <h2>Assessment Taken</h2>
+                            </>
+                          )}
+                      </>
+                    ) : (
+                      <>
+                        {loadingHistory &&
+                          !selectedTool &&
+                          historyPage === 0 && (
+                            <div className="flex justify-center items-center h-full">
+                              <svg
+                                className="animate-spin h-6 w-6 text-primary"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                              >
+                                <circle
+                                  className="opacity-25"
+                                  cx="12"
+                                  cy="12"
+                                  r="10"
+                                  stroke="currentColor"
+                                  strokeWidth="4"
+                                ></circle>
+                                <path
+                                  className="opacity-75"
+                                  fill="currentColor"
+                                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                ></path>
+                              </svg>
                             </div>
+                          )}
+                        {errorHistory && !selectedTool && (
+                          <div className="text-center text-red-400">
+                            Error loading history: {errorHistory}
                           </div>
-                        );
-                      }
+                        )}
+                        {loadingToolHistory &&
+                          selectedTool &&
+                          toolHistoryPage === 0 && (
+                            <div className="flex justify-center items-center h-full">
+                              <svg
+                                className="animate-spin h-6 w-6 text-primary"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                              >
+                                <circle
+                                  className="opacity-25"
+                                  cx="12"
+                                  cy="12"
+                                  r="10"
+                                  stroke="currentColor"
+                                  strokeWidth="4"
+                                ></circle>
+                                <path
+                                  className="opacity-75"
+                                  fill="currentColor"
+                                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                ></path>
+                              </svg>
+                            </div>
+                          )}
+                        {errorToolHistory && selectedTool && (
+                          <div className="text-center text-red-400">
+                            Error loading tool history: {errorToolHistory}
+                          </div>
+                        )}
+
+                        {showLoadMoreButton && (
+                          <div className=" bg-gray-50 py-2 flex justify-center">
+                            {!loadingHistory && !loadingToolHistory && (
+                              <button
+                                onClick={(event) => handleLoadMore(event)}
+                                className="text-primary hover:underline text-sm"
+                              >
+                                Load More
+                              </button>
+                            )}
+                            {loadingHistory &&
+                              !selectedTool &&
+                              historyPage > 0 && (
+                                <div className="text-gray-500 text-sm">
+                                  Loading more history...
+                                </div>
+                              )}
+                            {loadingToolHistory &&
+                              selectedTool &&
+                              toolHistoryPage > 0 && (
+                                <div className="text-gray-500 text-sm">
+                                  Loading more tool history...
+                                </div>
+                              )}
+                          </div>
+                        )}
+                        {currentMessages.map((message, index) => (
+                          <motion.div
+                            key={index}
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.3, delay: index * 0.1 }}
+                            className={`flex flex-col mb-2 ${
+                              message.fromUser ? "items-end" : "items-start"
+                            }`}
+                          >
+                            {!message.fromUser && (
+                              <div className="flex justify-end space-x-4 mb-1">
+                                <button
+                                  onClick={() => handleCopy(message.text)}
+                                  className="text-gray-600 hover:text-gray-800 flex gap-1"
+                                >
+                                  <FiCopy />{" "}
+                                  <span className="text-sm">Copy</span>
+                                </button>
+                                <button
+                                  onClick={() =>
+                                    handleTextToSpeech(message.text)
+                                  }
+                                  className="text-gray-600 hover:text-gray-800 flex gap-1"
+                                >
+                                  {isSpeaking ? <FiPause /> : <FiVolume2 />}
+                                  <span className="text-sm">
+                                    {isSpeaking ? "Pause" : "Voice"}
+                                  </span>
+                                </button>
+                              </div>
+                            )}
+                            <MarkdownRenderer
+                              content={message.text}
+                              className={`p-3 text-sm ${
+                                message.fromUser
+                                  ? "bg-primary max-w-xs text-white rounded-tl-lg"
+                                  : "bg-gray-200 max-w-xl text-black rounded-tr-lg"
+                              }`}
+                              style={{
+                                wordWrap: "break-word",
+                                whiteSpace: "pre-wrap",
+                              }}
+                            />
+                          </motion.div>
+                        ))}
+                      </>
                     )}
-                    <div className="mt-8 text-center">
-                      <Button
-                        onClick={() =>
-                          handleSubmitAssessment(
-                            classroom.liveclassroomassessments
-                          )
-                        }
-                        disabled={submittingAssessment}
-                        className="mt-2 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700"
-                        variant={"gradient"}
-                      >
-                        {submittingAssessment
-                          ? "Submitting..."
-                          : "Submit Answers"}
-                      </Button>
-                      {submissionSuccess && (
-                        <p className="text-green-600 mt-2">
-                          Assessment submitted successfully!
-                        </p>
-                      )}
-                      {submissionError && (
-                        <p className="text-red-600 mt-2">{submissionError}</p>
-                      )}
+                    <div ref={messagesEndRef} />
+                  </div>
+                </div>
+
+                <div className="fixed bottom-0 left-0 w-full bg-white  border-t lg:flex lg:w-[calc(100%-5rem)] lg:ml-[5rem] flex-col lg:flex-row">
+                  <div className="flex justify-between items-center gap-24 w-full">
+                    <div
+                      className="w-64 h-20 bg-cover bg-center relative hidden lg:block"
+                      style={{ backgroundImage: `url(${greyImg})` }}
+                    >
+                      <span className="absolute inset-0 flex items-center text-sm italic justify-center text-white text-lg font-bold bg-black bg-opacity-20">
+                        Powered By <span className="text-lg ml-1"> Zyra</span>
+                      </span>
                     </div>
 
-                    {classroom?.meeting_url && (
-                      <div className="mt-6">
-                        <p className="text-gray-700 text-lg mb-4">
-                          Ready to dive into the learning?
-                        </p>
-                        <Button
-                          onClick={() =>
-                            window.open(classroom.meeting_url, "_blank")
-                          }
-                          className="mt-2 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
-                          variant={"gradient"}
-                        >
-                          🚀 Join the Live Session Now!
-                        </Button>
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <div className="text-center">
-                    <LightBulbIcon className="w-16 h-16 text-yellow-500 mb-4 animate-pulse mx-auto" />
-                    <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-800 mb-2">
-                      No Live Class Assessments Available Yet!
-                    </h2>
-                    <p className="text-md sm:text-lg text-gray-600 max-w-prose mx-auto">
-                      It looks like the{" "}
-                      <span className="font-bold">
-                        assessment for this live session isn't ready yet.
-                      </span>{" "}
-                      Please check back later or join the live session if it's
-                      ongoing.
-                    </p>
-                    {classroom?.meeting_url && (
-                      <div className="mt-6">
-                        <p className="text-gray-700 text-lg mb-4">
-                          Ready to dive into the learning?
-                        </p>
-                        <Button
-                          onClick={() =>
-                            window.open(classroom.meeting_url, "_blank")
-                          }
-                          className="mt-2 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
-                          variant={"gradient"}
-                        >
-                          🚀 Join the Live Session Now!
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-          ) : (
-            <div className="bg-white border border-gray-200 rounded-lg shadow-md p-6 mt-6 space-y-6">
-              <h2 className="text-xl font-semibold text-primary">
-                Explore Classroom Resources
-              </h2>
-
-              <div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-3">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 inline-block mr-2 text-primary"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H10a2 2 0 01-2-2v-4a2 2 0 012-2h4v-2a2 2 0 012-2h1m-2 8H9a2 2 0 00-2 2v4a2 2 0 002 2h1m2-8h2m-2 8H9"
-                    />
-                  </svg>
-                  Uploaded Files
-                </h3>
-                {classroom?.classroomresources &&
-                classroom.classroomresources.length > 0 ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {classroom.classroomresources.map((resource) => (
-                      <div
-                        key={resource.resources_id}
-                        className="bg-gray-50 border border-gray-300 rounded-md p-4 flex flex-col items-center justify-between"
+                    <div className="relative p-2 lg:-ml-24 flex items-center w-full">
+                      <TextArea
+                        value={inputText}
+                        onChange={(e) => setInputText(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                        placeholder="Type your message..."
+                        className="flex-grow pr-16 px-3 py-2 border text-md rounded-lg"
+                      />
+                      <button
+                        onClick={toggleRecording}
+                        className={`absolute right-16 top-1/2 transform -translate-y-1/2 p-3 rounded-full ${
+                          isRecording
+                            ? "bg-red-500 text-white"
+                            : "bg-gray-200 text-black"
+                        }`}
                       >
-                        <div className="flex items-center w-full">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-6 w-6 mr-2 text-gray-600"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
+                        <FiMic />
+                      </button>
+                      <button
+                        onClick={handleSend}
+                        aria-label="Send Message"
+                        disabled={inputText.trim().length === 0}
+                        className="absolute right-2 top-1/2 transform -translate-y-1/2 p-2 bg-primary text-white rounded-full mr-4"
+                      >
+                        <FiSend className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <Button
+                    onClick={() => setIsDrawerOpen(true)}
+                    variant={"gradient"}
+                    className="flex items-center bg-white w-full rounded-md text-black lg:hidden mt-2 mx-auto"
+                  >
+                    View Tools
+                  </Button>
+                </div>
+              </>
+            ) : viewState === "liveclass" ? (
+              <div className="liveclass-div">
+                <div className="my-8 p-6 bg-gradient-to-r from-gray-50 to-purple-50 border border-purple-200 rounded-lg shadow-sm">
+                  {classroom?.liveclassroomassessments &&
+                  classroom.liveclassroomassessments.length > 0 ? (
+                    <>
+                      <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-800 mb-6 text-center">
+                        Live Class Assessments
+                      </h2>
+                      {classroom.liveclassroomassessments.map(
+                        (question: any, qIndex: number) => {
+                          const options = parseOptions(
+                            question.liveclassroomassessment_options
+                          );
+                          const studentAnswerForThisQuestion =
+                            question.liveclassroomassessment_student_answer ||
+                            studentAnswers[question.liveclassroomassessment_id];
+
+                          const isQuestionAnswered =
+                            isAssessmentCompleted ||
+                            question.liveclassroomassessment_student_answer !==
+                              null;
+
+                          const isCorrect =
+                            isQuestionAnswered &&
+                            studentAnswerForThisQuestion ===
+                              question.liveclassroomassessment_correct_answer;
+
+                          const didStudentFailToAnswer =
+                            isAssessmentCompleted &&
+                            question.liveclassroomassessment_student_answer ===
+                              null;
+
+                          return (
+                            <div
+                              key={
+                                question.liveclassroomassessment_id ||
+                                `q-${qIndex}`
+                              }
+                              className="mb-6 p-4 border border-gray-200 rounded-md bg-gray-50"
+                            >
+                              <p className="text-lg font-medium text-gray-800 mb-3 flex items-center">
+                                {qIndex + 1}.{" "}
+                                {question.liveclassroomassessment_question}
+                                {isAssessmentCompleted && (
+                                  <span className="ml-3">
+                                    {didStudentFailToAnswer ? (
+                                      <span className="text-red-500 font-bold">
+                                        &#10006; Unanswered
+                                      </span>
+                                    ) : isCorrect ? (
+                                      <span className="text-green-500 font-bold">
+                                        &#10003; Correct
+                                      </span>
+                                    ) : (
+                                      <span className="text-red-500 font-bold">
+                                        &#10006; Incorrect
+                                      </span>
+                                    )}
+                                  </span>
+                                )}
+                              </p>
+                              <div className="space-y-2">
+                                {options.map(
+                                  (
+                                    optionValue: string,
+                                    optionIndex: number
+                                  ) => {
+                                    const optionKey =
+                                      getOptionLetter(optionIndex);
+                                    const isChecked =
+                                      studentAnswerForThisQuestion ===
+                                      optionKey;
+                                    const isCorrectAnswerOption =
+                                      question.liveclassroomassessment_correct_answer ===
+                                      optionKey;
+
+                                    return (
+                                      <label
+                                        key={optionKey}
+                                        className={`flex items-center space-x-2 p-2 rounded-md transition-colors duration-200
+                        ${
+                          !isAssessmentCompleted
+                            ? "cursor-pointer hover:bg-gray-100"
+                            : "cursor-not-allowed"
+                        }
+                        ${
+                          isAssessmentCompleted &&
+                          isChecked &&
+                          isCorrect &&
+                          "bg-green-100 border border-green-300"
+                        }
+                        ${
+                          isAssessmentCompleted &&
+                          isChecked &&
+                          !isCorrect &&
+                          "bg-red-100 border border-red-300"
+                        }
+                        ${
+                          isAssessmentCompleted &&
+                          !isChecked &&
+                          isCorrectAnswerOption &&
+                          "bg-blue-50 border border-blue-200"
+                        }
+                      `}
+                                      >
+                                        <input
+                                          type="radio"
+                                          name={`question-${question.liveclassroomassessment_id}`}
+                                          value={optionKey}
+                                          checked={isChecked}
+                                          onChange={() =>
+                                            handleAnswerChange(
+                                              question.liveclassroomassessment_id,
+                                              optionKey
+                                            )
+                                          }
+                                          className={`form-radio h-4 w-4 ${
+                                            isAssessmentCompleted
+                                              ? "cursor-not-allowed"
+                                              : "text-purple-600 focus:ring-purple-500"
+                                          }`}
+                                          readOnly={isAssessmentCompleted}
+                                          disabled={isAssessmentCompleted}
+                                        />
+                                        <span className="text-gray-700">
+                                          {optionKey}. {optionValue}
+                                        </span>
+                                        {isAssessmentCompleted &&
+                                          !didStudentFailToAnswer &&
+                                          isCorrectAnswerOption &&
+                                          !isChecked && (
+                                            <span className="ml-2 text-green-600">
+                                              &#10003; (Correct Answer)
+                                            </span>
+                                          )}
+                                      </label>
+                                    );
+                                  }
+                                )}
+                                {isAssessmentCompleted &&
+                                  didStudentFailToAnswer && (
+                                    <p className="text-sm text-blue-600 mt-1">
+                                      Correct Answer:{" "}
+                                      {
+                                        question.liveclassroomassessment_correct_answer
+                                      }
+                                      .{" "}
+                                      {
+                                        options[
+                                          question.liveclassroomassessment_correct_answer.charCodeAt(
+                                            0
+                                          ) - 65
+                                        ]
+                                      }
+                                    </p>
+                                  )}
+                              </div>
+                            </div>
+                          );
+                        }
+                      )}
+                      <div className="mt-8 text-center">
+                        {!isAssessmentCompleted ? (
+                          <Button
+                            onClick={() =>
+                              handleSubmitAssessment(
+                                classroom.liveclassroomassessments
+                              )
+                            }
+                            disabled={submittingAssessment}
+                            className="mt-2 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700"
+                            variant={"gradient"}
                           >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M12 16v-4m0 0l-2-2m2 2l2-2m12-8v14l-4-4H8l-4 4V4h16z"
-                            />
-                          </svg>
-                          <p className="text-sm font-medium text-gray-800 truncate">
-                            {resource.resources_filename}
+                            {submittingAssessment
+                              ? "Submitting..."
+                              : "Submit Answers"}
+                          </Button>
+                        ) : (
+                          <div className="p-4 bg-blue-50 border border-blue-200 rounded-md">
+                            <p className="text-lg font-bold text-blue-800">
+                              Assessment Completed!
+                            </p>
+                            {submissionSuccess && (
+                              <p className="text-green-600 mt-2">
+                                Your answers have been submitted.
+                              </p>
+                            )}
+                            <p className="text-gray-700 mt-2">
+                              Review your answers above.
+                            </p>
+                          </div>
+                        )}
+
+                        {submissionError && (
+                          <p className="text-red-600 mt-2">{submissionError}</p>
+                        )}
+                      </div>
+                      {classroom?.meeting_url && (
+                        <div className="mt-6">
+                          <p className="text-gray-700 text-lg mb-4">
+                            Ready to dive into the learning?
                           </p>
-                        </div>
-                        <div className="mt-2 w-full flex justify-center">
                           <Button
-                            onClick={() => {
-                              const fullUrl = `https://${resource.resources_path}`;
-                              window.open(fullUrl, "_blank");
-                            }}
-                            className="text-primary hover:underline mr-2"
+                            onClick={() =>
+                              window.open(classroom.meeting_url, "_blank")
+                            }
+                            className="mt-2 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+                            variant={"gradient"}
                           >
-                            View
-                          </Button>
-                          <Button
-                            onClick={() => {
-                              const fullUrl = `https://${resource.resources_path}`;
-                              window.open(fullUrl, "_blank");
-                            }}
-                            variant="outline"
-                            size="sm"
-                            className="rounded-md text-primary border-indigo-300 hover:bg-indigo-50"
-                          >
-                            Download
+                            🚀 Join the Live Session Now!
                           </Button>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-gray-500 italic">No files uploaded yet.</p>
-                )}
-              </div>
-
-              <div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-3">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 inline-block mr-2 text-primary"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.99a4 4 0 005.656 0l4-4a4 4 0 10-5.656-5.656l-1.1 1.1"
-                    />
-                  </svg>
-                  External Links
-                </h3>
-                {classroom?.classroomresources_link &&
-                Array.isArray(classroom.classroomresources_link) &&
-                classroom.classroomresources_link.length > 0 ? (
-                  <ul className="space-y-2">
-                    {classroom.classroomresources_link.map(
-                      (link: string, index: number) => (
-                        <li key={index}>
-                          <a
-                            href={link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-indigo-600 hover:text-indigo-800 hover:underline text-sm"
+                      )}
+                    </>
+                  ) : (
+                    <div className="text-center">
+                      <LightBulbIcon className="w-16 h-16 text-yellow-500 mb-4 animate-pulse mx-auto" />
+                      <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-800 mb-2">
+                        No Live Class Assessments Available Yet!
+                      </h2>
+                      <p className="text-md sm:text-lg text-gray-600 max-w-prose mx-auto">
+                        It looks like the{" "}
+                        <span className="font-bold">
+                          assessment for this live session isn't ready yet.
+                        </span>{" "}
+                        Please check back later or join the live session if it's
+                        ongoing.
+                      </p>
+                      {classroom?.meeting_url && (
+                        <div className="mt-6">
+                          <p className="text-gray-700 text-lg mb-4">
+                            Ready to dive into the learning?
+                          </p>
+                          <Button
+                            onClick={() =>
+                              window.open(classroom.meeting_url, "_blank")
+                            }
+                            className="mt-2 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+                            variant={"gradient"}
                           >
-                            {link || "No link provided"}
-                          </a>
-                        </li>
-                      )
-                    )}
-                  </ul>
-                ) : (
-                  <p className="text-gray-500 italic">
-                    No external links provided.
-                  </p>
-                )}
-              </div>
-              <hr className="my-6 border-t border-gray-600" />
-
-              <h3 className="text-lg font-semibold text-gray-800 mb-3">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 inline-block mr-2 text-green-500"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                Grades & Certification
-              </h3>
-
-              {classroom?.classroomoutlines &&
-              classroom.classroomoutlines.every(
-                (outline) => outline.mark_as_read === 1
-              ) &&
-              classroom.classroomoutlines.some(
-                (outline) =>
-                  outline.assessments && outline.assessments.length > 0
-              ) ? (
-                <Button
-                  className="mt-4  flex justify-center rounded-md"
-                  onClick={handleViewGradesClick}
-                  variant={"gray"}
-                >
-                  View Grades
-                </Button>
-              ) : (
-                <Button
-                  className="mt-4 flex justify-center rounded-md"
-                  variant={"gray"}
-                  disabled
-                >
-                  View Grades (Complete All Assessments)
-                </Button>
-              )}
-
-              {!classroom?.classroomoutlines?.some(
-                (outline) =>
-                  outline.assessments && outline.assessments.length > 0
-              ) && (
-                <p className="text-sm text-gray-500 mt-2 italic">
-                  No assessments available for this classroom.
-                </p>
-              )}
-              <Button
-                onClick={handleToggleView}
-                variant="outline"
-                className="rounded-md text-indigo-600 border-indigo-300 hover:bg-indigo-50"
-              >
-                Back to Classroom
-              </Button>
-            </div>
-          )}
-
-          <Drawer
-            open={isDrawerOpen}
-            onClose={() => setIsDrawerOpen(false)}
-            direction="bottom"
-            className="lg:hidden"
-          >
-            <div className="p-4">
-              <h3 className="text-xl font-semibold">Class Tools</h3>
-              <ul className="space-y-4 mt-4">
-                <li
-                  className={`cursor-pointer px-4 py-2 rounded-lg ${
-                    selectedTool === null ? "bg-primary text-white" : ""
-                  }`}
-                  onClick={() => setSelectedTool(null)}
-                >
-                  Main Classroom
-                </li>
-                {tools.map((tool) => (
-                  <li
-                    key={tool.tool_id}
-                    className={`capitalize cursor-pointer px-4 py-2 rounded-lg ${
-                      selectedTool === tool.tool_name
-                        ? "bg-primary text-white"
-                        : ""
-                    }`}
-                    onClick={() => setSelectedTool(tool.tool_name)}
-                  >
-                    {tool.tool_name}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </Drawer>
-        </div>
-      </div>
-
-      <Dialog open={showGradeDialog} onOpenChange={setShowGradeDialog}>
-        <DialogContent className="max-w-3xl">
-          <DialogTitle>Assessment Grades</DialogTitle>
-          <DialogDescription>
-            {loadingGrade ? (
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 text-center mx-auto">
-                {[...Array(6)].map((_, index) => (
-                  <Skeleton key={index} className="h-24 w-full rounded-md" />
-                ))}
-              </div>
-            ) : errorGrade ? (
-              <p className="text-red-500">{errorGrade}</p>
-            ) : reportData && reportData.length > 0 ? (
-              <div className="mt-4 overflow-x-auto">
-                <table className="min-w-full divide-y text-left divide-gray-200 shadow-md rounded-md bg-white">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Outline
-                      </th>
-                      <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Total Score
-                      </th>
-                      <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        No. of Questions
-                      </th>
-                      <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Passed
-                      </th>
-                      <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Failed
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {reportData.map((item, index) => (
-                      <tr
-                        key={index}
-                        className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
-                      >
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {item.outline}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {item.total_score}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {item.no_of_question}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {item.passed}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {item.failed}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                            🚀 Join the Live Session Now!
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
             ) : (
-              <p>No assessment grade details available.</p>
+              <div className="bg-white border border-gray-200 rounded-lg shadow-md p-6 mt-6 space-y-6">
+                <h2 className="text-xl font-semibold text-primary">
+                  Explore Classroom Resources
+                </h2>
+
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 inline-block mr-2 text-primary"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H10a2 2 0 01-2-2v-4a2 2 0 012-2h4v-2a2 2 0 012-2h1m-2 8H9a2 2 0 00-2 2v4a2 2 0 002 2h1m2-8h2m-2 8H9"
+                      />
+                    </svg>
+                    Uploaded Files
+                  </h3>
+                  {classroom?.classroomresources &&
+                  classroom.classroomresources.length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {classroom.classroomresources.map((resource) => (
+                        <div
+                          key={resource.resources_id}
+                          className="bg-gray-50 border border-gray-300 rounded-md p-4 flex flex-col items-center justify-between"
+                        >
+                          <div className="flex items-center w-full">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-6 w-6 mr-2 text-gray-600"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M12 16v-4m0 0l-2-2m2 2l2-2m12-8v14l-4-4H8l-4 4V4h16z"
+                              />
+                            </svg>
+                            <p className="text-sm font-medium text-gray-800 truncate">
+                              {resource.resources_filename}
+                            </p>
+                          </div>
+                          <div className="mt-2 w-full flex justify-center">
+                            <Button
+                              onClick={() => {
+                                const fullUrl = `https://${resource.resources_path}`;
+                                window.open(fullUrl, "_blank");
+                              }}
+                              className="text-primary hover:underline mr-2"
+                            >
+                              View
+                            </Button>
+                            <Button
+                              onClick={() => {
+                                const fullUrl = `https://${resource.resources_path}`;
+                                window.open(fullUrl, "_blank");
+                              }}
+                              variant="outline"
+                              size="sm"
+                              className="rounded-md text-primary border-indigo-300 hover:bg-indigo-50"
+                            >
+                              Download
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-gray-500 italic">
+                      No files uploaded yet.
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 inline-block mr-2 text-primary"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.99a4 4 0 005.656 0l4-4a4 4 0 10-5.656-5.656l-1.1 1.1"
+                      />
+                    </svg>
+                    External Links
+                  </h3>
+                  {classroom?.classroomresources_link &&
+                  Array.isArray(classroom.classroomresources_link) &&
+                  classroom.classroomresources_link.length > 0 ? (
+                    <ul className="space-y-2">
+                      {classroom.classroomresources_link.map(
+                        (link: string, index: number) => (
+                          <li key={index}>
+                            <a
+                              href={link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-indigo-600 hover:text-indigo-800 hover:underline text-sm"
+                            >
+                              {link || "No link provided"}
+                            </a>
+                          </li>
+                        )
+                      )}
+                    </ul>
+                  ) : (
+                    <p className="text-gray-500 italic">
+                      No external links provided.
+                    </p>
+                  )}
+                </div>
+                <hr className="my-6 border-t border-gray-600" />
+
+                <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 inline-block mr-2 text-green-500"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  Grades & Certification
+                </h3>
+
+                {classroom?.classroomoutlines &&
+                classroom.classroomoutlines.every(
+                  (outline) => outline.mark_as_read === 1
+                ) &&
+                classroom.classroomoutlines.some(
+                  (outline) =>
+                    outline.assessments && outline.assessments.length > 0
+                ) ? (
+                  <Button
+                    className="mt-4  flex justify-center rounded-md"
+                    onClick={handleViewGradesClick}
+                    variant={"gray"}
+                  >
+                    View Grades
+                  </Button>
+                ) : (
+                  <Button
+                    className="mt-4 flex justify-center rounded-md"
+                    variant={"gray"}
+                    disabled
+                  >
+                    View Grades (Complete All Assessments)
+                  </Button>
+                )}
+
+                {!classroom?.classroomoutlines?.some(
+                  (outline) =>
+                    outline.assessments && outline.assessments.length > 0
+                ) && (
+                  <p className="text-sm text-gray-500 mt-2 italic">
+                    No assessments available for this classroom.
+                  </p>
+                )}
+                <Button
+                  onClick={handleToggleView}
+                  variant="outline"
+                  className="rounded-md text-indigo-600 border-indigo-300 hover:bg-indigo-50"
+                >
+                  Back to Classroom
+                </Button>
+              </div>
             )}
-          </DialogDescription>
-          <div className="mt-4 flex justify-end">
-            <Button variant="secondary" onClick={handleCloseGradeDialog}>
-              Close
-            </Button>
+
+            <Drawer
+              open={isDrawerOpen}
+              onClose={() => setIsDrawerOpen(false)}
+              direction="bottom"
+              className="lg:hidden"
+            >
+              <div className="p-4">
+                <h3 className="text-xl font-semibold">Class Tools</h3>
+                <ul className="space-y-4 mt-4">
+                  <li
+                    className={`cursor-pointer px-4 py-2 rounded-lg ${
+                      selectedTool === null ? "bg-primary text-white" : ""
+                    }`}
+                    onClick={() => setSelectedTool(null)}
+                  >
+                    Main Classroom
+                  </li>
+                  {tools.map((tool) => (
+                    <li
+                      key={tool.tool_id}
+                      className={`capitalize cursor-pointer px-4 py-2 rounded-lg ${
+                        selectedTool === tool.tool_name
+                          ? "bg-primary text-white"
+                          : ""
+                      }`}
+                      onClick={() => setSelectedTool(tool.tool_name)}
+                    >
+                      {tool.tool_name}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </Drawer>
           </div>
-        </DialogContent>
-      </Dialog>
-    </div>
+        </div>
+
+        <Dialog open={showGradeDialog} onOpenChange={setShowGradeDialog}>
+          <DialogContent className="max-w-3xl">
+            <DialogTitle>Assessment Grades</DialogTitle>
+            <DialogDescription>
+              {loadingGrade ? (
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 text-center mx-auto">
+                  {[...Array(6)].map((_, index) => (
+                    <Skeleton key={index} className="h-24 w-full rounded-md" />
+                  ))}
+                </div>
+              ) : errorGrade ? (
+                <p className="text-red-500">{errorGrade}</p>
+              ) : reportData && reportData.length > 0 ? (
+                <div className="mt-4 overflow-x-auto">
+                  <table className="min-w-full divide-y text-left divide-gray-200 shadow-md rounded-md bg-white">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Outline
+                        </th>
+                        <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Total Score
+                        </th>
+                        <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          No. of Questions
+                        </th>
+                        <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Passed
+                        </th>
+                        <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Failed
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {reportData.map((item, index) => (
+                        <tr
+                          key={index}
+                          className={
+                            index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                          }
+                        >
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {item.outline}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {item.total_score}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {item.no_of_question}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {item.passed}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {item.failed}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <p>No assessment grade details available.</p>
+              )}
+            </DialogDescription>
+            <div className="mt-4 flex justify-end">
+              <Button variant="secondary" onClick={handleCloseGradeDialog}>
+                Close
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      <Toast
+        open={toastOpen}
+        onOpenChange={setToastOpen}
+        variant={toastVariant}
+      >
+        <ToastTitle>{toastMessage}</ToastTitle>
+      </Toast>
+      <ToastViewport />
+    </ToastProvider>
   );
 };
 

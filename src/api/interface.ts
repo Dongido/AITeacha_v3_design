@@ -43,6 +43,7 @@ export interface Classroom {
   classroomresources_link?: string[] | null;
   liveclassroomassessments: any[];
   liveclassroom_id: string;
+  liveclassassessment_status?: string;
 }
 export interface ClassroomData {
   id: number;
