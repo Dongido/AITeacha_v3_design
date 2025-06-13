@@ -140,11 +140,11 @@ const AddSchoolTeachersDialog = forwardRef(
                 Upload a **CSV document** containing teacher information. The
                 CSV should have columns in the order: <br />
                 <span className="font-bold">
-                  firstname, lastname, phone, email, and employee ID.
+                  firstname, lastname, phone, email.
                 </span>
                 <br />
                 <span className="text-sm text-gray-500">
-                  (e.g., Jane,Doe,09012345678,jane.doe@example.com,EMP001)
+                  (e.g., Jane,Doe,09012345678,jane.doe@example.com)
                 </span>
               </DialogDescription>
               <div className="grid gap-4 py-4">
