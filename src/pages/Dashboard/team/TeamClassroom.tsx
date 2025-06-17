@@ -26,6 +26,7 @@ import { Button } from "../../../components/ui/Button";
 import { Skeleton } from "../../../components/ui/Skeleton";
 import RestrictedPage from "../classrooms/RestrictionPage";
 import { useNavigate } from "react-router-dom";
+import AddSchoolTeachersDialog from "../school/components/AddSchoolTeachersDialog";
 
 const TeamClassroomPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();

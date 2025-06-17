@@ -1,16 +1,26 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Skeleton } from "../../../components/ui/Skeleton";
-import { JitsiMeeting } from "@jitsi/react-sdk";
+import { JaaSMeeting } from "@jitsi/react-sdk";
 import { updateLiveClassMeetingUrl } from "../../../api/liveclass";
 
-const JITSI_DOMAIN = "meet.aiteacha.com:8443";
+const JITSI_DOMAIN = "8x8.vc";
+const APP_ID = "vpaas-magic-cookie-e64e5f39d0264ee28720dfbfe8003553";
+const BACKEND_AGENT_SERVER_URL = "http://localhost:3001";
+
+const JITSI_JWT =
+  "eyJhbGciOiJSUzI1NiIsImtpZCI6InZwYWFzLW1hZ2ljLWNvb2tpZS1lNjRlNWYzOWQwMjY0ZWUyODcyMGRmYmZlODAwMzU1My80ODQ2ZDUiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJqaXRzaSIsImNvbnRleHQiOnsidXNlciI6eyJpZCI6IjBmOGI3NzYwLWMxN2YtNGExMi1iMTM0LWM2YWMzNzE2NzE0NCIsIm5hbWUiOiJubHBnYSBhZG1pbiIsImF2YXRhciI6Imh0dHBzOi8vd3d3LmFwaS5uaWdlcmlhbHBnYXMuY29tL3N0b3JhZ2UvYXBwL3B1YmxpYy9maWxldXBsb2FkL2xvZ28ucG5nIiwiZW1haWwiOiJuaWdlcmlhbHBnYUBnbWFpbC5jb20iLCJtb2RlcmF0b3IiOiJ0cnVlIn0sImZlYXR1cmVzIjp7ImxpdmVzdHJlYW1pbmciOiJ0cnVlIiwib3V0Ym91bmQtY2FsbCI6InRydWUiLCJ0cmFuc2NyaXB0aW9uIjoiZmFsc2UiLCJyZWNvcmRpbmciOiJ0cnVlIn0sInJvb20iOnsicmVnZXgiOmZhbHNlfX0sImV4cCI6MjAzMDM4MjcwMSwiaXNzIjoiY2hhdCIsIm5iZiI6MTcxNDg0OTkwMSwicm9vbSI6IioiLCJzdWIiOiJ2cGFhcy1tYWdpYy1jb29raWUtZTY0ZTVmMzlkMDI2NGVlMjg3MjBkZmJmZTgwMDM1NTMifQ.cGVSL8VyZxl4600UxoDW3kTAyLs9jTAWX1Fa63rptwHjYvXOmoHW6YqGsUHxniH20Tp_XBe8n3xryKhXoFzFkbCOOxmAB2uBIS4AuXLToz5LwZVxxwwh8W_IX6ZF6XQCVi0ZL2BEobQ1gNBDx58zNsu1xM3bICSkSxL9kg365-TbTW2RCY8Sna81YM4s_S9W6iUYOv8ZXWWH6EZaXlD-4iGNqmFVlc9myDpZEXtTt0PWAy2gpBKtkYYa9kosrDEQwIf0vWewht0JhNvhzQGL_iZU6qYuA7dL654vHPivUZVjh8-QJ1zc5zxKKLOKIN1c_2RhKq7-OmCUPLGR6iPL5g";
 
 const JitsiMeetingPage: React.FC = () => {
   const { meetingId } = useParams<{ meetingId: string }>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const jitsiApiRef = useRef<any>(null);
+  const [chatTranscript, setChatTranscript] = useState<string[]>([]);
+  const [agentTriggered, setAgentTriggered] = useState(false);
+  const [agentStatus, setAgentStatus] = useState<
+    "idle" | "triggering" | "running" | "ended" | "error"
+  >("idle");
 
   useEffect(() => {
     if (!meetingId) {
@@ -25,7 +35,8 @@ const JitsiMeetingPage: React.FC = () => {
     jitsiApiRef.current = api;
     setLoading(false);
     console.log("Jitsi Meeting is ready!", api);
-    const fullMeetingUrl = api._url;
+
+    const fullMeetingUrl = `https://${JITSI_DOMAIN}/${APP_ID}/${meetingId}`;
 
     if (meetingId) {
       try {
@@ -38,11 +49,85 @@ const JitsiMeetingPage: React.FC = () => {
 
     api.addEventListener("videoConferenceJoined", () => {
       console.log("Video conference joined!");
+      if (fullMeetingUrl && !agentTriggered) {
+        triggerJitsiAgent(fullMeetingUrl, `Agent-${meetingId}`);
+      }
     });
 
     api.addEventListener("readyToClose", () => {
       console.log("Ready to close Jitsi meeting");
     });
+
+    api.addEventListener(
+      "incomingMessage",
+      (message: { from: string; message: string; privateMessage: boolean }) => {
+        const timestamp = new Date().toLocaleTimeString();
+        const sender = message.from;
+        const text = message.message;
+        const isPrivate = message.privateMessage ? "[PRIVATE] " : "";
+        const fullMessage = `${timestamp} - ${isPrivate}${sender}: ${text}`;
+        console.log("Incoming Chat Message:", fullMessage);
+
+        setChatTranscript((prevTranscript) => [...prevTranscript, fullMessage]);
+      }
+    );
+
+    return () => {
+      if (jitsiApiRef.current) {
+        console.log("Disposing of Jitsi API instance.");
+        jitsiApiRef.current.dispose();
+        jitsiApiRef.current = null;
+      }
+    };
+  };
+
+  const triggerJitsiAgent = async (
+    meetingUrl: string,
+    agentDisplayName: string
+  ) => {
+    setAgentStatus("triggering");
+    try {
+      console.log(
+        `Attempting to trigger Jitsi agent via backend for URL: ${meetingUrl}`
+      );
+      const response = await fetch(
+        `${BACKEND_AGENT_SERVER_URL}/start-jitsi-agent`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            meetingUrl: meetingUrl,
+            displayName: agentDisplayName,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log("Jitsi agent successfully triggered:", data.message);
+        setAgentTriggered(true);
+        setAgentStatus("running");
+        setTimeout(() => {
+          setAgentStatus("ended");
+          console.log("Agent session simulated as ended.");
+        }, 65000);
+      } else {
+        console.error(
+          "Failed to trigger Jitsi agent:",
+          data.error || response.statusText
+        );
+        setAgentStatus("error");
+      }
+    } catch (fetchError: any) {
+      console.error(
+        "Network error when trying to trigger Jitsi agent:",
+        fetchError
+      );
+      setAgentStatus("error");
+    }
   };
 
   if (loading) {
@@ -81,14 +166,20 @@ const JitsiMeetingPage: React.FC = () => {
       </h1>
       <div className="w-full max-w-4xl h-[600px] bg-white rounded-lg shadow-xl overflow-hidden border border-gray-200">
         {meetingId && (
-          <JitsiMeeting
+          <JaaSMeeting
+            appId={APP_ID}
             roomName={meetingId}
-            domain={JITSI_DOMAIN}
+            jwt={JITSI_JWT}
             configOverwrite={{
+              disableLocalVideoFlip: true,
+              backgroundAlpha: 0.5,
               startWithAudioMuted: false,
               startWithVideoMuted: false,
             }}
             interfaceConfigOverwrite={{
+              VIDEO_LAYOUT_FIT: "nocrop",
+              MOBILE_APP_PROMO: false,
+              TILE_VIEW_MAX_COLUMNS: 4,
               TOOLBAR_BUTTONS: [
                 "microphone",
                 "camera",
@@ -131,6 +222,41 @@ const JitsiMeetingPage: React.FC = () => {
       <p className="text-gray-600 mt-4 text-center">
         Your meeting is live. Ensure your microphone and camera are enabled.
       </p>
+
+      <div className="mt-4 p-3 rounded-lg text-sm font-medium">
+        {agentStatus === "idle" && (
+          <p className="text-gray-700">Agent Status: Idle</p>
+        )}
+        {agentStatus === "triggering" && (
+          <p className="text-blue-600">Agent Status: Triggering...</p>
+        )}
+        {agentStatus === "running" && (
+          <p className="text-green-600">
+            Agent Status: Running (will end in ~60s)
+          </p>
+        )}
+        {agentStatus === "ended" && (
+          <p className="text-purple-600">Agent Status: Ended</p>
+        )}
+        {agentStatus === "error" && (
+          <p className="text-red-600">Agent Status: Error starting</p>
+        )}
+      </div>
+
+      {chatTranscript.length > 0 && (
+        <div className="mt-8 w-full max-w-4xl bg-white p-6 rounded-lg shadow-xl border border-gray-200">
+          <h2 className="text-xl font-bold text-gray-800 mb-4">
+            Chat Transcript
+          </h2>
+          <div className="h-48 overflow-y-auto border border-gray-300 p-3 rounded-md bg-gray-50">
+            {chatTranscript.map((msg, index) => (
+              <p key={index} className="text-sm text-gray-700 mb-1">
+                {msg}
+              </p>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

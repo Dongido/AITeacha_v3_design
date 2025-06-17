@@ -207,7 +207,7 @@ const Team = () => {
             {inviteLoading ? "Inviting..." : "Invite"}
           </Button>
         </div>
-        <div className="relative flex justify-center items-center my-6">
+        {/* <div className="relative flex justify-center items-center my-6">
           <div className="absolute inset-x-0 h-px bg-gray-300"></div>
           <span className="relative z-10 bg-white px-4 text-gray-700 text-sm font-bold">
             OR
@@ -230,7 +230,7 @@ const Team = () => {
               Add By Uploading CSV
             </Button>
           </div>
-        </div>
+        </div> */}
         <BaseTable data={members} columns={teamColumns} />{" "}
         <AddSchoolTeachersDialog
           ref={addTeachersDialogRef}
