@@ -56,13 +56,13 @@ export const teamColumns = [
       return (
         <div className="flex items-center gap-2">
           <Actions
-            editFunction={() => {
+            editRoleFunction={() => {
               editRoleDialogRef.current?.openDialog(
                 teamMember.user_id,
                 String(teamMember.team_id),
                 teamMember.firstname,
                 teamMember.lastname,
-                teamMember.member_role
+                teamMember.member_role as "admin" | "member"
               );
               return Promise.resolve();
             }}
@@ -82,7 +82,7 @@ export const teamColumns = [
             teamId={String(teamMember.team_id)}
             firstname={teamMember.firstname}
             lastname={teamMember.lastname}
-            currentTeamRole={teamMember.member_role}
+            currentTeamRole={teamMember.member_role as "admin" | "member"}
             onSuccess={() => {}}
           />
         </div>
