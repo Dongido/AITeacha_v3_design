@@ -125,7 +125,7 @@ const GeneralRestrictedPage: React.FC<GeneralRestrictedPageProps> = ({
   const closePopup = () => setIsPopupOpen(false);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex flex-col items-center justify-center  bg-gray-100">
       <div className="p-8 bg-white rounded-lg shadow-md w-full ">
         <h3 className="text-3xl font-bold text-gray-900 mb-6 text-center">
           {title}

@@ -16,6 +16,30 @@ export const getTeamMembers = async (): Promise<any[]> => {
   }
 };
 
+export const changeTeamMemberRole = async (
+  teamId: string,
+  userId: string,
+  newRole: string
+): Promise<any> => {
+  try {
+    const response = await apiClient.put(`/team/changerole/${teamId}`, {
+      userId,
+      teamRole: newRole,
+    });
+    return response.data;
+  } catch (error: any) {
+    if (error.response?.status === 403) {
+      throw new Error(
+        error.response?.data?.message ||
+          "You are not authorized to change roles."
+      );
+    } else if (error.response?.data?.message) {
+      throw new Error(error.response.data.message);
+    } else {
+      throw new Error("Failed to change team member role. Please try again.");
+    }
+  }
+};
 export const assignToClassroom = async (
   email: string,
   classroomId: string

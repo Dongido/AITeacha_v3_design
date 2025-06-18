@@ -312,7 +312,7 @@ const Tools = () => {
             </DialogDescription>
             <Link to={"/dashboard/upgrade"}>
               <Button variant={"gradient"} className="rounded-full mt-6">
-                Please Upgrade your Plan to use this
+                Please Upgrade your Plan to use this tool.
               </Button>
             </Link>
           </DialogHeader>

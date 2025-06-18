@@ -118,7 +118,7 @@ export const sendLiveClassroomAssessmentAnswers = async (submissionData: {
 }) => {
   try {
     const response = await apiClient.post(
-      "/live/class/add/transcript/assssment",
+      "/live/class/submit/assessment",
       submissionData
     );
     return response.data;

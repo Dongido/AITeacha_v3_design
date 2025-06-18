@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { Switch } from "../ui/Switch";
 import {
   useMaterialTailwindController,
   setOpenConfigurator,
-  setFixedNavbar,
 } from "../../context/index";
 import { Button } from "../ui/Button";
 import Text from "../ui/Text";
@@ -14,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { loadUserProfile, selectUser } from "../../store/slices/profileSlice";
 import { AppDispatch } from "../../store";
-import { ThunkDispatch } from "@reduxjs/toolkit";
+
 function formatNumber(number: number, decPlaces: number): string {
   const dec = Math.pow(10, decPlaces);
   const abbrev = ["K", "M", "B", "T"];
@@ -41,7 +40,11 @@ export function Configurator() {
   const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
   const userDetails = useSelector(selectUser);
-  const [isRefreshingProfile, setIsRefreshingProfile] = useState(false);
+  const [isRefreshingProfile, setIsRefreshingProfile] =
+    useState<boolean>(false);
+
+  const configuratorRef = useRef<HTMLElement>(null);
+
   useEffect(() => {
     fetch(
       "https://api.github.com/repos/creativetimofficial/material-tailwind-dashboard-react"
@@ -55,7 +58,29 @@ export function Configurator() {
       .catch((error) => console.error("Failed to fetch star count:", error));
   }, []);
 
-  const getUpgradeText = () => {
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        openConfigurator &&
+        configuratorRef.current &&
+        !configuratorRef.current.contains(event.target as Node)
+      ) {
+        setOpenConfigurator(contextDispatch, false);
+      }
+    }
+
+    if (openConfigurator) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [openConfigurator, contextDispatch]);
+
+  const getUpgradeText = (): string => {
     if (userDetails?.package === "AiTeacha Pro") {
       return "Upgrade to Premium";
     }
@@ -65,7 +90,7 @@ export function Configurator() {
   const upgradeText = getUpgradeText();
   const upgradeLink = "/dashboard/upgrade";
 
-  const handleLogout = () => {
+  const handleLogout = (): void => {
     Cookies.remove("at-accessToken");
     Cookies.remove("at-refreshToken");
     localStorage.removeItem("ai-teacha-user");
@@ -73,10 +98,10 @@ export function Configurator() {
     navigate("/auth/login");
   };
 
-  const handleRefreshProfile = async () => {
+  const handleRefreshProfile = async (): Promise<void> => {
     setIsRefreshingProfile(true);
     try {
-      await dispatch(loadUserProfile() as any);
+      await dispatch(loadUserProfile());
     } catch (error) {
       console.error("Failed to refresh user profile:", error);
     } finally {
@@ -86,8 +111,9 @@ export function Configurator() {
 
   return (
     <aside
+      ref={configuratorRef}
       className={`fixed top-0 right-0 z-50 h-screen w-96 bg-white px-2.5 shadow-lg transition-transform duration-300 ${
-        openConfigurator ? "translate-x-0" : "translate-x-96"
+        openConfigurator ? "translate-x-0" : "translate-x-full"
       }`}
     >
       <div className="flex items-start justify-between px-6 pt-8 pb-6">
@@ -132,10 +158,9 @@ export function Configurator() {
         <Button
           className="w-full hover:bg-gray-100 transition duration-300"
           onClick={handleRefreshProfile}
-          disabled={isRefreshingProfile} // Disable button while loading
+          disabled={isRefreshingProfile}
         >
-          {isRefreshingProfile ? "Refreshing..." : "Refresh Profile"}{" "}
-          {/* Change text based on loading state */}
+          {isRefreshingProfile ? "Refreshing..." : "Refresh Profile"}
         </Button>
 
         <Button

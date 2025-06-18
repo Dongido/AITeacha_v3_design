@@ -217,16 +217,16 @@ const Classrooms = () => {
             ? "Team Classrooms"
             : "My Classrooms"}
         </h2>
-        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto items-start sm:items-center">
+        <div className="flex flex-col md:flex-row md:flex-wrap items-stretch md:items-center justify-start md:justify-end gap-3 p-4">
           <div className="flex items-center space-x-2">
             <Switch
               checked={classTypeFilter === "Paid"}
-              onCheckedChange={(checked: any) =>
+              onCheckedChange={(checked) =>
                 setClassTypeFilter(checked ? "Paid" : "Free")
               }
             />
             <Label
-              htmlFor="airplane-mode"
+              htmlFor="class-type-switch"
               className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
             >
               {classTypeFilter === "All" ? "All" : classTypeFilter} Classes
@@ -236,18 +236,19 @@ const Classrooms = () => {
                 variant="outline"
                 size="sm"
                 onClick={() => setClassTypeFilter("All")}
-                className="ml-2"
+                className="ml-2 flex-shrink-0"
               >
                 <Undo2 className="h-4 w-4" />
               </Button>
             )}
           </div>
+
           <select
             value={selectedType}
             onChange={(e) =>
               setSelectedType(e.target.value as "classrooms" | "teamClassrooms")
             }
-            className="p-2 border rounded-md"
+            className="p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full md:w-auto"
           >
             <option value="classrooms">My Classrooms</option>
             <option value="teamClassrooms">Team Classrooms</option>
@@ -255,7 +256,7 @@ const Classrooms = () => {
 
           <Link
             to={"/dashboard/classrooms/joined"}
-            className="w-full sm:w-auto"
+            className="w-full md:w-auto"
           >
             <Button
               variant="ghost"
@@ -264,9 +265,10 @@ const Classrooms = () => {
               Joined Classrooms
             </Button>
           </Link>
+
           <Button
             variant="gradient"
-            className="flex items-center w-full sm:w-fit h-full gap-3 rounded-md"
+            className="flex items-center w-full justify-center md:w-fit h-10 gap-2 rounded-md bg-blue-600 text-white hover:bg-blue-700"
             onClick={handleLaunchNewClassroom}
           >
             <Plus size={"1.1rem"} />
@@ -276,13 +278,13 @@ const Classrooms = () => {
           <Button
             onClick={openPopup}
             variant={"outline"}
-            className="flex items-center px-6 py-3 bg-red-500 text-white text-lg font-medium rounded-lg shadow-lg  space-x-2"
+            className="flex items-center px-6 py-2 bg-red-500 text-white text-base font-medium rounded-lg shadow-md hover:bg-red-600 space-x-2 w-full justify-center md:w-fit h-10"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="w-6 h-6"
+              className="w-5 h-5"
               viewBox="0 0 24 24"
-              fill="white"
+              fill="currentColor"
             >
               <path d="M19.615 3.184c-1.88-.33-9.379-.33-11.258 0C6.018 3.516 5.1 4.437 4.77 6.212c-.33 1.775-.33 5.514 0 7.29.33 1.774 1.248 2.696 3.587 3.03 1.88.33 9.379.33 11.258 0 2.339-.333 3.256-1.255 3.587-3.03.33-1.776.33-5.515 0-7.29-.33-1.775-1.248-2.696-3.587-3.03zm-9.78 5.952l5.723 3.328-5.723 3.33V9.136z" />
             </svg>
@@ -290,24 +292,26 @@ const Classrooms = () => {
           </Button>
 
           {isPopupOpen && (
-            <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
-              <div className="relative bg-white rounded-lg shadow-lg w-[90%] max-w-3xl">
+            <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-70 z-[100]">
+              <div className="relative bg-white rounded-lg shadow-2xl w-[95%] max-w-4xl max-h-[90vh] overflow-hidden">
                 <button
                   onClick={closePopup}
-                  className="absolute top-3 right-3 bg-red-500 text-gray-600 hover:bg-gray-300 p-2 rounded-full"
+                  className="absolute top-2 right-2 bg-red-500 text-white hover:bg-red-600 p-2 rounded-full text-lg z-10"
+                  aria-label="Close Guide"
                 >
-                  <span className="text-white"> ✕</span>
+                  ✕
                 </button>
 
-                <div className="p-4">
+                <div className="p-4 pt-10">
                   <iframe
                     width="100%"
-                    height="400"
-                    src="https://www.youtube.com/embed/o688vxKkcPw?si=CoKNScNo2C7XA8Dp"
+                    height="450"
+                    src="https://www.youtube.com/embed/5"
                     title="Community Preview"
                     frameBorder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
+                    className="rounded-lg"
                   ></iframe>
                 </div>
               </div>

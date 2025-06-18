@@ -7,7 +7,8 @@ import {
   Play,
   Pause,
   FileText,
-} from "lucide-react";
+  UserCog, // Import UserCog icon for role editing
+} from "lucide-react"; // Make sure to import UserCog
 import { ReactNode } from "react";
 import {
   DropdownMenu,
@@ -29,6 +30,7 @@ export default function Actions<T>({
   deleteFunction,
   activateFunction,
   deactivateFunction,
+  editRoleFunction, // Add new prop here
 }: {
   viewLink?: string;
   editLink?: string;
@@ -41,6 +43,7 @@ export default function Actions<T>({
   deleteFunction?: () => Promise<void>;
   activateFunction?: () => Promise<void>;
   deactivateFunction?: () => Promise<void>;
+  editRoleFunction?: () => Promise<void>; // Add type definition for new prop
 }) {
   return (
     <DropdownMenu>
@@ -102,6 +105,18 @@ export default function Actions<T>({
             <p>Edit</p>
           </DropdownMenuItem>
         ) : null}
+
+        {editRoleFunction && (
+          <DropdownMenuItem
+            onClick={() => editRoleFunction()}
+            className="flex gap-2 p-1 hover:bg-gray-100"
+          >
+            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-50">
+              <UserCog size={17} className="text-blue-500" />
+            </div>
+            <p>Edit Role</p>
+          </DropdownMenuItem>
+        )}
 
         {attemptLink && (
           <DropdownMenuItem

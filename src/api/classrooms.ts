@@ -195,6 +195,28 @@ export const fetchStudentReport = async (
     );
   }
 };
+export const fetchLiveclassReport = async (
+  classroomId: string
+): Promise<any> => {
+  try {
+    const response = await apiClient.get<{
+      status: string;
+      message: string;
+      data: any;
+    }>(`/report/get/liveclassassessment/${classroomId}`);
+
+    if (response.status !== 200) {
+      throw new Error("Failed to fetch the student report.");
+    }
+
+    return response.data.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data ||
+        "Failed to fetch the student report. Please try again."
+    );
+  }
+};
 
 export const editClassroomTools = async (toolsData: any): Promise<any[]> => {
   console.log("Tools Data:", toolsData);
