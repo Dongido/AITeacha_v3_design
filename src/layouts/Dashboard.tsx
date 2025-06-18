@@ -24,7 +24,7 @@ import AdminTools from "../pages/Dashboard/AdminTools";
 import PastUsers from "../pages/Dashboard/admin/PastUsers";
 import Subscribers from "../pages/Dashboard/admin/Subscribers";
 import ArchivedAssistants from "../pages/Dashboard/premium/Archive";
-
+import SchoolStudents from "../pages/Dashboard/school/SchoolStudents";
 export function Dashboard() {
   const navigate = useNavigate();
   const { controller, dispatch } = useMaterialTailwindController();
@@ -102,6 +102,7 @@ export function Dashboard() {
         </Routes>
         <Routes>
           <Route path="/premium/teams" element={<Team />} />
+          <Route path="/premium/students" element={<SchoolStudents />} />
           <Route path="/premium/resources" element={<Resources />} />
           <Route path="/premium/classrooms" element={<TeamClassroomPage />} />
           <Route path="/premium/archive" element={<ArchivedAssistants />} />

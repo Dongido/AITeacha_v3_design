@@ -59,40 +59,40 @@ export const schoolStudentColumns = () => [
       return <div className=" w-1/2 text-black">{info.getValue()}</div>;
     },
   }),
-  studentColumnHelper.accessor("student_id", {
-    header: ({ column }) => <Header title="Student ID" column={column} />,
+  studentColumnHelper.accessor("student_number", {
+    header: ({ column }) => <Header title="Student Number" column={column} />,
     sortingFn: "datetime",
     cell: (info) => {
       const studentId = info.getValue();
       return <span>{studentId ? studentId : "N/A"}</span>;
     },
   }),
-  studentColumnHelper.accessor("student_id", {
-    header: ({ column }) => <Header title="Actions" column={column} />,
-    cell: (info) => {
-      const navigate = useNavigate();
-      const studentId = info.getValue();
-      const student = info.row.original;
+  // studentColumnHelper.accessor("student_id", {
+  //   header: ({ column }) => <Header title="Actions" column={column} />,
+  //   cell: (info) => {
+  //     const navigate = useNavigate();
+  //     const studentId = info.getValue();
+  //     const student = info.row.original;
 
-      const deleteDialogRef = useRef<{ openDialog: () => void }>(null);
+  //     const deleteDialogRef = useRef<{ openDialog: () => void }>(null);
 
-      return (
-        <div className="flex items-center gap-2">
-          <Actions
-            // viewLink={`/dashboard/school/students/${studentId}`}
-            deleteFunction={() => {
-              deleteDialogRef.current?.openDialog();
-              return Promise.resolve();
-            }}
-          />
+  //     return (
+  //       <div className="flex items-center gap-2">
+  //         <Actions
+  //           // viewLink={`/dashboard/school/students/${studentId}`}
+  //           deleteFunction={() => {
+  //             deleteDialogRef.current?.openDialog();
+  //             return Promise.resolve();
+  //           }}
+  //         />
 
-          <RemoveStudentDialog
-            ref={deleteDialogRef}
-            studentId={studentId}
-            studentName={`${student.firstname} ${student.lastname}`}
-          />
-        </div>
-      );
-    },
-  }),
+  //         <RemoveStudentDialog
+  //           ref={deleteDialogRef}
+  //           studentId={studentId}
+  //           studentName={`${student.firstname} ${student.lastname}`}
+  //         />
+  //       </div>
+  //     );
+  //   },
+  // }),
 ];

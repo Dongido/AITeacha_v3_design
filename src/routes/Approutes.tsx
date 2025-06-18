@@ -102,6 +102,7 @@ import TranscriptDetailsPage from "../pages/Dashboard/live-class/TranscriptDetai
 import SuccessPage from "../pages/Dashboard/SuccessPage";
 
 import SchoolStudents from "../pages/Dashboard/school/SchoolStudents";
+import { UserIcon } from "lucide-react";
 const icon = {
   className: "w-5 h-5 text-inherit",
 };
@@ -191,6 +192,12 @@ export const routes = [
             name: "Teams",
             path: "/premium/teams",
             element: <Team />,
+          },
+          {
+            icon: <UserIcon {...icon} />,
+            name: "Students",
+            path: "/premium/students",
+            element: <SchoolStudents />,
           },
           {
             icon: <DocumentIcon {...icon} />,
