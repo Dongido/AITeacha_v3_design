@@ -25,6 +25,9 @@ import PastUsers from "../pages/Dashboard/admin/PastUsers";
 import Subscribers from "../pages/Dashboard/admin/Subscribers";
 import ArchivedAssistants from "../pages/Dashboard/premium/Archive";
 import SchoolStudents from "../pages/Dashboard/school/SchoolStudents";
+import StaffChat from "../pages/Dashboard/StaffChat";
+import GroupChatForm from "../pages/Dashboard/GroupChatForm";
+
 export function Dashboard() {
   const navigate = useNavigate();
   const { controller, dispatch } = useMaterialTailwindController();
@@ -105,6 +108,7 @@ export function Dashboard() {
           <Route path="/premium/students" element={<SchoolStudents />} />
           <Route path="/premium/resources" element={<Resources />} />
           <Route path="/premium/classrooms" element={<TeamClassroomPage />} />
+           <Route path="/premium/staff" element={<StaffChat />} />
           <Route path="/premium/archive" element={<ArchivedAssistants />} />
           <Route path="/premium/resources/:id" element={<ResourceSingle />} />
           <Route path="/resource/training" element={<Training />} />

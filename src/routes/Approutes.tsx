@@ -100,9 +100,14 @@ import GoogleMeetIframe from "../pages/Dashboard/live-class/LiveClassPreview";
 import JitsiMeetingPage from "../pages/Dashboard/live-class/LiveclassJitsi";
 import TranscriptDetailsPage from "../pages/Dashboard/live-class/TranscriptDetails";
 import SuccessPage from "../pages/Dashboard/SuccessPage";
-
 import SchoolStudents from "../pages/Dashboard/school/SchoolStudents";
 import { UserIcon } from "lucide-react";
+import { FaUsersLine } from "react-icons/fa6";
+import StaffChat from "../pages/Dashboard/StaffChat";
+import { Children } from "react";
+import GroupChatForm from "../pages/Dashboard/GroupChatForm";
+
+
 const icon = {
   className: "w-5 h-5 text-inherit",
 };
@@ -192,6 +197,12 @@ export const routes = [
             name: "Teams",
             path: "/premium/teams",
             element: <Team />,
+          },
+           {
+            icon: <FaUsersLine {...icon} />,
+            name: "Staff Chat",
+            path: "/premium/staff",
+            element:<StaffChat/>,
           },
           {
             icon: <UserIcon {...icon} />,
@@ -595,8 +606,8 @@ export const Paramroutes = [
         path: "/liveclass/current",
         element: <GoogleMeetIframe />,
       },
-      {
-        icon: <AcademicCapIcon {...icon} />,
+        icon: <AcademicCapIcon {...icon} />,      {
+
         name: "liveclass",
         path: "/liveclass/meeting/live/:meetingId",
         element: <JitsiMeetingPage />,
@@ -618,6 +629,11 @@ export const Paramroutes = [
         name: "school-students",
         path: "/school/students",
         element: <SchoolStudents />,
+       {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "teacherChats",
+        path: "/teacherChats/:id",
+        element: <GroupChatForm />,
       },
     ],
   },
