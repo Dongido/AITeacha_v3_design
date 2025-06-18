@@ -67,7 +67,7 @@ export const registerUser = async (
       organization,
       country,
       city,
-      referred_by,
+      referred_by
     });
     if (response.status === 201) {
       return response.data;
