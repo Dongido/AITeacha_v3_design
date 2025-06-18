@@ -100,6 +100,15 @@ import GoogleMeetIframe from "../pages/Dashboard/live-class/LiveClassPreview";
 import JitsiMeetingPage from "../pages/Dashboard/live-class/LiveclassJitsi";
 import TranscriptDetailsPage from "../pages/Dashboard/live-class/TranscriptDetails";
 import SuccessPage from "../pages/Dashboard/SuccessPage";
+import { FaUsersLine } from "react-icons/fa6";
+import StaffChat from "../pages/Dashboard/StaffChat";
+import { Children } from "react";
+import GroupChatForm from "../pages/Dashboard/GroupChatForm";
+
+
+
+
+
 const icon = {
   className: "w-5 h-5 text-inherit",
 };
@@ -189,6 +198,12 @@ export const routes = [
             name: "Teams",
             path: "/premium/teams",
             element: <Team />,
+          },
+           {
+            icon: <FaUsersLine {...icon} />,
+            name: "Staff Chat",
+            path: "/premium/staff",
+            element:<StaffChat/>,
           },
           {
             icon: <DocumentIcon {...icon} />,
@@ -603,6 +618,12 @@ export const Paramroutes = [
         name: "success",
         path: "/success",
         element: <SuccessPage />,
+      },
+       {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "teacherChats",
+        path: "/teacherChats/:id",
+        element: <GroupChatForm />,
       },
     ],
   },
