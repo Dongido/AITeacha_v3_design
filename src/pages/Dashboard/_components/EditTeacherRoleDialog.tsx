@@ -132,7 +132,7 @@ const EditTeacherRoleDialog = forwardRef(
                   onValueChange={(value) => setSelectedRole(value)}
                   disabled={isUpdating}
                 >
-                  <SelectTrigger id="role-select" className="w-full ">
+                  <SelectTrigger id="role-select" className="w-full h-1/2">
                     <SelectValue
                       placeholder="Select a role"
                       className="w-full py-2"

@@ -16,6 +16,7 @@ import {
   ToastTitle,
   ToastViewport,
 } from "../../../../components/ui/Toast";
+import { uploadStudents } from "../../../../api/school";
 
 interface AddStudentsDialogProps {
   onSuccess?: () => void;
@@ -26,7 +27,7 @@ interface StudentData {
   lastname: string;
   phone: string;
   email: string;
-  student_id?: string;
+  student_number?: string;
 }
 
 const AddSchoolStudentsDialog = forwardRef(
@@ -54,18 +55,37 @@ const AddSchoolStudentsDialog = forwardRef(
 
     const parseCSV = (text: string): StudentData[] => {
       const lines = text.split("\n").filter((line) => line.trim() !== "");
-      if (lines.length === 0) return [];
+      if (lines.length <= 1) {
+        throw new Error("CSV file is empty or contains only headers.");
+      }
 
       const data: StudentData[] = [];
+      const errors: string[] = [];
+
       for (let i = 1; i < lines.length; i++) {
-        const [firstname, lastname, phone, email, student_id] = lines[i]
+        const [firstname, lastname, phone, email, student_number] = lines[i]
           .split(",")
           .map((item) => item.trim());
 
-        if (firstname && lastname && phone && email) {
-          data.push({ firstname, lastname, phone, email, student_id });
+        if (!firstname || !lastname || !phone || !email) {
+          errors.push(
+            `Row ${
+              i + 1
+            }: Missing required fields (firstname, lastname, phone, or email).`
+          );
+        } else {
+          data.push({ firstname, lastname, phone, email, student_number });
         }
       }
+
+      if (errors.length > 0) {
+        throw new Error(
+          `Validation Error: Ensure all required fields are correctly inputted. Details: ${errors.join(
+            " "
+          )}`
+        );
+      }
+
       return data;
     };
 
@@ -92,18 +112,9 @@ const AddSchoolStudentsDialog = forwardRef(
           const text = e.target?.result as string;
           const students = parseCSV(text);
 
-          if (students.length === 0) {
-            setToastMessage(
-              "CSV file is empty or malformed. Please check the format."
-            );
-            setToastVariant("destructive");
-            setToastOpen(true);
-            setLoading(false);
-            return;
-          }
-
           console.log("Parsed Student Data:", students);
 
+          await uploadStudents(students);
           setToastMessage("Students uploaded successfully!");
           setToastVariant("default");
           setToastOpen(true);
@@ -111,7 +122,10 @@ const AddSchoolStudentsDialog = forwardRef(
           setFile(null);
           onSuccess();
         } catch (error: any) {
-          setToastMessage(error.message || "Failed to process CSV file.");
+          setToastMessage(
+            error.message ||
+              "Failed to process CSV file. Ensure all fields are correctly inputted."
+          );
           setToastVariant("destructive");
           setToastOpen(true);
         } finally {

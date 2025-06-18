@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Skeleton } from "../../../components/ui/Skeleton";
 import { JaaSMeeting } from "@jitsi/react-sdk";
 import { updateLiveClassMeetingUrl } from "../../../api/liveclass";
@@ -11,7 +11,8 @@ const BACKEND_AGENT_SERVER_URL = "http://localhost:3001";
 const JITSI_JWT =
   "eyJhbGciOiJSUzI1NiIsImtpZCI6InZwYWFzLW1hZ2ljLWNvb2tpZS1lNjRlNWYzOWQwMjY0ZWUyODcyMGRmYmZlODAwMzU1My80ODQ2ZDUiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJqaXRzaSIsImNvbnRleHQiOnsidXNlciI6eyJpZCI6IjBmOGI3NzYwLWMxN2YtNGExMi1iMTM0LWM2YWMzNzE2NzE0NCIsIm5hbWUiOiJubHBnYSBhZG1pbiIsImF2YXRhciI6Imh0dHBzOi8vd3d3LmFwaS5uaWdlcmlhbHBnYXMuY29tL3N0b3JhZ2UvYXBwL3B1YmxpYy9maWxldXBsb2FkL2xvZ28ucG5nIiwiZW1haWwiOiJuaWdlcmlhbHBnYUBnbWFpbC5jb20iLCJtb2RlcmF0b3IiOiJ0cnVlIn0sImZlYXR1cmVzIjp7ImxpdmVzdHJlYW1pbmciOiJ0cnVlIiwib3V0Ym91bmQtY2FsbCI6InRydWUiLCJ0cmFuc2NyaXB0aW9uIjoiZmFsc2UiLCJyZWNvcmRpbmciOiJ0cnVlIn0sInJvb20iOnsicmVnZXgiOmZhbHNlfX0sImV4cCI6MjAzMDM4MjcwMSwiaXNzIjoiY2hhdCIsIm5iZiI6MTcxNDg0OTkwMSwicm9vbSI6IioiLCJzdWIiOiJ2cGFhcy1tYWdpYy1jb29raWUtZTY0ZTVmMzlkMDI2NGVlMjg3MjBkZmJmZTgwMDM1NTMifQ.cGVSL8VyZxl4600UxoDW3kTAyLs9jTAWX1Fa63rptwHjYvXOmoHW6YqGsUHxniH20Tp_XBe8n3xryKhXoFzFkbCOOxmAB2uBIS4AuXLToz5LwZVxxwwh8W_IX6ZF6XQCVi0ZL2BEobQ1gNBDx58zNsu1xM3bICSkSxL9kg365-TbTW2RCY8Sna81YM4s_S9W6iUYOv8ZXWWH6EZaXlD-4iGNqmFVlc9myDpZEXtTt0PWAy2gpBKtkYYa9kosrDEQwIf0vWewht0JhNvhzQGL_iZU6qYuA7dL654vHPivUZVjh8-QJ1zc5zxKKLOKIN1c_2RhKq7-OmCUPLGR6iPL5g";
 
-const JitsiMeetingPage: React.FC = () => {
+const JitsiMeetingPage = () => {
+  const navigate = useNavigate();
   const { meetingId } = useParams<{ meetingId: string }>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -30,6 +31,40 @@ const JitsiMeetingPage: React.FC = () => {
       setLoading(false);
     }
   }, [meetingId]);
+
+  const handleMeetingEnd = async () => {
+    console.log("Frontend: Meeting ending sequence initiated.");
+    setAgentStatus("ended");
+
+    try {
+      const response = await fetch(
+        `${BACKEND_AGENT_SERVER_URL}/api/meeting-ended`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ meetingId }),
+        }
+      );
+
+      if (response.ok) {
+        console.log("Frontend: Backend successfully notified of meeting end.");
+      } else {
+        console.error(
+          "Frontend: Failed to notify backend of meeting end:",
+          await response.text()
+        );
+      }
+    } catch (error) {
+      console.error(
+        "Frontend: Network error notifying backend of meeting end:",
+        error
+      );
+    } finally {
+      setTimeout(() => {
+        navigate(`/dashboard/liveclass/details/${meetingId}`);
+      }, 2000);
+    }
+  };
 
   const handleJitsiReady = async (api: any) => {
     jitsiApiRef.current = api;
@@ -50,12 +85,18 @@ const JitsiMeetingPage: React.FC = () => {
     api.addEventListener("videoConferenceJoined", () => {
       console.log("Video conference joined!");
       if (fullMeetingUrl && !agentTriggered) {
-        triggerJitsiAgent(fullMeetingUrl, `Agent-${meetingId}`);
+        triggerJitsiAgent(fullMeetingUrl, `AiTeacha Agent`);
       }
     });
 
     api.addEventListener("readyToClose", () => {
-      console.log("Ready to close Jitsi meeting");
+      console.log("Jitsi readyToClose event received on frontend.");
+      handleMeetingEnd();
+    });
+
+    api.addEventListener("hangup", () => {
+      console.log("Jitsi hangup event received on frontend.");
+      handleMeetingEnd();
     });
 
     api.addEventListener(
@@ -110,10 +151,6 @@ const JitsiMeetingPage: React.FC = () => {
         console.log("Jitsi agent successfully triggered:", data.message);
         setAgentTriggered(true);
         setAgentStatus("running");
-        setTimeout(() => {
-          setAgentStatus("ended");
-          console.log("Agent session simulated as ended.");
-        }, 65000);
       } else {
         console.error(
           "Failed to trigger Jitsi agent:",
@@ -231,9 +268,7 @@ const JitsiMeetingPage: React.FC = () => {
           <p className="text-blue-600">Agent Status: Triggering...</p>
         )}
         {agentStatus === "running" && (
-          <p className="text-green-600">
-            Agent Status: Running (will end in ~60s)
-          </p>
+          <p className="text-green-600">Agent Status: Running</p>
         )}
         {agentStatus === "ended" && (
           <p className="text-purple-600">Agent Status: Ended</p>
