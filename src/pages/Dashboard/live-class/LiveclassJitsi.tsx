@@ -1,24 +1,23 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react"; // Import useCallback
 import { useParams, useNavigate } from "react-router-dom";
 import { Skeleton } from "../../../components/ui/Skeleton";
 import { JaaSMeeting } from "@jitsi/react-sdk";
 import { updateLiveClassMeetingUrl } from "../../../api/liveclass";
 import axios from "axios";
-declare global {
-  interface Window {
-    webkitSpeechRecognition: any;
-    SpeechRecognition: any;
-  }
-}
+import {
+  SpeechRecognition,
+  SpeechRecognitionEvent,
+  SpeechRecognitionResultList,
+  SpeechRecognitionErrorEvent,
+} from "./interface";
 
 const JITSI_DOMAIN = "8x8.vc";
-const APP_ID = "vpaas-magic-cookie-ca24806932244ad4920f362f4487ca67";
-const EXTERNAL_TRANSCRIPT_API_ENDPOINT =
+const APP_ID = "vpaas-magic-cookie-7cfdd85f7d9d411aaec362313fee83f9";
+const TRANSCRIPT_API_URL =
   "https://vd.aiteacha.com/api/live/class/add/transcript";
 
 const JITSI_JWT =
-  "eyJraWQiOiJ2cGFhcy1tYWdpYy1jb29raWUtY2EyNDgwNjkzMjI0NGFkNDkyMGYzNjJmNDQ4N2NhNjcvMDlmMDE2LVNBTVBMRV9BUFAiLCJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJqaXRzaSIsImlzcyI6ImNoYXQiLCJpYXQiOjE3NTAzMzYzMTcsImV4cCI6MTc1MDM0MzUxNywibmJmIjoxNzUwMzM2MzEyLCJzdWIiOiJ2cGFhcy1tYWdpYy1jb29raWUtY2EyNDgwNjkzMjI0NGFkNDkyMGYzNjJmNDQ4N2NhNjciLCJjb250ZXh0Ijp7ImZlYXR1cmVzIjp7ImxpdmVzdHJlYW1pbmciOnRydWUsIm91dGJvdW5kLWNhbGwiOnRydWUsInNpcC1vdXRib3VuZC1jYWxsIjpmYWxzZSwidHJhbnNjcmlwdGlvbiI6dHJ1ZSwicmVjb3JkaW5nIjp0cnVlLCJmbGlwIjpmYWxzZX0sInVzZXIiOnsiaGlkZGVuLWZyb20tcmVjb3JkZXItdHJ1ZSwibW9kZXJhdG9yIjp0cnVlLCJuYW1lIjoiY2h1a3d1bWFzYW11ZWwzNzEiLCJpZCI6Imdvb2dsZS1vYXV0aDJ8MTEzOTg2MzM0ODUzOTU4OTM1MzY3IiwiYXZhdGFyIjoiIiwiZW1haWwiOiJjaHVrd3VtYXNhbXVlbDM3MUBnbWFpbC5jb20ifX0sInJvb20iOiIqIn0.Sxc9AWp_QAz-j6mariXAh9UUlj5zSoJH92KBI_tAmKdKIOID0Ydtz6xmIGFw-yyycuymAFlnB_PoEMMYdWZiRubJ0OGAvbfv_QImPT4yCxhOUs3O69ezSbNfki0FTG48K-bB-T8MHzSdXLWnawFDnQcpuB50QnJWKte9w9T_V5ySa1XNYjwnrUZ4gSCpOZG7kHhf0KtlwR7Kw-KtIcGGnmFTgfWdvSdxFVcJggWbvT5YYR9NAsfda8-fTGS9fcQ7tv53ldz46HbgJtlCYsx5HIFTZnlxPe6nP7qf6WBddb79xh8UHjEDRZ9JSJ6VcFvik17K_JZPxxJqD4-8P6EWaw";
-
+  "eyJraWQiOiJ2cGFhcy1tYWdpYy1jb29raWUtN2NmZGQ4NWY3ZDlkNDExYWFlYzM2MjMxM2ZlZTgzZjkvODUzOWZjLVNBTVBMRV9BUFAiLCJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJqaXRzaSIsImlzcyI6ImNoYXQiLCJpYXQiOjE3NTAzNDIzMjYsImV4cCI6MTc1MDM0OTUyNiwibmJmIjoxNzUwMzQyMzIxLCJzdWIiOiJ2cGFhcy1tYWdpYy1jb29raWUtN2NmZGQ4NWY3ZDlkNDExYWFlYzM2MjMxM2ZlZTgzZjkiLCJjb250ZXh0Ijp7ImZlYXR1cmVzIjp7ImxpdmVzdHJlYW1pbmciOnRydWUsIm91dGJvdW5kLWNhbGwiOnRydWUsInNpcC1vdXRib3VuZC1jYWxsIjpmYWxzZSwidHJhbnNjcmlwdGlvbiI6dHJ1ZSwicmVjb3JkaW5nIjp0cnVlLCJmbGlwIjpmYWxzZX0sInVzZXIiOnsiaGlkZGVuLWZyb20tcmVjb3JkZXIiOmZhbHNlLCJtb2RlcmF0b3IiOnRydWUsIm5hbWUiOiJvZmZpY2lhbHNhbTM3MSIsImlkIjoiZ29vZ2xlLW9hdXRoMnwxMDA2MTY0MTkwODU5NTU1MzcxMTgiLCJhdmF0YXIiOiIiLCJlbWFpbCI6Im9mZmljaWFsc2FtMzcxQGdtYWlsLmNvbSJ9fSwicm9vbSI6IioifQ.tnrMvUaYm_JxD9AWrMkHqLQC1AYL5oWeL-wE5U2-q_OEJ4k8EHrAWfkd2uo4LCYtDzucB_rTYt3lfAXq8zupSGCmTmCFuji5qfBBDOe5qnETK3Yu-3uIUE22RSd--4LyfBDqJ9P-QAn2Dxy3AKGavaRYIQmJk45FUrFT1cOQh0LnXCZIhArs7pHFN6EFhpAUfdtjoyMBnRf8J1a00NrXaZQXND8Gy4dp_Dnq_5BeWMD-VWwBRR0UsIsqJdY27Jkk5FNFP8DBwcTumBC-zaruLujLKEaODjP6N5NEAp_VPXfTykOR27wROYb-8zztyGBCd-JZ9WpxwQVCZPTQYN3l3A";
 const JitsiMeetingPage = () => {
   const navigate = useNavigate();
   const { meetingId } = useParams<{ meetingId: string }>();
@@ -26,126 +25,18 @@ const JitsiMeetingPage = () => {
   const [error, setError] = useState<string | null>(null);
   const jitsiApiRef = useRef<any>(null);
 
-  const speechRecognitionRef = useRef<any>(null);
-  const [userSpeechTranscript, setUserSpeechTranscript] = useState<string>("");
-  const [isRecognitionActive, setIsRecognitionActive] = useState(false);
-  const lastTranscriptTime = useRef<number>(0);
-  const INACTIVITY_THRESHOLD = 5000;
-  const [chatTranscript, setChatTranscript] = useState<string[]>([]);
+  const [isRecording, setIsRecording] = useState(false);
+  const [speechTranscript, setSpeechTranscript] = useState<string>("");
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const [interimSpeechTranscript, setInterimSpeechTranscript] =
+    useState<string>("");
 
-  const startSpeechRecognition = async () => {
-    if (
-      !("webkitSpeechRecognition" in window || "SpeechRecognition" in window)
-    ) {
-      console.error(
-        "BROWSER CONSOLE: Your browser does not support Speech Recognition."
-      );
-      setError("Speech recognition not supported in this browser.");
-      return;
-    }
+  // Use a ref to hold the latest full transcript
+  const fullTranscriptRef = useRef<string>("");
 
-    try {
-      const SpeechRecognition =
-        window.webkitSpeechRecognition || window.SpeechRecognition;
-      const recognition = new SpeechRecognition();
-      recognition.lang = "en-US";
-      recognition.interimResults = true;
-      recognition.continuous = true;
-      recognition.onstart = () => {
-        console.log("BROWSER CONSOLE: Speech Recognition: Started.");
-        setIsRecognitionActive(true);
-      };
-
-      recognition.onend = () => {
-        console.log(
-          "BROWSER CONSOLE: Speech Recognition: Ended. Restarting for continuous listening..."
-        );
-        if (isRecognitionActive) {
-          recognition.start();
-        }
-      };
-
-      recognition.onerror = (event: any) => {
-        console.error(
-          "BROWSER CONSOLE: Speech Recognition Error:",
-          event.error
-        );
-        if (
-          event.error === "not-allowed" ||
-          event.error === "permission-denied"
-        ) {
-          setError(
-            "Microphone permission denied for speech recognition. Please enable it in browser settings."
-          );
-          setIsRecognitionActive(false);
-          recognition.stop();
-        } else if (isRecognitionActive) {
-          console.warn(
-            "BROWSER CONSOLE: Speech Recognition: Attempting to restart on error..."
-          );
-          recognition.start();
-        }
-      };
-
-      recognition.onresult = (event: any) => {
-        let finalTranscriptSegment = "";
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          if (event.results[i].isFinal) {
-            finalTranscriptSegment += event.results[i][0].transcript;
-          }
-        }
-
-        if (finalTranscriptSegment.trim().length > 0) {
-          setUserSpeechTranscript((prevFullTranscript) => {
-            const currentTime = Date.now();
-            const newSegment = finalTranscriptSegment.trim();
-            let updatedTranscript = prevFullTranscript;
-
-            // Add punctuation based on inactivity, similar to the backend agent
-            if (
-              updatedTranscript.length > 0 &&
-              currentTime - lastTranscriptTime.current > INACTIVITY_THRESHOLD
-            ) {
-              if (
-                !updatedTranscript.endsWith(".") &&
-                !updatedTranscript.endsWith("?") &&
-                !updatedTranscript.endsWith("!")
-              ) {
-                updatedTranscript += ". ";
-              } else {
-                updatedTranscript += " ";
-              }
-            } else if (updatedTranscript.length > 0) {
-              updatedTranscript += " ";
-            }
-            updatedTranscript += newSegment;
-            lastTranscriptTime.current = currentTime; // Update ref
-
-            console.log(`Frontend Speech: ${updatedTranscript}`);
-            return updatedTranscript;
-          });
-        }
-      };
-
-      speechRecognitionRef.current = recognition; // Store the recognition object in a ref
-      recognition.start();
-      console.log("Speech recognition process initialized and started.");
-    } catch (err) {
-      console.error("Failed to start Speech Recognition:", err);
-      setError("Failed to start speech recognition. " + err);
-      setIsRecognitionActive(false);
-    }
-  };
-
-  const stopSpeechRecognition = () => {
-    console.log("BROWSER CONSOLE: Speech Recognition: Stopping.");
-    setIsRecognitionActive(false); // Set flag to prevent restart
-    if (speechRecognitionRef.current) {
-      speechRecognitionRef.current.stop();
-      speechRecognitionRef.current = null;
-    }
-  };
-  // --- End Speech Recognition Functions ---
+  useEffect(() => {
+    fullTranscriptRef.current = speechTranscript + interimSpeechTranscript;
+  }, [speechTranscript, interimSpeechTranscript]);
 
   useEffect(() => {
     if (!meetingId) {
@@ -154,82 +45,180 @@ const JitsiMeetingPage = () => {
     } else {
       setLoading(false);
     }
+
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+        recognitionRef.current = null; // Ensure cleanup
+      }
+    };
   }, [meetingId]);
 
-  const handleMeetingEnd = async () => {
-    console.log("Frontend: Meeting ending sequence initiated.");
-    stopSpeechRecognition(); // Stop speech recognition immediately
+  const startSpeechRecognition = useCallback(() => {
+    if (!("webkitSpeechRecognition" in window)) {
+      alert("Your browser does not support speech recognition.");
+      return;
+    }
 
-    // Send user's speech transcript
-    if (userSpeechTranscript.trim().length > 0) {
-      const transcriptData = {
-        liveclassroom_id: meetingId,
-        transcript: userSpeechTranscript.trim(),
-      };
+    if (recognitionRef.current && isRecording) {
+      console.log("Speech recognition already running.");
+      return;
+    }
 
+    const SpeechRecognition =
+      (window as any).webkitSpeechRecognition ||
+      (window as any).SpeechRecognition;
+    const recognition: SpeechRecognition = new SpeechRecognition();
+
+    recognition.lang = "en-US";
+    recognition.interimResults = true;
+    recognition.continuous = true;
+
+    recognition.onstart = () => {
+      setIsRecording(true);
+      console.log("Speech recognition started.");
+    };
+
+    recognition.onend = () => {
+      setIsRecording(false);
       console.log(
-        `Frontend: Sending user speech transcript to ${EXTERNAL_TRANSCRIPT_API_ENDPOINT}`
+        "Speech recognition ended. Attempting to restart if meeting is active."
       );
-      try {
-        const response = await axios.post(
-          EXTERNAL_TRANSCRIPT_API_ENDPOINT,
-          transcriptData
+      // Optional: If you want to automatically restart recognition if the meeting is still active
+      // and it ended unexpectedly (not by explicit stopSpeechRecognition call)
+      if (jitsiApiRef.current) {
+        // Check if Jitsi meeting is still active
+        // Small delay before restarting to avoid rapid restarts on temporary issues
+        setTimeout(() => {
+          if (jitsiApiRef.current) {
+            // Re-check after delay
+            startSpeechRecognition();
+          }
+        }, 1000);
+      }
+    };
+
+    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+      console.error("Speech recognition error:", event.error, event.message);
+      setIsRecording(false);
+      if (event.error === "not-allowed") {
+        setError(
+          "Microphone access denied. Please allow microphone access for speech recognition."
         );
+      }
+      // If error, also try to stop it gracefully if it's still somehow active
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+    };
+
+    recognition.onresult = (
+      event: SpeechRecognitionEvent & {
+        resultIndex: number;
+        results: SpeechRecognitionResultList;
+      }
+    ) => {
+      let currentInterimTranscript = "";
+      let finalTranscriptChunk = "";
+
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          finalTranscriptChunk += transcript.trim();
+          // Add punctuation and space if missing, to make the final transcript more readable
+          if (finalTranscriptChunk && !/[.!?]$/.test(finalTranscriptChunk)) {
+            finalTranscriptChunk += ". ";
+          } else if (finalTranscriptChunk) {
+            finalTranscriptChunk += " ";
+          }
+        } else {
+          currentInterimTranscript += transcript;
+        }
+      }
+
+      if (finalTranscriptChunk) {
+        setSpeechTranscript((prev) => prev + finalTranscriptChunk);
+        setInterimSpeechTranscript(""); // Clear interim once a final chunk is processed
+      } else {
+        setInterimSpeechTranscript(currentInterimTranscript);
+      }
+    };
+
+    recognitionRef.current = recognition;
+    recognition.start();
+  }, [isRecording, jitsiApiRef]); // Add jitsiApiRef to useCallback dependencies
+
+  const stopSpeechRecognition = useCallback(() => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+      recognitionRef.current = null; // Clear the ref after stopping
+      setIsRecording(false);
+      console.log("Speech recognition explicitly stopped.");
+    }
+  }, []);
+
+  // Updated to use Axios
+  const sendTranscriptToBackend = useCallback(
+    async (transcript: string, id: string) => {
+      console.log("Sending transcript to backend...");
+      if (!transcript.trim()) {
+        console.log("Transcript is empty, not sending to backend.");
+        return;
+      }
+      try {
+        const response = await axios.post(TRANSCRIPT_API_URL, {
+          meetingId: id,
+          transcript: transcript,
+        });
 
         if (response.status === 200 || response.status === 201) {
           console.log(
-            "Frontend: User speech transcript sent successfully to external API!"
+            "Transcript successfully sent to backend.",
+            response.data
           );
         } else {
           console.error(
-            `Frontend: Failed to send user speech transcript to external API. Status: ${response.status}, Message: ${response.data}`
+            "Failed to send transcript to backend with status:",
+            response.status,
+            response.data
           );
         }
-      } catch (axiosError: any) {
-        console.error(
-          "Frontend: Error sending user speech transcript to external API:",
-          axiosError.message
-        );
-      }
-    } else {
-      console.log("Frontend: No user speech transcript to send.");
-    }
-
-    // You might still want to notify a backend of the meeting end,
-    // if that backend does other things (like stopping the *previous* agent).
-    // For now, removing the agent specific notification as per request.
-    // However, if the old agent is still running, it needs to be stopped.
-    // The previous implementation had a specific endpoint for this:
-    /*
-    try {
-      const response = await fetch(
-        `${BACKEND_AGENT_SERVER_URL}/api/meeting-ended`, // Removed BACKEND_AGENT_SERVER_URL constant
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ meetingId }),
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          console.error(
+            "Axios error sending transcript to backend:",
+            error.message,
+            error.response?.data || error.response?.statusText
+          );
+        } else {
+          console.error(
+            "Network or unknown error sending transcript to backend:",
+            error
+          );
         }
-      );
-      if (response.ok) {
-        console.log("Frontend: Backend successfully notified of meeting end.");
-      } else {
-        console.error(
-          "Frontend: Failed to notify backend of meeting end:",
-          await response.text()
-        );
       }
-    } catch (error) {
-      console.error(
-        "Frontend: Network error notifying backend of meeting end:",
-        error
-      );
+    },
+    []
+  ); // No dependencies needed for this as it uses parameters
+
+  const handleMeetingEnd = useCallback(async () => {
+    console.log("Frontend: Meeting ending sequence initiated.");
+
+    stopSpeechRecognition(); // Stop recognition immediately
+
+    // Access the latest full transcript from the ref
+    const finalTranscriptToSend = fullTranscriptRef.current;
+    console.log("Final Transcript to Send:", finalTranscriptToSend);
+    console.log("Meeting ID:", meetingId);
+
+    if (finalTranscriptToSend && meetingId) {
+      await sendTranscriptToBackend(finalTranscriptToSend.trim(), meetingId);
     }
-    */
 
     setTimeout(() => {
       navigate(`/dashboard/liveclass/details/${meetingId}`);
     }, 2000);
-  };
+  }, [meetingId, navigate, sendTranscriptToBackend, stopSpeechRecognition]); // Add dependencies
 
   const handleJitsiReady = async (api: any) => {
     jitsiApiRef.current = api;
@@ -248,7 +237,7 @@ const JitsiMeetingPage = () => {
     }
 
     api.addEventListener("videoConferenceJoined", () => {
-      console.log("Video conference joined! Starting user speech recognition.");
+      console.log("Video conference joined! Starting speech recognition.");
       startSpeechRecognition();
     });
 
@@ -262,31 +251,18 @@ const JitsiMeetingPage = () => {
       handleMeetingEnd();
     });
 
-    // Still handle chat messages if you want to display them or save them separately
-    api.addEventListener(
-      "incomingMessage",
-      (message: { from: string; message: string; privateMessage: boolean }) => {
-        const timestamp = new Date().toLocaleTimeString();
-        const sender = message.from;
-        const text = message.message;
-        const isPrivate = message.privateMessage ? "[PRIVATE] " : "";
-        const fullMessage = `${timestamp} - ${isPrivate}${sender}: ${text}`;
-        console.log("Incoming Chat Message:", fullMessage);
-        setChatTranscript((prevTranscript) => [...prevTranscript, fullMessage]);
-      }
-    );
-
-    // Cleanup when component unmounts
+    // Cleanup on unmount or before new API instance
     return () => {
-      console.log("JitsiMeetingPage unmounting.");
-      stopSpeechRecognition(); // Ensure recognition is stopped on unmount
       if (jitsiApiRef.current) {
         console.log("Disposing of Jitsi API instance.");
         jitsiApiRef.current.dispose();
         jitsiApiRef.current = null;
       }
+      stopSpeechRecognition(); // Ensure recognition is stopped on component unmount
     };
   };
+
+  const displayedTranscript = speechTranscript + interimSpeechTranscript;
 
   if (loading) {
     return (
@@ -380,28 +356,25 @@ const JitsiMeetingPage = () => {
       <p className="text-gray-600 mt-4 text-center">
         Your meeting is live. Ensure your microphone and camera are enabled.
       </p>
-      {userSpeechTranscript.length > 0 && (
-        <div className="mt-4 w-full max-w-4xl bg-white p-6 rounded-lg shadow-xl border border-gray-200">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">
-            Your Spoken Transcript
-          </h2>
-          <div className="h-48 overflow-y-auto border border-gray-300 p-3 rounded-md bg-gray-50">
-            <p className="text-sm text-gray-700">{userSpeechTranscript}</p>
-          </div>
-        </div>
-      )}
 
-      {chatTranscript.length > 0 && (
+      <div className="mt-4 p-3 rounded-lg text-sm font-medium">
+        <p className="text-gray-700">
+          Speech Recording Status: {isRecording ? "Recording..." : "Stopped"}
+        </p>
+      </div>
+
+      {(displayedTranscript.length > 0 || isRecording) && (
         <div className="mt-8 w-full max-w-4xl bg-white p-6 rounded-lg shadow-xl border border-gray-200">
           <h2 className="text-xl font-bold text-gray-800 mb-4">
-            Chat Transcript
+            Live Speech Transcript
           </h2>
           <div className="h-48 overflow-y-auto border border-gray-300 p-3 rounded-md bg-gray-50">
-            {chatTranscript.map((msg, index) => (
-              <p key={index} className="text-sm text-gray-700 mb-1">
-                {msg}
-              </p>
-            ))}
+            <p className="text-sm text-gray-700">
+              {displayedTranscript}
+              {isRecording && !interimSpeechTranscript && (
+                <span className="animate-pulse text-gray-500">_</span>
+              )}{" "}
+            </p>
           </div>
         </div>
       )}
