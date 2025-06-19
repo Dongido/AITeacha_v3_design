@@ -167,7 +167,7 @@ const JitsiMeetingPage = () => {
       }
       try {
         const response = await axios.post(TRANSCRIPT_API_URL, {
-          meetingId: id,
+          liveclassroom_id: id,
           transcript: transcript,
         });
 
