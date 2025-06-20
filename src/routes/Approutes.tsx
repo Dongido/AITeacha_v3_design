@@ -106,6 +106,7 @@ import { FaUsersLine } from "react-icons/fa6";
 import StaffChat from "../pages/Dashboard/StaffChat";
 import { Children } from "react";
 import GroupChatForm from "../pages/Dashboard/GroupChatForm";
+import Forumpage from "../pages/Dashboard/Forumpage";
 
 
 const icon = {
@@ -201,8 +202,8 @@ export const routes = [
            {
             icon: <FaUsersLine {...icon} />,
             name: "Staff Chat",
-            path: "/premium/staff",
-            element:<StaffChat/>,
+            path: "/premium/forum",
+            element:<Forumpage/>,
           },
           {
             icon: <UserIcon {...icon} />,
@@ -228,6 +229,7 @@ export const routes = [
             path: "/premium/classrooms",
             element: <TeamClassroomPage />,
           },
+        
         ],
       },
 
@@ -634,6 +636,12 @@ export const Paramroutes = [
         name: "teacherChats",
         path: "/teacherChats/:id",
         element: <GroupChatForm />,
+      },
+       {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "teacherChats",
+        path: "/stafforum/:id",
+        element: <StaffChat />,
       },
     ],
   },
