@@ -258,8 +258,6 @@ const ToolDetail = () => {
     setIsSubmitting(true);
     try {
       console.log(data);
-      // console.log("FormData to submit:", formDataToSubmit);
-
       const response = await submitToolData(formDataToSubmit);
       const plainTextResponse = await markdownToPlainText(response.data.data);
       const markedResponse = marked(response.data.data);
@@ -279,7 +277,7 @@ const ToolDetail = () => {
         setResponseMessage(errorMessage);
         console.log(error);
         setToastMessage(errorMessage);
-        setToastVariant("default");
+        setToastVariant("destructive");
         setShowToast(true);
       }
     } finally {

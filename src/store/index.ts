@@ -18,7 +18,9 @@ import archivedAssistantsReducer from "./slices/archivedAssistantsSlice";
 import bankReducer from "./slices/bankSlice";
 import testReducer from "./slices/testSlice";
 import studentTestsReducer from "./slices/studentTestsSlice";
+import schoolStudentReducer from "./slices/schoolStudentSlice";
 import staffChatSlice  from "./slices/staffchats"
+
 const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -40,6 +42,7 @@ const store = configureStore({
     bank: bankReducer,
     tests: testReducer,
     studentTests: studentTestsReducer,
+    schoolStudent: schoolStudentReducer,
     staffChats:staffChatSlice
   },
 });

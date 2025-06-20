@@ -35,7 +35,7 @@ const initialPrices = {
     GBP: { month: 0, threeMonths: 0, year: 0 },
   },
   pro: {
-    NGN: { month: 50, threeMonths: 15000, year: 55000 },
+    NGN: { month: 5000, threeMonths: 15000, year: 55000 },
     USD: { month: 5, threeMonths: 15, year: 55 },
     GBP: { month: 4, threeMonths: 12, year: 50 },
   },

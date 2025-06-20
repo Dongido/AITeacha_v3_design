@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useAppSelector, useAppDispatch } from "../../store/hooks";
 import {
   loadTeamMembers,
@@ -20,7 +20,7 @@ import {
 } from "../../components/ui/Toast";
 import GeneralRestrictedPage from "./_components/GeneralRestrictedPage";
 import { useNavigate } from "react-router-dom";
-
+import AddSchoolTeachersDialog from "./school/components/AddSchoolTeachersDialog";
 const Team = () => {
   const dispatch = useAppDispatch();
   const { members, loading, error, inviteLoading, inviteError } =
@@ -31,6 +31,11 @@ const Team = () => {
   const [isEmailVerified, setIsEmailVerified] = useState<number>(0);
   const [showToast, setShowToast] = useState(false);
   const [isInviteAttempted, setIsInviteAttempted] = useState(false);
+  const addTeachersDialogRef = useRef<{ openDialog: () => void }>(null);
+
+  const handleAddStudentsClick = () => {
+    addTeachersDialogRef.current?.openDialog();
+  };
   useEffect(() => {
     dispatch(loadTeamMembers());
   }, [dispatch]);
@@ -66,6 +71,29 @@ const Team = () => {
       setEmail("");
     });
     dispatch(loadTeamMembers());
+  };
+  const handleTeachersAdded = () => {
+    console.log("New Teachers added, refreshing table data!");
+  };
+  const handleDownloadTemplate = () => {
+    const csvContent =
+      "firstname,lastname,phone,email\nJohn,Doe,1234567890,john.doe@example.com,STU001\nJane,Smith,0987654321,jane.smith@example.com";
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", "student_template.csv");
+      link.style.visibility = "hidden";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } else {
+      window.open(
+        `data:text/csv;charset=utf-8,${encodeURIComponent(csvContent)}`
+      );
+    }
   };
 
   if (loading) {
@@ -160,7 +188,6 @@ const Team = () => {
             </span>
           </div>
         )}
-
         <div className="flex items-center gap-2 my-8">
           <Input
             type="email"
@@ -173,31 +200,56 @@ const Team = () => {
             onClick={handleInvite}
             disabled={inviteLoading}
             variant={"gradient"}
-            className={`px-4 py-3 rounded-md  ${
+            className={`px-4 py-3 rounded-md ${
               inviteLoading ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >
             {inviteLoading ? "Inviting..." : "Invite"}
           </Button>
         </div>
-
-        <BaseTable data={members} columns={teamColumns} />
+        {/* <div className="relative flex justify-center items-center my-6">
+          <div className="absolute inset-x-0 h-px bg-gray-300"></div>
+          <span className="relative z-10 bg-white px-4 text-gray-700 text-sm font-bold">
+            OR
+          </span>
+        </div>
+        <div className="py-2">
+          <div className="mb-4 flex justify-end">
+            <Button
+              onClick={handleDownloadTemplate}
+              variant={"outline"}
+              className="rounded-md hover:underline"
+            >
+              Download Example CSV Template
+            </Button>
+            <Button
+              onClick={handleAddStudentsClick}
+              variant={"gradient"}
+              className="rounded-md"
+            >
+              Add By Uploading CSV
+            </Button>
+          </div>
+        </div> */}
+        <BaseTable data={members} columns={teamColumns} />{" "}
+        <AddSchoolTeachersDialog
+          ref={addTeachersDialogRef}
+          onSuccess={handleTeachersAdded}
+        />
+        {showToast && (
+          <Toast
+            variant="destructive"
+            onOpenChange={(isOpen) => {
+              if (!isOpen) setShowToast(false);
+            }}
+          >
+            <ToastTitle>Invitation Failed</ToastTitle>
+            <ToastDescription>{inviteError}</ToastDescription>
+            <ToastClose />
+          </Toast>
+        )}
+        <ToastViewport />
       </div>
-
-      {showToast && (
-        <Toast
-          variant="destructive"
-          onOpenChange={(isOpen) => {
-            if (!isOpen) setShowToast(false);
-          }}
-        >
-          <ToastTitle>Invitation Failed</ToastTitle>
-          <ToastDescription>{inviteError}</ToastDescription>
-          <ToastClose />
-        </Toast>
-      )}
-
-      <ToastViewport />
     </ToastProvider>
   );
 };

@@ -305,9 +305,11 @@ const Profile: React.FC = () => {
                         {role === 3
                           ? "Student"
                           : role === 2
-                          ? "Teacher"
-                          : role === 1
                           ? "Educator"
+                          : role === 1
+                          ? "Admin"
+                          : role === 4
+                          ? "School"
                           : "Unknown Role"}
                       </p>
                     </div>
