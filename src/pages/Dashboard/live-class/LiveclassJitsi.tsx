@@ -1,27 +1,41 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Skeleton } from "../../../components/ui/Skeleton";
 import { JaaSMeeting } from "@jitsi/react-sdk";
 import { updateLiveClassMeetingUrl } from "../../../api/liveclass";
+import axios from "axios";
+import {
+  SpeechRecognition,
+  SpeechRecognitionEvent,
+  SpeechRecognitionResultList,
+  SpeechRecognitionErrorEvent,
+} from "./interface";
 
 const JITSI_DOMAIN = "8x8.vc";
-const APP_ID = "vpaas-magic-cookie-e64e5f39d0264ee28720dfbfe8003553";
-const BACKEND_AGENT_SERVER_URL = "https://meet.aiteacha.com";
+const APP_ID = "vpaas-magic-cookie-7cfdd85f7d9d411aaec362313fee83f9";
+const TRANSCRIPT_API_URL =
+  "https://vd.aiteacha.com/api/live/class/add/transcript";
 
 const JITSI_JWT =
-  "eyJhbGciOiJSUzI1NiIsImtpZCI6InZwYWFzLW1hZ2ljLWNvb2tpZS1lNjRlNWYzOWQwMjY0ZWUyODcyMGRmYmZlODAwMzU1My80ODQ2ZDUiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJqaXRzaSIsImNvbnRleHQiOnsidXNlciI6eyJpZCI6IjBmOGI3NzYwLWMxN2YtNGExMi1iMTM0LWM2YWMzNzE2NzE0NCIsIm5hbWUiOiJubHBnYSBhZG1pbiIsImF2YXRhciI6Imh0dHBzOi8vd3d3LmFwaS5uaWdlcmlhbHBnYXMuY29tL3N0b3JhZ2UvYXBwL3B1YmxpYy9maWxldXBsb2FkL2xvZ28ucG5nIiwiZW1haWwiOiJuaWdlcmlhbHBnYUBnbWFpbC5jb20iLCJtb2RlcmF0b3IiOiJ0cnVlIn0sImZlYXR1cmVzIjp7ImxpdmVzdHJlYW1pbmciOiJ0cnVlIiwib3V0Ym91bmQtY2FsbCI6InRydWUiLCJ0cmFuc2NyaXB0aW9uIjoiZmFsc2UiLCJyZWNvcmRpbmciOiJ0cnVlIn0sInJvb20iOnsicmVnZXgiOmZhbHNlfX0sImV4cCI6MjAzMDM4MjcwMSwiaXNzIjoiY2hhdCIsIm5iZiI6MTcxNDg0OTkwMSwicm9vbSI6IioiLCJzdWIiOiJ2cGFhcy1tYWdpYy1jb29raWUtZTY0ZTVmMzlkMDI2NGVlMjg3MjBkZmJmZTgwMDM1NTMifQ.cGVSL8VyZxl4600UxoDW3kTAyLs9jTAWX1Fa63rptwHjYvXOmoHW6YqGsUHxniH20Tp_XBe8n3xryKhXoFzFkbCOOxmAB2uBIS4AuXLToz5LwZVxxwwh8W_IX6ZF6XQCVi0ZL2BEobQ1gNBDx58zNsu1xM3bICSkSxL9kg365-TbTW2RCY8Sna81YM4s_S9W6iUYOv8ZXWWH6EZaXlD-4iGNqmFVlc9myDpZEXtTt0PWAy2gpBKtkYYa9kosrDEQwIf0vWewht0JhNvhzQGL_iZU6qYuA7dL654vHPivUZVjh8-QJ1zc5zxKKLOKIN1c_2RhKq7-OmCUPLGR6iPL5g";
-
+  "eyJraWQiOiJ2cGFhcy1tYWdpYy1jb29raWUtN2NmZGQ4NWY3ZDlkNDExYWFlYzM2MjMxM2ZlZTgzZjkvODUzOWZjLVNBTVBMRV9BUFAiLCJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJqaXRzaSIsImlzcyI6ImNoYXQiLCJpYXQiOjE3NTAzNDIzMjYsImV4cCI6MTc1MDM0OTUyNiwibmJmIjoxNzUwMzQyMzIxLCJzdWIiOiJ2cGFhcy1tYWdpYy1jb29raWUtN2NmZGQ4NWY3ZDlkNDExYWFlYzM2MjMxM2ZlZTgzZjkiLCJjb250ZXh0Ijp7ImZlYXR1cmVzIjp7ImxpdmVzdHJlYW1pbmciOnRydWUsIm91dGJvdW5kLWNhbGwiOnRydWUsInNpcC1vdXRib3VuZC1jYWxsIjpmYWxzZSwidHJhbnNjcmlwdGlvbiI6dHJ1ZSwicmVjb3JkaW5nIjp0cnVlLCJmbGlwIjpmYWxzZX0sInVzZXIiOnsiaGlkZGVuLWZyb20tcmVjb3JkZXIiOmZhbHNlLCJtb2RlcmF0b3IiOnRydWUsIm5hbWUiOiJvZmZpY2lhbHNhbTM3MSIsImlkIjoiZ29vZ2xlLW9hdXRoMnwxMDA2MTY0MTkwODU5NTU1MzcxMTgiLCJhdmF0YXIiOiIiLCJlbWFpbCI6Im9mZmljaWFsc2FtMzcxQGdtYWlsLmNvbSJ9fSwicm9vbSI6IioifQ.tnrMvUaYm_JxD9AWrMkHqLQC1AYL5oWeL-wE5U2-q_OEJ4k8EHrAWfkd2uo4LCYtDzucB_rTYt3lfAXq8zupSGCmTmCFuji5qfBBDOe5qnETK3Yu-3uIUE22RSd--4LyfBDqJ9P-QAn2Dxy3AKGavaRYIQmJk45FUrFT1cOQh0LnXCZIhArs7pHFN6EFhpAUfdtjoyMBnRf8J1a00NrXaZQXND8Gy4dp_Dnq_5BeWMD-VWwBRR0UsIsqJdY27Jkk5FNFP8DBwcTumBC-zaruLujLKEaODjP6N5NEAp_VPXfTykOR27wROYb-8zztyGBCd-JZ9WpxwQVCZPTQYN3l3A";
 const JitsiMeetingPage = () => {
   const navigate = useNavigate();
   const { meetingId } = useParams<{ meetingId: string }>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const jitsiApiRef = useRef<any>(null);
-  const [chatTranscript, setChatTranscript] = useState<string[]>([]);
-  const [agentTriggered, setAgentTriggered] = useState(false);
-  const [agentStatus, setAgentStatus] = useState<
-    "idle" | "triggering" | "running" | "ended" | "error"
-  >("idle");
+
+  const [isRecording, setIsRecording] = useState(false);
+  const [speechTranscript, setSpeechTranscript] = useState<string>("");
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const [interimSpeechTranscript, setInterimSpeechTranscript] =
+    useState<string>("");
+
+  const fullTranscriptRef = useRef<string>("");
+
+  useEffect(() => {
+    fullTranscriptRef.current = speechTranscript + interimSpeechTranscript;
+  }, [speechTranscript, interimSpeechTranscript]);
 
   useEffect(() => {
     if (!meetingId) {
@@ -30,42 +44,168 @@ const JitsiMeetingPage = () => {
     } else {
       setLoading(false);
     }
+
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+        recognitionRef.current = null;
+      }
+    };
   }, [meetingId]);
 
-  const handleMeetingEnd = async () => {
-    console.log("Frontend: Meeting ending sequence initiated.");
-    setAgentStatus("ended");
+  const startSpeechRecognition = useCallback(() => {
+    if (!("webkitSpeechRecognition" in window)) {
+      alert("Your browser does not support speech recognition.");
+      return;
+    }
 
-    try {
-      const response = await fetch(
-        `${BACKEND_AGENT_SERVER_URL}/api/meeting-ended`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ meetingId }),
-        }
+    if (recognitionRef.current && isRecording) {
+      console.log("Speech recognition already running.");
+      return;
+    }
+
+    const SpeechRecognition =
+      (window as any).webkitSpeechRecognition ||
+      (window as any).SpeechRecognition;
+    const recognition: SpeechRecognition = new SpeechRecognition();
+
+    recognition.lang = "en-US";
+    recognition.interimResults = true;
+    recognition.continuous = true;
+
+    recognition.onstart = () => {
+      setIsRecording(true);
+      console.log("Speech recognition started.");
+    };
+
+    recognition.onend = () => {
+      setIsRecording(false);
+      console.log(
+        "Speech recognition ended. Attempting to restart if meeting is active."
       );
+      if (jitsiApiRef.current) {
+        setTimeout(() => {
+          if (jitsiApiRef.current) {
+            startSpeechRecognition();
+          }
+        }, 1000);
+      }
+    };
 
-      if (response.ok) {
-        console.log("Frontend: Backend successfully notified of meeting end.");
-      } else {
-        console.error(
-          "Frontend: Failed to notify backend of meeting end:",
-          await response.text()
+    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+      console.error("Speech recognition error:", event.error, event.message);
+      setIsRecording(false);
+      if (event.error === "not-allowed") {
+        setError(
+          "Microphone access denied. Please allow microphone access for speech recognition."
         );
       }
-    } catch (error) {
-      console.error(
-        "Frontend: Network error notifying backend of meeting end:",
-        error
-      );
-    } finally {
-      setTimeout(() => {
-        navigate(`/dashboard/liveclass/details/${meetingId}`);
-      }, 2000);
-    }
-  };
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+    };
 
+    recognition.onresult = (
+      event: SpeechRecognitionEvent & {
+        resultIndex: number;
+        results: SpeechRecognitionResultList;
+      }
+    ) => {
+      let currentInterimTranscript = "";
+      let finalTranscriptChunk = "";
+
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          finalTranscriptChunk += transcript.trim();
+          if (finalTranscriptChunk && !/[.!?]$/.test(finalTranscriptChunk)) {
+            finalTranscriptChunk += ". ";
+          } else if (finalTranscriptChunk) {
+            finalTranscriptChunk += " ";
+          }
+        } else {
+          currentInterimTranscript += transcript;
+        }
+      }
+
+      if (finalTranscriptChunk) {
+        setSpeechTranscript((prev) => prev + finalTranscriptChunk);
+        setInterimSpeechTranscript("");
+      } else {
+        setInterimSpeechTranscript(currentInterimTranscript);
+      }
+    };
+
+    recognitionRef.current = recognition;
+    recognition.start();
+  }, [isRecording, jitsiApiRef]);
+  const stopSpeechRecognition = useCallback(() => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+      recognitionRef.current = null;
+      setIsRecording(false);
+      console.log("Speech recognition explicitly stopped.");
+    }
+  }, []);
+
+  const sendTranscriptToBackend = useCallback(
+    async (transcript: string, id: string) => {
+      console.log("Sending transcript to backend...");
+      if (!transcript.trim()) {
+        console.log("Transcript is empty, not sending to backend.");
+        return;
+      }
+      try {
+        const response = await axios.post(TRANSCRIPT_API_URL, {
+          liveclassroom_id: id,
+          transcript: transcript,
+        });
+
+        if (response.status === 200 || response.status === 201) {
+          console.log(
+            "Transcript successfully sent to backend.",
+            response.data
+          );
+        } else {
+          console.error(
+            "Failed to send transcript to backend with status:",
+            response.status,
+            response.data
+          );
+        }
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          console.error(
+            "Axios error sending transcript to backend:",
+            error.message,
+            error.response?.data || error.response?.statusText
+          );
+        } else {
+          console.error(
+            "Network or unknown error sending transcript to backend:",
+            error
+          );
+        }
+      }
+    },
+    []
+  );
+  const handleMeetingEnd = useCallback(async () => {
+    console.log("Frontend: Meeting ending sequence initiated.");
+
+    stopSpeechRecognition();
+    const finalTranscriptToSend = fullTranscriptRef.current;
+    console.log("Final Transcript to Send:", finalTranscriptToSend);
+    console.log("Meeting ID:", meetingId);
+
+    if (finalTranscriptToSend && meetingId) {
+      await sendTranscriptToBackend(finalTranscriptToSend.trim(), meetingId);
+    }
+
+    setTimeout(() => {
+      navigate(`/dashboard/liveclass/details/${meetingId}`);
+    }, 2000);
+  }, [meetingId, navigate, sendTranscriptToBackend, stopSpeechRecognition]);
   const handleJitsiReady = async (api: any) => {
     jitsiApiRef.current = api;
     setLoading(false);
@@ -83,10 +223,8 @@ const JitsiMeetingPage = () => {
     }
 
     api.addEventListener("videoConferenceJoined", () => {
-      console.log("Video conference joined!");
-      if (fullMeetingUrl && !agentTriggered) {
-        triggerJitsiAgent(fullMeetingUrl, `AiTeacha Agent`);
-      }
+      console.log("Video conference joined! Starting speech recognition.");
+      startSpeechRecognition();
     });
 
     api.addEventListener("readyToClose", () => {
@@ -99,73 +237,17 @@ const JitsiMeetingPage = () => {
       handleMeetingEnd();
     });
 
-    api.addEventListener(
-      "incomingMessage",
-      (message: { from: string; message: string; privateMessage: boolean }) => {
-        const timestamp = new Date().toLocaleTimeString();
-        const sender = message.from;
-        const text = message.message;
-        const isPrivate = message.privateMessage ? "[PRIVATE] " : "";
-        const fullMessage = `${timestamp} - ${isPrivate}${sender}: ${text}`;
-        console.log("Incoming Chat Message:", fullMessage);
-
-        setChatTranscript((prevTranscript) => [...prevTranscript, fullMessage]);
-      }
-    );
-
     return () => {
       if (jitsiApiRef.current) {
         console.log("Disposing of Jitsi API instance.");
         jitsiApiRef.current.dispose();
         jitsiApiRef.current = null;
       }
+      stopSpeechRecognition();
     };
   };
 
-  const triggerJitsiAgent = async (
-    meetingUrl: string,
-    agentDisplayName: string
-  ) => {
-    setAgentStatus("triggering");
-    try {
-      console.log(
-        `Attempting to trigger Jitsi agent via backend for URL: ${meetingUrl}`
-      );
-      const response = await fetch(
-        `${BACKEND_AGENT_SERVER_URL}/start-jitsi-agent`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            meetingUrl: meetingUrl,
-            displayName: agentDisplayName,
-          }),
-        }
-      );
-
-      const data = await response.json();
-
-      if (response.ok) {
-        console.log("Jitsi agent successfully triggered:", data.message);
-        setAgentTriggered(true);
-        setAgentStatus("running");
-      } else {
-        console.error(
-          "Failed to trigger Jitsi agent:",
-          data.error || response.statusText
-        );
-        setAgentStatus("error");
-      }
-    } catch (fetchError: any) {
-      console.error(
-        "Network error when trying to trigger Jitsi agent:",
-        fetchError
-      );
-      setAgentStatus("error");
-    }
-  };
+  const displayedTranscript = speechTranscript + interimSpeechTranscript;
 
   if (loading) {
     return (
@@ -261,34 +343,23 @@ const JitsiMeetingPage = () => {
       </p>
 
       <div className="mt-4 p-3 rounded-lg text-sm font-medium">
-        {agentStatus === "idle" && (
-          <p className="text-gray-700">Agent Status: Idle</p>
-        )}
-        {agentStatus === "triggering" && (
-          <p className="text-blue-600">Agent Status: Triggering...</p>
-        )}
-        {agentStatus === "running" && (
-          <p className="text-green-600">Agent Status: Running</p>
-        )}
-        {agentStatus === "ended" && (
-          <p className="text-purple-600">Agent Status: Ended</p>
-        )}
-        {agentStatus === "error" && (
-          <p className="text-red-600">Agent Status: Error starting</p>
-        )}
+        <p className="text-gray-700">
+          Speech Recording Status: {isRecording ? "Recording..." : "Stopped"}
+        </p>
       </div>
 
-      {chatTranscript.length > 0 && (
+      {(displayedTranscript.length > 0 || isRecording) && (
         <div className="mt-8 w-full max-w-4xl bg-white p-6 rounded-lg shadow-xl border border-gray-200">
           <h2 className="text-xl font-bold text-gray-800 mb-4">
-            Chat Transcript
+            Live Speech Transcript
           </h2>
           <div className="h-48 overflow-y-auto border border-gray-300 p-3 rounded-md bg-gray-50">
-            {chatTranscript.map((msg, index) => (
-              <p key={index} className="text-sm text-gray-700 mb-1">
-                {msg}
-              </p>
-            ))}
+            <p className="text-sm text-gray-700">
+              {displayedTranscript}
+              {isRecording && !interimSpeechTranscript && (
+                <span className="animate-pulse text-gray-500">_</span>
+              )}{" "}
+            </p>
           </div>
         </div>
       )}

@@ -16,7 +16,8 @@ import {
   ToastTitle,
   ToastViewport,
 } from "../../../../components/ui/Toast";
-
+import { LuLoader2 } from "react-icons/lu";
+import { uploadTeachers } from "../../../../api/school";
 interface AddSchoolTeachersDialogProps {
   onSuccess?: () => void;
 }
@@ -26,6 +27,11 @@ interface TeacherData {
   lastname: string;
   phone: string;
   email: string;
+  country: string;
+  city: string;
+  gender?: string;
+  age?: string;
+  disability_details?: string;
 }
 
 const AddSchoolTeachersDialog = forwardRef(
@@ -53,17 +59,54 @@ const AddSchoolTeachersDialog = forwardRef(
 
     const parseCSV = (text: string): TeacherData[] => {
       const lines = text.split("\n").filter((line) => line.trim() !== "");
-      if (lines.length === 0) return [];
+      if (lines.length <= 1) {
+        throw new Error(
+          "CSV file is empty or only contains a header. Please check the format."
+        );
+      }
 
       const data: TeacherData[] = [];
       for (let i = 1; i < lines.length; i++) {
-        const [firstname, lastname, phone, email] = lines[i]
-          .split(",")
-          .map((item) => item.trim());
+        const [
+          firstname,
+          lastname,
+          phone,
+          email,
+          country,
+          city,
+          gender,
+          age,
+          disability_details,
+        ] = lines[i].split(",").map((item) => item.trim());
 
-        if (firstname && lastname && phone && email) {
-          data.push({ firstname, lastname, phone, email });
+        if (
+          !firstname ||
+          !lastname ||
+          !phone ||
+          !email ||
+          !country ||
+          !city ||
+          !gender ||
+          !age
+        ) {
+          throw new Error(
+            `Row ${
+              i + 1
+            }: All fields (firstname, lastname, phone, email, country, city, gender, age) must be filled. Please check your CSV.`
+          );
         }
+        data.push({
+          firstname,
+          lastname,
+          phone,
+          email,
+          country,
+          city,
+          gender,
+          age,
+
+          disability_details: disability_details || undefined,
+        });
       }
       return data;
     };
@@ -93,15 +136,16 @@ const AddSchoolTeachersDialog = forwardRef(
 
           if (teachers.length === 0) {
             setToastMessage(
-              "CSV file is empty or malformed. Please check the format."
+              "No valid teacher data found in the CSV file after parsing."
             );
             setToastVariant("destructive");
             setToastOpen(true);
             setLoading(false);
             return;
           }
-
           console.log("Parsed Teacher Data:", teachers);
+
+          await uploadTeachers(teachers);
 
           setToastMessage("Teachers uploaded successfully!");
           setToastVariant("default");
@@ -110,7 +154,9 @@ const AddSchoolTeachersDialog = forwardRef(
           setFile(null);
           onSuccess();
         } catch (error: any) {
-          setToastMessage(error.message || "Failed to process CSV file.");
+          setToastMessage(
+            error.message || "Failed to process or upload teachers."
+          );
           setToastVariant("destructive");
           setToastOpen(true);
         } finally {
@@ -132,19 +178,32 @@ const AddSchoolTeachersDialog = forwardRef(
       <ToastProvider swipeDirection="right">
         <>
           <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent className="max-w-[500px] text-gray-800">
+            <DialogContent className="max-w-[700px] text-gray-800 max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Add New Teachers</DialogTitle>
               </DialogHeader>
               <DialogDescription className="mb-4">
-                Upload a **CSV document** containing teacher information. The
-                CSV should have columns in the order: <br />
+                Upload a{" "}
+                <strong className="block mb-2">
+                  CSV (Comma Separated Values)
+                </strong>{" "}
+                file containing teacher information. The CSV should have columns
+                in the order:
+                <br />
                 <span className="font-bold">
-                  firstname, lastname, phone, email.
+                  firstname, lastname, phone, email, country, city, gender, age,
+                  disability_details.
                 </span>
                 <br />
                 <span className="text-sm text-gray-500">
-                  (e.g., Jane,Doe,09012345678,jane.doe@example.com)
+                  (e.g.,
+                  Jane,Doe,09012345678,jane.doe@example.com,Nigeria,Lagos,Female,35,Wheelchair
+                  user)
+                </span>
+                <br />
+                <span className="text-sm text-gray-500">
+                  <span className="font-bold">disability_details</span> is
+                  optional. Leave blank if not applicable.
                 </span>
               </DialogDescription>
               <div className="grid gap-4 py-4">
@@ -169,7 +228,10 @@ const AddSchoolTeachersDialog = forwardRef(
                   className="rounded-md"
                   variant={"gradient"}
                 >
-                  {loading ? "Uploading..." : "Upload Teachers"}
+                  {loading && (
+                    <LuLoader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}{" "}
+                  {loading ? `Uploading` : "Upload Teachers"}
                 </Button>
                 <Button
                   onClick={() => {

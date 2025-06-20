@@ -14,9 +14,6 @@ import { Button } from "../../../components/ui/Button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PasswordInput } from "../../../components/ui/PasswordInput";
-import { jwtDecode } from "jwt-decode";
-import Cookies from "js-cookie";
-import { DecodedToken } from "../../../interfaces";
 import {
   ToastProvider,
   Toast,
@@ -26,15 +23,19 @@ import {
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../../store";
 import { Link, useNavigate } from "react-router-dom";
-import { setAuthData } from "../../../store/slices/authSlice";
 import {
   registerUser,
   SignupResponse,
-  loginWithGoogle,
 } from "../../../api/auth";
 import { FcGoogle } from "react-icons/fc";
-import { FaFacebook } from "react-icons/fa";
 import { Checkbox } from "../../../components/ui/Checkbox";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "../../../components/ui/Select";
 
 interface SignupFormProps extends HTMLAttributes<HTMLDivElement> {}
 
@@ -65,6 +66,10 @@ const formSchema = z
     phone: z.string().refine((val) => !containsUrl(val), {
       message: "Phone number cannot contain URLs",
     }),
+    gender: z.enum(["Male", "Female"], {
+      errorMap: () => ({ message: "Please select a gender" }),
+    }),
+    ageRange: z.string().min(1, { message: "Please select an age range" }),
     password: z
       .string()
       .min(8, { message: "Password must be at least 7 characters long" }),
@@ -81,11 +86,30 @@ const formSchema = z
     confirmPassword: z
       .string()
       .min(1, { message: "Please confirm your password" }),
+    hasDisability: z.boolean(),
+    disabilityDetails: z.string().optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",
     path: ["confirmPassword"],
-  });
+  })
+  .refine(
+    (data) => {
+      if (data.hasDisability && (!data.disabilityDetails || data.disabilityDetails.trim() === '')) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: "Please specify your disability",
+      path: ["disabilityDetails"],
+    }
+  );
+
+type Option = {
+  value: string;
+  label: string;
+};
 
 export function SignupForm({ className, ...props }: SignupFormProps) {
   const [isLoading, setIsLoading] = useState(false);
@@ -98,6 +122,19 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
 
+  const ageRanges: Option[] = [
+    { value: "5-10", label: "5-10" },
+    { value: "11-15", label: "11-15" },
+    { value: "16-21", label: "16-21" },
+    { value: "22-28", label: "22-28" },
+    { value: "29-40", label: "29-40" },
+    { value: "41-45", label: "41-45" },
+    { value: "46-53", label: "46-53" },
+    { value: "54-60", label: "54-60" },
+    { value: "60-70", label: "60-70" },
+    { value: "71-100", label: "71-100" },
+  ];
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -105,13 +142,19 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
       lastName: "",
       email: "",
       phone: "",
+      gender: undefined,
+      ageRange: "",
       referred_by: "",
       password: "",
       confirmPassword: "",
       acceptTerms: false,
       receiveNewsletters: false,
+      hasDisability: false,
+      disabilityDetails: "",
     },
   });
+
+  const hasDisability = form.watch("hasDisability");
 
   useEffect(() => {
     const storedReferralCode = localStorage.getItem("referralCode");
@@ -125,7 +168,7 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
 
     const storedRole = localStorage.getItem("selectedRole");
 
-    let role_id: number | 4 = 4;
+    let role_id: number = 4;
     if (storedRole === "student") {
       role_id = 3;
     } else if (storedRole === "teacher" || storedRole === "lecturer") {
@@ -139,11 +182,15 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
         data.lastName,
         data.password,
         role_id,
+        data.acceptTerms,
+        data.receiveNewsletters,
+        data.phone,
         undefined,
         undefined,
         undefined,
-        undefined,
-        undefined,
+        data.gender,
+        data.ageRange,
+        data.hasDisability ? data.disabilityDetails : undefined,
         data.referred_by
       );
       setToastMessage(res.message || "Signup successful! Redirecting...");
@@ -174,7 +221,7 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
                   control={form.control}
                   name="firstName"
                   render={({ field }) => (
-                    <FormItem className="space-y-1">
+                    <FormItem className="space-y-1 w-full">
                       <FormLabel className="font-semibold">
                         First Name
                       </FormLabel>
@@ -193,7 +240,7 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
                   control={form.control}
                   name="lastName"
                   render={({ field }) => (
-                    <FormItem className="space-y-1">
+                    <FormItem className="space-y-1 w-full">
                       <FormLabel className="font-semibold">Last Name</FormLabel>
                       <FormControl>
                         <Input
@@ -212,7 +259,7 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
                   control={form.control}
                   name="email"
                   render={({ field }) => (
-                    <FormItem className="space-y-1">
+                    <FormItem className="space-y-1 w-full">
                       <FormLabel className="font-semibold">Email</FormLabel>
                       <FormControl>
                         <Input
@@ -229,7 +276,7 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
                   control={form.control}
                   name="phone"
                   render={({ field }) => (
-                    <FormItem className="space-y-1">
+                    <FormItem className="space-y-1 w-full">
                       <FormLabel className="font-semibold">
                         Phone Number
                       </FormLabel>
@@ -244,6 +291,99 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
                     </FormItem>
                   )}
                 />
+              </div>
+
+              <div className="flex space-x-4">
+                <FormField
+                  control={form.control}
+                  name="gender"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col w-full space-y-2">
+                      <FormLabel className="font-semibold mt-2">Gender</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger className="h-10 rounded-full">
+                            <SelectValue placeholder="Select Gender" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="Male">Male</SelectItem>
+                          <SelectItem value="Female">Female</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage className="text-red-700" />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="ageRange"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col w-full space-y-2">
+                      <FormLabel className="font-semibold mt-2">Age Range</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger className="h-10 rounded-full">
+                            <SelectValue placeholder="Select Age Range" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {ageRanges.map((range) => (
+                            <SelectItem key={range.value} value={range.value}>
+                              {range.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage className="text-red-700" />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <FormField
+                  control={form.control}
+                  name="hasDisability"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 p-4 border border-gray-200 rounded-lg">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          id="hasDisability"
+                        />
+                      </FormControl>
+                      <div className="space-y-1 leading-none">
+                        <FormLabel htmlFor="hasDisability">
+                          Do you have a disability?
+                        </FormLabel>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                {hasDisability && (
+                  <FormField
+                    control={form.control}
+                    name="disabilityDetails"
+                    render={({ field }) => (
+                      <FormItem className="space-y-1">
+                        <FormLabel className="font-semibold">
+                          Disability Details
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="e.g., Visually Impaired, Hearing Impaired"
+                            className="rounded-full"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage className="text-red-700" />
+                      </FormItem>
+                    )}
+                  />
+                )}
               </div>
 
               <FormField
@@ -288,7 +428,7 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
                 render={({ field }) => (
                   <FormItem className="space-y-1 w-full">
                     <FormLabel className="font-semibold">
-                      Referred By(Optional)
+                      Referred By (Optional)
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -301,7 +441,7 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
                   </FormItem>
                 )}
               />
-              <div className="flex  space-x-6">
+              <div className="flex space-x-6">
                 <div className="flex items-center space-x-2">
                   <FormField
                     control={form.control}
@@ -315,7 +455,6 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
                             onCheckedChange={field.onChange}
                           />
                         </FormControl>
-
                         <a
                           href="/terms-of-service"
                           target="_blank"
@@ -324,7 +463,6 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
                         >
                           Accept Terms & Policy
                         </a>
-
                         <FormMessage className="text-red-700" />
                       </FormItem>
                     )}
@@ -356,6 +494,7 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
               </div>
               <Button
                 className="mt-2 bg-primary text-white rounded-full"
+                type="submit"
                 disabled={isLoading}
               >
                 {isLoading ? "Signing up..." : "Sign Up"}
@@ -374,12 +513,6 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
           </form>
         </Form>
         <div className="flex flex-col sm:flex-row justify-center mt-0 space-y-4 sm:space-y-0 sm:space-x-4">
-          {/* <Button
-                            variant="outline"
-                            className="w-full flex items-center rounded-full justify-center"
-                        >
-                            <FaFacebook className="mr-2" /> Facebook
-                        </Button> */}
           <Button
             variant="outline"
             type="button"
@@ -402,7 +535,6 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
             <FcGoogle className="mr-2" /> Google
           </Button>
         </div>
-
         <Toast
           open={toastOpen}
           onOpenChange={setToastOpen}
