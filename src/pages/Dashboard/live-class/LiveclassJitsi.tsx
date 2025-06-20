@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from "react"; // Import useCallback
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Skeleton } from "../../../components/ui/Skeleton";
 import { JaaSMeeting } from "@jitsi/react-sdk";
@@ -31,7 +31,6 @@ const JitsiMeetingPage = () => {
   const [interimSpeechTranscript, setInterimSpeechTranscript] =
     useState<string>("");
 
-  // Use a ref to hold the latest full transcript
   const fullTranscriptRef = useRef<string>("");
 
   useEffect(() => {
@@ -49,7 +48,7 @@ const JitsiMeetingPage = () => {
     return () => {
       if (recognitionRef.current) {
         recognitionRef.current.stop();
-        recognitionRef.current = null; // Ensure cleanup
+        recognitionRef.current = null;
       }
     };
   }, [meetingId]);
@@ -84,14 +83,9 @@ const JitsiMeetingPage = () => {
       console.log(
         "Speech recognition ended. Attempting to restart if meeting is active."
       );
-      // Optional: If you want to automatically restart recognition if the meeting is still active
-      // and it ended unexpectedly (not by explicit stopSpeechRecognition call)
       if (jitsiApiRef.current) {
-        // Check if Jitsi meeting is still active
-        // Small delay before restarting to avoid rapid restarts on temporary issues
         setTimeout(() => {
           if (jitsiApiRef.current) {
-            // Re-check after delay
             startSpeechRecognition();
           }
         }, 1000);
@@ -106,7 +100,6 @@ const JitsiMeetingPage = () => {
           "Microphone access denied. Please allow microphone access for speech recognition."
         );
       }
-      // If error, also try to stop it gracefully if it's still somehow active
       if (recognitionRef.current) {
         recognitionRef.current.stop();
       }
@@ -125,7 +118,6 @@ const JitsiMeetingPage = () => {
         const transcript = event.results[i][0].transcript;
         if (event.results[i].isFinal) {
           finalTranscriptChunk += transcript.trim();
-          // Add punctuation and space if missing, to make the final transcript more readable
           if (finalTranscriptChunk && !/[.!?]$/.test(finalTranscriptChunk)) {
             finalTranscriptChunk += ". ";
           } else if (finalTranscriptChunk) {
@@ -138,7 +130,7 @@ const JitsiMeetingPage = () => {
 
       if (finalTranscriptChunk) {
         setSpeechTranscript((prev) => prev + finalTranscriptChunk);
-        setInterimSpeechTranscript(""); // Clear interim once a final chunk is processed
+        setInterimSpeechTranscript("");
       } else {
         setInterimSpeechTranscript(currentInterimTranscript);
       }
@@ -146,18 +138,16 @@ const JitsiMeetingPage = () => {
 
     recognitionRef.current = recognition;
     recognition.start();
-  }, [isRecording, jitsiApiRef]); // Add jitsiApiRef to useCallback dependencies
-
+  }, [isRecording, jitsiApiRef]);
   const stopSpeechRecognition = useCallback(() => {
     if (recognitionRef.current) {
       recognitionRef.current.stop();
-      recognitionRef.current = null; // Clear the ref after stopping
+      recognitionRef.current = null;
       setIsRecording(false);
       console.log("Speech recognition explicitly stopped.");
     }
   }, []);
 
-  // Updated to use Axios
   const sendTranscriptToBackend = useCallback(
     async (transcript: string, id: string) => {
       console.log("Sending transcript to backend...");
@@ -199,14 +189,11 @@ const JitsiMeetingPage = () => {
       }
     },
     []
-  ); // No dependencies needed for this as it uses parameters
-
+  );
   const handleMeetingEnd = useCallback(async () => {
     console.log("Frontend: Meeting ending sequence initiated.");
 
-    stopSpeechRecognition(); // Stop recognition immediately
-
-    // Access the latest full transcript from the ref
+    stopSpeechRecognition();
     const finalTranscriptToSend = fullTranscriptRef.current;
     console.log("Final Transcript to Send:", finalTranscriptToSend);
     console.log("Meeting ID:", meetingId);
@@ -218,8 +205,7 @@ const JitsiMeetingPage = () => {
     setTimeout(() => {
       navigate(`/dashboard/liveclass/details/${meetingId}`);
     }, 2000);
-  }, [meetingId, navigate, sendTranscriptToBackend, stopSpeechRecognition]); // Add dependencies
-
+  }, [meetingId, navigate, sendTranscriptToBackend, stopSpeechRecognition]);
   const handleJitsiReady = async (api: any) => {
     jitsiApiRef.current = api;
     setLoading(false);
@@ -251,14 +237,13 @@ const JitsiMeetingPage = () => {
       handleMeetingEnd();
     });
 
-    // Cleanup on unmount or before new API instance
     return () => {
       if (jitsiApiRef.current) {
         console.log("Disposing of Jitsi API instance.");
         jitsiApiRef.current.dispose();
         jitsiApiRef.current = null;
       }
-      stopSpeechRecognition(); // Ensure recognition is stopped on component unmount
+      stopSpeechRecognition();
     };
   };
 

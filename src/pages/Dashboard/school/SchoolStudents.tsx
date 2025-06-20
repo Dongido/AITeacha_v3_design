@@ -31,7 +31,10 @@ const SchoolStudents = () => {
 
   const handleDownloadTemplate = () => {
     const csvContent =
-      "firstname,lastname,phone,email,student_number\nJohn,Doe,1234567890,john.doe@example.com,STU001\nJane,Smith,0987654321,jane.smith@example.com,STU002";
+      "firstname,lastname,phone,email,gender,age,student_number,disability_details\n" +
+      "John,Doe,1234567890,test.john@email.com,Male,12,STU001,Tumor\n" +
+      "Jane,Smith,0987654321,test.jane@email.com,Female,14,STU002";
+
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
     if (link.download !== undefined) {
@@ -49,7 +52,6 @@ const SchoolStudents = () => {
       );
     }
   };
-
   return (
     <div className="mt-12">
       <div
