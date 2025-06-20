@@ -6,6 +6,7 @@ import {
   updateProfilePhoto,
   fetchProfileImage,
   User,
+  changeUserPassword,
 } from "../../api/profile";
 
 interface ProfileState {
@@ -45,6 +46,28 @@ export const loadUserProfile = createAsyncThunk(
     }
   }
 );
+
+// updatepassword
+export const changePasswordThunk = createAsyncThunk(
+  "profile/changePassword",
+  async (
+    {
+      oldPassword,
+      password,
+    }: { oldPassword: string; password: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      await changeUserPassword(oldPassword, password);
+      return "Password updated successfully.";
+    } catch (error: any) {
+      return rejectWithValue(
+        error.message || "Failed to change password."
+      );
+    }
+  }
+);
+
 
 // Async thunk for updating user's name
 export const updateUserNameThunk = createAsyncThunk(
@@ -114,6 +137,20 @@ const profileSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
+
+      // change password
+     .addCase(changePasswordThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(changePasswordThunk.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(changePasswordThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+
       // Update user name
       .addCase(updateUserNameThunk.pending, (state) => {
         state.updateNameLoading = true;

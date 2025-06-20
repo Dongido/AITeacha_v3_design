@@ -229,37 +229,44 @@ const handleShowLess = () => {
   return (
     <div className="max-w-5xl mx-auto px-4 py-10 min-h-screen 
      bg-white overflow-y-hidden">
-      {/* Topic Info */}
-      <div className="backdrop-blur-mdshadow-xl border border-purple-200 rounded-2xl p-6 mb-10 ">
-        {thumbnailSrc && (
-         <div className="lg:w-[50%] w-[100%] ">
-            <img
-          src={thumbnailSrc}
-          alt="Topic Thumbnail"
-          className="w-full h-64   object-cover  mb-4"
-        />
-         </div>
-        )}
-        <h1 className="text-3xl md:text-4xl font-bold text-purple-800 mb-4">
-          {iteratedTopic?.topic}
-        </h1>
-        <div className="text-sm text-gray-600 mb-3 flex flex-wrap gap-4">
-          <span>
-            <strong>Category:</strong> {iteratedTopic?.category}
-          </span>
-          <span>
-            <strong>Published:</strong>{" "}
-            {new Date(iteratedTopic?.created_at).toLocaleDateString("en-GB", {
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-            })}
-          </span>
-        </div>
-        <p className="text-gray-700 leading-relaxed whitespace-pre-wrap text-base">
-          {iteratedTopic?.description}
-        </p>
+     {/* Topic Info */}
+     <div className="bg-white shadow-xl border border-purple-200 rounded-2xl p-6 mb-10">
+     {thumbnailSrc && (
+     <div className="lg:w-[50%] w-full mb-6">
+      <img
+        src={thumbnailSrc}
+        alt="Topic Thumbnail"
+        className="w-full h-64 object-cover rounded-xl shadow"
+      />
       </div>
+       )}
+
+     <h1 className="text-2xl md:text-3xl font-bold text-purple-900 mb-2">
+    {iteratedTopic?.topic?.charAt(0).toUpperCase() + iteratedTopic?.topic?.slice(1)}
+     </h1>
+
+  {/* Extra Info Section */}
+  <div className="flex flex-wrap gap-4 mb-4">
+    <span className="bg-purple-100 text-gray px-3 py-2 rounded-md text-sm shadow-sm">
+      👤 <strong>Author:</strong> {iteratedTopic?.firstname || "Unknown"}
+    </span>
+    
+    <span className="bg-purple-200 text-gray px-3 py-2 rounded-md text-sm shadow-sm">
+      🏷️ <strong>Category:</strong> {iteratedTopic?.category}
+    </span>
+    <span className="bg-purple-300 text-gray px-3 py-2 rounded-md text-sm shadow-sm">
+      📅 <strong>Published:</strong>{" "}
+      {new Date(iteratedTopic?.created_at).toLocaleDateString("en-GB", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      })}
+    </span>
+    </div>
+  <p className="text-gray-800 leading-relaxed whitespace-pre-wrap text-base">
+    {iteratedTopic?.description}
+  </p>
+</div>
 
       {/* Comments */}
       <Forumcomments

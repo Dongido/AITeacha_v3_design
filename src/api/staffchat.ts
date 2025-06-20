@@ -4,6 +4,7 @@ import { PremiumUsertype } from "../store/slices/staffchats";
 type CreateTopicPayload = {
   category: string;
   topic: string;
+ 
 };
 
 interface Topic {
@@ -11,6 +12,8 @@ interface Topic {
   topic: string;
   description: string,
   thumbnail?: File | null
+  firstname:string;
+  lastname:string 
 }
 
 
@@ -22,8 +25,10 @@ interface Topic {
   category: string;
   created_at?: string;
   updated_at?: string;
-  description: string,
-  thumbnail?: File | null
+  description: string;
+  thumbnail?: File | null;
+   firstname:string;
+  lastname:string ;
 }
 
 export const CreateStaffTopic = async (
@@ -43,7 +48,7 @@ export const CreateStaffTopic = async (
     if (response.status !== 201 && response.status !== 200) {
       throw new Error("Failed to create staff topic.");
     }
-  console.log("response api" , response)
+  // console.log("response api" , response)
     return response.data.data;
   } catch (error: any) {
     throw new Error(
@@ -53,18 +58,18 @@ export const CreateStaffTopic = async (
 };
 
 
-export const getAllStaffTopic = async (id: string): Promise<Topics[]> => {
+export const getAllStaffTopic = async (id:string): Promise<Topics[]> => {
   try {
     const response = await apiClient.get<{
       status: string;
       message: string;
       data: Topics[];
-    }>(`chat/user/topics/${id}`);
+    }>(`chat/get/user/topics/${id}`);
 
     if (response.status !== 200) {
       throw new Error("Failed to fetch staff topics.");
     }
-  // console.log("response fetch", response)
+  console.log("response fetch", response)
     return response.data.data;
   } catch (error: any) {
     throw new Error(

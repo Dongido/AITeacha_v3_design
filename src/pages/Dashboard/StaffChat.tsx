@@ -205,7 +205,7 @@ if (
   <div className="mt-12 overflow-x-hidden">
       {/* Integrate the GroupChatForm component */}
   <div className="flex w-full mt-12 mb-6 items-center justify-between flex-col sm:flex-row">
-  <h2 className="lg:text-3xl text-2xl font-extrabold text-gray-900 sm:mb-0 mb-4">
+  <h2 className="lg:text-3xl md:text-2xl text-lg font-extrabold text-gray-900 sm:mb-0 mb-4">
     📢 Staff Chat Topics
   </h2>
   <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto items-start">
@@ -220,14 +220,18 @@ if (
     </Button>
 
     {/* Create Topic Button */}
-    <Button
-      onClick={() => dialogRef.current?.openDialog()}
-      variant="gradient"
-      className="flex items-center w-full sm:w-fit h-full gap-3 rounded-md bg-purple-600 hover:bg-purple-700 text-white"
-    >
-      <Plus size={"1.1rem"} />
-      Create Topic
-    </Button>
+  {
+  topic.length  > 0 && (
+  <Button
+    onClick={() => dialogRef.current?.openDialog()}
+    variant="gradient"
+    className="flex items-center w-full sm:w-fit h-full gap-3 rounded-md bg-purple-600 hover:bg-purple-700 text-white"
+  >
+    <Plus size={"1.1rem"} />
+    Create Topic
+  </Button>
+  )  
+  }
   </div>
 </div>
 
@@ -258,43 +262,65 @@ if (
   </tbody>
 </table>
   </div>
-    ) : userTopics.length === 0 ? (
-      <p className="text-gray-500">No topics created yet. </p>
+    ) : topic.length === 0 ? (
+     <div className="text-center text-gray-600 py-8">
+    <p className="text-lg font-semibold mb-2">📝 Forum topic is empty</p>
+    <p className="text-sm mb-4">Proceed to creating a topic to start a discussion.</p>
+    <Button
+    onClick={() => dialogRef.current?.openDialog()}
+    variant="gradient"
+    className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md"
+    >
+    <Plus size={"1.1rem"} className="mr-2" />
+    Create Your First Topic
+  </Button>
+  </div>
     ) : (
     <div className="grid gap-4">
-      {topic?.map((topicItem) => (
+      <div className="grid gap-4">
+  {topic?.map((topicItem) =>
     topicItem && topicItem.topic ? (
-    <div
+      <div
       key={topicItem.id}
-      className="border border-gray-200 rounded-lg shadow-sm p-5 bg-white hover:shadow-md transition-all duration-200"
-    >
+      className="border border-gray-200 rounded-lg shadow-sm
+       p-5 bg-white hover:shadow-md transition-all duration-200"
+      >
       <div className="flex items-start gap-3">
-        <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-700 font-bold text-lg">
-          {topicItem.topic.charAt(0)}
+      {/* Circle with first letter */}
+      <div className="w-10 h-10 rounded-full bg-purple-100 flex 
+      items-center justify-center text-purple-700 font-bold text-lg">
+        {topicItem.topic.charAt(0).toUpperCase()}
+      </div>
+
+      <div className="flex-1">
+      {/* Topic title */}
+      <Link to={`/dashboard/teacherChats/${topicItem.id}`}>
+        <h3 className="text-lg sm:text-xl font-semibold text-purple-800 hover:underline cursor-pointer">
+      {topicItem.topic.charAt(0).toUpperCase() + topicItem.topic.slice(1)}
+        </h3>
+      </Link>
+
+      {/* Author name */}
+      {(topicItem.firstname || topicItem.lastname) && (
+        <p className="text-sm text-purple-700 mt-1">
+          By {topicItem.firstname} {topicItem.lastname}
+        </p>
+      )}
+
+      {/* Date */}
+      <div className="mt-1 flex items-center text-sm text-gray-500 gap-1">
+        <CalendarDays className="w-4 h-4" />
+      <span>
+        {new Date(topicItem.created_at || "").toLocaleDateString("en-GB")}
+       </span>
         </div>
-        <div className="flex-1">
-          <Link to={`/dashboard/teacherChats/${topicItem.id}`}>
-            <h3 className="text-lg sm:text-xl font-semibold text-purple-800 hover:underline cursor-pointer">
-              {topicItem.topic}
-            </h3>
-          </Link>
-          <div className="flex flex-col sm:flex-row sm:items-center sm:gap-6 text-sm text-gray-500 mt-2">
-            <div className="flex items-center gap-1">
-              <CalendarDays className="w-4 h-4" />
-              <span>
-                {new Date(topicItem.created_at || "").toLocaleDateString("en-GB")}
-              </span>
-            </div>
-            {/* <div className="flex items-center gap-1 mt-1 sm:mt-0">
-              <UserRound className="w-4 h-4" />
-              Add author name here if available
-            </div> */}
-          </div>
+        </div>
         </div>
       </div>
-    </div>
-      ) : null
-    ))}
+    ) 
+    : null
+     )}
+  </div>   
     </div>
       )}
       </div> 
