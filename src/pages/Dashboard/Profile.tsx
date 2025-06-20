@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../store";
 import {
@@ -20,6 +20,7 @@ import {
 import { FiEdit } from "react-icons/fi";
 import { generateReferralCode } from "../../api/profile";
 import { TextArea } from "../../components/ui/TextArea";
+import ChangePasswordDialog from "../../components/layout/ChangePasswordDialog";
 
 const Profile: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -148,6 +149,7 @@ const Profile: React.FC = () => {
       setToastVisible(true);
     }
   };
+  const passwordDialogRef = useRef<any>(null);
 
   return (
     <ToastProvider>
@@ -359,6 +361,16 @@ const Profile: React.FC = () => {
                         readOnly={!editMode}
                       />
                     </div>
+                    <hr className="my-6 border-t border-gray-300" />
+
+                  <div className="flex justify-end">
+                  <button
+                    className="bg-primary text-white py-2 px-4 rounded-md"
+                      onClick={() => passwordDialogRef.current?.openDialog()}
+                  >
+                    Change Password
+                  </button>
+                  </div>
                   </div>
 
                   <div className="w-full h-72 lg:w-1/3 bg-gray-200 p-6 rounded-md shadow-sm">
@@ -437,6 +449,11 @@ const Profile: React.FC = () => {
             )}
           </>
         )}
+        <ChangePasswordDialog
+        ref={passwordDialogRef}
+        onChangePassword={async (current, newPass) => {
+        }}
+      />
       </div>
 
       {toastVisible && (

@@ -135,3 +135,24 @@ export const generateReferralCode = async (): Promise<string> => {
     );
   }
 };
+
+
+// change pasword
+export const changeUserPassword = async (
+  oldPassword: string,
+  password: string
+): Promise<void> => {
+  try {
+    const response = await apiClient.put(`profile/changepassword`, {
+      oldPassword,
+      password,
+    });
+
+    console.log("Password changed successfully:", response.data);
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data?.message ||
+        "Failed to change password. Please try again."
+    );
+  }
+};
