@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { CreateStaffTopic, getAllStaffTopic, getforumConversationByforumId, getforumConversationById, Topics  } from "../../api/staffchat";
+import { CreateStaffTopic, getAllStaffTopic, getforumConversationByforumId, getforumConversationById, getpremiumUser, Topics  } from "../../api/staffchat";
 
 export type CreateTopicPayload = {
   category: string;
@@ -8,12 +8,24 @@ export type CreateTopicPayload = {
   thumbnail?: File | null
 };
 
+export type PremiumUsertype = {
+  user_id: number;
+  firstname: string;
+  lastname: string;
+  email: string;
+  imageurl: string | null;
+  organization: string;
+  host_team_id: number;
+};
+
+
 interface StaffTopicState {
   topics: Topics[];
   loading: boolean;
-   conversation: any[];
+  conversation: any[];
   selectedTopic: any | null;
   error: string | null;
+ checkuser: PremiumUsertype[]
 }
 
 const initialState: StaffTopicState = {
@@ -22,14 +34,15 @@ const initialState: StaffTopicState = {
   selectedTopic: null,
   loading: false,
   error: null,
+  checkuser: []
 };
 
 // 🔁 GET all topics
 export const getAllStaffTopics = createAsyncThunk(
   "staffTopic/getAllStaffTopics",
-  async (_, { rejectWithValue }) => {
+  async (id: string, { rejectWithValue }) => {
     try {
-      const topics = await getAllStaffTopic();
+      const topics = await getAllStaffTopic(id);
       return topics;
     } catch (error: any) {
       return rejectWithValue(error.message || "Failed to fetch topics.");
@@ -54,6 +67,7 @@ export const getsingleforumById = createAsyncThunk(
 //  CREATE topic
 
 export const createStaffTopic = createAsyncThunk(
+
   "staffTopic/createStaffTopic",
   async (payload: CreateTopicPayload, { rejectWithValue }) => {
     try {
@@ -80,6 +94,22 @@ export const getForumConversation = createAsyncThunk(
     }
   }
 );
+
+// premiumusers 
+export const getpremiumUsers = createAsyncThunk<PremiumUsertype[], void, { rejectValue: string }>(
+  "staffTopic/getpremiumUsers",
+  async (_, thunkAPI) => {
+    try {
+      const premiumuser = await getpremiumUser(); 
+      return [premiumuser]; 
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(error.message || "Failed to fetch premium users.");
+    }
+  }
+);
+
+
+ 
 
 
 export const staffTopicSlice = createSlice({
@@ -130,6 +160,21 @@ export const staffTopicSlice = createSlice({
       state.error = action.payload as string;
     })
 
+
+    // check premium user
+     .addCase(getpremiumUsers.pending, (state) => {
+      state.loading = true
+      state.error = null
+     })
+     .addCase(getpremiumUsers.fulfilled, (state, action) => {
+       state.loading = false
+       state.checkuser = action.payload
+     })
+     .addCase(getpremiumUsers.rejected , (state, action) => {
+      state.loading = false 
+      state.error = action.payload as string
+     })
+
     // Handle CREATE
     .addCase(createStaffTopic.pending, (state) => {
       state.loading = true;
@@ -142,12 +187,8 @@ export const staffTopicSlice = createSlice({
     .addCase(createStaffTopic.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload as string;
+
     });
-
-      //  get single forum conversation
-        
-
-      
 
       
   },

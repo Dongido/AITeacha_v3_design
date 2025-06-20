@@ -277,7 +277,8 @@ const handleShowLess = () => {
       >
         <h3 className="text-xl font-semibold text-purple-800 mb-3">Add a Comment</h3>
         {repliedMessage && (
-        <div ref={inputRef} className="mb-4 p-3 bg-purple-100 border-l-4 border-purple-400 text-purple-800 rounded relative">
+        <div ref={inputRef} className="mb-4 p-3 bg-purple-100 border-l-4
+         border-purple-400 text-purple-800 rounded relative">
           <p className="text-sm">
             Replying to <strong>{repliedMessage.sender}</strong>: "{repliedMessage.text}"
           </p>
@@ -290,15 +291,16 @@ const handleShowLess = () => {
         </div>
         )}
         <div className="mb-4 relative">
-  <textarea
-    value={newMessage}
-    onChange={(e) => setNewMessage(e.target.value)}
-    placeholder={repliedMessage ? "Reply..." : "Write your comment..."}
-    className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400 bg-purple-50 mb-2 resize-none"
-    rows={3}
-  />
+        <textarea
+          value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
+          placeholder={repliedMessage ? "Reply..." : "Write your comment..."}
+          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none
+           focus:ring-2 focus:ring-purple-400 bg-purple-50 mb-2 resize-none"
+          rows={3}
+        />
 
-     {/* Toggle Button */}
+        {/* Toggle Button */}
         <button
           type="button"
           onClick={() => setShowEmojiPicker((prev) => !prev)}
