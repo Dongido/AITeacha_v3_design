@@ -126,7 +126,7 @@ export const getpremiumUser = async (): Promise<PremiumUsertype[]> => {
       status: string,
       message: string,
       data: PremiumUsertype[]
-    }>(`chat/get/premiumuser/test`);
+    }>(`chat/get/premiumuser`);
     
     if (response.status !== 200) {
       throw new Error("Failed to fetch premium users");
