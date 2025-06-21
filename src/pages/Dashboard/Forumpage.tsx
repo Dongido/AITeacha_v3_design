@@ -6,15 +6,19 @@ import { Link, useNavigate } from 'react-router-dom';
 import RestrictedPage from './classrooms/RestrictionPage';
 import { Skeleton } from '../../components/ui/Skeleton';
 import { FaGraduationCap } from 'react-icons/fa';
+import { User } from 'lucide-react';
 
 const Forumpage = () => {
 const dispatch = useAppDispatch();
 const navigate = useNavigate();
 const [userDetails, setUserDetails] = useState<any>(null);
 const [isEmailVerified, setIsEmailVerified] = useState<number>(0);
-const { checkuser: users, loading, error } = useAppSelector(
+const { checkuser ,loading, error } = useAppSelector(
 (state: RootState) => state.staffChats
 );
+ const  users =  Array.isArray(checkuser) ? checkuser  : []
+
+ console.log("user", users)
 
 useEffect(() => {
 dispatch(getpremiumUsers());

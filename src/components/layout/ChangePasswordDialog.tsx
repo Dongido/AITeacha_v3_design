@@ -33,36 +33,44 @@ const ChangePasswordDialog = forwardRef(({ onChangePassword }: ChangePasswordDia
     setToastOpen(true);
   };
 
-  const handleSubmit = async () => {
-    if (!currentPassword || !newPassword || !confirmPassword) {
-      showToast("All fields are required.", "destructive");
-      return;
-    }
+ const handleSubmit = async () => {
+  if (!currentPassword || !newPassword || !confirmPassword) {
+    showToast("All fields are required.", "destructive");
+    return;
+  }
 
-    if (newPassword.length < 6) {
-      showToast("New password must be at least 6 characters long.", "destructive");
-      return;
-    }
+  if (newPassword.length < 8) {
+    showToast("New password must be at least 8 characters long.", "destructive");
+    return;
+  }
 
-    if (newPassword !== confirmPassword) {
-      showToast("Passwords do not match.", "destructive");
-      return;
-    }
+  if (newPassword !== confirmPassword) {
+    showToast("Passwords do not match.", "destructive");
+    return;
+  }
 
-    try {
-      setLoading(true);
-        await dispatch(changePasswordThunk({
+  try {
+    setLoading(true);
+    await dispatch(
+      changePasswordThunk({
         oldPassword: currentPassword,
         password: newPassword
-        })).unwrap()
-      showToast("Password changed successfully!", "default");
-      setOpen(false);
-    } catch (err: any) {
-      showToast(err?.message || "Failed to change password.", "destructive");
-    } finally {
-      setLoading(false);
-    }
-  };
+      })
+    ).unwrap();
+
+    showToast("Password changed successfully!", "default");
+    alert("Password changed successfully!");
+    setOpen(false);
+    setCurrentPassword("");
+    setNewPassword("");
+    setConfirmPassword("");
+  } catch (err: any) {
+    showToast(err?.message || "Failed to change password.", "destructive");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <ToastProvider>
