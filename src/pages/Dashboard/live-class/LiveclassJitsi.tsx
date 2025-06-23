@@ -17,7 +17,7 @@ const TRANSCRIPT_API_URL =
   "https://vd.aiteacha.com/api/live/class/add/transcript";
 
 const JITSI_JWT =
-  "eyJraWQiOiJ2cGFhcy1tYWdpYy1jb29raWUtN2NmZGQ4NWY3ZDlkNDExYWFlYzM2MjMxM2ZlZTgzZjkvODUzOWZjLVNBTVBMRV9BUFAiLCJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJqaXRzaSIsImlzcyI6ImNoYXQiLCJpYXQiOjE3NTAzNDIzMjYsImV4cCI6MTc1MDM0OTUyNiwibmJmIjoxNzUwMzQyMzIxLCJzdWIiOiJ2cGFhcy1tYWdpYy1jb29raWUtN2NmZGQ4NWY3ZDlkNDExYWFlYzM2MjMxM2ZlZTgzZjkiLCJjb250ZXh0Ijp7ImZlYXR1cmVzIjp7ImxpdmVzdHJlYW1pbmciOnRydWUsIm91dGJvdW5kLWNhbGwiOnRydWUsInNpcC1vdXRib3VuZC1jYWxsIjpmYWxzZSwidHJhbnNjcmlwdGlvbiI6dHJ1ZSwicmVjb3JkaW5nIjp0cnVlLCJmbGlwIjpmYWxzZX0sInVzZXIiOnsiaGlkZGVuLWZyb20tcmVjb3JkZXIiOmZhbHNlLCJtb2RlcmF0b3IiOnRydWUsIm5hbWUiOiJvZmZpY2lhbHNhbTM3MSIsImlkIjoiZ29vZ2xlLW9hdXRoMnwxMDA2MTY0MTkwODU5NTU1MzcxMTgiLCJhdmF0YXIiOiIiLCJlbWFpbCI6Im9mZmljaWFsc2FtMzcxQGdtYWlsLmNvbSJ9fSwicm9vbSI6IioifQ.tnrMvUaYm_JxD9AWrMkHqLQC1AYL5oWeL-wE5U2-q_OEJ4k8EHrAWfkd2uo4LCYtDzucB_rTYt3lfAXq8zupSGCmTmCFuji5qfBBDOe5qnETK3Yu-3uIUE22RSd--4LyfBDqJ9P-QAn2Dxy3AKGavaRYIQmJk45FUrFT1cOQh0LnXCZIhArs7pHFN6EFhpAUfdtjoyMBnRf8J1a00NrXaZQXND8Gy4dp_Dnq_5BeWMD-VWwBRR0UsIsqJdY27Jkk5FNFP8DBwcTumBC-zaruLujLKEaODjP6N5NEAp_VPXfTykOR27wROYb-8zztyGBCd-JZ9WpxwQVCZPTQYN3l3A";
+  "eyJraWQiOiJ2cGFhcy1tYWdpYy1jb29raWUtN2NmZGQ4NWY3ZDlkNDExYWFlYzM2MjMxM2ZlZTgzZjkvODUzOWZjLVNBTVBMRV9BUFAiLCJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJqaXRzaSIsImlzcyI6ImNoYXQiLCJpYXQiOjE3NTA2Nzg3NTMsImV4cCI6MTc1MDY4NTk1MywibmJmIjoxNzUwNjc4NzQ4LCJzdWIiOiJ2cGFhcy1tYWdpYy1jb29raWUtN2NmZGQ4NWY3ZDlkNDExYWFlYzM2MjMxM2ZlZTgzZjkiLCJjb250ZXh0Ijp7ImZlYXR1cmVzIjp7ImxpdmVzdHJlYW1pbmciOnRydWUsIm91dGJvdW5kLWNhbGwiOnRydWUsInNpcC1vdXRib3VuZC1jYWxsIjpmYWxzZSwidHJhbnNjcmlwdGlvbiI6dHJ1ZSwicmVjb3JkaW5nIjp0cnVlLCJmbGlwIjpmYWxzZX0sInVzZXIiOnsiaGlkZGVuLWZyb20tcmVjb3JkZXIiOmZhbHNlLCJtb2RlcmF0b3IiOnRydWUsIm5hbWUiOiJvZmZpY2lhbHNhbTM3MSIsImlkIjoiZ29vZ2xlLW9hdXRoMnwxMDA2MTY0MTkwODU5NTU1MzcxMTgiLCJhdmF0YXIiOiIiLCJlbWFpbCI6Im9mZmljaWFsc2FtMzcxQGdtYWlsLmNvbSJ9fSwicm9vbSI6IioifQ.HBRqNDUp_YHel23CbbHG_CAVc-68F5c4kO-nHaxNu6jGOwDO7L7gD6mOcsrVRigt_1kVCzij8S6iLbuL3wVIfQ7_bVwEKAzShIs2Vi8G00CqKNA6Xn3E_43uJlJ02mFJW30PO34u2aTO1CSTwxiAnUkvWNgAMsI4BmQ9No27viDAmD_B_xeiJVuX68lXlDAxef-oVIrUI9--XcO8qoTILp4l3pQlKwBATVQcOMz4yiHwhIBjSWZ9UY2pvgUindL9WNULThOpkHmcLKRE9tl-HFPsWcXgMB8ThXeQFJQG4eV9GHFcO7uHp_eWaQaPJf41Zm6EQx09K9e6DQSESqPjJw";
 const JitsiMeetingPage = () => {
   const navigate = useNavigate();
   const { meetingId } = useParams<{ meetingId: string }>();
@@ -280,9 +280,9 @@ const JitsiMeetingPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">
+      {/* <h1 className="text-3xl font-bold text-gray-800 mb-6">
         Jitsi Meeting: {meetingId}
-      </h1>
+      </h1> */}
       <div className="w-full max-w-4xl h-[600px] bg-white rounded-lg shadow-xl overflow-hidden border border-gray-200">
         {meetingId && (
           <JaaSMeeting
