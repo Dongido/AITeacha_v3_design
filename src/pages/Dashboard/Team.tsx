@@ -73,17 +73,20 @@ const Team = () => {
     dispatch(loadTeamMembers());
   };
   const handleTeachersAdded = () => {
-    console.log("New Teachers added, refreshing table data!");
+    dispatch(loadTeamMembers());
   };
   const handleDownloadTemplate = () => {
     const csvContent =
-      "firstname,lastname,phone,email\nJohn,Doe,1234567890,john.doe@example.com,STU001\nJane,Smith,0987654321,jane.smith@example.com";
+      "firstname,lastname,phone,email,country,city,gender,age,disability_details\n" +
+      "John,Doe,1234567890,teacher.john@example.com,Nigeria,Lagos,Male,40,Wheelchair user\n" +
+      "Jane,Smith,0987654321,teacher.jane@example.com,Ghana,Accra,Female,35,";
+
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
     if (link.download !== undefined) {
       const url = URL.createObjectURL(blob);
       link.setAttribute("href", url);
-      link.setAttribute("download", "student_template.csv");
+      link.setAttribute("download", "teacher_template.csv");
       link.style.visibility = "hidden";
       document.body.appendChild(link);
       link.click();
@@ -207,7 +210,7 @@ const Team = () => {
             {inviteLoading ? "Inviting..." : "Invite"}
           </Button>
         </div>
-        {/* <div className="relative flex justify-center items-center my-6">
+        <div className="relative flex justify-center items-center my-6">
           <div className="absolute inset-x-0 h-px bg-gray-300"></div>
           <span className="relative z-10 bg-white px-4 text-gray-700 text-sm font-bold">
             OR
@@ -217,20 +220,20 @@ const Team = () => {
           <div className="mb-4 flex justify-end">
             <Button
               onClick={handleDownloadTemplate}
-              variant={"outline"}
-              className="rounded-md hover:underline"
+              variant={"outlined"}
+              className="rounded-md underline border border-gray-200"
             >
-              Download Example CSV Template
+              Sample Template
             </Button>
             <Button
               onClick={handleAddStudentsClick}
               variant={"gradient"}
               className="rounded-md"
             >
-              Add By Uploading CSV
+              Upload CSV
             </Button>
           </div>
-        </div> */}
+        </div>
         <BaseTable data={members} columns={teamColumns} />{" "}
         <AddSchoolTeachersDialog
           ref={addTeachersDialogRef}

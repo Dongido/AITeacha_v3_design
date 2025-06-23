@@ -139,8 +139,7 @@ const ToolDetail = () => {
 
   useEffect(() => {
     if (responseMessage) {
-      setTimeLeft(20 * 60); // 20 minutes in seconds
-
+      setTimeLeft(20 * 60);
       const timer = setInterval(() => {
         setTimeLeft((prev) => (prev && prev > 0 ? prev - 1 : 0));
       }, 1000);
@@ -447,17 +446,17 @@ const ToolDetail = () => {
                   <div className="flex gap-4 mb-4">
                     <div className="w-full">
                       <Label className="capitalize">Description</Label>
-                      <Input
-                        type="text"
+                      <TextArea
                         name="description"
                         placeholder="Enter Specific Details "
                         value={formData.description || ""}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                           setFormData((prev) => ({
                             ...prev,
                             description: e.target.value,
                           }))
                         }
+                        rows={4}
                         className="input-field w-full"
                       />
                     </div>
@@ -1192,33 +1191,51 @@ const ToolDetail = () => {
                     field.name !== "subject" && (
                       <div>
                         <label className="capitalize">{field.label}</label>
-                        <Input
-                          type={
-                            field.name === "numberOfSlides" ||
-                            field.name === "numberOfQuestion" ||
-                            field.name === "numberOfVerse"
-                              ? "number"
-                              : "text"
-                          }
-                          name={field.name}
-                          required={
-                            field.name === "previous_knowledge"
-                              ? false
-                              : field.name === "theme"
-                              ? false
-                              : field.name === "description"
-                              ? tool.service_id === "transcribe"
+                        {field.name === "description" ? (
+                          <TextArea
+                            name={field.name}
+                            required={
+                              tool.service_id === "transcribe"
                                 ? false
                                 : tool.is_description_optional === 0
-                              : field.name !== "additionalNotes" &&
-                                field.name !== "recommendations"
-                          }
-                          placeholder={
-                            field.placeholder || `Enter ${field.label}`
-                          }
-                          value={formData[field.name] || ""}
-                          onChange={handleInputChange}
-                        />
+                            }
+                            placeholder={
+                              field.placeholder || `Enter ${field.label}`
+                            }
+                            value={formData[field.name] || ""}
+                            onChange={handleInputChange}
+                            className="input-field w-full"
+                            rows={4}
+                          />
+                        ) : (
+                          <Input
+                            type={
+                              field.name === "numberOfSlides" ||
+                              field.name === "numberOfQuestion" ||
+                              field.name === "numberOfVerse"
+                                ? "number"
+                                : "text"
+                            }
+                            name={field.name}
+                            required={
+                              field.name === "previous_knowledge"
+                                ? false
+                                : field.name === "theme"
+                                ? false
+                                : field.name === "description"
+                                ? tool.service_id === "transcribe"
+                                  ? false
+                                  : tool.is_description_optional === 0
+                                : field.name !== "additionalNotes" &&
+                                  field.name !== "recommendations"
+                            }
+                            placeholder={
+                              field.placeholder || `Enter ${field.label}`
+                            }
+                            value={formData[field.name] || ""}
+                            onChange={handleInputChange}
+                          />
+                        )}
                       </div>
                     )}
                 </div>

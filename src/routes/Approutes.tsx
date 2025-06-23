@@ -108,7 +108,6 @@ import { Children } from "react";
 import GroupChatForm from "../pages/Dashboard/GroupChatForm";
 import Forumpage from "../pages/Dashboard/Forumpage";
 
-
 const icon = {
   className: "w-5 h-5 text-inherit",
 };
@@ -189,7 +188,7 @@ export const routes = [
       // },
       {
         icon: <UserGroupIcon {...icon} />,
-        name: "Premium Features",
+        name: "School Features",
         path: "/premium",
         element: <Team />,
         submenu: [
@@ -199,11 +198,11 @@ export const routes = [
             path: "/premium/teams",
             element: <Team />,
           },
-           {
+          {
             icon: <FaUsersLine {...icon} />,
             name: "Staff Chat",
             path: "/premium/forum",
-            element:<Forumpage/>,
+            element: <Forumpage />,
           },
           {
             icon: <UserIcon {...icon} />,
@@ -229,7 +228,6 @@ export const routes = [
             path: "/premium/classrooms",
             element: <TeamClassroomPage />,
           },
-        
         ],
       },
 
@@ -608,8 +606,8 @@ export const Paramroutes = [
         path: "/liveclass/current",
         element: <GoogleMeetIframe />,
       },
-       {
-        icon: <AcademicCapIcon {...icon} />,     
+      {
+        icon: <AcademicCapIcon {...icon} />,
         name: "liveclass",
         path: "/liveclass/meeting/live/:meetingId",
         element: <JitsiMeetingPage />,
@@ -632,13 +630,13 @@ export const Paramroutes = [
         path: "/school/students",
         element: <SchoolStudents />,
       },
-       {
+      {
         icon: <AcademicCapIcon {...icon} />,
         name: "teacherChats",
         path: "/teacherChats/:id",
         element: <GroupChatForm />,
       },
-       {
+      {
         icon: <AcademicCapIcon {...icon} />,
         name: "teacherChats",
         path: "/stafforum/:id",

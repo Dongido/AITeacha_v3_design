@@ -26,7 +26,10 @@ import {
 } from "../ui/Dialogue";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch } from "../../store";
-import { loadProfileImage,resetProfileState } from "../../store/slices/profileSlice";
+import {
+  loadProfileImage,
+  resetProfileState,
+} from "../../store/slices/profileSlice";
 
 export function DashboardNavbar() {
   const { controller, dispatch: uiDispatch } = useMaterialTailwindController();
@@ -61,7 +64,7 @@ export function DashboardNavbar() {
     Cookies.remove("at-accessToken");
     Cookies.remove("at-refreshToken");
     localStorage.removeItem("ai-teacha-user");
-    dispatch(resetProfileState())
+    dispatch(resetProfileState());
     localStorage.removeItem("redirectPath");
     navigate("/auth/login");
   };

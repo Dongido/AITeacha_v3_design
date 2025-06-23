@@ -4,12 +4,15 @@ import { RootState, AppDispatch } from "../../../store";
 import BaseTable from "../../../components/table/BaseTable";
 import { schoolStudentColumns } from "./components/column.schoolstudents";
 import { Button } from "../../../components/ui/Button";
-import AddSchoolStudentsDialog from "./components/AddSchoolStudentDialog";
-
+import AddSingleStudentDialog from "./components/AddSchoolStudentDialog";
+import UploadStudentsCSVDialog from "./components/UploadStudentDialog";
 import { getSchoolStudents } from "../../../store/slices/schoolStudentSlice";
 import { Skeleton } from "../../../components/ui/Skeleton";
+
 const SchoolStudents = () => {
-  const addStudentsDialogRef = useRef<{ openDialog: () => void }>(null);
+  const addSingleStudentDialogRef = useRef<{ openDialog: () => void }>(null);
+  const uploadStudentsCSVDialogRef = useRef<{ openDialog: () => void }>(null);
+
   const columns = React.useMemo(() => schoolStudentColumns(), []);
 
   const dispatch: AppDispatch = useDispatch();
@@ -21,8 +24,12 @@ const SchoolStudents = () => {
     dispatch(getSchoolStudents());
   }, [dispatch]);
 
-  const handleAddStudentsClick = () => {
-    addStudentsDialogRef.current?.openDialog();
+  const handleAddSingleStudentClick = () => {
+    addSingleStudentDialogRef.current?.openDialog();
+  };
+
+  const handleUploadCSVClick = () => {
+    uploadStudentsCSVDialogRef.current?.openDialog();
   };
 
   const handleStudentsAdded = () => {
@@ -31,7 +38,10 @@ const SchoolStudents = () => {
 
   const handleDownloadTemplate = () => {
     const csvContent =
-      "firstname,lastname,phone,email,student_number\nJohn,Doe,1234567890,john.doe@example.com,STU001\nJane,Smith,0987654321,jane.smith@example.com,STU002";
+      "firstname,lastname,phone,email,gender,age,student_number,disability_details\n" +
+      "John,Doe,1234567890,test.john@email.com,Male,12,STU001,Tumor\n" +
+      "Jane,Smith,0987654321,test.jane@email.com,Female,14,STU002";
+
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
     if (link.download !== undefined) {
@@ -63,20 +73,27 @@ const SchoolStudents = () => {
           Teachers Are Heroes🎉
         </span>
       </div>
-      <div className="mb-4 flex justify-end gap-2">
+      <div className="mb-4 flex flex-col sm:flex-row sm:justify-end gap-2 items-center">
         <Button
           onClick={handleDownloadTemplate}
           variant={"outline"}
-          className="rounded-md hover:underline"
+          className="w-full sm:w-auto rounded-md underline"
         >
-          Download Example CSV Template
+          Sample Template
         </Button>
         <Button
-          onClick={handleAddStudentsClick}
+          onClick={handleUploadCSVClick}
           variant={"gradient"}
-          className="rounded-md"
+          className="w-full sm:w-auto rounded-full"
         >
-          Add Students By Uploading CSV
+          Upload CSV
+        </Button>
+        <Button
+          onClick={handleAddSingleStudentClick}
+          variant={"outlined"}
+          className="w-full sm:w-auto rounded-full bg-gray-300"
+        >
+          Add Single Student
         </Button>
       </div>
       {loadingStudents ? (
@@ -102,8 +119,13 @@ const SchoolStudents = () => {
         <BaseTable data={students} columns={columns} />
       )}
 
-      <AddSchoolStudentsDialog
-        ref={addStudentsDialogRef}
+      <AddSingleStudentDialog
+        ref={addSingleStudentDialogRef}
+        onSuccess={handleStudentsAdded}
+      />
+
+      <UploadStudentsCSVDialog
+        ref={uploadStudentsCSVDialogRef}
         onSuccess={handleStudentsAdded}
       />
     </div>
