@@ -280,9 +280,9 @@ const JitsiMeetingPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">
+      {/* <h1 className="text-3xl font-bold text-gray-800 mb-6">
         Jitsi Meeting: {meetingId}
-      </h1>
+      </h1> */}
       <div className="w-full max-w-4xl h-[600px] bg-white rounded-lg shadow-xl overflow-hidden border border-gray-200">
         {meetingId && (
           <JaaSMeeting
