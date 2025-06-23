@@ -690,17 +690,6 @@ const AddSchoolStudentsDialog = forwardRef(
                     {loading ? `Uploading` : "Upload Students"}
                   </Button>
                 )}
-                {/* <Button
-                  onClick={() => {
-                    setOpen(false);
-                    setFile(null);
-                    singleStudentForm.reset();
-                  }}
-                  variant="ghost"
-                  disabled={loading}
-                >
-                  Cancel
-                </Button> */}
               </DialogFooter>
             </DialogContent>
           </Dialog>

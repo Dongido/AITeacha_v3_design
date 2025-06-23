@@ -18,7 +18,6 @@ import { Skeleton } from "../../../components/ui/Skeleton";
 import { Button } from "../../../components/ui/Button";
 import { transcriptColumns } from "./components/column.transcript";
 import BaseTable from "../../../components/table/BaseTable";
-import DocumentTextIcon from "@heroicons/react/24/solid";
 export interface Meeting {
   id: number;
   user_id: number;
@@ -31,6 +30,7 @@ export interface Meeting {
   meeting_location: string | null;
   notes: string | null;
   participant: string | null;
+  classroom_name: string | null;
   meeting_type: string;
   created_at: string;
   updated_at: string;

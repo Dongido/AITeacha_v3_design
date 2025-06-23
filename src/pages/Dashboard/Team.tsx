@@ -220,17 +220,17 @@ const Team = () => {
           <div className="mb-4 flex justify-end">
             <Button
               onClick={handleDownloadTemplate}
-              variant={"outline"}
-              className="rounded-md hover:underline"
+              variant={"outlined"}
+              className="rounded-md underline border border-gray-200"
             >
-              Download Example CSV Template
+              Sample Template
             </Button>
             <Button
               onClick={handleAddStudentsClick}
               variant={"gradient"}
               className="rounded-md"
             >
-              Add By Uploading CSV
+              Upload CSV
             </Button>
           </div>
         </div>

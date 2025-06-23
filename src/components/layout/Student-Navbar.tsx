@@ -26,7 +26,10 @@ import {
 } from "../ui/Dialogue";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch } from "../../store";
-import { loadProfileImage } from "../../store/slices/profileSlice";
+import {
+  loadProfileImage,
+  resetProfileState,
+} from "../../store/slices/profileSlice";
 
 export function DashboardNavbar() {
   const { controller, dispatch: uiDispatch } = useMaterialTailwindController();
@@ -38,21 +41,30 @@ export function DashboardNavbar() {
   const dispatch = useDispatch<AppDispatch>();
   const { imageUrl, loading } = useSelector((state: any) => state.profile);
 
+  useEffect(() => {
+    if (!imageUrl) {
+      dispatch(loadProfileImage());
+    }
+    console.log(imageUrl);
+  }, [dispatch, imageUrl]);
+
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const [layout, page] = pathname.split("/").filter((el) => el !== "");
+
   const imageURL = imageUrl
     ? imageUrl.startsWith("http")
       ? imageUrl
       : `https://${imageUrl}`
     : "https://img.freepik.com/premium-photo/cool-asian-head-logo_925613-50527.jpg?w=360";
 
-  const { pathname } = useLocation();
-  const navigate = useNavigate();
-  const [layout, page] = pathname.split("/").filter((el) => el !== "");
-
   const handleLogout = () => {
     Cookies.remove("at-accessToken");
     Cookies.remove("at-refreshToken");
     localStorage.removeItem("ai-teacha-user");
     localStorage.removeItem("redirectPath");
+    dispatch(resetProfileState());
+
     navigate("/auth/login");
   };
 

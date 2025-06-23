@@ -69,16 +69,16 @@ const SchoolStudents = () => {
         <Button
           onClick={handleDownloadTemplate}
           variant={"outline"}
-          className="rounded-md hover:underline"
+          className="rounded-md underline"
         >
-          Download Example CSV Template
+          Sample Template
         </Button>
         <Button
           onClick={handleAddStudentsClick}
           variant={"gradient"}
           className="rounded-md"
         >
-          Add Students By Uploading CSV
+          Upload CSV
         </Button>
       </div>
       {loadingStudents ? (
