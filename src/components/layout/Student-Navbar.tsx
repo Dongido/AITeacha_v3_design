@@ -26,7 +26,7 @@ import {
 } from "../ui/Dialogue";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch } from "../../store";
-import { loadProfileImage } from "../../store/slices/profileSlice";
+import { loadProfileImage,resetProfileState } from "../../store/slices/profileSlice";
 
 export function DashboardNavbar() {
   const { controller, dispatch: uiDispatch } = useMaterialTailwindController();
@@ -35,8 +35,15 @@ export function DashboardNavbar() {
     openSidenav: boolean;
   };
 
+  
   const dispatch = useDispatch<AppDispatch>();
   const { imageUrl, loading } = useSelector((state: any) => state.profile);
+
+    useEffect(() => {
+    if (!imageUrl) {
+      dispatch(loadProfileImage());
+    }
+  }, [dispatch, imageUrl]);
 
   const imageURL = imageUrl
     ? imageUrl.startsWith("http")
@@ -53,6 +60,7 @@ export function DashboardNavbar() {
     Cookies.remove("at-refreshToken");
     localStorage.removeItem("ai-teacha-user");
     localStorage.removeItem("redirectPath");
+    dispatch(resetProfileState())
     navigate("/auth/login");
   };
 

@@ -126,18 +126,39 @@ export const getpremiumUser = async (): Promise<PremiumUsertype[]> => {
       status: string,
       message: string,
       data: PremiumUsertype[]
-    }>(`chat/get/premiumuser`);
+    }>(`chat/get/premiumuser/test`);
     
     if (response.status !== 200) {
       throw new Error("Failed to fetch premium users");
     }
 
-    console.log("premium users response", response.data.data);
+    // console.log("premium users response", response.data.data);
     return response.data.data;
   } catch (error) {
     throw new Error("Failed to fetch premium users");
   }
 }
+
+ export const getUserRoles  = async(id:string):Promise<any> => {
+
+   try {
+     const response = await apiClient.get<{
+      status:string,
+      message:string,
+      data:any
+     }>(`chat/get/userrole/${id}`)
+      console.log(response, "userrole")
+      if(response.status !== 200){
+         throw new Error("Failed to get user role")
+      }
+      
+      console.log(response.data.data, "userrole")
+        return response.data.data;
+   } catch (error) {
+     throw new Error("failed to get user role")
+   }
+  
+ }
 
 
 

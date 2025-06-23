@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { CreateStaffTopic, getAllStaffTopic, getforumConversationByforumId, getforumConversationById, getpremiumUser, Topics  } from "../../api/staffchat";
+import { CreateStaffTopic, getAllStaffTopic, getforumConversationByforumId, getforumConversationById, getpremiumUser, getUserRoles, Topics  } from "../../api/staffchat";
 
 export type CreateTopicPayload = {
   category: string;
@@ -25,7 +25,8 @@ interface StaffTopicState {
   conversation: any[];
   selectedTopic: any | null;
   error: string | null;
- checkuser:PremiumUsertype[]
+  checkuser:PremiumUsertype[]
+  userRole:any | null
 }
 
 const initialState: StaffTopicState = {
@@ -34,7 +35,8 @@ const initialState: StaffTopicState = {
   selectedTopic: null,
   loading: false,
   error: null,
-  checkuser: []
+  checkuser: [],
+  userRole:null
 };
 
 // 🔁 GET all topics
@@ -108,6 +110,22 @@ export const getpremiumUsers = createAsyncThunk<PremiumUsertype[], void, { rejec
   }
 );
 
+//  get user role 
+export const getUserRole = createAsyncThunk("staffTopic/getuserrole", async(id: string, { rejectWithValue }) => {
+  
+  try {
+    const roles = await getUserRoles(id); // roles = an array
+    const role = roles.length > 0 ? roles[0] : null; // extract first role
+    return role;
+  } catch (error: any) {
+    return rejectWithValue(error.message || "failed to get user role");
+  }
+});
+
+
+ 
+
+
 
 
  
@@ -175,6 +193,21 @@ export const staffTopicSlice = createSlice({
       state.loading = false 
       state.error = action.payload as string
      })
+
+
+    //  get user role
+    .addCase(getUserRole.pending, (state) => {
+      state.loading = true
+      state.error = null
+    })
+    .addCase(getUserRole.fulfilled, (state, action) => {
+      state.loading = false
+      state.userRole = action.payload
+    })
+    .addCase(getUserRole.rejected , (state, action) => {
+      state.loading = false
+      state.error = action.payload as string
+    })
 
     // Handle CREATE
     .addCase(createStaffTopic.pending, (state) => {

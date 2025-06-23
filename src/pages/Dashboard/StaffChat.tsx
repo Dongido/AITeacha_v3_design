@@ -27,7 +27,7 @@ import { Undo2 } from "lucide-react";
 
 const StaffChat = () => {
    const { id } = useParams<{id:string}>()
-   console.log("id", id)
+  //  console.log("id", id)
     
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
