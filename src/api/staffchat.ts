@@ -120,23 +120,25 @@ export const getforumConversationByforumId = async (id: string): Promise<any> =>
 
 
 // getpremium user
- export const getpremiumUser = async (): Promise<PremiumUsertype> => {
+export const getpremiumUser = async (): Promise<PremiumUsertype[]> => {
   try {
-     const response = await apiClient.get<{
-      status:string,
-      message:string,
-      data:PremiumUsertype
-   }>(`chat/get/premiumuser`)
-    if(response.status  !== 200){
-      throw new Error("failed to fetch get user") 
+    const response = await apiClient.get<{
+      status: string,
+      message: string,
+      data: PremiumUsertype[]
+    }>(`chat/get/premiumuser`);
+    
+    if (response.status !== 200) {
+      throw new Error("Failed to fetch premium users");
     }
-     console.log("response api", response)
-     return response.data.data;
-  } catch (error) {
-     throw new Error("failed")
-  }
 
- }
+    console.log("premium users response", response.data.data);
+    return response.data.data;
+  } catch (error) {
+    throw new Error("Failed to fetch premium users");
+  }
+}
+
 
 
 

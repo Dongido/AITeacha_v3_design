@@ -608,8 +608,8 @@ export const Paramroutes = [
         path: "/liveclass/current",
         element: <GoogleMeetIframe />,
       },
-        icon: <AcademicCapIcon {...icon} />,      {
-
+       {
+        icon: <AcademicCapIcon {...icon} />,     
         name: "liveclass",
         path: "/liveclass/meeting/live/:meetingId",
         element: <JitsiMeetingPage />,
@@ -631,6 +631,7 @@ export const Paramroutes = [
         name: "school-students",
         path: "/school/students",
         element: <SchoolStudents />,
+      },
        {
         icon: <AcademicCapIcon {...icon} />,
         name: "teacherChats",

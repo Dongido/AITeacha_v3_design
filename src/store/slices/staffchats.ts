@@ -25,7 +25,7 @@ interface StaffTopicState {
   conversation: any[];
   selectedTopic: any | null;
   error: string | null;
- checkuser: PremiumUsertype[]
+ checkuser:PremiumUsertype[]
 }
 
 const initialState: StaffTopicState = {
@@ -100,13 +100,14 @@ export const getpremiumUsers = createAsyncThunk<PremiumUsertype[], void, { rejec
   "staffTopic/getpremiumUsers",
   async (_, thunkAPI) => {
     try {
-      const premiumuser = await getpremiumUser(); 
-      return [premiumuser]; 
+      const premiumUsers = await getpremiumUser(); 
+      return premiumUsers;  
     } catch (error: any) {
       return thunkAPI.rejectWithValue(error.message || "Failed to fetch premium users.");
     }
   }
 );
+
 
 
  
