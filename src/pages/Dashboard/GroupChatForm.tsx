@@ -3,7 +3,7 @@ import { Button } from "../../components/ui/Button";
 import io from "socket.io-client";
 import { useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { getForumConversation, getsingleforumById } from "../../store/slices/staffchats";
+import { getForumConversation, getsingleforumById, getUserRole } from "../../store/slices/staffchats";
 import { RootState } from "../../store";
 import { Skeleton } from "../../components/ui/Skeleton";
 import Forumcomments from "./forum/Forumcomments";
@@ -34,10 +34,10 @@ interface SavedMessage {
 const GroupChatForm: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const dispatch = useAppDispatch();
-  const { selectedTopic, loading, error, conversation:chats } = useAppSelector(
+  const { selectedTopic, loading, error, conversation:chats , userRole} = useAppSelector(
     (state: RootState) => state.staffChats
   );
-  //  console.log("chat", chats)
+    // console.log("userfrontend", userRole)
 
   const [userDetails, setUserDetails] = useState<any>();
   const [userId, setUserId] = useState<string>("");
@@ -46,14 +46,16 @@ const GroupChatForm: React.FC = () => {
   const [newMessage, setNewMessage] = useState<string>("");
   const [visibleMessageCount, setVisibleMessageCount] = useState(10);
   const [visibleTopLevelMessageCount, setVisibleTopLevelMessageCount] = useState(5);
- const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [admin, setAdmin] = useState(false)  
 
 
  
-  
+ 
+
   
 
-
+//  iteratedTopic.user_id.toString()
 
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -61,13 +63,22 @@ const GroupChatForm: React.FC = () => {
 
 
   const currentUser = userDetails?.name || "You";
+  
+  const iteratedTopic = selectedTopic?.[0];
 
+  // get user role
+  const isAdmin = useMemo(() => {
+    return iteratedTopic?.user_id?.toString() === userId?.toString() || userRole?.member_role === "admin";
+  }, [iteratedTopic, userId, userRole]);
+   
+ 
+ console.log("userid" , iteratedTopic?.team_host_id)
   useEffect(() => {
     if (id) {
       dispatch(getsingleforumById(id));
-      dispatch(getForumConversation(id));
+      dispatch(getForumConversation(id)); 
     }
-
+  dispatch(getUserRole(iteratedTopic?.team_host_id as string));
     const userDetailsFromStorage = localStorage.getItem("ai-teacha-user");
     if (userDetailsFromStorage) {
       const parsedDetails = JSON.parse(userDetailsFromStorage);
@@ -76,6 +87,7 @@ const GroupChatForm: React.FC = () => {
     }
   }, [dispatch, id]);
 
+
 useEffect(() => {
   if (chats && chats.length > 0) {
     const historicalMessages: Message[] = chats.map((chat: any) => ({
@@ -83,7 +95,7 @@ useEffect(() => {
       avatar: chat.imageurl
         ? `https://${chat.imageurl}`
         : "https://i.pravatar.cc/150?img=10",
-      sender: chat.lastname || "User",
+      sender: `${chat.firstname || ""} ${chat.lastname || "User"}`.trim(),
       text: chat.content,
       date: new Date(chat.created_at).toLocaleString(),
       topic: chat.topic || "General",
@@ -183,6 +195,11 @@ const handleShowLess = () => {
 };
 
 
+  const thumbnailSrc = iteratedTopic?.thumbnail
+    ? `https://${iteratedTopic.thumbnail}`
+    : null;
+
+
 
   if (loading) {
     return (
@@ -221,11 +238,6 @@ const handleShowLess = () => {
     );
   }
 
-  const iteratedTopic = selectedTopic?.[0];
-  const thumbnailSrc = iteratedTopic?.thumbnail
-    ? `https://${iteratedTopic.thumbnail}`
-    : null;
-
   return (
     <div className="max-w-5xl mx-auto px-4 py-10 min-h-screen 
      bg-white overflow-y-hidden">
@@ -241,20 +253,20 @@ const handleShowLess = () => {
       </div>
        )}
 
-     <h1 className="text-2xl md:text-3xl font-bold text-purple-900 mb-2">
+     <h1 className="text-2xl md:text-3xl font-bold text-black mb-2">
     {iteratedTopic?.topic?.charAt(0).toUpperCase() + iteratedTopic?.topic?.slice(1)}
      </h1>
 
   {/* Extra Info Section */}
   <div className="flex flex-wrap gap-4 mb-4">
-    <span className="bg-purple-100 text-gray px-3 py-2 rounded-md text-sm shadow-sm">
+    <span className="bg-purple-50 text-gray px-3 py-2 rounded-md text-sm shadow-sm">
       👤 <strong>Author:</strong> {iteratedTopic?.firstname || "Unknown"}
     </span>
     
-    <span className="bg-purple-200 text-gray px-3 py-2 rounded-md text-sm shadow-sm">
+    <span className="bg-purple-50 text-gray text-gray px-3 py-2 rounded-md text-sm shadow-sm">
       🏷️ <strong>Category:</strong> {iteratedTopic?.category}
     </span>
-    <span className="bg-purple-300 text-gray px-3 py-2 rounded-md text-sm shadow-sm">
+    <span className="bg-purple-50 text-gray text-gray px-3 py-2 rounded-md text-sm shadow-sm">
       📅 <strong>Published:</strong>{" "}
       {new Date(iteratedTopic?.created_at).toLocaleDateString("en-GB", {
         day: "numeric",
@@ -263,10 +275,10 @@ const handleShowLess = () => {
       })}
     </span>
     </div>
-  <p className="text-gray-800 leading-relaxed whitespace-pre-wrap text-base">
-    {iteratedTopic?.description}
-  </p>
-</div>
+      <p className="text-gray-800 leading-relaxed whitespace-pre-wrap text-base">
+        {iteratedTopic?.description}
+      </p>
+    </div>
 
       {/* Comments */}
       <Forumcomments
@@ -275,8 +287,8 @@ const handleShowLess = () => {
         onReply={handleReply}
         onLoadMore={handleLoadMore}
         onShowLess={handleShowLess}
+        admin={isAdmin}
      />
-
       {/* Form */}
       <form
         onSubmit={handleSendMessage}

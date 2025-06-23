@@ -178,12 +178,11 @@ return (
                   : `${user.firstname} ${user.lastname}`}
               </h3>
               <p className="text-gray-600 text-sm">
-                This forum gives you access to {user.organization}  team discussions.
+                This forum gives you access to {user.organization} team discussions.
               </p>
                <Link
                to={`/dashboard/stafforum/${user.host_team_id}`}
-                className="mt-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-full transition"
-               
+                className="mt-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-full transition"   
               >
                 View Topics
               </Link>
