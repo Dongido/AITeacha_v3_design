@@ -76,7 +76,6 @@ export const registerUser = async (
       disability_details: disabilityDetails,
       referred_by,
       assigned_number,
-      referred_by
     });
     if (response.status === 201) {
       return response.data;
