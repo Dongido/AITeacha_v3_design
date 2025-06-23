@@ -29,8 +29,7 @@ const Classrooms = () => {
   >("classrooms");
   const [classTypeFilter, setClassTypeFilter] = useState<
     "All" | "Free" | "Paid"
-  >("All"); // Added state for class type filter
-
+  >("All");
   useEffect(() => {
     dispatch(loadClassrooms());
     dispatch(loadTeamClassrooms());
@@ -212,12 +211,12 @@ const Classrooms = () => {
       )}
 
       <div className="flex w-full mt-12 mb-6 items-center justify-between flex-col sm:flex-row">
-        <h2 className="text-2xl font-bold text-gray-900 sm:mb-0 mb-4">
+        <h2 className="text-xl md:text-2xl lg:text-2xl font-bold text-gray-900 sm:mb-0 mb-4 whitespace-nowrap ">
           {selectedType === "teamClassrooms"
             ? "Team Classrooms"
             : "My Classrooms"}
         </h2>
-        <div className="flex flex-col md:flex-row md:flex-wrap items-stretch md:items-center justify-start md:justify-end gap-3 p-4">
+        <div className="flex flex-wrap items-center justify-center gap-3 p-4 md:flex-row md:justify-end">
           <div className="flex items-center space-x-2">
             <Switch
               checked={classTypeFilter === "Paid"}
@@ -243,53 +242,58 @@ const Classrooms = () => {
             )}
           </div>
 
-          <select
-            value={selectedType}
-            onChange={(e) =>
-              setSelectedType(e.target.value as "classrooms" | "teamClassrooms")
-            }
-            className="p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full md:w-auto"
-          >
-            <option value="classrooms">My Classrooms</option>
-            <option value="teamClassrooms">Team Classrooms</option>
-          </select>
+          {/* Group 1: My Classrooms (Dropdown) and Joined Classrooms */}
+          <div className="flex flex-wrap items-center justify-center gap-3 w-full sm:w-auto">
+            <select
+              value={selectedType}
+              onChange={(e) =>
+                setSelectedType(
+                  e.target.value as "classrooms" | "teamClassrooms"
+                )
+              }
+              className="p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent flex-grow"
+            >
+              <option value="classrooms">My Classrooms</option>
+              <option value="teamClassrooms">Team Classrooms</option>
+            </select>
 
-          <Link
-            to={"/dashboard/classrooms/joined"}
-            className="w-full md:w-auto"
-          >
+            <Link to={"/dashboard/classrooms/joined"} className="flex-grow">
+              <Button
+                variant="ghost"
+                className="flex items-center w-full sm:w-fit bg-gray-400 h-full gap-3 rounded-md"
+              >
+                Joined Classrooms
+              </Button>
+            </Link>
+          </div>
+
+          {/* Group 2: Launch Classroom and Guide */}
+          <div className="flex flex-wrap items-center justify-center gap-3 w-full sm:w-auto">
             <Button
-              variant="ghost"
-              className="flex items-center w-full sm:w-fit bg-gray-400 h-full gap-3 rounded-md"
+              variant="gradient"
+              className="flex items-center w-full justify-center sm:w-fit h-10 gap-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 flex-grow"
+              onClick={handleLaunchNewClassroom}
             >
-              Joined Classrooms
+              <Plus size={"1.1rem"} />
+              Launch Classroom
             </Button>
-          </Link>
 
-          <Button
-            variant="gradient"
-            className="flex items-center w-full justify-center md:w-fit h-10 gap-2 rounded-md bg-blue-600 text-white hover:bg-blue-700"
-            onClick={handleLaunchNewClassroom}
-          >
-            <Plus size={"1.1rem"} />
-            Launch Classroom
-          </Button>
-
-          <Button
-            onClick={openPopup}
-            variant={"outline"}
-            className="flex items-center px-6 py-2 bg-red-500 text-white text-base font-medium rounded-lg shadow-md hover:bg-red-600 space-x-2 w-full justify-center md:w-fit h-10"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-5 h-5"
-              viewBox="0 0 24 24"
-              fill="currentColor"
+            <Button
+              onClick={openPopup}
+              variant={"outline"}
+              className="flex items-center px-6 py-2 bg-red-500 text-white text-base font-medium rounded-lg shadow-md hover:bg-red-600 space-x-2 w-full justify-center sm:w-fit h-10 flex-grow"
             >
-              <path d="M19.615 3.184c-1.88-.33-9.379-.33-11.258 0C6.018 3.516 5.1 4.437 4.77 6.212c-.33 1.775-.33 5.514 0 7.29.33 1.774 1.248 2.696 3.587 3.03 1.88.33 9.379.33 11.258 0 2.339-.333 3.256-1.255 3.587-3.03.33-1.776.33-5.515 0-7.29-.33-1.775-1.248-2.696-3.587-3.03zm-9.78 5.952l5.723 3.328-5.723 3.33V9.136z" />
-            </svg>
-            <span className="text-white">Guide</span>
-          </Button>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-5 h-5"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path d="M19.615 3.184c-1.88-.33-9.379-.33-11.258 0C6.018 3.516 5.1 4.437 4.77 6.212c-.33 1.775-.33 5.514 0 7.29.33 1.774 1.248 2.696 3.587 3.03 1.88.33 9.379.33 11.258 0 2.339-.333 3.256-1.255 3.587-3.03.33-1.776.33-5.515 0-7.29-.33-1.775-1.248-2.696-3.587-3.03zm-9.78 5.952l5.723 3.328-5.723 3.33V9.136z" />
+              </svg>
+              <span className="text-white">Guidex</span>
+            </Button>
+          </div>
 
           {isPopupOpen && (
             <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-70 z-[100]">

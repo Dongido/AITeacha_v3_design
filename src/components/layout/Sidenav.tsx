@@ -69,6 +69,7 @@ export function Sidenav({
     }
     if (user) {
       localStorage.setItem("ai-teacha-user", JSON.stringify(user));
+      console.log(user);
     }
   }, [dispatch, user]);
 

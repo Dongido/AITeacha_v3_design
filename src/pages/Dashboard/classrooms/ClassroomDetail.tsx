@@ -155,22 +155,34 @@ const ClassroomDetail = () => {
             </p>
             <p className="text-lg">Status: {classroom?.status}</p>
 
-            <div className="flex flex-col sm:flex-row items-center mt-2 justify-between sm:space-x-4">
-              <button
-                onClick={() =>
-                  navigate(
-                    `/dashboard/classrooms/${classroom?.classroom_id}/students`
-                  )
-                }
-                className="mt- sm:mt-0 flex hover:bg-gray-200 items-center bg-white text-[#5C3CBB] font-semibold py-2 px-4 rounded-full text-sm"
-              >
-                View Students
-                <ArrowRightIcon className="h-5 w-5 ml-2" />
-              </button>
-
-              <div className="mt-4 sm:mt-0 flex flex-row gap-4 items-center">
+            <div className="flex flex-col sm:flex-row items-center mt-4 justify-between gap-4 sm:gap-6 flex-wrap">
+              <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
                 <button
-                  className="bg-[#e5dbff] text-[#5C3CBB] font-semibold py-2 px-4 rounded-full text-sm"
+                  onClick={() =>
+                    navigate(`/dashboard/liveclass/${classroom?.classroom_id}`)
+                  }
+                  className="w-full sm:w-auto flex items-center justify-center hover:bg-gray-200 bg-white text-[#5C3CBB] font-semibold py-2 px-4 rounded-full text-sm shadow-md"
+                >
+                  Go to Live Class
+                  <ArrowRightIcon className="h-5 w-5 ml-2" />
+                </button>
+
+                <button
+                  onClick={() =>
+                    navigate(
+                      `/dashboard/classrooms/${classroom?.classroom_id}/students`
+                    )
+                  }
+                  className="w-full sm:w-auto flex items-center justify-center hover:bg-gray-200 bg-white text-[#5C3CBB] font-semibold py-2 px-4 rounded-full text-sm shadow-md"
+                >
+                  View Students
+                  <ArrowRightIcon className="h-5 w-5 ml-2" />
+                </button>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mt-4 sm:mt-0">
+                <button
+                  className="w-full sm:w-auto bg-[#e5dbff] text-[#5C3CBB] font-semibold py-2 px-4 rounded-full text-sm shadow-md"
                   onClick={() => {
                     navigator.clipboard.writeText(
                       classroom?.join_url || "Link not available"
@@ -178,11 +190,11 @@ const ClassroomDetail = () => {
                     handleCopyLink();
                   }}
                 >
-                  Copy Link
+                  Copy Class Link
                 </button>
 
                 <button
-                  className=" bg-[#e5dbff] text-[#5C3CBB] font-semibold py-2 px-4 rounded-full text-sm"
+                  className="w-full sm:w-auto bg-[#e5dbff] text-[#5C3CBB] font-semibold py-2 px-4 rounded-full text-sm shadow-md"
                   onClick={() => {
                     navigator.clipboard.writeText(
                       classroom?.join_code || "Code not available"
@@ -190,16 +202,17 @@ const ClassroomDetail = () => {
                     handleCopyCode();
                   }}
                 >
-                  Copy Code
+                  Copy Class Code
                 </button>
 
-                <div className="flex items-center mt-2">
+                <div className="flex items-center mt-2 sm:mt-0">
                   {copied && (
                     <CheckIcon className="h-5 w-5 ml-2 text-green-400" />
                   )}
                 </div>
               </div>
             </div>
+            {/* END - Responsive changes applied here */}
           </div>
 
           <div className="mt-8 flex justify-center">
@@ -210,12 +223,6 @@ const ClassroomDetail = () => {
               <button className="flex items-center gap-2 bg-blue-200 text-blue-800 rounded-full py-2 px-4 whitespace-nowrap">
                 Maximum No of Students: {classroom?.number_of_students}
               </button>
-              {/* <button className="flex items-center gap-2 bg-yellow-200 text-yellow-800 rounded-full py-2 px-4 whitespace-nowrap">
-                no_of_students:{" "}
-                {classroom?.number_of_students_joined !== null
-                  ? classroom?.number_of_students_joined
-                  : "null"}
-              </button> */}
             </div>
           </div>
 

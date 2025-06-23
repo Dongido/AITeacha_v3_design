@@ -21,9 +21,9 @@ root.render(
         <ScrollToTop />
         <ThemeProvider>
           <MaterialTailwindControllerProvider>
-            <ErrorBoundary>
-              <App />
-            </ErrorBoundary>
+            {/* <ErrorBoundary> */}
+            <App />
+            {/* </ErrorBoundary> */}
           </MaterialTailwindControllerProvider>
         </ThemeProvider>
       </BrowserRouter>

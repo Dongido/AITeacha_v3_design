@@ -1,8 +1,11 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Skeleton } from "../../../components/ui/Skeleton";
-import { JaaSMeeting } from "@jitsi/react-sdk";
-import { updateLiveClassMeetingUrl } from "../../../api/liveclass";
+import { JaaSMeeting, JitsiMeeting } from "@jitsi/react-sdk";
+import {
+  updateLiveClassMeetingUrl,
+  getLiveClassById,
+} from "../../../api/liveclass";
 import axios from "axios";
 import {
   SpeechRecognition,
@@ -11,13 +14,28 @@ import {
   SpeechRecognitionErrorEvent,
 } from "./interface";
 
-const JITSI_DOMAIN = "8x8.vc";
-const APP_ID = "vpaas-magic-cookie-7cfdd85f7d9d411aaec362313fee83f9";
+export interface Meeting {
+  id: number;
+  user_id: number;
+  name: string;
+  title: string | null;
+  description: string | null;
+  meeting_code: string;
+  meeting_url: string;
+  meeting_timezone: string | null;
+  meeting_location: string | null;
+  notes: string | null;
+  participant: string | null;
+  classroom_name: string | null;
+  meeting_type: string;
+  created_at: string;
+  updated_at: string;
+}
+
+const JITSI_DOMAIN = "meet.aiteacha.com:8443";
 const TRANSCRIPT_API_URL =
   "https://vd.aiteacha.com/api/live/class/add/transcript";
 
-const JITSI_JWT =
-  "eyJraWQiOiJ2cGFhcy1tYWdpYy1jb29raWUtN2NmZGQ4NWY3ZDlkNDExYWFlYzM2MjMxM2ZlZTgzZjkvODUzOWZjLVNBTVBMRV9BUFAiLCJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJqaXRzaSIsImlzcyI6ImNoYXQiLCJpYXQiOjE3NTA2Nzg3NTMsImV4cCI6MTc1MDY4NTk1MywibmJmIjoxNzUwNjc4NzQ4LCJzdWIiOiJ2cGFhcy1tYWdpYy1jb29raWUtN2NmZGQ4NWY3ZDlkNDExYWFlYzM2MjMxM2ZlZTgzZjkiLCJjb250ZXh0Ijp7ImZlYXR1cmVzIjp7ImxpdmVzdHJlYW1pbmciOnRydWUsIm91dGJvdW5kLWNhbGwiOnRydWUsInNpcC1vdXRib3VuZC1jYWxsIjpmYWxzZSwidHJhbnNjcmlwdGlvbiI6dHJ1ZSwicmVjb3JkaW5nIjp0cnVlLCJmbGlwIjpmYWxzZX0sInVzZXIiOnsiaGlkZGVuLWZyb20tcmVjb3JkZXIiOmZhbHNlLCJtb2RlcmF0b3IiOnRydWUsIm5hbWUiOiJvZmZpY2lhbHNhbTM3MSIsImlkIjoiZ29vZ2xlLW9hdXRoMnwxMDA2MTY0MTkwODU5NTU1MzcxMTgiLCJhdmF0YXIiOiIiLCJlbWFpbCI6Im9mZmljaWFsc2FtMzcxQGdtYWlsLmNvbSJ9fSwicm9vbSI6IioifQ.HBRqNDUp_YHel23CbbHG_CAVc-68F5c4kO-nHaxNu6jGOwDO7L7gD6mOcsrVRigt_1kVCzij8S6iLbuL3wVIfQ7_bVwEKAzShIs2Vi8G00CqKNA6Xn3E_43uJlJ02mFJW30PO34u2aTO1CSTwxiAnUkvWNgAMsI4BmQ9No27viDAmD_B_xeiJVuX68lXlDAxef-oVIrUI9--XcO8qoTILp4l3pQlKwBATVQcOMz4yiHwhIBjSWZ9UY2pvgUindL9WNULThOpkHmcLKRE9tl-HFPsWcXgMB8ThXeQFJQG4eV9GHFcO7uHp_eWaQaPJf41Zm6EQx09K9e6DQSESqPjJw";
 const JitsiMeetingPage = () => {
   const navigate = useNavigate();
   const { meetingId } = useParams<{ meetingId: string }>();
@@ -31,6 +49,8 @@ const JitsiMeetingPage = () => {
   const [interimSpeechTranscript, setInterimSpeechTranscript] =
     useState<string>("");
 
+  const [meeting, setMeeting] = useState<Meeting | null>(null);
+
   const fullTranscriptRef = useRef<string>("");
 
   useEffect(() => {
@@ -38,12 +58,47 @@ const JitsiMeetingPage = () => {
   }, [speechTranscript, interimSpeechTranscript]);
 
   useEffect(() => {
-    if (!meetingId) {
-      setError("Meeting code is missing. Cannot start Jitsi meeting.");
-      setLoading(false);
-    } else {
-      setLoading(false);
-    }
+    const fetchMeetingDetails = async () => {
+      if (!meetingId) {
+        setError("Meeting ID is missing from the URL.");
+        setLoading(false);
+        return;
+      }
+
+      const id = parseInt(meetingId);
+      if (isNaN(id)) {
+        setError("Invalid Meeting ID in the URL.");
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
+      try {
+        const data = await getLiveClassById(id);
+        if (
+          data &&
+          data.data &&
+          Array.isArray(data.data) &&
+          data.data.length > 0
+        ) {
+          setMeeting(data.data[0]);
+        } else if (data && !Array.isArray(data.data)) {
+          setMeeting(data);
+        } else {
+          setError("Meeting data not found in API response.");
+        }
+      } catch (err: any) {
+        console.error("Failed to fetch meeting details:", err);
+        setError(
+          "Failed to load meeting details: " + (err.message || "Unknown error")
+        );
+        setMeeting(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMeetingDetails();
 
     return () => {
       if (recognitionRef.current) {
@@ -206,12 +261,13 @@ const JitsiMeetingPage = () => {
       navigate(`/dashboard/liveclass/details/${meetingId}`);
     }, 2000);
   }, [meetingId, navigate, sendTranscriptToBackend, stopSpeechRecognition]);
+
   const handleJitsiReady = async (api: any) => {
     jitsiApiRef.current = api;
-    setLoading(false);
-    console.log("Jitsi Meeting is ready!", api);
-
-    const fullMeetingUrl = `https://${JITSI_DOMAIN}/${APP_ID}/${meetingId}`;
+    const roomName = meeting?.classroom_name
+      ? meeting.classroom_name.replace(/\s+/g, "-")
+      : meetingId;
+    const fullMeetingUrl = `https://${JITSI_DOMAIN}/${roomName}`;
 
     if (meetingId) {
       try {
@@ -248,6 +304,9 @@ const JitsiMeetingPage = () => {
   };
 
   const displayedTranscript = speechTranscript + interimSpeechTranscript;
+  const jitsiRoomName = meeting?.classroom_name
+    ? meeting.classroom_name.replace(/\s+/g, "-")
+    : meetingId;
 
   if (loading) {
     return (
@@ -280,15 +339,14 @@ const JitsiMeetingPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
-      {/* <h1 className="text-3xl font-bold text-gray-800 mb-6">
-        Jitsi Meeting: {meetingId}
-      </h1> */}
+      <h1 className="text-3xl font-bold text-gray-800 mb-6">
+        {jitsiRoomName} Liveclass
+      </h1>
       <div className="w-full max-w-4xl h-[600px] bg-white rounded-lg shadow-xl overflow-hidden border border-gray-200">
-        {meetingId && (
-          <JaaSMeeting
-            appId={APP_ID}
-            roomName={meetingId}
-            jwt={JITSI_JWT}
+        {meeting && meetingId && jitsiRoomName && (
+          <JitsiMeeting
+            roomName={jitsiRoomName}
+            domain={JITSI_DOMAIN}
             configOverwrite={{
               disableLocalVideoFlip: true,
               backgroundAlpha: 0.5,
