@@ -36,7 +36,8 @@ export interface Meeting {
 const JITSI_DOMAIN = "meet.aiteacha.com:8443";
 const TRANSCRIPT_API_URL =
   "https://vd.aiteacha.com/api/live/class/add/transcript";
-const TRANSCRIBE_API_ENDPOINT = "http://localhost:4000/api/transcribe";
+const TRANSCRIBE_API_ENDPOINT =
+  "https://vd.aiteacha.com/api/live/class/meeting/transcriber";
 const JitsiMeetingPage = () => {
   const navigate = useNavigate();
   const { meetingId } = useParams<{ meetingId: string }>();
