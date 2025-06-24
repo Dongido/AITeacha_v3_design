@@ -13,7 +13,8 @@ import {
   SpeechRecognitionResultList,
   SpeechRecognitionErrorEvent,
 } from "./interface";
-
+import { motion } from "framer-motion";
+import { Button } from "../../../components/ui/Button";
 export interface Meeting {
   id: number;
   user_id: number;
@@ -50,6 +51,7 @@ const JitsiMeetingPage = () => {
     useState<string>("");
 
   const [meeting, setMeeting] = useState<Meeting | null>(null);
+  const [copySuccess, setCopySuccess] = useState(false); // State for copy success message
 
   const fullTranscriptRef = useRef<string>("");
 
@@ -194,6 +196,7 @@ const JitsiMeetingPage = () => {
     recognitionRef.current = recognition;
     recognition.start();
   }, [isRecording, jitsiApiRef]);
+
   const stopSpeechRecognition = useCallback(() => {
     if (recognitionRef.current) {
       recognitionRef.current.stop();
@@ -245,6 +248,7 @@ const JitsiMeetingPage = () => {
     },
     []
   );
+
   const handleMeetingEnd = useCallback(async () => {
     console.log("Frontend: Meeting ending sequence initiated.");
 
@@ -262,11 +266,27 @@ const JitsiMeetingPage = () => {
     }, 2000);
   }, [meetingId, navigate, sendTranscriptToBackend, stopSpeechRecognition]);
 
+  // Function to generate random alphanumeric string
+  const generateRandomString = (length: number) => {
+    let result = "";
+    const characters =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    const charactersLength = characters.length;
+    for (let i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+  };
+
   const handleJitsiReady = async (api: any) => {
     jitsiApiRef.current = api;
+
+    // Generate a random string to append to the room name for uniqueness
+    const randomSuffix = generateRandomString(6);
     const roomName = meeting?.classroom_name
-      ? meeting.classroom_name.replace(/\s+/g, "-")
-      : meetingId;
+      ? `${meeting.classroom_name.replace(/\s+/g, "-")}-${randomSuffix}`
+      : `${meetingId}-${randomSuffix}`; // Append random suffix to meetingId if classroom_name is not available
+
     const fullMeetingUrl = `https://${JITSI_DOMAIN}/${roomName}`;
 
     if (meetingId) {
@@ -308,6 +328,20 @@ const JitsiMeetingPage = () => {
     ? meeting.classroom_name.replace(/\s+/g, "-")
     : meetingId;
 
+  const currentMeetingUrl = `https://${JITSI_DOMAIN}/${jitsiRoomName}`; // The URL to copy
+
+  const handleCopyLink = () => {
+    navigator.clipboard
+      .writeText(currentMeetingUrl)
+      .then(() => {
+        setCopySuccess(true);
+        setTimeout(() => setCopySuccess(false), 2000); // Hide message after 2 seconds
+      })
+      .catch((err) => {
+        console.error("Failed to copy: ", err);
+      });
+  };
+
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
@@ -339,9 +373,18 @@ const JitsiMeetingPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">
-        {jitsiRoomName} Liveclass
-      </h1>
+      <div className="flex flex-col md:flex-row items-center md:justify-between w-full max-w-4xl mb-6">
+        <h1 className="text-2xl md:text-3xl lg:text-3xl font-bold text-gray-800 mb-4 md:mb-0">
+          {jitsiRoomName} Liveclass
+        </h1>
+        <Button
+          onClick={handleCopyLink}
+          variant={"outlined"}
+          className="px-4 py-2 bg-gray-200 text-white rounded-full  border border-gray-500 transition-colors text-sm md:text-base"
+        >
+          Copy Meeting Link
+        </Button>
+      </div>
       <div className="w-full max-w-4xl h-[600px] bg-white rounded-lg shadow-xl overflow-hidden border border-gray-200">
         {meeting && meetingId && jitsiRoomName && (
           <JitsiMeeting
@@ -420,6 +463,18 @@ const JitsiMeetingPage = () => {
             </p>
           </div>
         </div>
+      )}
+
+      {copySuccess && (
+        <motion.div
+          className="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-purple-300 text-white py-2 px-4 rounded-md shadow-lg z-50"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 20 }}
+          transition={{ duration: 0.3 }}
+        >
+          Meeting link copied!
+        </motion.div>
       )}
     </div>
   );
