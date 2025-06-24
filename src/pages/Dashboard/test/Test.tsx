@@ -6,6 +6,11 @@ import {
   selectTestsLoading,
   selectTestsError,
 } from "../../../store/slices/testSlice";
+import {
+  setSelectedTestType,
+  selectSelectedTestType,
+  SelectedTestType,
+} from "../../../store/slices/uiSlice";
 import { AppDispatch } from "../../../store";
 import { testColumns } from "./components/column.test";
 import BaseTable from "../../../components/table/BaseTable";
@@ -19,30 +24,15 @@ const TestPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
-  const [selectedType, setSelectedType] = useState<"test" | "exam" | null>(
-    () => {
-      if (typeof window !== "undefined") {
-        return (
-          (localStorage.getItem("selectedTestType") as
-            | "test"
-            | "exam"
-            | null) || null
-        );
-      }
-      return null;
-    }
-  );
+  const selectedType = useSelector(selectSelectedTestType);
 
   const tests = useSelector(selectTests);
   const loading = useSelector(selectTestsLoading);
   const error = useSelector(selectTestsError);
-  const userDetails = useSelector((state: any) => state.auth.user); // Assuming user details are in auth slice
-  const isEmailVerified = userDetails?.isEmailVerified; // Assuming this property exists
-
+  const userDetails = useSelector((state: any) => state.auth.user);
+  const isEmailVerified = userDetails?.isEmailVerified;
   const handleVerifyEmail = () => {
-    // Implement your email verification logic here, e.g., dispatch an action
     console.log("Verify email clicked");
-    // You might want to redirect the user or show a message about resending verification
   };
 
   useEffect(() => {
@@ -141,14 +131,14 @@ const TestPage: React.FC = () => {
         </h2>
         <div className="flex flex-wrap gap-8 items-center justify-center">
           <button
-            onClick={() => setSelectedType("test")}
+            onClick={() => dispatch(setSelectedTestType("test"))}
             className="bg-white hover:bg-blue-50 transition-all duration-300 text-blue-600 font-semibold px-8 py-5 rounded-2xl shadow-md border border-blue-200 flex flex-col items-center gap-2 w-40 h-40"
           >
             <ClipboardList size={36} />
             <span>Test</span>
           </button>
           <button
-            onClick={() => setSelectedType("exam")}
+            onClick={() => dispatch(setSelectedTestType("exam"))}
             className="bg-white hover:bg-green-50 transition-all duration-300 text-green-600 font-semibold px-8 py-5 rounded-2xl shadow-md border border-green-200 flex flex-col items-center gap-2 w-40 h-40"
           >
             <PenBox size={36} />
@@ -167,7 +157,7 @@ const TestPage: React.FC = () => {
             {selectedType === "test" ? "Test Manager" : "Exam Manager"}
           </h2>
           <button
-            onClick={() => setSelectedType(null)}
+            onClick={() => dispatch(setSelectedTestType(null))}
             className="text-sm text-blue-500 hover:underline"
           >
             Change Type

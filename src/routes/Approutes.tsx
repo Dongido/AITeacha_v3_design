@@ -107,7 +107,7 @@ import StaffChat from "../pages/Dashboard/StaffChat";
 import { Children } from "react";
 import GroupChatForm from "../pages/Dashboard/GroupChatForm";
 import Forumpage from "../pages/Dashboard/Forumpage";
-
+import JitsiStudentMeeting from "../pages/Dashboard/student/JitsiMeeting";
 const icon = {
   className: "w-5 h-5 text-inherit",
 };
@@ -742,6 +742,12 @@ export const StudentParamroutes = [
         name: "verify",
         path: "/verify-email",
         element: <VerifyEmail />,
+      },
+      {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "meeting",
+        path: "/meeting-view",
+        element: <JitsiStudentMeeting />,
       },
     ],
   },

@@ -51,8 +51,7 @@ const JitsiMeetingPage = () => {
     useState<string>("");
 
   const [meeting, setMeeting] = useState<Meeting | null>(null);
-  const [copySuccess, setCopySuccess] = useState(false); // State for copy success message
-
+  const [copySuccess, setCopySuccess] = useState(false);
   const fullTranscriptRef = useRef<string>("");
 
   useEffect(() => {
@@ -150,16 +149,20 @@ const JitsiMeetingPage = () => {
     };
 
     recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+      if (event.error === "aborted") {
+        return;
+      }
+
       console.error("Speech recognition error:", event.error, event.message);
       setIsRecording(false);
+
       if (event.error === "not-allowed") {
         setError(
           "Microphone access denied. Please allow microphone access for speech recognition."
         );
       }
-      if (recognitionRef.current) {
-        recognitionRef.current.stop();
-      }
+
+      recognitionRef.current?.stop();
     };
 
     recognition.onresult = (
@@ -266,7 +269,6 @@ const JitsiMeetingPage = () => {
     }, 2000);
   }, [meetingId, navigate, sendTranscriptToBackend, stopSpeechRecognition]);
 
-  // Function to generate random alphanumeric string
   const generateRandomString = (length: number) => {
     let result = "";
     const characters =
@@ -281,12 +283,10 @@ const JitsiMeetingPage = () => {
   const handleJitsiReady = async (api: any) => {
     jitsiApiRef.current = api;
 
-    // Generate a random string to append to the room name for uniqueness
     const randomSuffix = generateRandomString(6);
     const roomName = meeting?.classroom_name
       ? `${meeting.classroom_name.replace(/\s+/g, "-")}-${randomSuffix}`
-      : `${meetingId}-${randomSuffix}`; // Append random suffix to meetingId if classroom_name is not available
-
+      : `${meetingId}-${randomSuffix}`;
     const fullMeetingUrl = `https://${JITSI_DOMAIN}/${roomName}`;
 
     if (meetingId) {
@@ -328,14 +328,16 @@ const JitsiMeetingPage = () => {
     ? meeting.classroom_name.replace(/\s+/g, "-")
     : meetingId;
 
-  const currentMeetingUrl = `https://${JITSI_DOMAIN}/${jitsiRoomName}`; // The URL to copy
+  const currentMeetingUrl = `https://${JITSI_DOMAIN}/${jitsiRoomName}`;
 
   const handleCopyLink = () => {
+    const encodedMeetingUrl = encodeURIComponent(currentMeetingUrl);
+    const meetingUrl = `https://aiteacha.com/student/meeting-view?url=${encodedMeetingUrl}`;
     navigator.clipboard
-      .writeText(currentMeetingUrl)
+      .writeText(meetingUrl)
       .then(() => {
         setCopySuccess(true);
-        setTimeout(() => setCopySuccess(false), 2000); // Hide message after 2 seconds
+        setTimeout(() => setCopySuccess(false), 2000);
       })
       .catch((err) => {
         console.error("Failed to copy: ", err);
@@ -448,7 +450,6 @@ const JitsiMeetingPage = () => {
           Speech Recording Status: {isRecording ? "Recording..." : "Stopped"}
         </p>
       </div>
-
       {(displayedTranscript.length > 0 || isRecording) && (
         <div className="mt-8 w-full max-w-4xl bg-white p-6 rounded-lg shadow-xl border border-gray-200">
           <h2 className="text-xl font-bold text-gray-800 mb-4">
