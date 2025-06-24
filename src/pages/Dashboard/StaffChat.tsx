@@ -202,7 +202,7 @@ if (
     );
   }
   return (
-  <div className="mt-12 overflow-x-hidden">
+  <div className="lg:mt-12 md:mt-6 overflow-x-hidden">
       {/* Integrate the GroupChatForm component */}
   <div className="flex w-full mt-12 mb-6 items-center justify-between flex-col sm:flex-row">
   <h2 className="lg:text-3xl md:text-2xl text-lg font-extrabold text-gray-900 sm:mb-0 mb-4">
