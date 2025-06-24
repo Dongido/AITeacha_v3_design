@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Skeleton } from "../../../components/ui/Skeleton";
-import { JaaSMeeting, JitsiMeeting } from "@jitsi/react-sdk";
+import { JitsiMeeting } from "@jitsi/react-sdk";
 import {
   updateLiveClassMeetingUrl,
   getLiveClassById,
@@ -15,6 +15,7 @@ import {
 } from "./interface";
 import { motion } from "framer-motion";
 import { Button } from "../../../components/ui/Button";
+
 export interface Meeting {
   id: number;
   user_id: number;
@@ -53,6 +54,7 @@ const JitsiMeetingPage = () => {
   const [meeting, setMeeting] = useState<Meeting | null>(null);
   const [copySuccess, setCopySuccess] = useState(false);
   const fullTranscriptRef = useRef<string>("");
+  const [isMeetingActive, setIsMeetingActive] = useState(false);
 
   useEffect(() => {
     fullTranscriptRef.current = speechTranscript + interimSpeechTranscript;
@@ -76,15 +78,12 @@ const JitsiMeetingPage = () => {
       setLoading(true);
       try {
         const data = await getLiveClassById(id);
-        if (
-          data &&
-          data.data &&
-          Array.isArray(data.data) &&
-          data.data.length > 0
-        ) {
-          setMeeting(data.data[0]);
-        } else if (data && !Array.isArray(data.data)) {
-          setMeeting(data);
+        if (data && data.data) {
+          if (Array.isArray(data.data) && data.data.length > 0) {
+            setMeeting(data.data[0]);
+          } else {
+            setMeeting(data.data);
+          }
         } else {
           setError("Meeting data not found in API response.");
         }
@@ -106,24 +105,36 @@ const JitsiMeetingPage = () => {
         recognitionRef.current.stop();
         recognitionRef.current = null;
       }
+      if (jitsiApiRef.current) {
+        jitsiApiRef.current.dispose();
+        jitsiApiRef.current = null;
+      }
+      setIsMeetingActive(false);
     };
   }, [meetingId]);
 
   const startSpeechRecognition = useCallback(() => {
     if (!("webkitSpeechRecognition" in window)) {
       alert("Your browser does not support speech recognition.");
+      setError("Speech recognition not supported by your browser.");
       return;
     }
 
-    if (recognitionRef.current && isRecording) {
-      console.log("Speech recognition already running.");
+    if (!isMeetingActive || (recognitionRef.current && isRecording)) {
+      if (!isMeetingActive) {
+        console.log("Meeting not active, preventing speech recognition start.");
+      } else {
+        console.log(
+          "Speech recognition already running, preventing duplicate start."
+        );
+      }
       return;
     }
 
-    const SpeechRecognition =
+    const SpeechRecognitionAPI =
       (window as any).webkitSpeechRecognition ||
       (window as any).SpeechRecognition;
-    const recognition: SpeechRecognition = new SpeechRecognition();
+    const recognition: SpeechRecognition = new SpeechRecognitionAPI();
 
     recognition.lang = "en-US";
     recognition.interimResults = true;
@@ -136,33 +147,65 @@ const JitsiMeetingPage = () => {
 
     recognition.onend = () => {
       setIsRecording(false);
-      console.log(
-        "Speech recognition ended. Attempting to restart if meeting is active."
-      );
-      if (jitsiApiRef.current) {
+      console.log("Speech recognition ended.");
+      if (isMeetingActive) {
+        console.log(
+          "Meeting still active, attempting to restart speech recognition..."
+        );
         setTimeout(() => {
-          if (jitsiApiRef.current) {
+          if (isMeetingActive) {
             startSpeechRecognition();
+          } else {
+            console.log(
+              "Meeting became inactive during restart delay, not restarting."
+            );
           }
-        }, 1000);
+        }, 500);
+      } else {
+        console.log(
+          "Meeting is not active, not restarting speech recognition."
+        );
       }
     };
 
     recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-      if (event.error === "aborted") {
+      if (event.error === "aborted" && isMeetingActive) {
+        console.warn(
+          "Speech recognition aborted (likely due to mic contention). OnEnd will handle restart."
+        );
+        setIsRecording(false);
+        recognitionRef.current?.stop();
         return;
       }
 
       console.error("Speech recognition error:", event.error, event.message);
       setIsRecording(false);
-
       if (event.error === "not-allowed") {
         setError(
           "Microphone access denied. Please allow microphone access for speech recognition."
         );
+      } else if (event.error === "network") {
+        setError(
+          "Speech recognition network error. Please check your internet connection."
+        );
+      } else if (event.error === "no-speech") {
+        console.warn(
+          "No speech detected, recognition will attempt to restart if continuous."
+        );
       }
 
       recognitionRef.current?.stop();
+
+      if (isMeetingActive && event.error !== "not-allowed") {
+        console.log(
+          "Error occurred, but meeting is active. Attempting restart."
+        );
+        setTimeout(() => {
+          if (isMeetingActive) {
+            startSpeechRecognition();
+          }
+        }, 1000);
+      }
     };
 
     recognition.onresult = (
@@ -198,7 +241,7 @@ const JitsiMeetingPage = () => {
 
     recognitionRef.current = recognition;
     recognition.start();
-  }, [isRecording, jitsiApiRef]);
+  }, [isRecording, isMeetingActive]);
 
   const stopSpeechRecognition = useCallback(() => {
     if (recognitionRef.current) {
@@ -254,14 +297,22 @@ const JitsiMeetingPage = () => {
 
   const handleMeetingEnd = useCallback(async () => {
     console.log("Frontend: Meeting ending sequence initiated.");
+    setIsMeetingActive(false);
 
     stopSpeechRecognition();
+
     const finalTranscriptToSend = fullTranscriptRef.current;
     console.log("Final Transcript to Send:", finalTranscriptToSend);
     console.log("Meeting ID:", meetingId);
 
     if (finalTranscriptToSend && meetingId) {
       await sendTranscriptToBackend(finalTranscriptToSend.trim(), meetingId);
+    }
+
+    if (jitsiApiRef.current) {
+      console.log("Disposing of Jitsi API instance on meeting end.");
+      jitsiApiRef.current.dispose();
+      jitsiApiRef.current = null;
     }
 
     setTimeout(() => {
@@ -280,26 +331,39 @@ const JitsiMeetingPage = () => {
     return result;
   };
 
+  const [jitsiLiveRoomName, setJitsiLiveRoomName] = useState<string | null>(
+    null
+  );
+
   const handleJitsiReady = async (api: any) => {
     jitsiApiRef.current = api;
 
     const randomSuffix = generateRandomString(6);
-    const roomName = meeting?.classroom_name
-      ? `${meeting.classroom_name.replace(/\s+/g, "-")}-${randomSuffix}`
-      : `${meetingId}-${randomSuffix}`;
-    const fullMeetingUrl = `https://${JITSI_DOMAIN}/${roomName}`;
+    const baseRoomName = meeting?.classroom_name
+      ? meeting.classroom_name.replace(/\s+/g, "-")
+      : `liveclass-${meetingId}`;
+    const uniqueRoomName = `${baseRoomName}-${randomSuffix}`;
+    setJitsiLiveRoomName(uniqueRoomName);
+
+    const fullMeetingUrl = `https://${JITSI_DOMAIN}/${uniqueRoomName}`;
 
     if (meetingId) {
       try {
         await updateLiveClassMeetingUrl(parseInt(meetingId), fullMeetingUrl);
-        console.log("Meeting URL successfully updated in the database.");
+        console.log(
+          "Meeting URL successfully updated in the database:",
+          fullMeetingUrl
+        );
       } catch (apiError: any) {
         console.error("Failed to update meeting URL in DB:", apiError.message);
       }
     }
 
     api.addEventListener("videoConferenceJoined", () => {
-      console.log("Video conference joined! Starting speech recognition.");
+      console.log(
+        "Video conference joined! Setting meeting active and starting speech recognition."
+      );
+      setIsMeetingActive(true);
       startSpeechRecognition();
     });
 
@@ -314,27 +378,35 @@ const JitsiMeetingPage = () => {
     });
 
     return () => {
+      console.log(
+        "Jitsi Meeting component unmounting or API changing. Initiating cleanup."
+      );
       if (jitsiApiRef.current) {
-        console.log("Disposing of Jitsi API instance.");
-        jitsiApiRef.current.dispose();
+        try {
+          jitsiApiRef.current.dispose();
+          console.log("Jitsi API instance disposed from onApiReady cleanup.");
+        } catch (e) {
+          console.warn("Error disposing Jitsi API during cleanup:", e);
+        }
         jitsiApiRef.current = null;
       }
       stopSpeechRecognition();
+      setIsMeetingActive(false);
+      setJitsiLiveRoomName(null);
     };
   };
 
   const displayedTranscript = speechTranscript + interimSpeechTranscript;
-  const jitsiRoomName = meeting?.classroom_name
-    ? meeting.classroom_name.replace(/\s+/g, "-")
-    : meetingId;
 
-  const currentMeetingUrl = `https://${JITSI_DOMAIN}/${jitsiRoomName}`;
+  const displayRoomName = meeting?.classroom_name
+    ? meeting.classroom_name.replace(/\s+/g, "-")
+    : `liveclass-${meetingId}`;
+
+  const studentShareUrl = `${window.location.origin}/student/meeting-view?meetingId=${meetingId}`;
 
   const handleCopyLink = () => {
-    const encodedMeetingUrl = encodeURIComponent(currentMeetingUrl);
-    const meetingUrl = `https://aiteacha.com/student/meeting-view?url=${encodedMeetingUrl}`;
     navigator.clipboard
-      .writeText(meetingUrl)
+      .writeText(studentShareUrl)
       .then(() => {
         setCopySuccess(true);
         setTimeout(() => setCopySuccess(false), 2000);
@@ -377,7 +449,7 @@ const JitsiMeetingPage = () => {
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
       <div className="flex flex-col md:flex-row items-center md:justify-between w-full max-w-4xl mb-6">
         <h1 className="text-2xl md:text-3xl lg:text-3xl font-bold text-gray-800 mb-4 md:mb-0">
-          {jitsiRoomName} Liveclass
+          {displayRoomName} Liveclass
         </h1>
         <Button
           onClick={handleCopyLink}
@@ -388,9 +460,9 @@ const JitsiMeetingPage = () => {
         </Button>
       </div>
       <div className="w-full max-w-4xl h-[600px] bg-white rounded-lg shadow-xl overflow-hidden border border-gray-200">
-        {meeting && meetingId && jitsiRoomName && (
+        {meeting && meetingId && displayRoomName && (
           <JitsiMeeting
-            roomName={jitsiRoomName}
+            roomName={displayRoomName}
             domain={JITSI_DOMAIN}
             configOverwrite={{
               disableLocalVideoFlip: true,
