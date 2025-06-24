@@ -69,7 +69,7 @@ export const getAllStaffTopic = async (id:string): Promise<Topics[]> => {
     if (response.status !== 200) {
       throw new Error("Failed to fetch staff topics.");
     }
-  console.log("response fetch", response)
+  // console.log("response fetch", response)
     return response.data.data;
   } catch (error: any) {
     throw new Error(
@@ -139,6 +139,7 @@ export const getpremiumUser = async (): Promise<PremiumUsertype[]> => {
   }
 }
 
+// get all  user roles
  export const getUserRoles  = async(id:string):Promise<any> => {
 
    try {
@@ -151,8 +152,7 @@ export const getpremiumUser = async (): Promise<PremiumUsertype[]> => {
       if(response.status !== 200){
          throw new Error("Failed to get user role")
       }
-      
-      console.log(response.data.data, "userrole")
+      // console.log(response.data.data, "userrole")
         return response.data.data;
    } catch (error) {
      throw new Error("failed to get user role")

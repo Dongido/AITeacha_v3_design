@@ -18,9 +18,9 @@ interface Props {
   messages: Message[];
   visibleMessageCount: number;
   onReply: (msg: Message) => void;
-   onLoadMore: () => void;
-   onShowLess:() => void
-    admin:boolean
+  onLoadMore: () => void;
+  onShowLess:() => void
+  admin:boolean
 }
 
 const Forumcomments: React.FC<Props> = ({
