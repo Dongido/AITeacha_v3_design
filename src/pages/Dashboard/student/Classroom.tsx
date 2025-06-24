@@ -1482,9 +1482,14 @@ const Classroom = () => {
                             Ready to dive into the learning?
                           </p>
                           <Button
-                            onClick={() =>
-                              window.open(classroom.meeting_url, "_blank")
-                            }
+                            onClick={() => {
+                              const encodedMeetingUrl = encodeURIComponent(
+                                classroom.meeting_url
+                              );
+                              navigate(
+                                `/student/meeting-view?url=${encodedMeetingUrl}`
+                              );
+                            }}
                             className="mt-2 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
                             variant={"gradient"}
                           >
@@ -1513,9 +1518,14 @@ const Classroom = () => {
                             Ready to dive into the learning?
                           </p>
                           <Button
-                            onClick={() =>
-                              window.open(classroom.meeting_url, "_blank")
-                            }
+                            onClick={() => {
+                              const encodedMeetingUrl = encodeURIComponent(
+                                classroom.meeting_url
+                              );
+                              navigate(
+                                `/student/meeting-view?url=${encodedMeetingUrl}`
+                              );
+                            }}
                             className="mt-2 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
                             variant={"gradient"}
                           >

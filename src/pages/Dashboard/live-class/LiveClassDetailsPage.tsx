@@ -208,7 +208,7 @@ const LiveClassDetailsPage: React.FC = () => {
                 {loading ? (
                   <Skeleton className="w-72 h-10" />
                 ) : (
-                  meeting?.title || "Untitled Live Class"
+                  meeting?.title || meeting?.classroom_name
                 )}
               </h1>
               <p className="mt-2 text-indigo-200 text-lg">

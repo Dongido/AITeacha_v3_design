@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import faqImg from "../../../assets/img/unnamed (1).png";
+import faqImg from "../../../assets/img/WhatsApp_Image_2025-06-24_at_09.51.24_b287f3fc-removebg-preview.png";
 interface Faq {
   q: string;
   a: string;
@@ -121,7 +121,13 @@ const FaqHome: React.FC = () => {
   return (
     <section className="leading-relaxed ">
       <div className="flex items-center justify-center my-8">
-        <img src={faqImg} alt="" className="max-w-full" />
+        <a
+          href="https://www.f6s.com/ai-teacha"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img src={faqImg} alt="" className="max-w-full" />
+        </a>
       </div>
 
       <section className="relative bg-blight w-full h-[30vh] pt-[5rem] flex justify-center items-center overflow-hidden overlow-hidden">
