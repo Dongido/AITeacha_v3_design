@@ -553,3 +553,39 @@ legend + * {
     transform: rotate(360deg);
   }
 }
+
+
+/* src/index.css (or your chosen global CSS file) */
+
+/* For Webkit browsers (Chrome, Safari, Edge, Opera) */
+/* In your global CSS file (e.g., src/index.css) */
+
+/* For Webkit browsers (Chrome, Safari, Edge, Opera) */
+.routes-scroll-area::-webkit-scrollbar {
+  width: 8px; /* You might need this to make the scrollbar visible enough to color */
+}
+
+.routes-scroll-area::-webkit-scrollbar-track {
+  background-color: transparent; /* Keep track transparent or a very light background */
+  border-radius: 10px; /* Optional: adds rounded corners to the track */
+}
+
+.routes-scroll-area::-webkit-scrollbar-thumb {
+  background-color: blue; /* <-- THIS IS FOR THE SCROLLBAR THUMB (the draggable part) */
+  border-radius: 10px; /* Optional: adds rounded corners to the thumb */
+}
+
+.routes-scroll-area::-webkit-scrollbar-thumb:hover {
+  /* background-color: darkred;  */
+}
+
+/* For Firefox */
+.routes-scroll-area {
+  scrollbar-width: thin; /* 'auto' or 'thin' */
+  scrollbar-color: #e5e7eb transparent; /* <-- THUMB COLOR (red) TRACK COLOR (transparent) */
+}
+
+/* Optional: To make the scrollbar always visible if it's not by default */
+.routes-scroll-area {
+  overflow-y: scroll; /* Use 'scroll' instead of 'auto' if you want it always visible */
+}
