@@ -98,3 +98,7 @@ html {
   --tw-text-opacity: 1;
   color: rgb(79 70 229 / var(--tw-text-opacity));
 }
+
+/* In your global CSS file (e.g., src/index.css) */
+
+/* Apply this class to the scrollable div in your Sidenav.tsx */
