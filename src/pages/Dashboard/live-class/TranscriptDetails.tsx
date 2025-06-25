@@ -111,7 +111,7 @@ const TranscriptDetailsPage: React.FC = () => {
   const [suggestedAssessment, setSuggestedAssessment] = useState<
     AssessmentQuestion[] | null
   >(null);
-  const [assessmentLoading, setAssessmentLoading] = useState<boolean>(true); // Set to true initially to fetch existing assessments
+  const [assessmentLoading, setAssessmentLoading] = useState<boolean>(true);
   const [assessmentError, setAssessmentError] = useState<string | null>(null);
   const [savingAssessment, setSavingAssessment] = useState<boolean>(false);
   const [saveSuccess, setSaveSuccess] = useState<boolean>(false);
@@ -174,7 +174,6 @@ const TranscriptDetailsPage: React.FC = () => {
       }
 
       try {
-        // Fetch transcript details
         const transcriptData = await getTranscriptDetails(id);
         const fetchedTranscript =
           transcriptData.data && Array.isArray(transcriptData.data)
@@ -182,13 +181,10 @@ const TranscriptDetailsPage: React.FC = () => {
             : transcriptData.data;
         setTranscript(fetchedTranscript);
 
-        // Fetch existing assessments
-        const assessmentResponse = await getTranscriptAssessment(id); // Call your new API
+        const assessmentResponse = await getTranscriptAssessment(id);
         if (assessmentResponse.data && Array.isArray(assessmentResponse.data)) {
-          // Format the existing assessments to match the AssessmentQuestion interface
           const formattedAssessments: AssessmentQuestion[] =
             assessmentResponse.data.map((item: any) => {
-              // Parse the options string into a JavaScript array
               const optionsArray = JSON.parse(item.options);
               return {
                 question: item.question,
@@ -199,7 +195,7 @@ const TranscriptDetailsPage: React.FC = () => {
                     option: string,
                     idx: number
                   ) => {
-                    const optionKey = String.fromCharCode(65 + idx); // A, B, C, D...
+                    const optionKey = String.fromCharCode(65 + idx);
                     acc[optionKey] = option;
                     return acc;
                   },
