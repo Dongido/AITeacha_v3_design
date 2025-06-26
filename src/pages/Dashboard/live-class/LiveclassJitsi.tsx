@@ -38,6 +38,7 @@ const TRANSCRIPT_API_URL =
   "https://vd.aiteacha.com/api/live/class/add/transcript";
 const TRANSCRIBE_API_ENDPOINT =
   "https://vd.aiteacha.com/api/live/class/meeting/transcriber";
+// "https://vd.aiteacha.com/api/live/class/meeting/transcriber";
 const JitsiMeetingPage = () => {
   const navigate = useNavigate();
   const { meetingId } = useParams<{ meetingId: string }>();
@@ -345,7 +346,7 @@ const JitsiMeetingPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-2 lg:p-4 md:p-4">
       <div className="flex flex-col md:flex-row items-center md:justify-between w-full max-w-4xl mb-6">
         <h1 className="text-2xl md:text-3xl lg:text-3xl font-bold text-gray-800 mb-4 md:mb-0">
           {jitsiRoomName} Liveclass

@@ -110,7 +110,6 @@ const ClassroomDetail = () => {
             onClick={openDeleteDialog}
             className="flex items-center w-fit h-full gap-3 py-2 rounded-md"
           >
-            <DeleteIcon size={"1.1rem"} color="white" />
             Delete
           </Button>
         </div>
@@ -137,7 +136,7 @@ const ClassroomDetail = () => {
         </div>
       ) : (
         <div className=" border rounded-lg">
-          <div className="bg-[#5C3CBB] text-white p-8 rounded-lg overflow-hidden">
+          <div className="bg-[#5C3CBB] text-white p-4 lg:p-8 md:p-8 rounded-lg overflow-hidden">
             <div className="flex items-center justify-between mb-4">
               <p className="text-sm font-semibold">Classroom Details</p>
             </div>

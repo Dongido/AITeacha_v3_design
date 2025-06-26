@@ -302,16 +302,16 @@ export function Sidenav({
           >
             Current Plan: {userDetails.package}
           </Button>
-          <Button
+          {/* <Button
             variant="black"
             color={sidenavColor}
-            onClick={() => setOpenConfigurator(dispatch, true)}
+            onClick={() => setOpenConfigurator(dispatch, true)}s
             aria-label="Open configurator"
             className="w-full rounded-full flex items-center justify-center gap-2"
           >
             <Cog6ToothIcon className="h-5 w-5" />
             <span>Account Settings</span>
-          </Button>
+          </Button> */}
         </div>
       )}
     </aside>

@@ -1218,7 +1218,9 @@ const ToolDetail = () => {
                             }
                             name={field.name}
                             required={
-                              field.name === "previous_knowledge"
+                              field.name === "previous_kownledge"
+                                ? false
+                                : field.name === "previous_knowledge"
                                 ? false
                                 : field.name === "theme"
                                 ? false
