@@ -216,7 +216,7 @@ const Classrooms = () => {
             ? "Team Classrooms"
             : "My Classrooms"}
         </h2>
-        <div className="flex flex-wrap items-center justify-center gap-3 p-4 md:flex-row md:justify-end">
+        <div className="flex flex-wrap items-center justify-center gap-3 p-0 md:p-2 lg:p-4 md:flex-row md:justify-end">
           <div className="flex items-center space-x-2">
             <Switch
               checked={classTypeFilter === "Paid"}
@@ -242,7 +242,6 @@ const Classrooms = () => {
             )}
           </div>
 
-          {/* Group 1: My Classrooms (Dropdown) and Joined Classrooms */}
           <div className="flex flex-wrap items-center justify-center gap-3 w-full sm:w-auto">
             <select
               value={selectedType}
@@ -267,7 +266,6 @@ const Classrooms = () => {
             </Link>
           </div>
 
-          {/* Group 2: Launch Classroom and Guide */}
           <div className="flex flex-wrap items-center justify-center gap-3 w-full sm:w-auto">
             <Button
               variant="gradient"
