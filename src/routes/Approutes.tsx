@@ -20,6 +20,7 @@ import {
   ClockIcon,
   EnvelopeIcon,
   ShieldCheckIcon,
+  BanknotesIcon,
 } from "@heroicons/react/24/solid";
 import Dashboard from "../pages/Dashboard/Home";
 import Team from "../pages/Dashboard/Team";
@@ -50,6 +51,7 @@ import TeamClassroomPage from "../pages/Dashboard/team/TeamClassroom";
 import FreeUsers from "../pages/Dashboard/admin/FreeUsers";
 import PastUsers from "../pages/Dashboard/admin/PastUsers";
 import Subscribers from "../pages/Dashboard/admin/Subscribers";
+import AdminWithdrawalsPage from "../pages/Dashboard/admin/Withdrawals";
 import HeroesWallAdmin from "../pages/Dashboard/HoroesWall";
 import Training from "../pages/Dashboard/Training";
 import Community from "../pages/Dashboard/Community";
@@ -104,7 +106,7 @@ import SchoolStudents from "../pages/Dashboard/school/SchoolStudents";
 import { UserIcon } from "lucide-react";
 import { FaUsersLine } from "react-icons/fa6";
 import StaffChat from "../pages/Dashboard/StaffChat";
-import { Children } from "react";
+import AdminUserDetailsPage from "../pages/Dashboard/admin/UserDetailsPage";
 import GroupChatForm from "../pages/Dashboard/GroupChatForm";
 import Forumpage from "../pages/Dashboard/Forumpage";
 import JitsiStudentMeeting from "../pages/Dashboard/student/JitsiMeeting";
@@ -287,6 +289,12 @@ export const routes = [
             name: "Subscribers",
             path: "/admin/subscribers",
             element: <Subscribers />,
+          },
+          {
+            icon: <BanknotesIcon {...icon} />,
+            name: "Withdrawals",
+            path: "/admin/withdrawals",
+            element: <AdminWithdrawalsPage />,
           },
         ],
       },

@@ -8,6 +8,9 @@ const Training = () => {
     navigate("/dashboard/resource/training/form");
   };
   const videoUrls = [
+    "https://www.youtube.com/embed/-84DHq29NiM?si=CNOZQzCJVEiagH0k",
+    "https://www.youtube.com/embed/z7_EvUO4BSA?si=dlutyNzAH0UiDUGH",
+    "https://www.youtube.com/embed/-84DHq29NiM?si=ijc5ZAsary_NQeJ-",
     "https://www.youtube.com/embed/ytnQEgxMnBM?si=Mc6Lqg3Q2YUpTznG",
     "https://www.youtube.com/embed/ytnQEgxMnBM?si=oGHfPuBqAxAwgpy8",
     "https://www.youtube.com/embed/sRarbz2zIO8?si=1O6sQ_UU79_h1Gnm",

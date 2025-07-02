@@ -289,7 +289,7 @@ const Classrooms = () => {
               >
                 <path d="M19.615 3.184c-1.88-.33-9.379-.33-11.258 0C6.018 3.516 5.1 4.437 4.77 6.212c-.33 1.775-.33 5.514 0 7.29.33 1.774 1.248 2.696 3.587 3.03 1.88.33 9.379.33 11.258 0 2.339-.333 3.256-1.255 3.587-3.03.33-1.776.33-5.515 0-7.29-.33-1.775-1.248-2.696-3.587-3.03zm-9.78 5.952l5.723 3.328-5.723 3.33V9.136z" />
               </svg>
-              <span className="text-white">Guidex</span>
+              <span className="text-white">Guide</span>
             </Button>
           </div>
 
@@ -308,7 +308,7 @@ const Classrooms = () => {
                   <iframe
                     width="100%"
                     height="450"
-                    src="https://www.youtube.com/embed/5"
+                    src="https://www.youtube.com/embed/o688vxKkcPw?si=ML-K6a0dBhyH7WqM"
                     title="Community Preview"
                     frameBorder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
