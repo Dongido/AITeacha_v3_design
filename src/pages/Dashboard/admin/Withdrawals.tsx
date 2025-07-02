@@ -6,6 +6,13 @@ import BaseTable from "../../../components/table/BaseTable";
 import { getAdminWithdrawalColumns } from "../_components/AdminWithdrawalColumns";
 import { Skeleton } from "../../../components/ui/Skeleton";
 import { Button } from "../../../components/ui/Button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../../components/ui/Select"; // Import Select components
 import { updateBulkWithdrawalStatus } from "../../../api/bankaccount";
 import {
   ToastProvider,
@@ -13,6 +20,7 @@ import {
   ToastTitle,
   ToastViewport,
 } from "../../../components/ui/Toast";
+
 interface Withdrawal {
   email: string;
   firstname: string;
@@ -43,6 +51,12 @@ const AdminWithdrawalsPage = () => {
   const [toastVariant, setToastVariant] = useState<"default" | "destructive">(
     "default"
   );
+
+  // New state for filter status
+  const [filterStatus, setFilterStatus] = useState<
+    "all" | "processing" | "paid" | "declined"
+  >("all");
+
   useEffect(() => {
     dispatch(fetchAdminWithdrawals());
   }, [dispatch]);
@@ -73,7 +87,7 @@ const AdminWithdrawalsPage = () => {
       setToastMessage(`Updated all selected withdrawal requests to ${status}.`);
       setToastVariant("default");
       setToastOpen(true);
-      dispatch(fetchAdminWithdrawals());
+      dispatch(fetchAdminWithdrawals()); // Re-fetch data to reflect changes
       setSelectedWithdrawals([]);
     } catch (error: any) {
       console.error("Bulk update error:", error.message);
@@ -86,6 +100,7 @@ const AdminWithdrawalsPage = () => {
       setLoadingStatus(null);
     }
   };
+
   const adminWithdrawalColumns = useMemo(
     () =>
       getAdminWithdrawalColumns({
@@ -94,6 +109,16 @@ const AdminWithdrawalsPage = () => {
       }),
     [selectedWithdrawals]
   );
+
+  // Filtered withdrawals based on the selected status
+  const filteredWithdrawals = useMemo(() => {
+    if (filterStatus === "all") {
+      return withdrawals;
+    }
+    return withdrawals.filter(
+      (withdrawal) => withdrawal.status.toLowerCase() === filterStatus
+    );
+  }, [withdrawals, filterStatus]);
 
   if (loading) {
     return (
@@ -141,12 +166,32 @@ const AdminWithdrawalsPage = () => {
       <div className="p-2 md:p-6 lg:p-6 mt-6">
         <h1 className="text-3xl font-bold mb-6">Admin Withdrawal Requests</h1>
 
+        <div className="mb-4 flex items-center gap-4">
+          <h2 className="text-xl font-semibold">Filter by Status:</h2>
+          <Select
+            value={filterStatus}
+            onValueChange={(
+              value: "all" | "processing" | "paid" | "declined"
+            ) => setFilterStatus(value)}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Select Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All</SelectItem>
+              <SelectItem value="processing">Processing</SelectItem>
+              <SelectItem value="paid">Paid</SelectItem>
+              <SelectItem value="declined">Declined</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
         {selectedWithdrawals.length > 0 && (
           <div className="mb-4 flex gap-4">
             <Button
               onClick={() => handleUpdateStatus("paid")}
               variant="gradient"
               className="text-white font-bold py-2 px-4 rounded"
+              disabled={loadingStatus !== null}
             >
               {loadingStatus === "paid" ? (
                 <span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
@@ -156,9 +201,10 @@ const AdminWithdrawalsPage = () => {
               ({selectedWithdrawals.length})
             </Button>
             <Button
-              onClick={() => handleUpdateStatus("paid")}
+              onClick={() => handleUpdateStatus("declined")}
               variant="destructive"
               className="text-white font-bold py-2 px-4 rounded"
+              disabled={loadingStatus !== null}
             >
               {loadingStatus === "declined" ? (
                 <span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
@@ -169,10 +215,15 @@ const AdminWithdrawalsPage = () => {
             </Button>
           </div>
         )}
-        {withdrawals.length === 0 ? (
-          <p className="text-gray-600">No withdrawal requests found.</p>
+        {filteredWithdrawals.length === 0 ? (
+          <p className="text-gray-600">
+            No withdrawal requests found for the selected status.
+          </p>
         ) : (
-          <BaseTable data={withdrawals} columns={adminWithdrawalColumns} />
+          <BaseTable
+            data={filteredWithdrawals}
+            columns={adminWithdrawalColumns}
+          />
         )}
       </div>
       <Toast

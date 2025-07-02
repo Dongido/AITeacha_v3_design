@@ -656,9 +656,7 @@ const Withdrawals = () => {
         </Dialog>
 
         <div className="mt-8">
-          {/* Filter Section */}
           <div className="mb-4 flex items-center gap-4">
-            <h2 className="text-xl font-semibold">Withdrawal History</h2>
             <Select
               value={filterStatus}
               onValueChange={(
