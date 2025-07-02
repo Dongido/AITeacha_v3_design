@@ -38,6 +38,7 @@ export function DashboardNavbar() {
     openSidenav: boolean;
   };
 
+  
   const dispatch = useDispatch<AppDispatch>();
   const { imageUrl, loading } = useSelector((state: any) => state.profile);
 
@@ -64,7 +65,6 @@ export function DashboardNavbar() {
     localStorage.removeItem("ai-teacha-user");
     localStorage.removeItem("redirectPath");
     dispatch(resetProfileState());
-
     navigate("/auth/login");
   };
 

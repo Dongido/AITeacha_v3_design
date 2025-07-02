@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import { FiCopy } from "react-icons/fi";
+import { VscPinned } from "react-icons/vsc";
+import { TbPinnedOff } from "react-icons/tb";
+
 
 interface Message {
   id: string;
@@ -15,8 +18,9 @@ interface Props {
   messages: Message[];
   visibleMessageCount: number;
   onReply: (msg: Message) => void;
-   onLoadMore: () => void;
-   onShowLess:() => void
+  onLoadMore: () => void;
+  onShowLess:() => void
+  admin:boolean
 }
 
 const Forumcomments: React.FC<Props> = ({
@@ -24,9 +28,12 @@ const Forumcomments: React.FC<Props> = ({
   visibleMessageCount,
   onReply,
   onLoadMore,
-  onShowLess
+  onShowLess,
+  admin
 }) => {
   const [visibleReplies, setVisibleReplies] = useState<{ [key: string]: boolean }>({});
+  const [pinnedId, setPinnedId] = useState<string | null>(null);
+
 
   const toggleReplies = (parentId: string) => {
     setVisibleReplies((prev) => ({
@@ -46,6 +53,12 @@ const Forumcomments: React.FC<Props> = ({
  const topLevel = messages
   .filter((msg) => !msg.parent_id)
   .slice(0, visibleMessageCount);
+
+  const togglePin = (id: string) => {
+  setPinnedId((prevId) => (prevId === id ? null : id));
+};
+
+  
 
   const ReplyItem = ({ reply }: { reply: Message }) => {
     const children = getReplies(reply.id);
@@ -86,49 +99,93 @@ const Forumcomments: React.FC<Props> = ({
     );
   };
 
+const pinnedMessage = messages.find((msg) => msg.id === pinnedId && !msg.parent_id);
+
   return (
     <div className="space-y-4 mb-10">
-      {topLevel.map((msg) => (
-        <div key={msg.id} className="flex flex-col items-start">
-          {/* Comment Box */}
-          <div className="bg-white border border-purple-100 p-3 rounded-md shadow-sm max-w-[600px] w-full">
-            <div className="flex items-center gap-3 mb-2">
-              <img
-                src={msg.avatar}
-                alt={msg.sender}
-                className="w-8 h-8 rounded-full object-cover"
-              />
-              <div className="flex flex-col">
-                <span className="font-semibold text-purple-800">{msg.sender}</span>
-                <span className="text-xs text-gray-500">{msg.date}</span>
-              </div>
-            </div>
+      {/*pinned  */}
+  {pinnedMessage && (
+  <div className="border border-purple-100 bg-purple-50 p-3 rounded-md shadow max-w-[600px] w-full">
+  <div className="flex justify-between items-center mb-2">
+    <div className="flex items-center gap-3">
+      <img
+        src={pinnedMessage.avatar}
+        alt={pinnedMessage.sender}
+        className="w-8 h-8 rounded-full object-cover"
+      />
+      <div className="flex flex-col">
+        <span className="font-semibold text-black">{pinnedMessage.sender}</span>
+        <span className="text-xs text-gray-800">{pinnedMessage.date}</span>
+      </div>
+    </div>
+   <div className="flex gap-1 items-center"> 
+    <span className="text-black text-[10px]">Pinned</span>
+     <button
+      onClick={() => togglePin(pinnedMessage.id)}
+      className="text-xs text-purple-500 hover:underline"
+    >
+      <TbPinnedOff  className="text-[16px]"  />
+    </button>
+   </div>
+    </div>
+    <p className="text-gray-800 text-sm mb-2">{pinnedMessage.text}</p>
+  </div>
+)}
 
-            <p className="text-gray-800 mb-2 text-sm">{msg.text}</p>
+ {/* all chats */}
+{topLevel.map((msg) => (
+<div key={msg.id} className="flex flex-col items-start">
+  {/* Comment Box */}
+<div className="bg-white border-b border-b-purple-100 p-3 rounded-md shadow-sm max-w-[600px] w-full">
+  <div className="flex items-center gap-3 mb-2">
+  <img
+    src={msg.avatar}
+    alt={msg.sender}
+      className="w-8 h-8 rounded-full object-cover"
+      />
+      <div className="flex flex-col">
+        <span className="font-semibold text-black">{msg.sender}</span>
+        <span className="text-xs text-gray-800">{msg.date}</span>
+      </div>
+      </div>
+     <p className="text-gray-800 mb-2 text-sm">{msg.text}</p>
 
-            <div className="flex gap-4 text-xs text-purple-600">
-              <button onClick={() => onReply(msg)} className="hover:underline">Reply</button>
-              <button onClick={() => handleCopy(msg.text)} className="flex items-center gap-1 hover:underline">
-                <FiCopy /> Copy
-              </button>
-              {getReplies(msg.id).length > 0 && (
-                <button
-                  onClick={() => toggleReplies(msg.id)}
-                  className="hover:underline"
-                >
-                  {visibleReplies[msg.id] ? "Hide Replies" : "View Replies"}
-                </button>
-              )}
-            </div>
-          </div>
+    <div className="flex gap-4 text-xs text-purple-600">
+      <button onClick={() => onReply(msg)} className="hover:underline">Reply</button>
+      <button onClick={() => handleCopy(msg.text)} className="flex items-center gap-1 hover:underline">
+        <FiCopy /> Copy
+      </button>
+      {
+      admin && (
+      <button
+      onClick={() => togglePin(msg.id)}
+      className=""
+     >
+      {pinnedId === msg.id ? <><span className="flex items-center">
+      <TbPinnedOff  className="text-[16px]"  /> </span>  </>
+      :<>
+      <span className="flex"> <VscPinned className="text-[16px]" /></span></>}
+    </button>
+       )
+      }
+      {getReplies(msg.id).length > 0 && (
+        <button
+          onClick={() => toggleReplies(msg.id)}
+          className="hover:underline"
+        >
+          {visibleReplies[msg.id] ? "Hide Replies" : "View Replies"}
+        </button>
+      )}
+      </div>
+    </div>
 
-          {/* Replies */}
-          {visibleReplies[msg.id] &&
-            getReplies(msg.id).map((reply) => (
-              <ReplyItem key={reply.id} reply={reply} />
-            ))}
-        </div>
-      ))}
+      {/* Replies */}
+      {visibleReplies[msg.id] &&
+        getReplies(msg.id).map((reply) => (
+          <ReplyItem key={reply.id} reply={reply} />
+        ))}
+    </div>
+   ))}
 
       <div className="flex gap-4 mt-4">
      {messages.filter((msg) => !msg.parent_id).length > visibleMessageCount && (

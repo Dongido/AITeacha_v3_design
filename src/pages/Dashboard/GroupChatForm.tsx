@@ -3,7 +3,7 @@ import { Button } from "../../components/ui/Button";
 import io from "socket.io-client";
 import { useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { getForumConversation, getsingleforumById } from "../../store/slices/staffchats";
+import { getForumConversation, getsingleforumById, getUserRole } from "../../store/slices/staffchats";
 import { RootState } from "../../store";
 import { Skeleton } from "../../components/ui/Skeleton";
 import Forumcomments from "./forum/Forumcomments";
@@ -34,10 +34,9 @@ interface SavedMessage {
 const GroupChatForm: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const dispatch = useAppDispatch();
-  const { selectedTopic, loading, error, conversation:chats } = useAppSelector(
+  const { selectedTopic, loading, error, conversation: chats, userRole } = useAppSelector(
     (state: RootState) => state.staffChats
   );
-  //  console.log("chat", chats)
 
   const [userDetails, setUserDetails] = useState<any>();
   const [userId, setUserId] = useState<string>("");
@@ -46,54 +45,56 @@ const GroupChatForm: React.FC = () => {
   const [newMessage, setNewMessage] = useState<string>("");
   const [visibleMessageCount, setVisibleMessageCount] = useState(10);
   const [visibleTopLevelMessageCount, setVisibleTopLevelMessageCount] = useState(5);
- const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [admin, setAdmin] = useState(false);
 
-
- 
-  
-  
-
-
-
-  
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-
+  const inputRef = useRef<HTMLTextAreaElement | null>(null);
 
   const currentUser = userDetails?.name || "You";
 
+  const iteratedTopic = selectedTopic?.[0];
+
+  // get user role
+  const isAdmin = useMemo(() => {
+    return iteratedTopic?.user_id?.toString() === userId?.toString() || userRole?.member_role === "admin";
+  }, [iteratedTopic, userId, userRole]);
+
+
+  console.log("userid", iteratedTopic?.team_host_id)
   useEffect(() => {
     if (id) {
       dispatch(getsingleforumById(id));
       dispatch(getForumConversation(id));
     }
-
+    dispatch(getUserRole(iteratedTopic?.team_host_id as string));
     const userDetailsFromStorage = localStorage.getItem("ai-teacha-user");
     if (userDetailsFromStorage) {
       const parsedDetails = JSON.parse(userDetailsFromStorage);
       setUserDetails(parsedDetails);
       setUserId(parsedDetails.id);
     }
-  }, [dispatch, id]);
+  }, [dispatch, id, iteratedTopic?.team_host_id]);
 
-useEffect(() => {
-  if (chats && chats.length > 0) {
-    const historicalMessages: Message[] = chats.map((chat: any) => ({
-      id: chat.id?.toString() || crypto.randomUUID(),
-      avatar: chat.imageurl
-        ? `https://${chat.imageurl}`
-        : "https://i.pravatar.cc/150?img=10",
-      sender: chat.lastname || "User",
-      text: chat.content,
-      date: new Date(chat.created_at).toLocaleString(),
-      topic: chat.topic || "General",
-      parent_id: chat.parent_id?.toString() || null,
-    }));
 
-    // Append them to message state
-    setMessages(historicalMessages);
-  }
-}, [chats]);
+  useEffect(() => {
+    if (chats && chats.length > 0) {
+      const historicalMessages: Message[] = chats.map((chat: any) => ({
+        id: chat.id?.toString() || crypto.randomUUID(),
+        avatar: chat.imageurl
+          ? `https://${chat.imageurl}`
+          : "https://i.pravatar.cc/150?img=10",
+        sender: `${chat.firstname || ""} ${chat.lastname || "User"}`.trim(),
+        text: chat.content,
+        date: new Date(chat.created_at).toLocaleString(),
+        topic: chat.topic || "General",
+        parent_id: chat.parent_id?.toString() || null,
+      }));
+
+      // Append them to message state
+      setMessages(historicalMessages);
+    }
+  }, [chats]);
 
 
   useEffect(() => {
@@ -108,14 +109,14 @@ useEffect(() => {
     socket.on("receiveMessage", (savedMessage: SavedMessage) => {
       const newMsg: Message = {
         id: savedMessage.id?.toString() || crypto.randomUUID(),
-        avatar: savedMessage.imageurl 
-         ? `https://${savedMessage.imageurl}`
-        : "https://i.pravatar.cc/150?img=10",
+        avatar: savedMessage.imageurl
+          ? `https://${savedMessage.imageurl}`
+          : "https://i.pravatar.cc/150?img=10",
         sender: savedMessage.sender || "User",
         text: savedMessage.content,
         date: new Date(savedMessage.created_at).toLocaleString(),
         topic: savedMessage.topic || "General",
-        parent_id: savedMessage.parent_id?.toString() || null, 
+        parent_id: savedMessage.parent_id?.toString() || null,
       };
       setMessages((prev) => [...prev, newMsg]);
     });
@@ -137,50 +138,56 @@ useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-const inputRef = useRef<HTMLInputElement | null>(null);
 
-// handlereply
+  // handlereply
   useEffect(() => {
     if (repliedMessage && inputRef.current) {
-      inputRef.current.scrollIntoView({ behavior: "smooth" });
       inputRef.current.focus();
     }
-  }, [repliedMessage]); // run only when repliedMessage changes
+  }, [repliedMessage]);
 
   const handleReply = (msg: Message) => {
     setRepliedMessage(msg);
   };
 
   const handleSendMessage = (e: React.FormEvent) => {
-  e.preventDefault();
-  if (!newMessage.trim() || !userId || !id) return;
-  const payload = {
-    user_id: userId,
-    forum_id: id,
-    content: newMessage.trim(),
-    parent_id: repliedMessage?.id || null,
+    e.preventDefault();
+    if (!newMessage.trim() || !userId || !id) return;
+    const payload = {
+      user_id: userId,
+      forum_id: id,
+      content: newMessage.trim(),
+      parent_id: repliedMessage?.id || null,
+    };
+
+    socket.emit("sendMessage", payload);
+    setNewMessage("");
+    setRepliedMessage(null);
   };
 
-  socket.emit("sendMessage", payload);
-  setNewMessage("");
-  setRepliedMessage(null); // clear after send
-};
-
-// emoji
-const handleEmojiClick = (emojiData: any) => {
-  setNewMessage((prev) => prev + emojiData.emoji);
-  setShowEmojiPicker(false); // auto close
-};
+  // emoji
+  const handleEmojiClick = (emojiData: any) => {
+    setNewMessage((prev) => prev + emojiData.emoji);
+    // Only auto-close if on a large screen, or if you prefer this behavior
+    // If you want it to *always* auto-close when an emoji is picked, keep this line.
+    // If you only want it to auto-close on large screens, add a conditional check for screen size.
+    setShowEmojiPicker(false);
+  };
 
 
 
   // Increment the number of visible messages
-const handleLoadMore = () => {
+  const handleLoadMore = () => {
     setVisibleTopLevelMessageCount((prevCount) => prevCount + 5);
-};
-const handleShowLess = () => {
-    setVisibleTopLevelMessageCount(5); 
-};
+  };
+  const handleShowLess = () => {
+    setVisibleTopLevelMessageCount(5);
+  };
+
+
+  const thumbnailSrc = iteratedTopic?.thumbnail
+    ? `https://${iteratedTopic.thumbnail}`
+    : null;
 
 
 
@@ -221,52 +228,47 @@ const handleShowLess = () => {
     );
   }
 
-  const iteratedTopic = selectedTopic?.[0];
-  const thumbnailSrc = iteratedTopic?.thumbnail
-    ? `https://${iteratedTopic.thumbnail}`
-    : null;
-
   return (
-    <div className="max-w-5xl mx-auto px-4 py-10 min-h-screen 
-     bg-white overflow-y-hidden">
-     {/* Topic Info */}
-     <div className="bg-white shadow-xl border border-purple-200 rounded-2xl p-6 mb-10">
-     {thumbnailSrc && (
-     <div className="lg:w-[50%] w-full mb-6">
-      <img
-        src={thumbnailSrc}
-        alt="Topic Thumbnail"
-        className="w-full h-64 object-cover rounded-xl shadow"
-      />
+    <div className="max-w-5xl mx-auto px-4 py-10 min-h-screen
+      bg-white overflow-y-hidden">
+      {/* Topic Info */}
+      <div className="bg-white shadow-xl border border-purple-200 rounded-2xl p-6 mb-10">
+        {thumbnailSrc && (
+          <div className="lg:w-[50%] w-full mb-6">
+            <img
+              src={thumbnailSrc}
+              alt="Topic Thumbnail"
+              className="w-full h-64 object-cover rounded-xl shadow"
+            />
+          </div>
+        )}
+
+        <h1 className="text-2xl md:text-3xl font-bold text-black mb-2">
+          {iteratedTopic?.topic?.charAt(0).toUpperCase() + iteratedTopic?.topic?.slice(1)}
+        </h1>
+
+        {/* Extra Info Section */}
+        <div className="flex flex-wrap gap-4 mb-4">
+          <span className="bg-purple-50 text-gray px-3 py-2 rounded-md text-sm shadow-sm">
+            👤 <strong>Author:</strong> {iteratedTopic?.firstname || "Unknown"}
+          </span>
+
+          <span className="bg-purple-50 text-gray text-gray px-3 py-2 rounded-md text-sm shadow-sm">
+            🏷️ <strong>Category:</strong> {iteratedTopic?.category}
+          </span>
+          <span className="bg-purple-50 text-gray text-gray px-3 py-2 rounded-md text-sm shadow-sm">
+            📅 <strong>Published:</strong>{" "}
+            {new Date(iteratedTopic?.created_at).toLocaleDateString("en-GB", {
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+            })}
+          </span>
+        </div>
+        <p className="text-gray-800 leading-relaxed whitespace-pre-wrap text-base">
+          {iteratedTopic?.description}
+        </p>
       </div>
-       )}
-
-     <h1 className="text-2xl md:text-3xl font-bold text-purple-900 mb-2">
-    {iteratedTopic?.topic?.charAt(0).toUpperCase() + iteratedTopic?.topic?.slice(1)}
-     </h1>
-
-  {/* Extra Info Section */}
-  <div className="flex flex-wrap gap-4 mb-4">
-    <span className="bg-purple-100 text-gray px-3 py-2 rounded-md text-sm shadow-sm">
-      👤 <strong>Author:</strong> {iteratedTopic?.firstname || "Unknown"}
-    </span>
-    
-    <span className="bg-purple-200 text-gray px-3 py-2 rounded-md text-sm shadow-sm">
-      🏷️ <strong>Category:</strong> {iteratedTopic?.category}
-    </span>
-    <span className="bg-purple-300 text-gray px-3 py-2 rounded-md text-sm shadow-sm">
-      📅 <strong>Published:</strong>{" "}
-      {new Date(iteratedTopic?.created_at).toLocaleDateString("en-GB", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      })}
-    </span>
-    </div>
-  <p className="text-gray-800 leading-relaxed whitespace-pre-wrap text-base">
-    {iteratedTopic?.description}
-  </p>
-</div>
 
       {/* Comments */}
       <Forumcomments
@@ -275,57 +277,79 @@ const handleShowLess = () => {
         onReply={handleReply}
         onLoadMore={handleLoadMore}
         onShowLess={handleShowLess}
-     />
-
+        admin={isAdmin}
+      />
       {/* Form */}
       <form
         onSubmit={handleSendMessage}
-        className="bg-white/90 border border-purple-200 shadow-lg rounded-xl p-6"
+        className="bg-white/90 border border-purple-200 shadow-lg rounded-xl p-6 relative"
       >
         <h3 className="text-xl font-semibold text-purple-800 mb-3">Add a Comment</h3>
         {repliedMessage && (
-        <div ref={inputRef} className="mb-4 p-3 bg-purple-100 border-l-4
-         border-purple-400 text-purple-800 rounded relative">
-          <p className="text-sm">
-            Replying to <strong>{repliedMessage.sender}</strong>: "{repliedMessage.text}"
-          </p>
-          <button
-            onClick={() => setRepliedMessage(null)}
-            className="absolute top-1 right-2 text-[30px] text-gray-500 hover:text-gray-700"
-          >
-            &times;
-          </button>
-        </div>
+          <div className="mb-4 p-3 bg-purple-100 border-l-4
+           border-purple-400 text-purple-800 rounded relative">
+            <p className="text-sm">
+              Replying to <strong>{repliedMessage.sender}</strong>: "{repliedMessage.text}"
+            </p>
+            <button
+              onClick={() => setRepliedMessage(null)}
+              className="absolute top-1 right-2 text-[30px] text-gray-500 hover:text-gray-700"
+            >
+              &times;
+            </button>
+          </div>
         )}
         <div className="mb-4 relative">
-        <textarea
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          placeholder={repliedMessage ? "Reply..." : "Write your comment..."}
-          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none
-           focus:ring-2 focus:ring-purple-400 bg-purple-50 mb-2 resize-none"
-          rows={3}
-        />
+          <textarea
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            placeholder={repliedMessage ? "Reply..." : "Write your comment..."}
+            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none
+             focus:ring-2 focus:ring-purple-400 bg-purple-50 mb-2 resize-none"
+            rows={3}
+            ref={inputRef}
+          />
 
-        {/* Toggle Button */}
-        <button
-          type="button"
-          onClick={() => setShowEmojiPicker((prev) => !prev)}
-          className="text-purple-700 text-sm hover:underline mb-2"
-        >
-          😀 {showEmojiPicker ? "Hide" : "Add Emoji"}
-        </button>
+          {/* Toggle Button */}
+          <button
+            type="button"
+            onClick={() => setShowEmojiPicker((prev) => !prev)}
+            className="text-purple-700 text-sm hover:underline mb-2"
+          >
+            😀 {showEmojiPicker ? "Hide" : "Add Emoji"}
+          </button>
 
-        {/* Emoji Picker */}
-        {showEmojiPicker && (
-        <div
-        className="absolute z-50 mt-2 bg-white border rounded shadow-lg overflow-y-auto"
-        style={{ maxHeight: "250px" }} // limit height, allows scroll within
-      >
-        <EmojiPicker onEmojiClick={handleEmojiClick} />
-      </div>
-        )}
-      </div>
+          {/* Emoji Picker */}
+          {showEmojiPicker && (
+            // This is the overlay that covers the entire screen
+            <div
+              className="fixed inset-0 flex items-center justify-center z-[100] bg-black bg-opacity-50 p-4"
+              onClick={() => setShowEmojiPicker(false)}
+            >
+              {/* This is the actual emoji picker content container */}
+              <div
+                className="relative  rounded-lg shadow-xl lg:shadow-none p-4 overflow-y-auto
+                 w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl"
+                style={{ maxHeight: "80vh" }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Close button - visible only on small screens (up to md breakpoint) */}
+                <button
+                  onClick={() => setShowEmojiPicker(false)}
+                  className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 
+                  text-4xl font-bold p-1 rounded-full hover:bg-gray-100
+                             md:hidden" 
+                  aria-label="Close emoji picker"
+                >
+                  &times;
+                </button>
+               <div className="w-full">
+                 <EmojiPicker onEmojiClick={handleEmojiClick}  />
+               </div>
+              </div>
+            </div>
+          )}
+        </div>
 
         <Button
           variant="gradient"
