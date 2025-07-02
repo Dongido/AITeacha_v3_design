@@ -107,6 +107,7 @@ import StaffChat from "../pages/Dashboard/StaffChat";
 import { Children } from "react";
 import GroupChatForm from "../pages/Dashboard/GroupChatForm";
 import Forumpage from "../pages/Dashboard/Forumpage";
+import StudentClass from "../pages/Dashboard/student/StudentChat";
 
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -742,6 +743,18 @@ export const StudentParamroutes = [
         name: "verify",
         path: "/verify-email",
         element: <VerifyEmail />,
+      },
+       {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "chat",
+        path: "/Studentforum/:id",
+        element: <StudentClass />,
+      },
+      {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "chat",
+        path: "/Studentchat/:id",
+        element: <GroupChatForm />,
       },
     ],
   },

@@ -8,6 +8,7 @@ import {
   FiPause,
   FiX,
   FiPaperclip,
+  FiMessageCircle,
 } from "react-icons/fi";
 import { Button } from "../../../components/ui/Button";
 import { TextArea } from "../../../components/ui/TextArea";
@@ -942,6 +943,19 @@ const Classroom = () => {
                   </h2>
                 </div>
               </div>
+            <div className=" flex gap-4">              
+             <Link
+              to={`/student/Studentforum/${id}`}
+              className="relative flex items-center justify-center bg-white border border-[#5c3cbb]
+               hover:border-purple-600 hover:bg-purple-50 rounded-full px-3 py-2 text-sm text-[#5c3cbb] font-medium shadow-sm transition-all"
+            >
+              Chat
+              <span className="absolute -top-1.5 -right-1.5 bg-[#5c3cbb]
+               text-white rounded-full p-1 flex items-center justify-center shadow-md">
+                <FiMessageCircle size={14} />
+              </span>
+            </Link> 
+            
               {classroom?.isLiveclassroom && viewState !== "liveclass" && (
                 <Button
                   variant={"gradient"}
@@ -960,6 +974,7 @@ const Classroom = () => {
                   Back to Classroom
                 </Button>
               )}
+              </div>
             </div>
 
             {viewState === "classroom" ? (

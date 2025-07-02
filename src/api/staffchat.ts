@@ -4,7 +4,9 @@ import { PremiumUsertype } from "../store/slices/staffchats";
 type CreateTopicPayload = {
   category: string;
   topic: string;
- 
+  content_from:string,
+  classroom_id?:string,
+  team_host_id?:string,
 };
 
 interface Topic {
@@ -15,6 +17,12 @@ interface Topic {
   firstname:string;
   lastname:string 
 }
+
+ export interface ZyraType {
+  main_post:string,
+  reply?:string,
+  question:string
+ }
 
 
  export interface Topics {
@@ -48,7 +56,7 @@ export const CreateStaffTopic = async (
     if (response.status !== 201 && response.status !== 200) {
       throw new Error("Failed to create staff topic.");
     }
-  // console.log("response api" , response)
+  console.log("response api create" , response)
     return response.data.data;
   } catch (error: any) {
     throw new Error(
@@ -158,6 +166,24 @@ export const getpremiumUser = async (): Promise<PremiumUsertype[]> => {
      throw new Error("failed to get user role")
    }
   
+ }
+
+   //  create zyra chat
+ export const ZyraChat = async(payload:ZyraType):Promise<string> => {
+    try {
+    const response = await apiClient.post<{
+    status:string,
+    message:string,
+    data:string
+    }>('assistant/zyra/chat/response', payload)
+    if(response.status !== 200){
+        throw new Error("Failed to get user role")
+    }
+    console.log("response", response)
+      return response.data.data;
+  } catch (error) {
+     throw new Error("failed to get user role") 
+  }
  }
 
 

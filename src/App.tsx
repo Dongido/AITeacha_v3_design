@@ -63,7 +63,7 @@ function App() {
   }, [location.pathname]);
 
   return (
-    <Routes>
+    <Routes >
       <Route path="/" element={<Home />} />
       <Route
         path="/communities/pioneer-program"
