@@ -180,7 +180,7 @@ export function Sidenav({
       </div>
 
       {/* Bottom Actions */}
-      {!isCollapsed && (
+      {/* {!isCollapsed && (
         <div className="absolute bottom-4 bg-white left-4 right-4">
           <Button
             variant="ghost"
@@ -200,7 +200,7 @@ export function Sidenav({
             <span>Account Settings</span>
           </Button>
         </div>
-      )}
+      )} */}
     </aside>
   );
 }

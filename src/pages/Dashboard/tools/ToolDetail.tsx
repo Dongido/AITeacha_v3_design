@@ -33,11 +33,9 @@ import {
 } from "../../../components/ui/Toast";
 import NotFound from "./NotFound";
 import LoadingToolDetails from "./Loading";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import { jsPDF } from "jspdf";
+
 import { Country } from "country-state-city";
-import { Checkbox } from "../../../components/ui/Checkbox";
+
 import { MultiSelect } from "primereact/multiselect";
 import {
   activityList,
@@ -346,7 +344,7 @@ const ToolDetail = () => {
   const [subTopicInputList, setSubTopicInputList] = useState<string[]>([""]);
 
   const handleAddSubTopic = () => {
-    setSubTopicInputList((prev) => [...prev, ""]); // Add a new empty input field
+    setSubTopicInputList((prev) => [...prev, ""]);
   };
 
   const handleSubTopicChange = (index: number, value: string) => {

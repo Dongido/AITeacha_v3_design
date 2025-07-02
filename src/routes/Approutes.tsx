@@ -106,10 +106,11 @@ import SchoolStudents from "../pages/Dashboard/school/SchoolStudents";
 import { UserIcon } from "lucide-react";
 import { FaUsersLine } from "react-icons/fa6";
 import StaffChat from "../pages/Dashboard/StaffChat";
-import AdminUserDetailsPage from "../pages/Dashboard/admin/UserDetailsPage";
+import UserProfilePage from "../pages/Dashboard/UserProfilePage";
 import GroupChatForm from "../pages/Dashboard/GroupChatForm";
 import Forumpage from "../pages/Dashboard/Forumpage";
 import JitsiStudentMeeting from "../pages/Dashboard/student/JitsiMeeting";
+
 const icon = {
   className: "w-5 h-5 text-inherit",
 };
@@ -650,6 +651,12 @@ export const Paramroutes = [
         path: "/stafforum/:id",
         element: <StaffChat />,
       },
+      {
+        icon: <DocumentTextIcon {...icon} />,
+        name: "profile",
+        path: "/user-profile/:id",
+        element: <UserProfilePage />,
+      },
     ],
   },
 ];
@@ -756,6 +763,12 @@ export const StudentParamroutes = [
         name: "meeting",
         path: "/meeting-view",
         element: <JitsiStudentMeeting />,
+      },
+      {
+        icon: <DocumentTextIcon {...icon} />,
+        name: "profile",
+        path: "/user-profile/:id",
+        element: <UserProfilePage />,
       },
     ],
   },

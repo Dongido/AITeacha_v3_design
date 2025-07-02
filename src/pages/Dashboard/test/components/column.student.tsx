@@ -2,6 +2,7 @@ import { createColumnHelper } from "@tanstack/react-table";
 import Header from "../../../../components/table/TableHeaderItem";
 import Actions from "../../../../components/table/TableActions";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 // import RemoveStudentDialog from "./DeleteStudentDialog";
 import { useRef } from "react";
 
@@ -45,9 +46,17 @@ export const studentColumns = (classroomId: string | undefined) => [
     id: "full_name",
     header: ({ column }) => <Header title="Full Name" column={column} />,
     sortingFn: "text",
-    cell: (info) => (
-      <span className="capitalize whitespace-nowrap">{info.getValue()}</span>
-    ),
+    cell: (info) => {
+      const studentId = info.row.original.student_id;
+      return (
+        <Link
+          to={`/dashboard/user-profile/${studentId}`}
+          className="text-primary hover:underline capitalize whitespace-nowrap"
+        >
+          {info.getValue()}
+        </Link>
+      );
+    },
   }),
   studentColumnHelper.accessor("status", {
     header: ({ column }) => <Header title="Status" column={column} />,
