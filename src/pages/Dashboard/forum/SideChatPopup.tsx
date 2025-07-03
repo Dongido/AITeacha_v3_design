@@ -13,6 +13,7 @@ const socket = io("https://api.aiteacha.com");
 interface SideChatPopupProps {
   isOpen: boolean;
   onClose: () => void;
+  id:string
 }
 
 interface ChatMessage {
@@ -25,11 +26,9 @@ interface ChatMessage {
   time: string;
 }
 
-const SideChatPopup: React.FC<SideChatPopupProps> = ({ isOpen, onClose }) => {
-  const payload: getZaraChats = {
-    senderId: 15,
-    receiverId: 7723,
-  };
+const SideChatPopup: React.FC<SideChatPopupProps> = ({ isOpen, onClose , id:receiverId }) => {
+  
+ 
 
   const senderImage = "https://ui-avatars.com/api/?name=You";
   const dispatch = useAppDispatch();
@@ -38,6 +37,14 @@ const SideChatPopup: React.FC<SideChatPopupProps> = ({ isOpen, onClose }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [userDetails, setUserDetails] = useState<any>(null);
+   const [senderId, setSenderId] = useState<number | null>(null);
+
+    const payload = {
+     senderId,
+     receiverId:parseInt(receiverId, 10) 
+    }
+     console.log(payload, "payload")
 
   useEffect(() => {
     socket.on("connect", () => console.log("✅ Connected:", socket.id));
@@ -72,9 +79,31 @@ const SideChatPopup: React.FC<SideChatPopupProps> = ({ isOpen, onClose }) => {
     };
   }, []);
 
-  useEffect(() => {
+ useEffect(() => {
+  if (senderId !== null) {
+    const payload = {
+      senderId,
+      receiverId: parseInt(receiverId, 10),
+    };
     dispatch(getMessages(payload));
-  }, [dispatch]);
+  }
+}, [dispatch, senderId, receiverId]);
+
+
+ console.log("id", senderId , receiverId)
+
+  
+    useEffect(() => {
+      const userDetailsFromStorage = localStorage.getItem("ai-teacha-user");
+  
+      if (userDetailsFromStorage) {
+        const parsedDetails = JSON.parse(userDetailsFromStorage);
+        setUserDetails(parsedDetails);
+        setSenderId(parsedDetails.id);
+      }
+  
+    }, []);
+  
 
   useEffect(() => {
     if (message && Array.isArray(message)) {
@@ -102,8 +131,8 @@ const SideChatPopup: React.FC<SideChatPopupProps> = ({ isOpen, onClose }) => {
     if (!input.trim()) return;
 
     const messageData = {
-      sender_id: payload.senderId,
-      receiver_id: payload.receiverId,
+      sender_id: senderId,
+      receiver_id: receiverId,
       content: input.trim(),
       mark_as_read: false,
     };
@@ -192,11 +221,12 @@ const SideChatPopup: React.FC<SideChatPopupProps> = ({ isOpen, onClose }) => {
         />
         <button
           onClick={handleSend}
-          className="bg-[#5c3cbb] text-white px-4 py-2 rounded-lg hover:bg-purple-700"
+          className="border-r-light-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
         >
           Send
         </button>
       </div>
+      
     </div>
   );
 };

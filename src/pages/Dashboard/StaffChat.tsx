@@ -352,7 +352,7 @@ if (
       <CreateTopicDialog ref={dialogRef} onCreate={handleCreate} loading={loading}   categories={categories} />
       {
         showSideChat && (
-          <SideChatPopup isOpen={showSideChat} onClose={() => setShowSideChat(false)} />
+          <SideChatPopup isOpen={showSideChat} onClose={() => setShowSideChat(false)} id={"22"} />
         )
       }
     </div>
