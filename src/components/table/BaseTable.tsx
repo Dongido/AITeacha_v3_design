@@ -81,7 +81,7 @@ export default function BaseTable({
 
   return (
     <>
-      <Table className="overflow-auto">
+      <Table className="">
         <TableHeader className="bg-white">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id} className="px-12">

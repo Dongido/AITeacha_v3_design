@@ -1,31 +1,23 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useAppSelector, useAppDispatch } from "../../store/hooks";
 
-import {
-  loadResources,
-  shareResourceThunk,
-} from "../../store/slices/teamResourcesSlice";
-import { RootState } from "../../store";
-import ShareResourceDialog from "./_components/ShareResourceDialog";
-import { Button } from "../../components/ui/Button";
-import BaseTable from "../../components/table/BaseTable";
-import { sharedResourceColumns } from "./_components/column.sharedresource";
-import { Skeleton } from "../../components/ui/Skeleton";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import GeneralRestrictedPage from "./_components/GeneralRestrictedPage";
 import { Link } from "react-router-dom";
 import { CalendarDays, Plus, UserRound } from "lucide-react";
-import CreateTopicDialog from "./_components/Topicdialog";
-import { createStaffTopic, getAllStaffTopics } from "../../store/slices/staffchats";
-import RestrictedPage from "./classrooms/RestrictionPage";
 import { Undo2 } from "lucide-react";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { RootState } from "../../../store";
+import { createStaffTopic, getAllStaffTopics } from "../../../store/slices/staffchats";
+import RestrictedPage from "../classrooms/RestrictionPage";
+import { Button } from "../../../components/ui/Button";
+import { Skeleton } from "../../../components/ui/Skeleton";
+import CreateTopicDialog from "../_components/Topicdialog";
 
 
 
 
 
 
-const StaffChat = () => {
+const StudentClass = () => {
    const { id } = useParams<{id:string}>()
   //  console.log("id", id)
     
@@ -79,9 +71,6 @@ const StaffChat = () => {
       },
     ];
 
-
-
-
     setTimeout(() => {
       setUserTopics(dummyTopics);
     }, 1000);
@@ -97,23 +86,23 @@ const StaffChat = () => {
     shareDialogRef.current.openDialog();
   };
 
-  // categories
-     const categories = [
-      "General Discussions",
-      "Exam Timetables",
-      "Events & Activities",
-      "Public Holidays",
-      "Results & Reports",
-      "School Fees",
-      "Discipline & Conduct",
-      "Academic Calendar",
+  //  categotries
+    const categories = [
+    "Class Discussions",
+    "Assignments & Homework",
+    "Exams & Test Prep",
+    "School Events",
+    "Clubs & Societies",
+    "Fees & Payments",
+    "Academic Calendar",
+    "Student Welfare",
     ];
 
    const handleCreate = async (
       topic: string,
       category: string,
       description: string,
-      thumbnail?: File | null,
+      thumbnail?: File | null
    ) => {
 
    const result = await dispatch(createStaffTopic({
@@ -121,11 +110,11 @@ const StaffChat = () => {
       topic,
       description,
       thumbnail,
-      content_from:"staff chat",
-      classroom_id:"",
-      team_host_id:id
+      content_from:"student chat",
+      classroom_id:id,
+    team_host_id:"",
    }));
-  //  console.log(result, "result")
+//    console.log(result, "result")
 
     if (result) {
       dispatch(getAllStaffTopics( id as string));
@@ -312,7 +301,7 @@ if (
 
       <div className="flex-1">
       {/* Topic title */}
-      <Link to={`/dashboard/teacherChats/${topicItem.id}`}>
+      <Link to={`/student/Studentchat/${topicItem.id}`}>
         <h3 className="text-lg sm:text-xl font-semibold text-purple-800 hover:underline cursor-pointer">
       {topicItem.topic.charAt(0).toUpperCase() + topicItem.topic.slice(1)}
         </h3>
@@ -343,9 +332,9 @@ if (
       )}
       </div> 
       </div>
-      <CreateTopicDialog ref={dialogRef} onCreate={handleCreate} loading={loading}   categories={categories} />
+      <CreateTopicDialog ref={dialogRef} onCreate={handleCreate} loading={loading} categories={categories} />
     </div>
   );
 };
 
-export default StaffChat;
+export default StudentClass;

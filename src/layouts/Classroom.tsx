@@ -57,7 +57,7 @@ export function ClassroomDashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F1F1F1] flex">
+    <div className="min-h-screen bg-[#F1F1F1] flex routes-scroll-area">
       {/* Sidenav with manually parsed outlines/tools */}
       <Sidenav
         brandName="AiTeacha"
@@ -67,7 +67,7 @@ export function ClassroomDashboard() {
       />
 
       <div
-        className={`flex-1 transition-all duration-300 ${
+        className={`flex-1 transition-all duration-300 routes-scroll-area ${
           isCollapsed ? "ml-28" : "ml-72"
         }`}
       >

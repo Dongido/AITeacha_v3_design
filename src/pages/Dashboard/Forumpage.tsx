@@ -192,7 +192,7 @@ return (
       )}
 
       {!loading && users?.length === 0 && (
-        <p className="text-center text-gray-500">No premium users found.</p>
+        <p className="text-center text-gray-500 ">No premium users found.</p>
       )}
     </div>
   );

@@ -109,6 +109,7 @@ import StaffChat from "../pages/Dashboard/StaffChat";
 import UserProfilePage from "../pages/Dashboard/UserProfilePage";
 import GroupChatForm from "../pages/Dashboard/GroupChatForm";
 import Forumpage from "../pages/Dashboard/Forumpage";
+import StudentClass from "../pages/Dashboard/student/StudentChat";
 import JitsiStudentMeeting from "../pages/Dashboard/student/JitsiMeeting";
 
 const icon = {
@@ -758,6 +759,18 @@ export const StudentParamroutes = [
         path: "/verify-email",
         element: <VerifyEmail />,
       },
+       {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "chat",
+        path: "/Studentforum/:id",
+        element: <StudentClass />,
+      },
+      {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "chat",
+        path: "/Studentchat/:id",
+        element: <GroupChatForm />,
+      },
       {
         icon: <AcademicCapIcon {...icon} />,
         name: "meeting",
@@ -768,7 +781,7 @@ export const StudentParamroutes = [
         icon: <DocumentTextIcon {...icon} />,
         name: "profile",
         path: "/user-profile/:id",
-        element: <UserProfilePage />,
+        element: <UserProfilePage />
       },
     ],
   },

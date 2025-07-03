@@ -1,11 +1,14 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { CreateStaffTopic, getAllStaffTopic, getforumConversationByforumId, getforumConversationById, getpremiumUser, getUserRoles, Topics  } from "../../api/staffchat";
+import { CreateStaffTopic, getAllStaffTopic, getforumConversationByforumId, getforumConversationById, getpremiumUser, getUserRoles, Topics, ZyraChat, ZyraType  } from "../../api/staffchat";
 
 export type CreateTopicPayload = {
   category: string;
   topic: string;
   description: string,
-  thumbnail?: File | null
+  thumbnail?: File | null,
+  content_from:string,
+  classroom_id?:string,
+  team_host_id?:string,
 };
 
 export type PremiumUsertype = {
@@ -27,6 +30,8 @@ interface StaffTopicState {
   error: string | null;
   checkuser:PremiumUsertype[]
   userRole:any | null
+  zyrachat:string | null
+  zaraloding:boolean
 }
 
 const initialState: StaffTopicState = {
@@ -36,7 +41,9 @@ const initialState: StaffTopicState = {
   loading: false,
   error: null,
   checkuser: [],
-  userRole:null
+  userRole:null,
+  zyrachat:null,
+  zaraloding:false
 };
 
 // 🔁 GET all topics
@@ -121,6 +128,16 @@ export const getUserRole = createAsyncThunk("staffTopic/getuserrole", async(id: 
   }
 });
 
+ export const createZyraChat = createAsyncThunk("staffTopic/createzyra", async(payload:ZyraType, {rejectWithValue}) => {
+  try {
+    const  response = await  ZyraChat(payload) 
+    return response
+  } catch (error:any) {
+    
+    return rejectWithValue(error.message || "failed to get create zyra chat");
+  }
+ })
+
 
  
 
@@ -133,7 +150,11 @@ export const getUserRole = createAsyncThunk("staffTopic/getuserrole", async(id: 
 export const staffTopicSlice = createSlice({
   name: "staffTopic",
   initialState,
-  reducers: {},
+  reducers: {
+  resetZyraChat(state) {
+ state.zyrachat = null;
+  }
+  },
   extraReducers: (builder) => {
     builder
       // Handle GET
@@ -208,6 +229,20 @@ export const staffTopicSlice = createSlice({
       state.error = action.payload as string
     })
 
+    // create zyra chat 
+    .addCase(createZyraChat.pending, (state) => {
+      state.zaraloding = true
+      state.error = null
+    })
+    .addCase(createZyraChat.fulfilled, (state, action) => {
+      state.zaraloding = false
+      state.zyrachat = action.payload
+    })
+    .addCase(createZyraChat.rejected, (state, action) => {
+      state.zaraloding = false
+      state.error = action.payload as string
+    })
+
     // Handle CREATE
     .addCase(createStaffTopic.pending, (state) => {
       state.loading = true;
@@ -228,3 +263,5 @@ export const staffTopicSlice = createSlice({
 });
 
 export default staffTopicSlice.reducer;
+export const { resetZyraChat } = staffTopicSlice.actions;
+
