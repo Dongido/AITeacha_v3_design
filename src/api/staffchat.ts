@@ -8,6 +8,10 @@ type CreateTopicPayload = {
   classroom_id?:string,
   team_host_id?:string,
 };
+ export interface getZaraChats {
+  senderId:number,
+  receiverId:number
+ }
 
 interface Topic {
   category: string;
@@ -23,6 +27,16 @@ interface Topic {
   reply?:string,
   question:string
  }
+
+ export interface Message {
+  id: number;
+  sender_id: number;
+  receiver_id: number;
+  content: string;
+  mark_as_read: number; 
+  created_at:string
+}
+
 
 
  export interface Topics {
@@ -179,14 +193,32 @@ export const getpremiumUser = async (): Promise<PremiumUsertype[]> => {
     if(response.status !== 200){
         throw new Error("Failed to get user role")
     }
-    console.log("response", response)
+    // console.log("response", response)
       return response.data.data;
   } catch (error) {
      throw new Error("failed to get user role") 
   }
  }
 
+export const getMessage = async(paylod:getZaraChats):Promise<Message[]> => {
+  try {
+    const response = await apiClient.get<{
+      status: string;
+      message: string;
+      data: Message[];
+    }>(`chat/get/retrieveMessage/${paylod.senderId}/${paylod.receiverId}`);
 
+    if (response.status !== 200) {
+      throw new Error("Failed to get chat");
+    }
+
+    console.log("response", response);
+    return response.data.data;
+  } catch (error: any) {
+    console.error("❌ Error fetching messages:", error?.response?.data || error.message);
+    throw new Error(error?.response?.data?.message || "Failed to fetch messages");
+  }
+};
 
 
 

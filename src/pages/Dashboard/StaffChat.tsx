@@ -19,6 +19,7 @@ import CreateTopicDialog from "./_components/Topicdialog";
 import { createStaffTopic, getAllStaffTopics } from "../../store/slices/staffchats";
 import RestrictedPage from "./classrooms/RestrictionPage";
 import { Undo2 } from "lucide-react";
+import SideChatPopup from "./forum/SideChatPopup";
 
 
 
@@ -34,6 +35,7 @@ const StaffChat = () => {
   const [email, setEmail] = useState<string>("");
   const [userDetails, setUserDetails] = useState<any>(null);
   const [isEmailVerified, setIsEmailVerified] = useState<number>(0);
+  const [showSideChat, setShowSideChat] = useState(false);
   const [userTopics, setUserTopics] = useState<any[]>([]);
    const dialogRef = useRef<{ openDialog: () => void }>(null);
   const { topics, loading, error } = useAppSelector(
@@ -305,7 +307,9 @@ if (
       >
       <div className="flex items-start gap-3">
       {/* Circle with first letter */}
-      <div className="w-10 h-10 rounded-full bg-purple-100 flex 
+      <div
+      onClick={() => setShowSideChat(true)}
+       className="w-10 h-10 rounded-full bg-purple-100 flex 
       items-center justify-center text-purple-700 font-bold text-lg">
         {topicItem.topic.charAt(0).toUpperCase()}
       </div>
@@ -313,14 +317,16 @@ if (
       <div className="flex-1">
       {/* Topic title */}
       <Link to={`/dashboard/teacherChats/${topicItem.id}`}>
-        <h3 className="text-lg sm:text-xl font-semibold text-purple-800 hover:underline cursor-pointer">
+        <h3 className="text-lg sm:text-xl font-semibold  text-purple-800 hover:underline cursor-pointer">
       {topicItem.topic.charAt(0).toUpperCase() + topicItem.topic.slice(1)}
         </h3>
       </Link>
 
       {/* Author name */}
       {(topicItem.firstname || topicItem.lastname) && (
-        <p className="text-sm text-purple-700 mt-1">
+        <p
+        onClick={() => setShowSideChat(true)}
+         className="text-sm text-purple-700 mt-1 cursor-pointer">
           By {topicItem.firstname} {topicItem.lastname}
         </p>
       )}
@@ -344,6 +350,11 @@ if (
       </div> 
       </div>
       <CreateTopicDialog ref={dialogRef} onCreate={handleCreate} loading={loading}   categories={categories} />
+      {
+        showSideChat && (
+          <SideChatPopup isOpen={showSideChat} onClose={() => setShowSideChat(false)} />
+        )
+      }
     </div>
   );
 };

@@ -63,6 +63,7 @@ const Forumcomments: React.FC<Props> = ({
 }) => {
   const [visibleReplies, setVisibleReplies] = useState<{ [key: string]: boolean }>({});
   const [pinnedId, setPinnedId] = useState<string | null>(null);
+   
 
   const toggleReplies = (parentId: string) => {
     setVisibleReplies((prev) => ({
@@ -83,6 +84,8 @@ const Forumcomments: React.FC<Props> = ({
     .filter((msg) => !msg.parent_id)
     .slice(0, visibleMessageCount);
 
+
+
   const togglePin = (id: string) => {
     setPinnedId((prevId) => (prevId === id ? null : id));
   };
@@ -90,6 +93,9 @@ const Forumcomments: React.FC<Props> = ({
   const ReplyItem = ({ reply }: { reply: Message }) => {
     const children = getReplies(reply.id);
     const showZyraResponse = isZyraLoading || reply.zyraResponse;
+    const isLoading = !!reply.isZyraLoading && !reply.zyraResponse;
+
+
 
     return (
       <div className="ml-6 mt-2 p-2 bg-purple-50 border-l-4 border-purple-200 rounded-md lg:max-w-[450px] w-[90%]">
@@ -105,20 +111,19 @@ const Forumcomments: React.FC<Props> = ({
           </div>
         </div>
         <p className="text-gray-700 text-sm">{reply.text}</p>
-       {/* <ZyraResponse isLoading={reply.isZyraLoading || false} response={reply.zyraResponse || null} /> */}
 
-
-        <div className="mt-2 flex gap-3 text-xs text-purple-600">
-          <button onClick={() => onReply(reply)} className="hover:underline">Reply</button>
-          <button onClick={() => handleCopy(reply.text)} className="flex items-center gap-1 hover:underline">
-            <FiCopy /> Copy
+         <div className="mt-2 flex gap-3 text-xs text-purple-600">
+        <button onClick={() => onReply(reply)} className="hover:underline">Reply</button>
+        <button onClick={() => handleCopy(reply.text)} className="flex items-center gap-1 hover:underline">
+          <FiCopy /> Copy
+        </button>
+    
+        { children.length > 0 && (
+          <button onClick={() => toggleReplies(reply.id)} className="hover:underline">
+            {visibleReplies[reply.id] ? "Hide Replies" : "View Replies"}
           </button>
-          {children.length > 0 && (
-            <button onClick={() => toggleReplies(reply.id)} className="hover:underline">
-              {visibleReplies[reply.id] ? "Hide Replies" : "View Replies"}
-            </button>
-          )}
-        </div>
+        )}
+      </div>
 
 
         {/* Render nested replies */}
@@ -209,14 +214,17 @@ const Forumcomments: React.FC<Props> = ({
                     )}
                   </button>
                 )}
-                {getReplies(msg.id).length > 0 && (
-                  <button
-                    onClick={() => toggleReplies(msg.id)}
-                    className="hover:underline"
-                  >
-                    {visibleReplies[msg.id] ? "Hide Replies" : "View Replies"}
-                  </button>
-                )}
+               {msg.isZyraLoading ? (
+                <span className="text-purple-600 text-xs animate-pulse">Loading reply...</span>
+              ) : getReplies(msg.id).length > 0 && (
+                <button
+                  onClick={() => toggleReplies(msg.id)}
+                  className="hover:underline"
+                >
+                  {visibleReplies[msg.id] ? "Hide Replies" : "View Replies"}
+                </button>
+              )}
+
               </div>
             </div>
             {/* Replies */}

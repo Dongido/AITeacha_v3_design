@@ -1,5 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { CreateStaffTopic, getAllStaffTopic, getforumConversationByforumId, getforumConversationById, getpremiumUser, getUserRoles, Topics, ZyraChat, ZyraType  } from "../../api/staffchat";
+import { CreateStaffTopic, getAllStaffTopic, getforumConversationByforumId, 
+  getforumConversationById, getMessage, getpremiumUser, getUserRoles, getZaraChats,  Message, Topics, ZyraChat, ZyraType  } from "../../api/staffchat";
+
 
 export type CreateTopicPayload = {
   category: string;
@@ -32,6 +34,7 @@ interface StaffTopicState {
   userRole:any | null
   zyrachat:string | null
   zaraloding:boolean
+  message:Message[] 
 }
 
 const initialState: StaffTopicState = {
@@ -43,7 +46,8 @@ const initialState: StaffTopicState = {
   checkuser: [],
   userRole:null,
   zyrachat:null,
-  zaraloding:false
+  zaraloding:false,
+  message: []
 };
 
 // 🔁 GET all topics
@@ -138,6 +142,17 @@ export const getUserRole = createAsyncThunk("staffTopic/getuserrole", async(id: 
   }
  })
 
+//  get  chat
+  export const getMessages = createAsyncThunk("staffTopic/getmessage" , async(payload:getZaraChats, {rejectWithValue}) => {
+    try {
+      const response = await getMessage(payload)
+      return response
+    } catch (error:any) {
+       return rejectWithValue(error.message || "failed to get chat");  
+    }
+
+  })
+
 
  
 
@@ -152,7 +167,10 @@ export const staffTopicSlice = createSlice({
   initialState,
   reducers: {
   resetZyraChat(state) {
- state.zyrachat = null;
+  state.zyrachat = null
+  },
+  resetConversation(state){
+   state.conversation = [] 
   }
   },
   extraReducers: (builder) => {
@@ -243,6 +261,20 @@ export const staffTopicSlice = createSlice({
       state.error = action.payload as string
     })
 
+    // get all message 
+    .addCase(getMessages.pending , (state) =>{
+      state.loading = true
+      state.error = null
+    })
+    .addCase(getMessages.fulfilled, (state, action) => {
+      state.loading = false
+      state.message = action.payload
+    })
+    .addCase(getMessages.rejected , (state, action) => {
+      state.loading = false
+      state.error = action.payload as string
+    })
+
     // Handle CREATE
     .addCase(createStaffTopic.pending, (state) => {
       state.loading = true;
@@ -263,5 +295,5 @@ export const staffTopicSlice = createSlice({
 });
 
 export default staffTopicSlice.reducer;
-export const { resetZyraChat } = staffTopicSlice.actions;
+export const { resetZyraChat , resetConversation } = staffTopicSlice.actions;
 
