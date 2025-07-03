@@ -76,7 +76,7 @@ export function Sidenav({
   return (
     <aside
       ref={sidenavRef}
-      className={`${sidenavTypes[sidenavType]} ${
+      className={` routes-scroll-area ${sidenavTypes[sidenavType]} ${
         openSidenav ? "translate-x-0" : "-translate-x-80"
       } fixed inset-0 z-50 h-[calc(100vh)] ${
         isCollapsed ? "w-28" : "w-72"
