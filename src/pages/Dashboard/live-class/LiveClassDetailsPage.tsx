@@ -192,7 +192,7 @@ const LiveClassDetailsPage: React.FC = () => {
     : "N/A";
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100 py-10 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen  py-10 px-0 md:px-2 lg:px-4">
       <div className="max-w-7xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
         <div className="relative p-6 sm:p-10 bg-gradient-to-r from-purple-700 to-indigo-700 text-white">
           <div className="flex items-center space-x-6">
@@ -200,18 +200,18 @@ const LiveClassDetailsPage: React.FC = () => {
               {loading ? (
                 <Skeleton className="w-full h-full rounded-full" />
               ) : (
-                <AcademicCapIcon className="w-12 h-12 sm:w-16 sm:h-16 text-white" />
+                <AcademicCapIcon className="w-12 h-12 md:w-16 md:h-16 lg:w-16 lg:h-16 text-white" />
               )}
             </div>
             <div>
-              <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
+              <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold md:font-extrabold lg:font-extrabold tracking-tight">
                 {loading ? (
                   <Skeleton className="w-72 h-10" />
                 ) : (
                   meeting?.title || meeting?.classroom_name
                 )}
               </h1>
-              <p className="mt-2 text-indigo-200 text-lg">
+              <p className="mt-2 text-gray-200 text-lg">
                 {loading ? (
                   <Skeleton className="w-60 h-6 mt-1" />
                 ) : meeting?.title?.split(" ")[0] ? (
@@ -247,11 +247,11 @@ const LiveClassDetailsPage: React.FC = () => {
 
         <div className="p-6 sm:p-10">
           {" "}
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">
+          <h2 className="text-xl md:text-2xl lg:text-2xl font-bold text-gray-800 mb-6">
             Class Overview
           </h2>
-          <div className="bg-white rounded-lg p-6 shadow-md border border-gray-200 mb-6">
-            <h3 className="text-xl font-semibold text-gray-700 mb-4 flex items-center">
+          <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200 mb-6">
+            <h3 className="text-lg md:text-xl lg:text-xl font-semibold text-gray-700 mb-4 flex items-center">
               <ChatBubbleBottomCenterTextIcon className="w-6 h-6 mr-3 text-purple-600" />
               Description
             </h3>
@@ -304,7 +304,7 @@ const LiveClassDetailsPage: React.FC = () => {
             <Button
               onClick={handleStartMeeting}
               disabled={loading}
-              className="bg-primary text-white font-bold py-3 px-8 rounded-lg shadow-lg "
+              className="bg-primary text-white font-bold py-3 px-8 rounded-full shadow-lg "
             >
               Start Meeting
             </Button>
@@ -320,7 +320,7 @@ const LiveClassDetailsPage: React.FC = () => {
               <div className="mb-6">
                 {" "}
                 <h3 className="text-xl font-semibold text-gray-700 mb-4 flex items-center">
-                  Transcripts
+                  Lesson Note
                 </h3>
                 {transcriptsLoading ? (
                   <Skeleton className="w-full h-48" />

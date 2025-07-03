@@ -1,8 +1,7 @@
 import { createColumnHelper } from "@tanstack/react-table";
 import Header from "../../../../components/table/TableHeaderItem";
 import Actions from "../../../../components/table/TableActions";
-import { StatusType } from "../../../../lib/constants";
-import Status from "../../_components/Status";
+import { Link } from "react-router-dom";
 import { Student } from "../../../../api/interface";
 import { useNavigate } from "react-router-dom";
 import { useRef } from "react";
@@ -41,9 +40,17 @@ export const studentColumns = (
     id: "full_name",
     header: ({ column }) => <Header title="Full Name" column={column} />,
     sortingFn: "text",
-    cell: (info) => (
-      <span className="capitalize whitespace-nowrap">{info.getValue()}</span>
-    ),
+    cell: (info) => {
+      const studentId = info.row.original.student_id;
+      return (
+        <Link
+          to={`/dashboard/user-profile/${studentId}`}
+          className="text-primary hover:underline capitalize whitespace-nowrap"
+        >
+          {info.getValue()}
+        </Link>
+      );
+    },
   }),
   studentColumnHelper.accessor("submission_status", {
     header: ({ column }) => (

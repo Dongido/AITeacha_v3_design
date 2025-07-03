@@ -415,7 +415,7 @@ const TranscriptDetailsPage: React.FC = () => {
   const cleanedTranscriptContent = transcript?.content || "N/A";
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100 py-10 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen  py-10 px-0 md:px-2 lg:px-4">
       <div className="max-w-7xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
         <div className="relative p-6 sm:p-10 bg-gradient-to-r from-purple-700 to-indigo-700 text-white">
           <div className="flex items-center space-x-6">
@@ -427,7 +427,7 @@ const TranscriptDetailsPage: React.FC = () => {
               )}
             </div>
             <div>
-              <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
+              <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold md:font-extrabold lg:font-extrabold tracking-tight">
                 {isLoading ? (
                   <Skeleton className="w-72 h-10" />
                 ) : (
@@ -467,10 +467,10 @@ const TranscriptDetailsPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="p-6 sm:p-10">
+        <div className="p-2 md:p-10 lg:p-10">
           <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
             <DocumentTextIcon className="w-7 h-7 mr-3 text-purple-600" />
-            Full Transcript Content (ID: {transcriptId || "N/A"})
+            Full Transcript Content
           </h2>
           <div className="bg-white rounded-lg p-6 shadow-md border border-gray-200 mb-6">
             {loadingTranscript ? (
@@ -515,9 +515,8 @@ const TranscriptDetailsPage: React.FC = () => {
               )}
             </div>
           </div>
-          <hr className="my-8 border-gray-200" />{" "}
-          {/* Added a horizontal rule for separation */}
-          <div className="bg-white rounded-lg p-6 shadow-md border border-gray-200 mt-6">
+          <hr className="my-8 border-gray-200" />
+          <div className="bg-white rounded-lg p-2 lg:p-6 md:p-6 shadow-md border border-gray-200 mt-6">
             <h3 className="text-xl font-semibold text-gray-700 mb-4 flex items-center">
               <LightBulbIcon className="w-6 h-6 mr-3 text-yellow-600" />
               Assessment
@@ -556,7 +555,7 @@ const TranscriptDetailsPage: React.FC = () => {
                 {suggestedAssessment.map((q, qIndex) => (
                   <div
                     key={qIndex}
-                    className="mb-6 p-4 border border-gray-200 rounded-md bg-gray-50"
+                    className="mb-6 p-2 md:p-4 lg:p-4 border border-gray-200 rounded-md bg-gray-50"
                   >
                     <div className="mb-3">
                       <Label

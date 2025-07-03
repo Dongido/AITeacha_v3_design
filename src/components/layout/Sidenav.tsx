@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import {
   XMarkIcon,
@@ -14,10 +14,17 @@ import {
 import { Button } from "../ui/Button";
 import Text from "../ui/Text";
 import brandImg from "../../logo.png";
-import { setOpenConfigurator } from "../../context/index";
+import {
+  Toast,
+  ToastTitle,
+  ToastDescription,
+  ToastProvider,
+  ToastViewport,
+} from "../ui/Toast";
 import { useDispatch, useSelector } from "react-redux";
 import { loadUserProfile, selectUser } from "../../store/slices/profileSlice";
 import { AppDispatch } from "../../store";
+
 interface RoutePage {
   icon: React.ReactNode;
   name: string;
@@ -47,6 +54,8 @@ export function Sidenav({
   onToggle,
 }: SidenavProps) {
   const { controller, dispatch } = useMaterialTailwindController();
+  const [toastVisible, setToastVisible] = useState<boolean>(false);
+  const [toastMessage, setToastMessage] = useState<string>("");
   const { sidenavColor, sidenavType, openSidenav } = controller as {
     sidenavColor: string;
     sidenavType: SidenavType;
@@ -94,6 +103,16 @@ export function Sidenav({
     }
   };
 
+  const handleRefreshProfile = async () => {
+    try {
+      await appdispatch(loadUserProfile()).unwrap();
+      setToastMessage("Profile refreshed successfully!");
+    } catch (err) {
+      setToastMessage("Failed to refresh profile: " + err);
+    } finally {
+      setToastVisible(true);
+    }
+  };
   return (
     <aside
       ref={sidenavRef}
@@ -303,14 +322,16 @@ export function Sidenav({
             Current Plan: {userDetails.package}
           </Button>
           <Button
-            variant="black"
-            color={sidenavColor}
-            onClick={() => setOpenConfigurator(dispatch, true)}
+            variant="outlined"
+            onClick={handleRefreshProfile}
             aria-label="Open configurator"
-            className="w-full rounded-full flex items-center justify-center gap-2"
+            className="bg-purple-100 font-bold justify-center gap-2 w-full rounded-full"
           >
-            <Cog6ToothIcon className="h-5 w-5" />
-            <span>Account Settings</span>
+            {loading ? (
+              <span>Refreshing...</span>
+            ) : (
+              <span>Refresh Profile</span>
+            )}
           </Button>
         </div>
       )}

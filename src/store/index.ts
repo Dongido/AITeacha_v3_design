@@ -21,6 +21,9 @@ import studentTestsReducer from "./slices/studentTestsSlice";
 import schoolStudentReducer from "./slices/schoolStudentSlice";
 import staffChatSlice from "./slices/staffchats";
 import uiReducer from "./slices/uiSlice";
+import adminWithdrawalsReducer from "./slices/adminWithdrawalSlice";
+import adminUserReducer from "./slices/adminUserSlice";
+
 const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -45,6 +48,8 @@ const store = configureStore({
     schoolStudent: schoolStudentReducer,
     staffChats: staffChatSlice,
     ui: uiReducer,
+    adminWithdrawals: adminWithdrawalsReducer,
+    adminUser: adminUserReducer,
   },
 });
 

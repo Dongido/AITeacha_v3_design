@@ -38,6 +38,7 @@ const TRANSCRIPT_API_URL =
   "https://vd.aiteacha.com/api/live/class/add/transcript";
 const TRANSCRIBE_API_ENDPOINT =
   "https://vd.aiteacha.com/api/live/class/meeting/transcriber";
+// "https://vd.aiteacha.com/api/live/class/meeting/transcriber";
 const JitsiMeetingPage = () => {
   const navigate = useNavigate();
   const { meetingId } = useParams<{ meetingId: string }>();
@@ -345,9 +346,9 @@ const JitsiMeetingPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-0 lg:p-4 md:p-4">
       <div className="flex flex-col md:flex-row items-center md:justify-between w-full max-w-4xl mb-6">
-        <h1 className="text-2xl md:text-3xl lg:text-3xl font-bold text-gray-800 mb-4 md:mb-0">
+        <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-800 mb-4 md:mb-0">
           {jitsiRoomName} Liveclass
         </h1>
         <Button
@@ -418,14 +419,18 @@ const JitsiMeetingPage = () => {
 
       <div className="mt-4 p-3 rounded-lg text-sm font-medium">
         <p className="text-gray-700">
-          Speech Recording Status:{" "}
-          {isRecording ? <p>🔴 Recording...</p> : <p>Not recording</p>}
+          Speech Recording Status:
+          {isRecording ? (
+            <span> 🔴 Recording...</span>
+          ) : (
+            <span> Not recording</span>
+          )}
         </p>
       </div>
 
       {copySuccess && (
         <motion.div
-          className="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-purple-300 text-white py-2 px-4 rounded-md shadow-lg z-50"
+          className="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-purple-600 text-white py-2 px-4 rounded-md shadow-lg z-50"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 20 }}

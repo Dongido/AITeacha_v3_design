@@ -81,10 +81,15 @@ export function Configurator() {
   }, [openConfigurator, contextDispatch]);
 
   const getUpgradeText = (): string => {
-    if (userDetails?.package === "AiTeacha Pro") {
+    if (userDetails?.package === "AI Teacha Enterprise") {
+      return "You're all set with AI Teacha Enterprise.";
+    } else if (userDetails?.package === "AI Teacha Pro") {
       return "Upgrade to Premium";
+    } else if (userDetails?.package === "AI Teacha Premium") {
+      return "You're all set with AI Teacha Premium.";
+    } else {
+      return "Upgrade to Pro";
     }
-    return "Upgrade to Pro";
   };
 
   const upgradeText = getUpgradeText();
@@ -139,15 +144,16 @@ export function Configurator() {
           </Button>
         </Link>
 
-        {userDetails?.role !== 3 && (
-          <Link to={"/dashboard/wallet"}>
-            <Button className="w-full hover:bg-gray-100 transition duration-300">
-              Wallet Settings
-            </Button>
-          </Link>
-        )}
+        {userDetails?.role !== 3 ||
+          (userDetails?.role_id !== 3 && (
+            <Link to={"/dashboard/wallet"}>
+              <Button className="w-full hover:bg-gray-100 transition duration-300">
+                Wallet Settings
+              </Button>
+            </Link>
+          ))}
 
-        {upgradeText && (
+        {userDetails && userDetails.role_id !== 3 && (
           <Link to={upgradeLink}>
             <Button className="flex hover:bg-pink-200 items-center bg-pink-100 text-black font-semibold py-2 px-4 rounded-md text-sm w-full">
               {upgradeText}

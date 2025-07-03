@@ -21,7 +21,7 @@ import { FiEdit } from "react-icons/fi";
 import { generateReferralCode } from "../../api/profile";
 import { TextArea } from "../../components/ui/TextArea";
 import ChangePasswordDialog from "../../components/layout/ChangePasswordDialog";
-
+import Withdrawals from "./_components/Withdrawals";
 const Profile: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { user, loading, error, updateNameLoading, updatePhotoLoading } =
@@ -164,33 +164,26 @@ const Profile: React.FC = () => {
               <button
                 className={`px-4 py-2 rounded-t-lg mr-2 ${
                   activeTab === "profile"
-                    ? "bg-gray-200"
+                    ? "bg-purple-50"
                     : "bg-gray-100 hover:bg-gray-200"
                 }`}
                 onClick={() => setActiveTab("profile")}
               >
                 Profile Details
               </button>
-              {userDetails.role !== 3 && (
-                <button
-                  className={`px-4 py-2 rounded-t-lg ${
-                    activeTab === "wallet"
-                      ? "bg-gray-200"
-                      : "bg-gray-100 hover:bg-gray-200"
-                  }`}
-                  onClick={() => setActiveTab("wallet")}
-                >
-                  Wallet Details
-                </button>
-              )}
-
-              <Button
-                onClick={handleRefreshProfile}
-                variant={"outline"}
-                className="bg-purple-50 font-bold py-2 px-4 mx-4 rounded"
-              >
-                Refresh Profile
-              </Button>
+              {userDetails.role !== 3 ||
+                (userDetails.role_id !== 3 && (
+                  <button
+                    className={`px-4 py-2 rounded-t-lg ${
+                      activeTab === "wallet"
+                        ? "bg-purple-50"
+                        : "bg-gray-100 hover:bg-gray-200"
+                    }`}
+                    onClick={() => setActiveTab("wallet")}
+                  >
+                    Wallet Details
+                  </button>
+                ))}
             </div>
 
             {activeTab === "profile" && (
@@ -363,14 +356,14 @@ const Profile: React.FC = () => {
                     </div>
                     <hr className="my-6 border-t border-gray-300" />
 
-                  <div className="flex justify-end">
-                  <button
-                    className="bg-primary text-white py-2 px-4 rounded-md"
-                      onClick={() => passwordDialogRef.current?.openDialog()}
-                  >
-                    Change Password
-                  </button>
-                  </div>
+                    <div className="flex justify-end">
+                      <button
+                        className="bg-primary text-white py-2 px-4 rounded-md"
+                        onClick={() => passwordDialogRef.current?.openDialog()}
+                      >
+                        Change Password
+                      </button>
+                    </div>
                   </div>
 
                   <div className="w-full h-72 lg:w-1/3 bg-gray-200 p-6 rounded-md shadow-sm">
@@ -418,42 +411,43 @@ const Profile: React.FC = () => {
             )}
 
             {activeTab === "wallet" && (
-              <div className="bg-white rounded-lg shadow-md p-4">
-                <h2 className="text-xl font-semibold mb-4">Wallet Balances</h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {/* USD Card */}
-                  <div className="bg-gray-100 p-4 rounded-lg shadow-sm flex items-center space-x-4">
-                    <div>
-                      <p className="font-semibold">USD Balance</p>
-                      <p className="text-lg">${user?.wallet_balance_usd}</p>
+              <div>
+                <div className="bg-white rounded-lg shadow-md p-4">
+                  <h2 className="text-xl font-semibold mb-4">
+                    Wallet Balances
+                  </h2>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="bg-gray-100 p-4 rounded-lg shadow-sm flex items-center space-x-4">
+                      <div>
+                        <p className="font-semibold">USD Balance</p>
+                        <p className="text-lg">${user?.wallet_balance_usd}</p>
+                      </div>
                     </div>
-                  </div>
 
-                  {/* NGN Card */}
-                  <div className="bg-gray-100 p-4 rounded-lg shadow-sm flex items-center space-x-4">
-                    <div>
-                      <p className="font-semibold">NGN Balance</p>
-                      <p className="text-lg">₦{user?.wallet_balance_ngn}</p>
+                    <div className="bg-gray-100 p-4 rounded-lg shadow-sm flex items-center space-x-4">
+                      <div>
+                        <p className="font-semibold">NGN Balance</p>
+                        <p className="text-lg">₦{user?.wallet_balance_ngn}</p>
+                      </div>
                     </div>
-                  </div>
 
-                  {/* GBP Card */}
-                  <div className="bg-gray-100 p-4 rounded-lg shadow-sm flex items-center space-x-4">
-                    <div>
-                      <p className="font-semibold">GBP Balance</p>
-                      <p className="text-lg">£{user?.wallet_balance_gbp}</p>
+                    <div className="bg-gray-100 p-4 rounded-lg shadow-sm flex items-center space-x-4">
+                      <div>
+                        <p className="font-semibold">GBP Balance</p>
+                        <p className="text-lg">£{user?.wallet_balance_gbp}</p>
+                      </div>
                     </div>
                   </div>
                 </div>
+                <Withdrawals />
               </div>
             )}
           </>
         )}
         <ChangePasswordDialog
-        ref={passwordDialogRef}
-        onChangePassword={async (current, newPass) => {
-        }}
-      />
+          ref={passwordDialogRef}
+          onChangePassword={async (current, newPass) => {}}
+        />
       </div>
 
       {toastVisible && (
