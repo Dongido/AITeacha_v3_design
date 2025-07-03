@@ -105,12 +105,10 @@ export const updateProfilePhotoThunk = createAsyncThunk(
   }
 );
 
-// Create the slice
 const profileSlice = createSlice({
   name: "profile",
   initialState,
   reducers: {
-    // Optional: Reset profile state
     resetProfileState: (state) => {
       state.user = null;
       state.loading = false;
@@ -121,7 +119,6 @@ const profileSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Load user profile
       .addCase(loadUserProfile.pending, (state) => {
         state.loading = true;
         state.error = null;

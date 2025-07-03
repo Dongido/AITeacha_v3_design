@@ -89,20 +89,14 @@ export const teamClassroomColumns = [
     sortingFn: "text",
     cell: (info) => <span>{info.getValue()}</span>,
   }),
-  classroomColumnHelper.accessor("firstname", {
-    header: ({ column }) => (
-      <Header title="Teacher First Name" column={column} />
-    ),
+  classroomColumnHelper.accessor((row) => `${row.firstname} ${row.lastname}`, {
+    id: "full_name",
+    header: ({ column }) => <Header title="Teacher FullName" column={column} />,
     sortingFn: "text",
+
     cell: (info) => <span>{info.getValue()}</span>,
   }),
-  classroomColumnHelper.accessor("lastname", {
-    header: ({ column }) => (
-      <Header title="Teacher Last Name" column={column} />
-    ),
-    sortingFn: "text",
-    cell: (info) => <span>{info.getValue()}</span>,
-  }),
+
   classroomColumnHelper.accessor("classroom_thumbnail", {
     header: ({ column }) => <Header title="Thumbnail" column={column} />,
     cell: (info) => {

@@ -110,7 +110,6 @@ const ClassroomDetail = () => {
             onClick={openDeleteDialog}
             className="flex items-center w-fit h-full gap-3 py-2 rounded-md"
           >
-            <DeleteIcon size={"1.1rem"} color="white" />
             Delete
           </Button>
         </div>
@@ -137,7 +136,7 @@ const ClassroomDetail = () => {
         </div>
       ) : (
         <div className=" border rounded-lg">
-          <div className="bg-[#5C3CBB] text-white p-8 rounded-lg overflow-hidden">
+          <div className="bg-[#5C3CBB] text-white p-4 lg:p-8 md:p-8 rounded-lg overflow-hidden">
             <div className="flex items-center justify-between mb-4">
               <p className="text-sm font-semibold">Classroom Details</p>
             </div>
@@ -157,7 +156,7 @@ const ClassroomDetail = () => {
 
             <div className="flex flex-col sm:flex-row items-center mt-4 justify-between gap-4 sm:gap-6 flex-wrap">
               <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-                <button
+                {/* <button
                   onClick={() =>
                     navigate(`/dashboard/liveclass/${classroom?.classroom_id}`)
                   }
@@ -165,7 +164,7 @@ const ClassroomDetail = () => {
                 >
                   Go to Live Class
                   <ArrowRightIcon className="h-5 w-5 ml-2" />
-                </button>
+                </button> */}
 
                 <button
                   onClick={() =>

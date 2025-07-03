@@ -3,6 +3,7 @@ import { createColumnHelper } from "@tanstack/react-table";
 import Header from "../../../components/table/TableHeaderItem";
 import Actions from "../../../components/table/TableActions";
 import DeleteTeamMemberDialog from "./DeleteTeamMemberDialog";
+import { Link } from "react-router-dom";
 import EditTeacherRoleDialog, {
   EditTeacherRoleDialogRef,
 } from "./EditTeacherRoleDialog";
@@ -24,22 +25,29 @@ export const teamColumns = [
     sortingFn: "text",
     cell: (info) => <span>{info.getValue()}</span>,
   }),
+
+  teamColumnHelper.accessor((row) => `${row.firstname} ${row.lastname}`, {
+    id: "full_name",
+    header: ({ column }) => <Header title="Full Name" column={column} />,
+    sortingFn: "text",
+    cell: (info) => {
+      const userId = info.row.original.user_id;
+      return (
+        <Link
+          to={`/dashboard/user-profile/${userId}`}
+          className="text-primary hover:underline capitalize whitespace-nowrap"
+        >
+          {info.getValue()}
+        </Link>
+      );
+    },
+  }),
   teamColumnHelper.accessor("email", {
     header: ({ column }) => <Header title="Email" column={column} />,
     sortingFn: "text",
     cell: (info) => (
       <span className="whitespace-nowrap">{info.getValue()}</span>
     ),
-  }),
-  teamColumnHelper.accessor("firstname", {
-    header: ({ column }) => <Header title="First Name" column={column} />,
-    sortingFn: "text",
-    cell: (info) => <span>{info.getValue()}</span>,
-  }),
-  teamColumnHelper.accessor("lastname", {
-    header: ({ column }) => <Header title="Last Name" column={column} />,
-    sortingFn: "text",
-    cell: (info) => <span>{info.getValue()}</span>,
   }),
   teamColumnHelper.accessor("member_role", {
     header: ({ column }) => <Header title="Role" column={column} />,

@@ -13,7 +13,8 @@ import {
   SpeechRecognitionResultList,
   SpeechRecognitionErrorEvent,
 } from "./interface";
-
+import { motion } from "framer-motion";
+import { Button } from "../../../components/ui/Button";
 export interface Meeting {
   id: number;
   user_id: number;
@@ -35,7 +36,9 @@ export interface Meeting {
 const JITSI_DOMAIN = "meet.aiteacha.com:8443";
 const TRANSCRIPT_API_URL =
   "https://vd.aiteacha.com/api/live/class/add/transcript";
-
+const TRANSCRIBE_API_ENDPOINT =
+  "https://vd.aiteacha.com/api/live/class/meeting/transcriber";
+// "https://vd.aiteacha.com/api/live/class/meeting/transcriber";
 const JitsiMeetingPage = () => {
   const navigate = useNavigate();
   const { meetingId } = useParams<{ meetingId: string }>();
@@ -50,12 +53,15 @@ const JitsiMeetingPage = () => {
     useState<string>("");
 
   const [meeting, setMeeting] = useState<Meeting | null>(null);
-
+  const [copySuccess, setCopySuccess] = useState(false);
   const fullTranscriptRef = useRef<string>("");
 
   useEffect(() => {
     fullTranscriptRef.current = speechTranscript + interimSpeechTranscript;
   }, [speechTranscript, interimSpeechTranscript]);
+
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<BlobPart[]>([]);
 
   useEffect(() => {
     const fetchMeetingDetails = async () => {
@@ -108,98 +114,70 @@ const JitsiMeetingPage = () => {
     };
   }, [meetingId]);
 
-  const startSpeechRecognition = useCallback(() => {
-    if (!("webkitSpeechRecognition" in window)) {
-      alert("Your browser does not support speech recognition.");
+  const startRecording = useCallback(async () => {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      alert("Your browser does not support audio recording.");
       return;
     }
 
-    if (recognitionRef.current && isRecording) {
-      console.log("Speech recognition already running.");
-      return;
-    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
 
-    const SpeechRecognition =
-      (window as any).webkitSpeechRecognition ||
-      (window as any).SpeechRecognition;
-    const recognition: SpeechRecognition = new SpeechRecognition();
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
 
-    recognition.lang = "en-US";
-    recognition.interimResults = true;
-    recognition.continuous = true;
-
-    recognition.onstart = () => {
-      setIsRecording(true);
-      console.log("Speech recognition started.");
-    };
-
-    recognition.onend = () => {
-      setIsRecording(false);
-      console.log(
-        "Speech recognition ended. Attempting to restart if meeting is active."
-      );
-      if (jitsiApiRef.current) {
-        setTimeout(() => {
-          if (jitsiApiRef.current) {
-            startSpeechRecognition();
-          }
-        }, 1000);
-      }
-    };
-
-    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-      console.error("Speech recognition error:", event.error, event.message);
-      setIsRecording(false);
-      if (event.error === "not-allowed") {
-        setError(
-          "Microphone access denied. Please allow microphone access for speech recognition."
-        );
-      }
-      if (recognitionRef.current) {
-        recognitionRef.current.stop();
-      }
-    };
-
-    recognition.onresult = (
-      event: SpeechRecognitionEvent & {
-        resultIndex: number;
-        results: SpeechRecognitionResultList;
-      }
-    ) => {
-      let currentInterimTranscript = "";
-      let finalTranscriptChunk = "";
-
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        const transcript = event.results[i][0].transcript;
-        if (event.results[i].isFinal) {
-          finalTranscriptChunk += transcript.trim();
-          if (finalTranscriptChunk && !/[.!?]$/.test(finalTranscriptChunk)) {
-            finalTranscriptChunk += ". ";
-          } else if (finalTranscriptChunk) {
-            finalTranscriptChunk += " ";
-          }
-        } else {
-          currentInterimTranscript += transcript;
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
         }
-      }
+        console.log("Data available:", event.data);
+      };
 
-      if (finalTranscriptChunk) {
-        setSpeechTranscript((prev) => prev + finalTranscriptChunk);
-        setInterimSpeechTranscript("");
-      } else {
-        setInterimSpeechTranscript(currentInterimTranscript);
-      }
-    };
+      mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(audioChunksRef.current, {
+          type: "audio/webm",
+        });
+        audioChunksRef.current = [];
 
-    recognitionRef.current = recognition;
-    recognition.start();
-  }, [isRecording, jitsiApiRef]);
-  const stopSpeechRecognition = useCallback(() => {
-    if (recognitionRef.current) {
-      recognitionRef.current.stop();
-      recognitionRef.current = null;
+        try {
+          const formData = new FormData();
+          formData.append("audio", audioBlob, "recording.webm");
+          formData.append("liveclassroom_id", meetingId || "");
+
+          const response = await axios.post(TRANSCRIBE_API_ENDPOINT, formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          });
+
+          if (response.data && response.data.transcription) {
+            setSpeechTranscript(
+              (prev) => prev + " " + response.data.transcription
+            );
+          }
+        } catch (error) {
+          console.error("Error sending audio to transcription API:", error);
+        }
+      };
+
+      mediaRecorder.start();
+      setIsRecording(true);
+      console.log("Recording started");
+    } catch (err: any) {
+      console.error("Could not start audio recording:", err);
+      alert("Could not start audio recording: " + err.message);
+    }
+  }, []);
+
+  const stopRecording = useCallback(() => {
+    if (
+      mediaRecorderRef.current &&
+      mediaRecorderRef.current.state !== "inactive"
+    ) {
+      mediaRecorderRef.current.stop();
       setIsRecording(false);
-      console.log("Speech recognition explicitly stopped.");
+      console.log("Recording stopped");
     }
   }, []);
 
@@ -245,10 +223,11 @@ const JitsiMeetingPage = () => {
     },
     []
   );
+
   const handleMeetingEnd = useCallback(async () => {
     console.log("Frontend: Meeting ending sequence initiated.");
 
-    stopSpeechRecognition();
+    stopRecording();
     const finalTranscriptToSend = fullTranscriptRef.current;
     console.log("Final Transcript to Send:", finalTranscriptToSend);
     console.log("Meeting ID:", meetingId);
@@ -260,13 +239,26 @@ const JitsiMeetingPage = () => {
     setTimeout(() => {
       navigate(`/dashboard/liveclass/details/${meetingId}`);
     }, 2000);
-  }, [meetingId, navigate, sendTranscriptToBackend, stopSpeechRecognition]);
+  }, [meetingId, navigate, sendTranscriptToBackend, stopRecording]);
+
+  const generateRandomString = (length: number) => {
+    let result = "";
+    const characters =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    const charactersLength = characters.length;
+    for (let i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+  };
 
   const handleJitsiReady = async (api: any) => {
     jitsiApiRef.current = api;
+
+    const randomSuffix = generateRandomString(6);
     const roomName = meeting?.classroom_name
-      ? meeting.classroom_name.replace(/\s+/g, "-")
-      : meetingId;
+      ? `${meeting.classroom_name.replace(/\s+/g, "-")}-${randomSuffix}`
+      : `${meetingId}-${randomSuffix}`;
     const fullMeetingUrl = `https://${JITSI_DOMAIN}/${roomName}`;
 
     if (meetingId) {
@@ -280,7 +272,7 @@ const JitsiMeetingPage = () => {
 
     api.addEventListener("videoConferenceJoined", () => {
       console.log("Video conference joined! Starting speech recognition.");
-      startSpeechRecognition();
+      startRecording();
     });
 
     api.addEventListener("readyToClose", () => {
@@ -299,7 +291,7 @@ const JitsiMeetingPage = () => {
         jitsiApiRef.current.dispose();
         jitsiApiRef.current = null;
       }
-      stopSpeechRecognition();
+      startRecording();
     };
   };
 
@@ -307,6 +299,22 @@ const JitsiMeetingPage = () => {
   const jitsiRoomName = meeting?.classroom_name
     ? meeting.classroom_name.replace(/\s+/g, "-")
     : meetingId;
+
+  const currentMeetingUrl = `https://${JITSI_DOMAIN}/${jitsiRoomName}`;
+
+  const handleCopyLink = () => {
+    const encodedMeetingUrl = encodeURIComponent(currentMeetingUrl);
+    const meetingUrl = `https://aiteacha.com/student/meeting-view?url=${encodedMeetingUrl}`;
+    navigator.clipboard
+      .writeText(meetingUrl)
+      .then(() => {
+        setCopySuccess(true);
+        setTimeout(() => setCopySuccess(false), 2000);
+      })
+      .catch((err) => {
+        console.error("Failed to copy: ", err);
+      });
+  };
 
   if (loading) {
     return (
@@ -338,10 +346,19 @@ const JitsiMeetingPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">
-        {jitsiRoomName} Liveclass
-      </h1>
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-0 lg:p-4 md:p-4">
+      <div className="flex flex-col md:flex-row items-center md:justify-between w-full max-w-4xl mb-6">
+        <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-800 mb-4 md:mb-0">
+          {jitsiRoomName} Liveclass
+        </h1>
+        <Button
+          onClick={handleCopyLink}
+          variant={"outlined"}
+          className="px-4 py-2 bg-gray-200 text-white rounded-full  border border-gray-500 transition-colors text-sm md:text-base"
+        >
+          Copy Meeting Link
+        </Button>
+      </div>
       <div className="w-full max-w-4xl h-[600px] bg-white rounded-lg shadow-xl overflow-hidden border border-gray-200">
         {meeting && meetingId && jitsiRoomName && (
           <JitsiMeeting
@@ -402,24 +419,25 @@ const JitsiMeetingPage = () => {
 
       <div className="mt-4 p-3 rounded-lg text-sm font-medium">
         <p className="text-gray-700">
-          Speech Recording Status: {isRecording ? "Recording..." : "Stopped"}
+          Speech Recording Status:
+          {isRecording ? (
+            <span> 🔴 Recording...</span>
+          ) : (
+            <span> Not recording</span>
+          )}
         </p>
       </div>
 
-      {(displayedTranscript.length > 0 || isRecording) && (
-        <div className="mt-8 w-full max-w-4xl bg-white p-6 rounded-lg shadow-xl border border-gray-200">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">
-            Live Speech Transcript
-          </h2>
-          <div className="h-48 overflow-y-auto border border-gray-300 p-3 rounded-md bg-gray-50">
-            <p className="text-sm text-gray-700">
-              {displayedTranscript}
-              {isRecording && !interimSpeechTranscript && (
-                <span className="animate-pulse text-gray-500">_</span>
-              )}{" "}
-            </p>
-          </div>
-        </div>
+      {copySuccess && (
+        <motion.div
+          className="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-purple-600 text-white py-2 px-4 rounded-md shadow-lg z-50"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 20 }}
+          transition={{ duration: 0.3 }}
+        >
+          Meeting link copied!
+        </motion.div>
       )}
     </div>
   );

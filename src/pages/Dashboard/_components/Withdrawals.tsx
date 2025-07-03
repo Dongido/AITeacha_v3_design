@@ -1,66 +1,73 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { RootState, AppDispatch } from "../../../store";
 import {
-  addBankAccount,
-  updateBankAccount,
   fetchUserBankAccounts,
-} from "../../store/slices/bankSlice";
-import { RootState, AppDispatch } from "../../store";
+  addBankAccount,
+  requestWithdrawal,
+  fetchWithdrawalRequests,
+} from "../../../store/slices/bankSlice";
 import {
   Dialog,
   DialogTrigger,
   DialogContent,
+  DialogHeader,
   DialogTitle,
   DialogDescription,
   DialogClose,
-} from "../../components/ui/Dialogue";
-import { Skeleton } from "../../components/ui/Skeleton";
-import { Input } from "../../components/ui/Input";
-import { Button } from "../../components/ui/Button";
-import { Loader2 } from "lucide-react";
-import { Country } from "country-state-city";
-import { ICountry } from "country-state-city";
-import {
-  fetchBanksByCountry,
-  verifyAccountNumber,
-} from "../../api/bankaccount";
+} from "../../../components/ui/Dialogue";
+import { Button } from "../../../components/ui/Button";
+import { Input } from "../../../components/ui/Input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../../components/ui/Select";
+} from "../../../components/ui/Select";
+import { Skeleton } from "../../../components/ui/Skeleton";
+import { withdrawalColumns } from "./column.withdrawals";
+import BaseTable from "../../../components/table/BaseTable";
 import {
   ToastProvider,
   Toast,
   ToastTitle,
   ToastViewport,
-} from "../../components/ui/Toast";
-import { Bank, BankAccount } from "./_components/interface";
+} from "../../../components/ui/Toast";
+import {
+  fetchBanksByCountry,
+  verifyAccountNumber,
+} from "../../../api/bankaccount";
+import { ICountry, Country } from "country-state-city";
+import {
+  Bank,
+  Withdrawal,
+  NewAccount,
+  WithdrawalRequest,
+  UserBankAccountFromRedux,
+} from "./interface";
+import { Loader2 } from "lucide-react";
 
-const BankAccountsPage = () => {
+const Withdrawals = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { accounts, loading, error } = useSelector(
-    (state: RootState) => state.bank
-  );
-  const [isSaving, setIsSaving] = useState(false);
-  const [isVerifyingAccount, setIsVerifyingAccount] = useState(false);
-  const [verifiedAccountName, setVerifiedAccountName] = useState<string | null>(
-    null
-  );
-  const [verificationError, setVerificationError] = useState<string | null>(
-    null
-  );
-  const [isFetchingBanks, setIsFetchingBanks] = useState(false);
+  const {
+    accounts,
+    loading: accountsLoading,
+    requesting,
+    error: accountsError,
+    requestError,
+  } = useSelector((state: RootState) => state.bank);
 
-  const [toastOpen, setToastOpen] = useState(false);
-  const [toastMessage, setToastMessage] = useState("");
-  const [toastVariant, setToastVariant] = useState<"default" | "destructive">(
-    "default"
+  const [isWithdrawalDialogOpen, setIsWithdrawalDialogOpen] = useState(false);
+  const [withdrawalDetails, setWithdrawalDetails] = useState<WithdrawalRequest>(
+    {
+      bankaccount_id: "",
+      amount: 0,
+    }
   );
 
-  const [newAccount, setNewAccount] = useState<BankAccount>({
+  const [isAddAccountDialogOpen, setIsAddAccountDialogOpen] = useState(false);
+  const [newAccount, setNewAccount] = useState<NewAccount>({
     accountNumber: "",
     bankName: "",
     accountName: "",
@@ -71,17 +78,53 @@ const BankAccountsPage = () => {
     currency: "",
   });
 
-  const [selectedAccountId, setSelectedAccountId] = useState<number | null>(
-    null
+  const [withdrawals, setWithdrawals] = useState<Withdrawal[]>([]);
+  const [withdrawalsLoading, setWithdrawalsLoading] = useState(true);
+  const [withdrawalsError, setWithdrawalsError] = useState<string | null>(null);
+  const [toastOpen, setToastOpen] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastVariant, setToastVariant] = useState<"default" | "destructive">(
+    "default"
   );
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-
   const [countries, setCountries] = useState<ICountry[]>([]);
   const [availableBanks, setAvailableBanks] = useState<Bank[]>([]);
+  const [isFetchingBanks, setIsFetchingBanks] = useState(false);
+  const [isSavingAccount, setIsSavingAccount] = useState(false);
+  const [isVerifyingAccount, setIsVerifyingAccount] = useState(false);
+  const [verifiedAccountName, setVerifiedAccountName] = useState<string | null>(
+    null
+  );
+  const [verificationError, setVerificationError] = useState<string | null>(
+    null
+  );
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // State for filtering withdrawals
+  const [filterStatus, setFilterStatus] = useState<
+    "all" | "processing" | "paid" | "declined"
+  >("all");
 
   useEffect(() => {
     setCountries(Country.getAllCountries());
     dispatch(fetchUserBankAccounts());
+
+    const fetchWithdrawals = async () => {
+      try {
+        setWithdrawalsLoading(true);
+        const data = await dispatch(fetchWithdrawalRequests()).unwrap();
+        setWithdrawals(data);
+        setWithdrawalsError(null);
+      } catch (error: any) {
+        setWithdrawalsError(error.message);
+        console.error("Failed to fetch withdrawals:", error);
+        setToastMessage(error.message || "Failed to fetch withdrawals.");
+        setToastVariant("destructive");
+        setToastOpen(true);
+      } finally {
+        setWithdrawalsLoading(false);
+      }
+    };
+    fetchWithdrawals();
   }, [dispatch]);
 
   useEffect(() => {
@@ -90,11 +133,10 @@ const BankAccountsPage = () => {
         setIsFetchingBanks(true);
         try {
           const fetched = await fetchBanksByCountry(newAccount.countryCode);
-          console.log(fetched);
           setAvailableBanks(fetched);
         } catch (err: any) {
           setAvailableBanks([]);
-          setToastMessage(err.message || "Failed to fetch banks:");
+          setToastMessage(err.message || "Failed to fetch banks.");
           setToastVariant("destructive");
           setToastOpen(true);
         } finally {
@@ -106,8 +148,6 @@ const BankAccountsPage = () => {
     };
     fetchBanks();
   }, [newAccount.countryCode]);
-
-  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleAccountVerification = useCallback(async () => {
     if (newAccount.accountNumber && newAccount.bankCode) {
@@ -159,10 +199,39 @@ const BankAccountsPage = () => {
     handleAccountVerification,
   ]);
 
-  const handleSaveAccount = async () => {
-    setIsSaving(true);
+  const handleRequestWithdrawal = async () => {
+    if (!withdrawalDetails.bankaccount_id) {
+      alert("Please select a bank account.");
+      return;
+    }
+    if (withdrawalDetails.amount <= 0) {
+      alert("Please enter a valid amount.");
+      return;
+    }
+
     try {
-      const payload: BankAccount = {
+      await dispatch(requestWithdrawal(withdrawalDetails)).unwrap();
+      setIsWithdrawalDialogOpen(false);
+      setWithdrawalDetails({ bankaccount_id: "", amount: 0 });
+      setToastMessage(`Withdrawal request submitted'.`);
+      setToastVariant("default");
+      setToastOpen(true);
+      const data = await dispatch(fetchWithdrawalRequests()).unwrap();
+      setWithdrawals(data);
+    } catch (error: any) {
+      console.error("Error requesting withdrawal:", error);
+      setToastMessage(
+        error || "Failed to make withdrawal request. Please try again."
+      );
+      setToastVariant("destructive");
+      setToastOpen(true);
+    }
+  };
+
+  const handleSaveAccount = async () => {
+    setIsSavingAccount(true);
+    try {
+      const payload: NewAccount = {
         accountNumber: newAccount.accountNumber,
         bankName: newAccount.bankName,
         accountName: newAccount.accountName,
@@ -173,15 +242,8 @@ const BankAccountsPage = () => {
         currency: newAccount.currency,
       };
 
-      console.log("Payload being sent:", payload);
-
-      if (selectedAccountId) {
-        await dispatch(
-          updateBankAccount({ id: selectedAccountId, ...payload })
-        ).unwrap();
-      } else {
-        await dispatch(addBankAccount(payload)).unwrap();
-      }
+      await dispatch(addBankAccount(payload)).unwrap();
+      setIsAddAccountDialogOpen(false);
       setNewAccount({
         accountNumber: "",
         bankName: "",
@@ -194,17 +256,25 @@ const BankAccountsPage = () => {
       });
       setVerifiedAccountName(null);
       setVerificationError(null);
-      setSelectedAccountId(null);
-      setIsDialogOpen(false);
+
       dispatch(fetchUserBankAccounts());
-    } catch (error) {
+      setIsWithdrawalDialogOpen(true);
+      setToastMessage(`Bank Account saved successfully.`);
+      setToastVariant("default");
+      setToastOpen(true);
+    } catch (error: any) {
       console.error("Error saving account:", error);
+      setToastMessage(
+        error.message || "Failed to add bank account. Please try again."
+      );
+      setToastVariant("destructive");
+      setToastOpen(true);
     } finally {
-      setIsSaving(false);
+      setIsSavingAccount(false);
     }
   };
 
-  const handleOpenAddAccountDialog = () => {
+  const handleOpenDialog = () => {
     setNewAccount({
       accountNumber: "",
       bankName: "",
@@ -212,15 +282,37 @@ const BankAccountsPage = () => {
       bankBranch: "",
       countryCode: "",
       bankCode: "",
+      bankId: "",
       currency: "",
     });
     setVerifiedAccountName(null);
     setVerificationError(null);
-    setSelectedAccountId(null);
-    setIsDialogOpen(true);
+
+    setWithdrawalDetails({ bankaccount_id: "", amount: 0 });
+
+    if (accounts.length === 0) {
+      setIsAddAccountDialogOpen(true);
+    } else {
+      setIsWithdrawalDialogOpen(true);
+    }
   };
 
-  if (loading) {
+  const handleBankAccountSelectForWithdrawal = (accountId: string) => {
+    setWithdrawalDetails({
+      ...withdrawalDetails,
+      bankaccount_id: accountId,
+    });
+  };
+
+  // Filtered withdrawals based on status
+  const filteredWithdrawals = withdrawals.filter((withdrawal) => {
+    if (filterStatus === "all") {
+      return true;
+    }
+    return withdrawal.status.toLowerCase() === filterStatus;
+  });
+
+  if (accountsLoading) {
     return (
       <div className="overflow-x-auto">
         <table className="min-w-full border-collapse">
@@ -249,32 +341,122 @@ const BankAccountsPage = () => {
     );
   }
 
-  if (error) return <p>Error: {error}</p>;
+  if (accountsError) {
+    return <p>Error: {accountsError}</p>;
+  }
 
   return (
-    <ToastProvider>
-      <div>
-        <h1>Bank Accounts</h1>
+    <ToastProvider swipeDirection="right">
+      <div className="p-2 md:p-6 lg:p-6 mt-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+          <h1 className="text-3xl font-bold mb-4 md:mb-0">Withdrawals</h1>
+          <Button
+            className="rounded-full"
+            variant={"gradient"}
+            onClick={handleOpenDialog}
+          >
+            Request New Withdrawal
+          </Button>
+        </div>
 
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button
-              className="rounded-full"
-              variant={"gradient"}
-              onClick={handleOpenAddAccountDialog}
-            >
-              Add New Bank Account
-            </Button>
-          </DialogTrigger>
+        <Dialog
+          open={isWithdrawalDialogOpen}
+          onOpenChange={setIsWithdrawalDialogOpen}
+        >
           <DialogContent>
-            <DialogTitle>
-              {selectedAccountId ? "Update" : "Add"} Bank Account
-            </DialogTitle>
-            <DialogDescription>
-              {selectedAccountId
-                ? "Update your bank account details."
-                : "Enter new bank account details."}
-            </DialogDescription>
+            <DialogHeader>
+              <DialogTitle>Request a Withdrawal</DialogTitle>
+              <DialogDescription className="text-lg font-semibold">
+                Select an account and currency to withdraw funds.
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-2">
+              <label htmlFor="account-select" className="text-sm font-medium">
+                Select Bank Account
+              </label>
+              <Select
+                onValueChange={handleBankAccountSelectForWithdrawal}
+                value={withdrawalDetails.bankaccount_id}
+              >
+                <SelectTrigger id="account-select" className="h-1/2">
+                  <SelectValue placeholder="Select an account" />
+                </SelectTrigger>
+                <SelectContent>
+                  {accounts.length > 0 ? (
+                    accounts.map((account: any) => (
+                      <SelectItem
+                        key={account.id}
+                        value={account.id.toString()}
+                      >
+                        {account.bank_name} - {account.account_number} (
+                        {account.currency})
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem value="no-accounts" disabled>
+                      No bank accounts available. Please add one.
+                    </SelectItem>
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="amount-input" className="text-sm font-medium">
+                Amount
+              </label>
+              <Input
+                id="amount-input"
+                type="number"
+                placeholder="Enter amount"
+                value={withdrawalDetails.amount || ""}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setWithdrawalDetails({
+                    ...withdrawalDetails,
+                    amount: Number(e.target.value),
+                  })
+                }
+              />
+            </div>
+
+            <Button
+              onClick={handleRequestWithdrawal}
+              className="rounded-md"
+              variant={"gradient"}
+              disabled={
+                requesting ||
+                !withdrawalDetails.bankaccount_id ||
+                withdrawalDetails.amount <= 0
+              }
+            >
+              {requesting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Requesting...
+                </>
+              ) : (
+                "Submit Withdrawal Request"
+              )}
+            </Button>
+            <DialogClose asChild>
+              <Button variant={"destructive"} className="rounded-md w-full">
+                Cancel
+              </Button>
+            </DialogClose>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog
+          open={isAddAccountDialogOpen}
+          onOpenChange={setIsAddAccountDialogOpen}
+        >
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add Bank Account</DialogTitle>
+              <DialogDescription>
+                You need to add a bank account before you can make a withdrawal.
+              </DialogDescription>
+            </DialogHeader>
 
             <Select
               value={newAccount.countryCode}
@@ -287,6 +469,7 @@ const BankAccountsPage = () => {
                   bankName: "",
                   accountName: "",
                   accountNumber: "",
+                  currency: "",
                 });
                 setVerifiedAccountName(null);
                 setVerificationError(null);
@@ -362,11 +545,12 @@ const BankAccountsPage = () => {
                 )}
               </SelectContent>
             </Select>
+
             <Input
               type="text"
               placeholder="Account Number"
               value={newAccount.accountNumber}
-              onChange={(e) => {
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setNewAccount({ ...newAccount, accountNumber: e.target.value });
                 setVerifiedAccountName(null);
                 setVerificationError(null);
@@ -382,15 +566,6 @@ const BankAccountsPage = () => {
             {verificationError && (
               <p className="text-sm text-red-500">{verificationError}</p>
             )}
-            {/* {verifiedAccountName && (
-              <Input
-                type="text"
-                placeholder="Verified Account Name"
-                value={verifiedAccountName}
-                readOnly
-                className="mt-2 bg-gray-100"
-              />
-            )} */}
 
             <Input
               type="text"
@@ -404,7 +579,7 @@ const BankAccountsPage = () => {
               type="text"
               placeholder="Bank Branch"
               value={newAccount.bankBranch}
-              onChange={(e) =>
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 setNewAccount({ ...newAccount, bankBranch: e.target.value })
               }
             />
@@ -435,22 +610,21 @@ const BankAccountsPage = () => {
               className="rounded-md"
               variant={"gradient"}
               disabled={
-                isSaving ||
+                isSavingAccount ||
                 isVerifyingAccount ||
                 isFetchingBanks ||
                 !newAccount.accountName ||
                 !newAccount.currency ||
                 !newAccount.bankCode ||
+                !newAccount.countryCode ||
                 !newAccount.accountNumber
               }
             >
-              {isSaving ? (
+              {isSavingAccount ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Saving...
                 </>
-              ) : selectedAccountId ? (
-                "Update Account"
               ) : (
                 "Add Account"
               )}
@@ -460,8 +634,7 @@ const BankAccountsPage = () => {
                 variant={"destructive"}
                 className="rounded-md w-full"
                 onClick={() => {
-                  setIsDialogOpen(false);
-                  setSelectedAccountId(null);
+                  setIsAddAccountDialogOpen(false);
                   setNewAccount({
                     accountNumber: "",
                     bankName: "",
@@ -476,80 +649,64 @@ const BankAccountsPage = () => {
                   setVerificationError(null);
                 }}
               >
-                Close
+                Cancel
               </Button>
             </DialogClose>
           </DialogContent>
         </Dialog>
-        <div className="overflow-x-auto my-4">
-          <table className="min-w-full border border-gray-300 shadow-md py-6 rounded-full">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="border px-4 py-2">Bank Name</th>
-                <th className="border px-4 py-2">Account Number</th>
-                <th className="border px-4 py-2">Account Name</th>
-                <th className="border px-4 py-2">Bank Branch</th>
-                <th className="border px-4 py-2">Country</th>
-                <th className="border px-4 py-2">Currency</th>
-                <th className="border px-4 py-2">Actions</th>
-              </tr>
-            </thead>
 
-            <tbody className="divide-y divide-gray-200">
-              {accounts.map((account, index) => (
-                <tr
-                  key={account.id}
-                  className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
-                >
-                  <td className="border px-4 py-2">{account.bank_name}</td>
-                  <td className="border px-4 py-2">{account.account_number}</td>
-                  <td className="border px-4 py-2">{account.account_name}</td>
-                  <td className="border px-4 py-2">{account.bank_branch}</td>
-                  <td className="border px-4 py-2">
-                    {account.country_code || "N/A"}
-                  </td>
-                  <td className="border px-4 py-2">
-                    {account.currency || "N/A"}
-                  </td>
-                  <td className="border px-4 py-2">
-                    <Dialog
-                      open={selectedAccountId === account.id}
-                      onOpenChange={(open) => {
-                        if (!open) {
-                          setSelectedAccountId(null);
-                        }
-                      }}
-                    >
-                      <DialogTrigger
-                        onClick={() => {
-                          setSelectedAccountId(account.id);
-                          setNewAccount({
-                            accountNumber: account.account_number,
-                            bankName: account.bank_name,
-                            accountName: account.account_name,
-                            bankBranch: account.bank_branch,
-                            countryCode: account.country_code || "",
-                            bankCode: account.bank_code || "",
-                            bankId: account.bank_id || "",
-                            currency: account.currency || "",
-                          });
-                          setVerifiedAccountName(account.account_name);
-                          setIsDialogOpen(true);
-                        }}
-                      >
-                        <Button
-                          variant={"outlined"}
-                          className="bg-gray-200 border border-gray-500 rounded-full"
-                        >
-                          Update
-                        </Button>
-                      </DialogTrigger>
-                    </Dialog>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="mt-8">
+          <div className="mb-4 flex items-center gap-4">
+            <Select
+              value={filterStatus}
+              onValueChange={(
+                value: "all" | "processing" | "paid" | "declined"
+              ) => setFilterStatus(value)}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Filter by Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="processing">Processing</SelectItem>
+                <SelectItem value="paid">Paid</SelectItem>
+                <SelectItem value="declined">Declined</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {withdrawalsLoading ? (
+            <div className="overflow-x-auto">
+              <table className="min-w-full border-collapse">
+                <thead>
+                  <tr>
+                    {[...Array(4)].map((_, index) => (
+                      <th key={index} className="p-4 border-b">
+                        <Skeleton className="h-4 w-20 rounded" />
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {[...Array(5)].map((_, rowIndex) => (
+                    <tr key={rowIndex} className="border-b">
+                      {[...Array(4)].map((_, colIndex) => (
+                        <td key={colIndex} className="p-4">
+                          <Skeleton className="h-4 w-full rounded" />
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : withdrawalsError ? (
+            <p className="text-red-500">Error: {withdrawalsError}</p>
+          ) : filteredWithdrawals.length === 0 ? (
+            <p>No withdrawal history found for the selected status.</p>
+          ) : (
+            <BaseTable data={filteredWithdrawals} columns={withdrawalColumns} />
+          )}
         </div>
       </div>
       <Toast
@@ -563,5 +720,4 @@ const BankAccountsPage = () => {
     </ToastProvider>
   );
 };
-
-export default BankAccountsPage;
+export default Withdrawals;

@@ -62,7 +62,7 @@ const Analytics = () => {
           <Skeleton className="h-64 w-full mx-auto rounded-lg" />
         </div>
       ) : analyticsData ? (
-        <div>
+        <div className="bg-white shadow-md rounded-lg p-2 lg:p-6 md:p-4">
           <div className="mt-4 space-y-3">
             <MarkdownRenderer content={analyticsData.data} />
           </div>

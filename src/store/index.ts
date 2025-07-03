@@ -19,7 +19,10 @@ import bankReducer from "./slices/bankSlice";
 import testReducer from "./slices/testSlice";
 import studentTestsReducer from "./slices/studentTestsSlice";
 import schoolStudentReducer from "./slices/schoolStudentSlice";
-import staffChatSlice  from "./slices/staffchats"
+import staffChatSlice from "./slices/staffchats";
+import uiReducer from "./slices/uiSlice";
+import adminWithdrawalsReducer from "./slices/adminWithdrawalSlice";
+import adminUserReducer from "./slices/adminUserSlice";
 
 const store = configureStore({
   reducer: {
@@ -43,7 +46,10 @@ const store = configureStore({
     tests: testReducer,
     studentTests: studentTestsReducer,
     schoolStudent: schoolStudentReducer,
-    staffChats:staffChatSlice
+    staffChats: staffChatSlice,
+    ui: uiReducer,
+    adminWithdrawals: adminWithdrawalsReducer,
+    adminUser: adminUserReducer,
   },
 });
 

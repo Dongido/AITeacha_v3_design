@@ -61,7 +61,7 @@ const LiveClass = () => {
   };
 
   return (
-    <div className="p-6 min-h-screen rounded-lg shadow-lg">
+    <div className="p-2 md:p-6 lg:p-6 min-h-screen rounded-lg mt-6">
       {liveClasses.length === 0 && !loading && !error && (
         <div className="mb-8 flex justify-center">
           <Button
@@ -84,7 +84,7 @@ const LiveClass = () => {
         </div>
       )}
 
-      <h2 className="text-2xl font-semibold text-gray-700 mb-4">
+      <h2 className="text-xl md:text-2xl lg:text-2xl font-semibold text-gray-800 mb-4">
         Your Live Classes
       </h2>
       {loading ? (

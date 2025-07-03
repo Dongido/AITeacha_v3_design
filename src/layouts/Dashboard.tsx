@@ -23,6 +23,8 @@ import FreeUsers from "../pages/Dashboard/admin/FreeUsers";
 import AdminTools from "../pages/Dashboard/AdminTools";
 import PastUsers from "../pages/Dashboard/admin/PastUsers";
 import Subscribers from "../pages/Dashboard/admin/Subscribers";
+import AdminWithdrawalsPage from "../pages/Dashboard/admin/Withdrawals";
+import AdminUserDetailsPage from "../pages/Dashboard/admin/UserDetailsPage";
 import ArchivedAssistants from "../pages/Dashboard/premium/Archive";
 import SchoolStudents from "../pages/Dashboard/school/SchoolStudents";
 import StaffChat from "../pages/Dashboard/StaffChat";
@@ -109,7 +111,7 @@ export function Dashboard() {
           <Route path="/premium/students" element={<SchoolStudents />} />
           <Route path="/premium/resources" element={<Resources />} />
           <Route path="/premium/classrooms" element={<TeamClassroomPage />} />
-           <Route path="/premium/forum" element={<Forumpage />} />
+          <Route path="/premium/forum" element={<Forumpage />} />
           <Route path="/premium/archive" element={<ArchivedAssistants />} />
           <Route path="/premium/resources/:id" element={<ResourceSingle />} />
           <Route path="/resource/training" element={<Training />} />
@@ -121,6 +123,8 @@ export function Dashboard() {
           <Route path="/admin/past-users" element={<PastUsers />} />
 
           <Route path="/admin/subscribers" element={<Subscribers />} />
+          <Route path="/admin/withdrawals" element={<AdminWithdrawalsPage />} />
+          <Route path="/admin/user/:id" element={<AdminUserDetailsPage />} />
         </Routes>
         {/* <div className="text-blue-gray-600">
           <Footer />

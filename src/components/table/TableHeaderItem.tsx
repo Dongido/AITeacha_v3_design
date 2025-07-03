@@ -7,7 +7,7 @@ export default function Header<T, K>({
   column,
   className,
 }: {
-  title: string;
+  title: React.ReactNode;
   column: Column<T, K>;
   className?: string;
 }) {

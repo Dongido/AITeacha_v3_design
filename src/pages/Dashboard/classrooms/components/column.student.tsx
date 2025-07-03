@@ -7,7 +7,7 @@ import { Student } from "../../../../api/interface";
 import { useNavigate } from "react-router-dom";
 import RemoveStudentDialog from "./DeleteStudentDialog";
 import { useRef } from "react";
-
+import { Link } from "react-router-dom";
 const studentColumnHelper = createColumnHelper<Student>();
 
 export const studentColumns = (classroomId: string | undefined) => [
@@ -42,9 +42,31 @@ export const studentColumns = (classroomId: string | undefined) => [
     id: "full_name",
     header: ({ column }) => <Header title="Full Name" column={column} />,
     sortingFn: "text",
-    cell: (info) => (
-      <span className="capitalize whitespace-nowrap">{info.getValue()}</span>
-    ),
+    cell: (info) => {
+      const studentId = info.row.original.student_id;
+      return (
+        <Link
+          to={`/dashboard/user-profile/${studentId}`}
+          className="text-primary hover:underline capitalize whitespace-nowrap"
+        >
+          {info.getValue()}
+        </Link>
+      );
+    },
+  }),
+  studentColumnHelper.accessor("student_id", {
+    header: ({ column }) => <Header title="Analytics" column={column} />,
+    sortingFn: "text",
+    cell: (info) => {
+      return (
+        <Link
+          to={`/dashboard/classrooms/${classroomId}/students/${info.getValue()}`}
+          className="text-blue-600 hover:underline"
+        >
+          View Analytics
+        </Link>
+      );
+    },
   }),
   studentColumnHelper.accessor("status", {
     header: ({ column }) => <Header title="Status" column={column} />,

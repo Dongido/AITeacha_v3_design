@@ -1,14 +1,11 @@
-// interface.ts - Make sure this file contains the following corrected definitions
-
 export interface SpeechRecognitionEvent extends Event {
   readonly resultIndex: number;
   readonly results: SpeechRecognitionResultList;
-  // Add other properties if necessary based on your usage
 }
 
 export interface SpeechRecognitionResult extends Event {
   readonly isFinal: boolean;
-  readonly ["0"]: SpeechRecognitionAlternative; // Represents the first alternative
+  readonly ["0"]: SpeechRecognitionAlternative;
 }
 
 export interface SpeechRecognitionAlternative {
@@ -22,7 +19,6 @@ export interface SpeechRecognitionResultList {
   item(index: number): SpeechRecognitionResult;
 }
 
-// THIS IS THE CRITICAL INTERFACE TO UPDATE/VERIFY
 export interface SpeechRecognition extends EventTarget {
   continuous: boolean;
   interimResults: boolean;
@@ -32,9 +28,7 @@ export interface SpeechRecognition extends EventTarget {
   stop(): void;
   abort(): void;
 
-  // These are the event handler properties that need to be explicitly defined.
-  // The 'onstart' one is the specific one causing your current error.
-  onstart: ((this: SpeechRecognition, ev: Event) => any) | null; // <--- ADD/CORRECT THIS LINE
+  onstart: ((this: SpeechRecognition, ev: Event) => any) | null;
   onaudiostart: ((this: SpeechRecognition, ev: Event) => any) | null;
   onsoundstart: ((this: SpeechRecognition, ev: Event) => any) | null;
   onspeechstart: ((this: SpeechRecognition, ev: Event) => any) | null;

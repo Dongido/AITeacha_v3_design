@@ -90,6 +90,8 @@ const Home = () => {
       return "You're all set with AI Teacha Enterprise.";
     } else if (userDetails?.package === "AI Teacha Pro") {
       return "Upgrade to Premium";
+    } else if (userDetails?.package === "AI Teacha Premium") {
+      return "You're all set with AI Teacha Premium.";
     } else {
       return "Upgrade to Pro";
     }
