@@ -212,13 +212,38 @@ export const getMessage = async(paylod:getZaraChats):Promise<Message[]> => {
       throw new Error("Failed to get chat");
     }
 
-    console.log("response", response);
+    // console.log("response", response);
     return response.data.data;
   } catch (error: any) {
     console.error("❌ Error fetching messages:", error?.response?.data || error.message);
     throw new Error(error?.response?.data?.message || "Failed to fetch messages");
   }
 };
+
+
+
+export const getParticipant = async(paylod:string):Promise<any[]> => {
+  try {
+    const response = await apiClient.get<{
+      status: string;
+      message: string;
+      data: any[];
+    }>(`classroom/participants/${paylod}`);
+
+    if (response.status !== 200) {
+      throw new Error("Failed to get chat");
+    }
+
+    // console.log("response", response);
+    return response.data.data;
+  } catch (error: any) {
+    console.error("❌ Error fetching messages:", error?.response?.data || error.message);
+    throw new Error(error?.response?.data?.message || "Failed to fetch messages");
+  }
+};
+
+
+
 
 
 

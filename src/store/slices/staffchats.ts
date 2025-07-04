@@ -124,8 +124,8 @@ export const getpremiumUsers = createAsyncThunk<PremiumUsertype[], void, { rejec
 //  get user role 
 export const getUserRole = createAsyncThunk("staffTopic/getuserrole", async(id: string, { rejectWithValue }) => {
   try {
-    const roles = await getUserRoles(id); // roles = an array
-    const role = roles.length > 0 ? roles[0] : null; // extract first role
+    const roles = await getUserRoles(id); 
+    const role = roles.length > 0 ? roles[0] : null; 
     return role;
   } catch (error: any) {
     return rejectWithValue(error.message || "failed to get user role");

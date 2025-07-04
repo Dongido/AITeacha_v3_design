@@ -111,6 +111,7 @@ import GroupChatForm from "../pages/Dashboard/GroupChatForm";
 import Forumpage from "../pages/Dashboard/Forumpage";
 import StudentClass from "../pages/Dashboard/student/StudentChat";
 import JitsiStudentMeeting from "../pages/Dashboard/student/JitsiMeeting";
+import Participants from "../pages/Dashboard/student/Particpant";
 
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -782,6 +783,12 @@ export const StudentParamroutes = [
         name: "profile",
         path: "/user-profile/:id",
         element: <UserProfilePage />
+      },
+      {
+        icon: <DocumentTextIcon {...icon} />,
+        name: "participant",
+        path: "/participant/:id",
+        element: <Participants/>
       },
     ],
   },
