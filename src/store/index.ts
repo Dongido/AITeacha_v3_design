@@ -23,6 +23,7 @@ import staffChatSlice from "./slices/staffchats";
 import uiReducer from "./slices/uiSlice";
 import adminWithdrawalsReducer from "./slices/adminWithdrawalSlice";
 import adminUserReducer from "./slices/adminUserSlice";
+import adminResourcesReducer from "./slices/adminResourceSlice";
 
 const store = configureStore({
   reducer: {
@@ -50,6 +51,7 @@ const store = configureStore({
     ui: uiReducer,
     adminWithdrawals: adminWithdrawalsReducer,
     adminUser: adminUserReducer,
+    adminResources: adminResourcesReducer,
   },
 });
 

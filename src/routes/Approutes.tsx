@@ -110,7 +110,7 @@ import UserProfilePage from "../pages/Dashboard/UserProfilePage";
 import GroupChatForm from "../pages/Dashboard/GroupChatForm";
 import Forumpage from "../pages/Dashboard/Forumpage";
 import JitsiStudentMeeting from "../pages/Dashboard/student/JitsiMeeting";
-
+import AdminResourcesPage from "../pages/Dashboard/admin/AdminResources";
 const icon = {
   className: "w-5 h-5 text-inherit",
 };
@@ -296,6 +296,12 @@ export const routes = [
             name: "Withdrawals",
             path: "/admin/withdrawals",
             element: <AdminWithdrawalsPage />,
+          },
+          {
+            icon: <FolderIcon {...icon} />,
+            name: "Resources",
+            path: "/admin/resources",
+            element: <AdminResourcesPage />,
           },
         ],
       },
