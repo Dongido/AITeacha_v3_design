@@ -196,6 +196,17 @@ const JoinClassDialog = forwardRef(
         const studentCheck = await checkIfStudentInClassroom(response.id);
         setIsStudent(studentCheck);
 
+        if (studentCheck) {
+          setToastMessage("You are already enrolled in this classroom!");
+          setToastVariant("default");
+          setToastOpen(true);
+          setOpen(false);
+          onSuccess();
+          setTimeout(() => {
+            navigate(navigateToClassroom);
+          }, 2000);
+          return;
+        }
         if (response.class_type === "Paid") {
           handlePayment();
         } else {

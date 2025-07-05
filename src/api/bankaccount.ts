@@ -22,7 +22,19 @@ export const fetchBanksByCountry = async (
     );
   }
 };
-
+export const fetchBalance = async (): Promise<any[]> => {
+  try {
+    const response = await apiClient.get<ApiResponse<any[]>>(
+      `/profile/refresh/walletbalance`
+    );
+    return response.data.data;
+  } catch (error: any) {
+    console.log(error.response?.data.message);
+    throw new Error(
+      error.response?.data.message || "Failed to fetch banks. Please try again."
+    );
+  }
+};
 export const verifyAccountNumber = async (
   accountNumber: string,
   accountBankCode: string

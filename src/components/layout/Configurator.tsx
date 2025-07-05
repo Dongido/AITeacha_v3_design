@@ -59,6 +59,15 @@ export function Configurator() {
   }, []);
 
   useEffect(() => {
+    if (!userDetails && !isRefreshingProfile) {
+      setIsRefreshingProfile(true);
+      dispatch(loadUserProfile()).finally(() => {
+        setIsRefreshingProfile(false);
+      });
+    }
+  }, [userDetails, dispatch, isRefreshingProfile]);
+
+  useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
         openConfigurator &&
@@ -144,14 +153,13 @@ export function Configurator() {
           </Button>
         </Link>
 
-        {userDetails?.role !== 3 ||
-          (userDetails?.role_id !== 3 && (
-            <Link to={"/dashboard/wallet"}>
-              <Button className="w-full hover:bg-gray-100 transition duration-300">
-                Wallet Settings
-              </Button>
-            </Link>
-          ))}
+        {userDetails?.role_id !== 3 && (
+          <Link to={"/dashboard/wallet"}>
+            <Button className="w-full hover:bg-gray-100 transition duration-300">
+              Wallet Settings
+            </Button>
+          </Link>
+        )}
 
         {userDetails && userDetails.role_id !== 3 && (
           <Link to={upgradeLink}>

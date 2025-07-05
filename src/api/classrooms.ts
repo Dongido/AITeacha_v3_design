@@ -282,6 +282,7 @@ export const fetchClassroomByJoinCode = async (
 
     return classroomData;
   } catch (error: any) {
+    console.log(error.response.data);
     throw new Error(
       error.response?.data ||
         "Failed to fetch classroom details. Please try again."

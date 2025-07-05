@@ -22,6 +22,9 @@ import { generateReferralCode } from "../../api/profile";
 import { TextArea } from "../../components/ui/TextArea";
 import ChangePasswordDialog from "../../components/layout/ChangePasswordDialog";
 import Withdrawals from "./_components/Withdrawals";
+import { fetchBalance } from "../../api/bankaccount";
+import { Skeleton } from "../../components/ui/Skeleton";
+
 const Profile: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { user, loading, error, updateNameLoading, updatePhotoLoading } =
@@ -39,11 +42,25 @@ const Profile: React.FC = () => {
   const [toastMessage, setToastMessage] = useState<string>("");
   const [generating, setGenerating] = useState<boolean>(false);
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
+
+  const [walletBalances, setWalletBalances] = useState<any>({
+    usd: 0,
+    ngn: 0,
+    gbp: 0,
+  });
+  const [isFetchingBalance, setIsFetchingBalance] = useState<boolean>(false);
+  const [balanceError, setBalanceError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
   const userDetails = JSON.parse(
     localStorage.getItem("ai-teacha-user") || "{}"
   );
+  useEffect(() => {
+    if (activeTab === "wallet" && userDetails.role_id !== 3) {
+      handleFetchBalance();
+    }
+  }, [activeTab, userDetails.role_id]);
+
   useEffect(() => {
     dispatch(loadUserProfile());
   }, [dispatch]);
@@ -60,6 +77,19 @@ const Profile: React.FC = () => {
     }
   }, [user]);
 
+  const handleFetchBalance = async () => {
+    setIsFetchingBalance(true);
+    setBalanceError(null);
+    try {
+      const data = await fetchBalance();
+
+      setWalletBalances(data[0]);
+    } catch (err: any) {
+      setBalanceError(err.message || "Failed to load balance.");
+    } finally {
+      setIsFetchingBalance(false);
+    }
+  };
   const handleCopyReferralLink = () => {
     navigator.clipboard.writeText(
       `https://aiteacha.com/auth/onboarding?referralCode=${referral_code}`
@@ -139,16 +169,6 @@ const Profile: React.FC = () => {
     setEditMode(false);
   };
 
-  const handleRefreshProfile = async () => {
-    try {
-      await dispatch(loadUserProfile()).unwrap();
-      setToastMessage("Profile refreshed successfully!");
-    } catch (err) {
-      setToastMessage("Failed to refresh profile: " + err);
-    } finally {
-      setToastVisible(true);
-    }
-  };
   const passwordDialogRef = useRef<any>(null);
 
   return (
@@ -171,19 +191,18 @@ const Profile: React.FC = () => {
               >
                 Profile Details
               </button>
-              {userDetails.role !== 3 ||
-                (userDetails.role_id !== 3 && (
-                  <button
-                    className={`px-4 py-2 rounded-t-lg ${
-                      activeTab === "wallet"
-                        ? "bg-purple-50"
-                        : "bg-gray-100 hover:bg-gray-200"
-                    }`}
-                    onClick={() => setActiveTab("wallet")}
-                  >
-                    Wallet Details
-                  </button>
-                ))}
+              {userDetails.role_id !== 3 && (
+                <button
+                  className={`px-4 py-2 rounded-t-lg ${
+                    activeTab === "wallet"
+                      ? "bg-purple-50"
+                      : "bg-gray-100 hover:bg-gray-200"
+                  }`}
+                  onClick={() => setActiveTab("wallet")}
+                >
+                  Wallet Details
+                </button>
+              )}
             </div>
 
             {activeTab === "profile" && (
@@ -413,31 +432,57 @@ const Profile: React.FC = () => {
             {activeTab === "wallet" && (
               <div>
                 <div className="bg-white rounded-lg shadow-md p-4">
-                  <h2 className="text-xl font-semibold mb-4">
-                    Wallet Balances
-                  </h2>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="bg-gray-100 p-4 rounded-lg shadow-sm flex items-center space-x-4">
-                      <div>
-                        <p className="font-semibold">USD Balance</p>
-                        <p className="text-lg">${user?.wallet_balance_usd}</p>
-                      </div>
-                    </div>
-
-                    <div className="bg-gray-100 p-4 rounded-lg shadow-sm flex items-center space-x-4">
-                      <div>
-                        <p className="font-semibold">NGN Balance</p>
-                        <p className="text-lg">₦{user?.wallet_balance_ngn}</p>
-                      </div>
-                    </div>
-
-                    <div className="bg-gray-100 p-4 rounded-lg shadow-sm flex items-center space-x-4">
-                      <div>
-                        <p className="font-semibold">GBP Balance</p>
-                        <p className="text-lg">£{user?.wallet_balance_gbp}</p>
-                      </div>
-                    </div>
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-xl font-semibold">Wallet Balances</h2>
+                    <button
+                      onClick={handleFetchBalance}
+                      disabled={isFetchingBalance}
+                      className="px-4 py-2 bg-purple-50 rounded-full text-black font-bold  "
+                    >
+                      {isFetchingBalance ? "Refreshing..." : "Refresh Balance"}
+                    </button>
                   </div>
+                  {balanceError && (
+                    <p className="text-red-600 mb-4">{balanceError}</p>
+                  )}
+                  {isFetchingBalance ? (
+                    <tr>
+                      {[...Array(6)].map((_, index) => (
+                        <th key={index} className="p-4 border-b">
+                          <Skeleton className="h-4 w-20 rounded" />
+                        </th>
+                      ))}
+                    </tr>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="bg-gray-100 p-4 rounded-lg shadow-sm flex items-center space-x-4">
+                        <div>
+                          <p className="font-semibold">USD Balance</p>
+                          <p className="text-lg">
+                            ${walletBalances.wallet_balance_usd?.toFixed(2)}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="bg-gray-100 p-4 rounded-lg shadow-sm flex items-center space-x-4">
+                        <div>
+                          <p className="font-semibold">NGN Balance</p>
+                          <p className="text-lg">
+                            ₦{walletBalances.wallet_balance_ngn?.toFixed(2)}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="bg-gray-100 p-4 rounded-lg shadow-sm flex items-center space-x-4">
+                        <div>
+                          <p className="font-semibold">GBP Balance</p>
+                          <p className="text-lg">
+                            £{walletBalances.wallet_balance_gbp?.toFixed(2)}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <Withdrawals />
               </div>

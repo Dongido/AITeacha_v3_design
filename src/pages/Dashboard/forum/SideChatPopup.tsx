@@ -164,10 +164,10 @@ const SideChatPopup: React.FC<SideChatPopupProps> = ({ isOpen, onClose, id: rece
                 />
               )}
               <div
-                className={`max-w-[80%] px-4 py-2 rounded-2xl text-sm ${
+                className={`max-w-[70%] px-4 py-2 rounded-2xl text-sm break-words ${
                   msg.isMe
-                    ? "bg-gray-700 text-white rounded-br-none shadow"
-                    : "bg-gray-200 text-gray-800 rounded-bl-none shadow"
+                    ? "bg-gray-800 text-white rounded-br-none ml-auto"
+                    : "bg-gray-100 text-gray-900 rounded-bl-none mr-auto"
                 }`}
               >
                 <p className="leading-relaxed">{msg.text}</p>
