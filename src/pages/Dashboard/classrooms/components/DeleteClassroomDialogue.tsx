@@ -43,13 +43,13 @@ const DeleteClassroomDialog = forwardRef(
         await dispatch(deleteClassroomThunk(classroomId)).unwrap();
         setToastMessage("Classroom deleted successfully!");
         setToastVariant("default");
-        setToastOpen(true); // Open toast on success
-        setOpen(false); // Close dialog on success
+        setToastOpen(true);
+        setOpen(false);
         onSuccess();
       } catch (error: any) {
         setToastMessage(error.message || "Failed to delete classroom.");
         setToastVariant("destructive");
-        setToastOpen(true); // Open toast on failure
+        setToastOpen(true);
       }
     };
 
@@ -86,7 +86,7 @@ const DeleteClassroomDialog = forwardRef(
 
           <Toast
             open={toastOpen}
-            onOpenChange={setToastOpen} // Ensure toast can be manually closed by the user
+            onOpenChange={setToastOpen}
             variant={toastVariant}
           >
             <ToastTitle>{toastMessage}</ToastTitle>

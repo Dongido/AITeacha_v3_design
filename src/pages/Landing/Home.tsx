@@ -4,9 +4,8 @@ import HeroToolBox from "./components/ToolBoxHero";
 import FaqHome from "./components/FaqHome";
 import CTA from "./components/CTA";
 import Footer from "./components/Footer";
-import Hero from "./components/Hero";
+
 import HeroA from "./components/HeroA";
-import HeroD from "./components/HeroD";
 import HowItWorks from "./components/HowItWorks";
 import WhatSetsUsApart from "./components/WhatSetsUsApart";
 import AnimatedSection from "./components/AnimatedSection";
