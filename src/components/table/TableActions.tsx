@@ -17,6 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/DropdownMenu";
 import { Link } from "react-router-dom";
+import { FaUsers } from "react-icons/fa";
 
 export default function Actions<T>({
   viewLink,
@@ -30,12 +31,14 @@ export default function Actions<T>({
   deleteFunction,
   activateFunction,
   deactivateFunction,
-  editRoleFunction, // Add new prop here
+  editRoleFunction, 
+  viewParticipant,
 }: {
   viewLink?: string;
   editLink?: string;
   attemptLink?: string;
   isHidden?: boolean;
+  viewParticipant?:string;
   hideFunction?: () => Promise<void>;
   editButton?: ReactNode;
   viewFunction?: () => Promise<void>;
@@ -128,6 +131,20 @@ export default function Actions<T>({
                 <FileText size={17} className="text-blue-600" />
               </div>
               <p>Attempt </p>
+            </Link>
+          </DropdownMenuItem>
+        )}
+
+         {viewParticipant && (
+          <DropdownMenuItem
+            asChild
+            className="flex gap-2 p-1 hover:bg-gray-100"
+          >
+            <Link to={viewParticipant}>
+              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-600/20">  
+                <FaUsers size={16} className="text-blue-600"  />
+              </div>
+              <p className="pt-1">Participant </p>
             </Link>
           </DropdownMenuItem>
         )}

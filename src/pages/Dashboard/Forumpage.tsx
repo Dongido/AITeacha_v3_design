@@ -18,7 +18,7 @@ const { checkuser ,loading, error } = useAppSelector(
 );
  const  users =  Array.isArray(checkuser) ? checkuser  : []
 
- console.log("user", users)
+ console.log("user", checkuser)
 
 useEffect(() => {
 dispatch(getpremiumUsers());

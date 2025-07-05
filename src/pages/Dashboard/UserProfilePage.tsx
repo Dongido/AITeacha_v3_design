@@ -6,6 +6,8 @@ import { Skeleton } from "../../components/ui/Skeleton";
 
 import { Button } from "../../components/ui/Button";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
+import { FiMessageCircle } from "react-icons/fi";
+import SideChatPopup from "./forum/SideChatPopup";
 
 interface User {
   id: string;
@@ -40,6 +42,7 @@ const UserProfilePage = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+   const [showSideChat, setShowSideChat] = useState(false);
 
   useEffect(() => {
     const getUserData = async () => {
@@ -202,9 +205,20 @@ const UserProfilePage = () => {
           </div>
 
           <div className="col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-8 p-4 bg-gray-50 rounded-lg shadow-inner">
-            <h3 className="col-span-full text-xl font-bold text-gray-800 border-b pb-2 mb-4">
-              Contact Information
-            </h3>
+           <div className="col-span-full flex items-center justify-between border-b pb-2 mb-4">
+              <h3 className="text-xl font-bold text-gray-800">Contact Information</h3>
+
+              <button
+              
+                onClick={() => setShowSideChat(true)}
+                className="group flex items-center gap-2 bg-blue-100 text-blue-800 px-4 py-2 rounded-full shadow-sm hover:bg-blue-200 transition-all"
+              >
+                <FiMessageCircle className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                <span className="text-sm font-semibold">Message User</span>
+              </button>
+            </div>
+
+
             <div className="flex flex-col">
               <span className="font-semibold text-gray-700 text-sm">
                 Email:
@@ -340,6 +354,11 @@ const UserProfilePage = () => {
           )}
         </div>
       </div>
+       {
+        showSideChat && (
+          <SideChatPopup isOpen={showSideChat} onClose={() => setShowSideChat(false)} id={userId} />
+        )
+      }
     </div>
   );
 };

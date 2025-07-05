@@ -88,7 +88,10 @@ export const classroomColumns = [
       };
       return (
         <div className="flex items-center gap-2">
-          <Actions viewLink={getRedirectPath()} />
+          <Actions 
+          viewLink={getRedirectPath()} 
+          viewParticipant={`/student/participant/${classroomId}`}
+          />
         </div>
       );
     },

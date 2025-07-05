@@ -86,6 +86,7 @@ export const studentColumns = (
         <div className="flex items-center gap-2">
           <Actions
             viewLink={`/dashboard/assignments/report/${assignmentId}/students/${studentId}`}
+            
           />
         </div>
       );

@@ -3,7 +3,7 @@ import { Button } from "../../components/ui/Button";
 import io from "socket.io-client";
 import { useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { createZyraChat, getForumConversation, getsingleforumById, getUserRole, resetZyraChat } from "../../store/slices/staffchats";
+import { createZyraChat, getForumConversation, getsingleforumById, getUserRole, resetConversation, resetZyraChat } from "../../store/slices/staffchats";
 import { RootState } from "../../store";
 import { Skeleton } from "../../components/ui/Skeleton";
 import Forumcomments from "./forum/Forumcomments";
@@ -45,7 +45,7 @@ interface ZyraRequestPayload {
 const GroupChatForm: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const dispatch = useAppDispatch();
-  const { selectedTopic, loading, error, conversation: chats, userRole, zyrachat } = useAppSelector(
+  const { selectedTopic, loading, error, conversation:chats, userRole, zyrachat } = useAppSelector(
     (state: RootState) => state.staffChats
   );
 
@@ -82,6 +82,8 @@ const isAdmin = useMemo(() => {
     if (id) {
       dispatch(getsingleforumById(id));
       dispatch(getForumConversation(id));
+       dispatch(resetZyraChat())
+       setMessages([])
     }
     if (iteratedTopic?.team_host_id) {
       dispatch(getUserRole(iteratedTopic.team_host_id));
@@ -96,6 +98,7 @@ const isAdmin = useMemo(() => {
         console.error("Failed to parse user details from localStorage", e);
       }
     }
+     dispatch(resetConversation());
   }, [dispatch, id, iteratedTopic?.team_host_id]);
 
   useEffect(() => {
@@ -114,8 +117,15 @@ const isAdmin = useMemo(() => {
         isZyraLoading: false, 
       }));
       setMessages(historicalMessages);
+       dispatch(resetZyraChat())
     }
   }, [chats]);
+
+  useEffect(() => {
+  dispatch(resetConversation());
+  dispatch(resetZyraChat());
+  setMessages([]); 
+}, [id]);
 
   useEffect(() => {
     if (zyrachat) {
@@ -181,7 +191,10 @@ const isAdmin = useMemo(() => {
     topic: savedMessage.topic || "General",
     parent_id: savedMessage.parent_id?.toString() || null,
     zyraResponse: null,
-    isZyraLoading: false,
+    isZyraLoading:
+  awaitingZyraTriggerId &&
+  savedMessage.content === lastSentZyraTriggerMessageContentRef.current &&
+  savedMessage.firstname !== 'Zyra',
   };
 
   // ✅ Prevent duplication
@@ -428,7 +441,11 @@ const isAdmin = useMemo(() => {
           <div className="mb-4 p-3 bg-purple-100 border-l-4
               border-purple-400 text-purple-800 rounded relative">
             <p className="text-sm">
-              Replying to <strong>{repliedMessage.sender}</strong>: "{repliedMessage.text}"
+              Replying to <strong>{repliedMessage.sender}</strong>:
+               {repliedMessage.text.length > 80
+                ? repliedMessage.text.slice(0, 100) + "......"
+                : repliedMessage.text}
+                "
             </p>
             <button
               onClick={() => setRepliedMessage(null)}
