@@ -29,6 +29,7 @@ import ArchivedAssistants from "../pages/Dashboard/premium/Archive";
 import SchoolStudents from "../pages/Dashboard/school/SchoolStudents";
 import StaffChat from "../pages/Dashboard/StaffChat";
 import GroupChatForm from "../pages/Dashboard/GroupChatForm";
+import AdminResourcesPage from "../pages/Dashboard/admin/AdminResources";
 import Forumpage from "../pages/Dashboard/Forumpage";
 
 export function Dashboard() {
@@ -125,6 +126,7 @@ export function Dashboard() {
           <Route path="/admin/subscribers" element={<Subscribers />} />
           <Route path="/admin/withdrawals" element={<AdminWithdrawalsPage />} />
           <Route path="/admin/user/:id" element={<AdminUserDetailsPage />} />
+          <Route path="/admin/resources" element={<AdminResourcesPage />} />
         </Routes>
         {/* <div className="text-blue-gray-600">
           <Footer />
