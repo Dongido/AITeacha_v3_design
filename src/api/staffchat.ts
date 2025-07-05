@@ -222,7 +222,7 @@ export const getMessage = async(paylod:getZaraChats):Promise<Message[]> => {
 
 
 
-export const getParticipant = async(paylod:string):Promise<any[]> => {
+export const getParticipant = async(paylod:number):Promise<any[]> => {
   try {
     const response = await apiClient.get<{
       status: string;
@@ -234,7 +234,7 @@ export const getParticipant = async(paylod:string):Promise<any[]> => {
       throw new Error("Failed to get chat");
     }
 
-    // console.log("response", response);
+    console.log("response", response);
     return response.data.data;
   } catch (error: any) {
     console.error("❌ Error fetching messages:", error?.response?.data || error.message);

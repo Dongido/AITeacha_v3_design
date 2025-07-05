@@ -1,19 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { X, Smile } from "lucide-react";
 import io from "socket.io-client";
 import EmojiPicker from "emoji-picker-react";
 import { RootState } from "../../../store";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getZaraChats } from "../../../api/staffchat";
 import { getMessages } from "../../../store/slices/staffchats";
 
-// Connect to backend
 const socket = io("https://api.aiteacha.com");
 
 interface SideChatPopupProps {
   isOpen: boolean;
   onClose: () => void;
-  id:string
+  id: string;
 }
 
 interface ChatMessage {
@@ -26,32 +24,63 @@ interface ChatMessage {
   time: string;
 }
 
-const SideChatPopup: React.FC<SideChatPopupProps> = ({ isOpen, onClose , id:receiverId }) => {
-  
- 
-
-  const senderImage = "https://ui-avatars.com/api/?name=You";
+const SideChatPopup: React.FC<SideChatPopupProps> = ({ isOpen, onClose, id: receiverId }) => {
   const dispatch = useAppDispatch();
   const { message, loading } = useAppSelector((state: RootState) => state.staffChats);
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [userDetails, setUserDetails] = useState<any>(null);
-   const [senderId, setSenderId] = useState<number | null>(null);
-
-    const payload = {
-     senderId,
-     receiverId:parseInt(receiverId, 10) 
-    }
-     console.log(payload, "payload")
+  const [senderId, setSenderId] = useState<number | null>(null);
+  const bottomRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    socket.on("connect", () => console.log("✅ Connected:", socket.id));
-    socket.on("disconnect", () => console.log("❌ Disconnected"));
+    const userDetailsFromStorage = localStorage.getItem("ai-teacha-user");
+    if (userDetailsFromStorage) {
+      const parsedDetails = JSON.parse(userDetailsFromStorage);
+      setSenderId(parsedDetails.id);
+    }
+  }, []);
 
+  useEffect(() => {
+    if (senderId !== null) {
+      dispatch(getMessages({ senderId, receiverId: parseInt(receiverId, 10) }));
+    }
+  }, [dispatch, senderId, receiverId]);
+
+  useEffect(() => {
+    if (message && Array.isArray(message)) {
+      const transformed = message.map((msg) => {
+        const isMe = msg.sender_id === senderId;
+        const name = isMe ? "Me" : "User";
+        const displayName = isMe ? "Me" : name.charAt(0).toUpperCase();
+        const image = `https://ui-avatars.com/api/?name=${displayName}&background=${isMe ? "4B5563" : "E5E7EB"}&color=${isMe ? "fff" : "000"}`;
+
+        return {
+          id: msg.id,
+          senderId: msg.sender_id,
+          text: msg.content,
+          name: displayName,
+          image,
+          isMe,
+          time: new Date(msg.created_at).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+          }),
+        };
+      });
+      setMessages(transformed);
+    }
+  }, [message, senderId]);
+
+  useEffect(() => {
     socket.on("receiveChat", (msg: any) => {
-      const isMe = msg.sender_id === payload.senderId;
+      const isMe = msg.sender_id === senderId;
+      const name = isMe ? "Me" : msg.name || "User";
+      const displayName = isMe ? "Me" : name.charAt(0).toUpperCase();
+      const image = `https://ui-avatars.com/api/?name=${displayName}&background=${isMe ? "4B5563" : "E5E7EB"}&color=${isMe ? "fff" : "000"}`;
+
       const time = new Date(msg.created_at).toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
@@ -64,8 +93,8 @@ const SideChatPopup: React.FC<SideChatPopupProps> = ({ isOpen, onClose , id:rece
           id: msg.id || Date.now(),
           senderId: msg.sender_id,
           text: msg.content,
-          name: isMe ? "Me" : "User",
-          image: isMe ? senderImage : "https://ui-avatars.com/api/?name=User",
+          name: displayName,
+          image,
           isMe,
           time,
         },
@@ -73,66 +102,20 @@ const SideChatPopup: React.FC<SideChatPopupProps> = ({ isOpen, onClose , id:rece
     });
 
     return () => {
-      socket.off("connect");
-      socket.off("disconnect");
       socket.off("receiveChat");
     };
-  }, []);
-
- useEffect(() => {
-  if (senderId !== null) {
-    const payload = {
-      senderId,
-      receiverId: parseInt(receiverId, 10),
-    };
-    dispatch(getMessages(payload));
-  }
-}, [dispatch, senderId, receiverId]);
-
-
- console.log("id", senderId , receiverId)
-
-  
-    useEffect(() => {
-      const userDetailsFromStorage = localStorage.getItem("ai-teacha-user");
-  
-      if (userDetailsFromStorage) {
-        const parsedDetails = JSON.parse(userDetailsFromStorage);
-        setUserDetails(parsedDetails);
-        setSenderId(parsedDetails.id);
-      }
-  
-    }, []);
-  
+  }, [senderId]);
 
   useEffect(() => {
-    if (message && Array.isArray(message)) {
-      const transformed = message.map((msg) => {
-        const isMe = msg.sender_id === payload.senderId;
-        return {
-          id: msg.id,
-          senderId: msg.sender_id,
-          text: msg.content,
-          name: isMe ? "Me" : "User",
-          image: isMe ? senderImage : "https://ui-avatars.com/api/?name=User",
-          isMe,
-          time: new Date(msg.created_at).toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: true,
-          }),
-        };
-      });
-      setMessages(transformed);
-    }
-  }, [message]);
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   const handleSend = () => {
-    if (!input.trim()) return;
+    if (!input.trim() || senderId === null) return;
 
     const messageData = {
       sender_id: senderId,
-      receiver_id: receiverId,
+      receiver_id: parseInt(receiverId, 10),
       content: input.trim(),
       mark_as_read: false,
     };
@@ -149,7 +132,7 @@ const SideChatPopup: React.FC<SideChatPopupProps> = ({ isOpen, onClose , id:rece
 
   return (
     <div
-      className={`fixed top-0 right-0 h-full w-full sm:w-[370px] bg-white shadow-xl transition-transform duration-300 z-[1000] ${
+      className={`fixed top-0 right-0 h-full w-full sm:w-[370px] bg-white shadow-2xl transition-transform duration-300 z-[1000] ${
         isOpen ? "translate-x-0" : "translate-x-full"
       }`}
     >
@@ -164,16 +147,14 @@ const SideChatPopup: React.FC<SideChatPopupProps> = ({ isOpen, onClose , id:rece
       {/* Messages */}
       <div className="p-4 overflow-y-auto h-[calc(100%-200px)] space-y-4 bg-gray-50">
         {loading ? (
-          <p className="text-blue-500 text-sm text-center animate-pulse">Loading messages...</p>
+          <p className="text-gray-500 text-sm text-center animate-pulse">Loading messages...</p>
         ) : messages.length === 0 ? (
           <p className="text-sm text-gray-400 italic text-center">No messages yet</p>
         ) : (
           messages.map((msg) => (
             <div
               key={msg.id}
-              className={`flex items-end gap-2 ${
-                msg.isMe ? "justify-end" : "justify-start"
-              }`}
+              className={`flex items-end gap-2 ${msg.isMe ? "justify-end" : "justify-start"}`}
             >
               {!msg.isMe && (
                 <img
@@ -183,18 +164,26 @@ const SideChatPopup: React.FC<SideChatPopupProps> = ({ isOpen, onClose , id:rece
                 />
               )}
               <div
-                className={`max-w-[80%] px-4 py-2 rounded-2xl text-sm shadow-sm ${
+                className={`max-w-[80%] px-4 py-2 rounded-2xl text-sm ${
                   msg.isMe
-                    ? "bg-blue-100 text-gray-900 rounded-br-none"
-                    : "bg-gray-100 text-gray-800 rounded-bl-none"
+                    ? "bg-gray-700 text-white rounded-br-none shadow"
+                    : "bg-gray-200 text-gray-800 rounded-bl-none shadow"
                 }`}
               >
                 <p className="leading-relaxed">{msg.text}</p>
-                <p className="text-[10px] mt-1 text-right text-gray-500">{msg.time}</p>
+                <p className="text-[10px] mt-1 text-right opacity-70">{msg.time}</p>
               </div>
+              {msg.isMe && (
+                <img
+                  src={msg.image}
+                  alt="avatar"
+                  className="w-8 h-8 rounded-full object-cover"
+                />
+              )}
             </div>
           ))
         )}
+        <div ref={bottomRef} />
       </div>
 
       {/* Emoji Picker */}
@@ -208,7 +197,7 @@ const SideChatPopup: React.FC<SideChatPopupProps> = ({ isOpen, onClose , id:rece
       <div className="p-4 border-t flex items-center gap-2 bg-white">
         <button
           onClick={() => setShowEmojiPicker((prev) => !prev)}
-          className="text-gray-500 hover:text-blue-600"
+          className="text-gray-500 hover:text-gray-700"
         >
           <Smile />
         </button>
@@ -217,16 +206,15 @@ const SideChatPopup: React.FC<SideChatPopupProps> = ({ isOpen, onClose , id:rece
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSend()}
           placeholder="Type a message..."
-          className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400"
+          className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-400"
         />
         <button
           onClick={handleSend}
-          className="border-r-light-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+          className="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-black"
         >
           Send
         </button>
       </div>
-      
     </div>
   );
 };

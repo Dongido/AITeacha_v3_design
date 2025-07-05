@@ -214,7 +214,7 @@ const UserProfilePage = () => {
                 className="group flex items-center gap-2 bg-blue-100 text-blue-800 px-4 py-2 rounded-full shadow-sm hover:bg-blue-200 transition-all"
               >
                 <FiMessageCircle className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                <span className="text-sm font-semibold">Message User</span>
+                <span className="text-sm font-semibold">Message </span>
               </button>
             </div>
 

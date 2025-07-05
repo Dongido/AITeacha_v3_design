@@ -35,7 +35,7 @@ const StaffChat = () => {
   const [email, setEmail] = useState<string>("");
   const [userDetails, setUserDetails] = useState<any>(null);
   const [isEmailVerified, setIsEmailVerified] = useState<number>(0);
-  const [showSideChat, setShowSideChat] = useState(false);
+
   const [userTopics, setUserTopics] = useState<any[]>([]);
    const dialogRef = useRef<{ openDialog: () => void }>(null);
   const { topics, loading, error } = useAppSelector(
@@ -307,12 +307,12 @@ if (
       >
       <div className="flex items-start gap-3">
       {/* Circle with first letter */}
-      <div
-      onClick={() => setShowSideChat(true)}
+      <Link
+      to={`/dashboard/user-profile/${topicItem.user_id}`} 
        className="w-10 h-10 rounded-full bg-purple-100 flex 
       items-center justify-center text-purple-700 font-bold text-lg">
         {topicItem.topic.charAt(0).toUpperCase()}
-      </div>
+      </Link>
 
       <div className="flex-1">
       {/* Topic title */}
@@ -324,11 +324,11 @@ if (
 
       {/* Author name */}
       {(topicItem.firstname || topicItem.lastname) && (
-        <p
-        onClick={() => setShowSideChat(true)}
+        <Link
+        to={`/dashboard/user-profile/${topicItem.user_id}`} 
          className="text-sm text-purple-700 mt-1 cursor-pointer">
           By {topicItem.firstname} {topicItem.lastname}
-        </p>
+        </Link>
       )}
 
       {/* Date */}
@@ -350,11 +350,7 @@ if (
       </div> 
       </div>
       <CreateTopicDialog ref={dialogRef} onCreate={handleCreate} loading={loading}   categories={categories} />
-      {
-        showSideChat && (
-          <SideChatPopup isOpen={showSideChat} onClose={() => setShowSideChat(false)} id={"22"} />
-        )
-      }
+    
     </div>
   );
 };
