@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { CreateStaffTopic, getAllStaffTopic, getforumConversationByforumId, 
-  getforumConversationById, getMessage,  getpremiumUser,  getUserRoles, getZaraChats,  Message, Topics, ZyraChat, ZyraType  } from "../../api/staffchat";
+  getforumConversationById, getMessage,  getParticipant,  getpremiumUser,  getUserRoles, getZaraChats,  Message, Topics, ZyraChat, ZyraType  } from "../../api/staffchat";
 
 
 export type CreateTopicPayload = {
@@ -35,6 +35,7 @@ interface StaffTopicState {
   zyrachat:string | null
   zaraloding:boolean
   message:Message[] 
+  participant:any[]
 }
 
 const initialState: StaffTopicState = {
@@ -47,7 +48,8 @@ const initialState: StaffTopicState = {
   userRole:null,
   zyrachat:null,
   zaraloding:false,
-  message: []
+  message: [],
+ participant:[]
 };
 
 // 🔁 GET all topics
@@ -152,6 +154,15 @@ export const getUserRole = createAsyncThunk("staffTopic/getuserrole", async(id: 
     }
 
   })
+
+   export const getParticipants  = createAsyncThunk("staffTopic/participant", async(payload:number , {rejectWithValue}) => {
+     try {
+      const response = await  getParticipant(payload)
+      return response  
+     } catch (error:any) {
+        return rejectWithValue(error.message || "failed to get chat");  
+     }
+   })
 
 
  
@@ -272,6 +283,20 @@ export const staffTopicSlice = createSlice({
     })
     .addCase(getMessages.rejected , (state, action) => {
       state.loading = false
+      state.error = action.payload as string
+    })
+
+    // getparticipant
+    .addCase(getParticipants.pending, (state) => {
+      state.loading = true
+      state.error = null
+    })
+    .addCase(getParticipants.fulfilled, (state, action) => {
+      state.loading = false
+      state.participant = action.payload
+    })
+    .addCase(getParticipants.rejected , (state, action) => {
+      state.loading = false 
       state.error = action.payload as string
     })
 
