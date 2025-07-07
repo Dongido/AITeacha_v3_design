@@ -38,7 +38,7 @@ export const adminResourceColumns = [
       <span className="capitalize whitespace-nowrap">{info.getValue()}</span>
     ),
   }),
-  adminResourceColumnHelper.accessor("createdAt", {
+  adminResourceColumnHelper.accessor("created_at", {
     header: ({ column }) => <Header title="Created At" column={column} />,
     sortingFn: "datetime",
     cell: (info) => {

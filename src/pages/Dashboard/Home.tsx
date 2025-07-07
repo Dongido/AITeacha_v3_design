@@ -98,6 +98,10 @@ const Home = () => {
   };
 
   const upgradeText = getUpgradeText();
+  const showUpgradeLink =
+    userDetails?.package !== "AI Teacha Enterprise" &&
+    userDetails?.package !== "AI Teacha Premium";
+
   const upgradeLink = "/dashboard/upgrade";
   const filteredTools =
     selectedCategory && selectedCategory !== "all"
@@ -153,7 +157,7 @@ const Home = () => {
                     <ArrowRightIcon className="h-5 w-5 ml-2" />
                   </button>
                 </Link>
-                {upgradeText && (
+                {showUpgradeLink && upgradeText && (
                   <Link to={upgradeLink}>
                     <button className="flex hover:bg-pink-200 items-center bg-purple-100 text-black font-semibold py-2 px-4 rounded-full text-sm">
                       {upgradeText}
