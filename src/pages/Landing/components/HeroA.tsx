@@ -110,10 +110,10 @@ export default () => {
           }}
           className="pb-24"
         >
-          <div className="max-w-screen-2xl mx-auto relative space-y-5 text-center  px-4 md:px-8 mt-12 ">
+          <div className="max-w-screen-2xl mx-auto relative space-y-5 text-center px-4 md:px-8 mt-12 ">
             <a
               href="#"
-              className="inline-flex justify-between items-center py-2 mt-6 px-3   text-sm text-primary bg-gray-50 rounded-full dark:text-white border border-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+              className="inline-flex justify-between items-center py-2 mt-6 px-3 text-sm text-primary bg-gray-50 rounded-full dark:text-white border border-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
               role="alert"
             >
               <span className="text-lg font-medium">
@@ -125,7 +125,7 @@ export default () => {
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1, ease: "easeOut" }}
-                className="text-4xl md:text-5xl lg:text-7xl text-black  primary-bold mx-auto"
+                className="text-4xl md:text-5xl lg:text-7xl text-black primary-bold mx-auto"
               >
                 <AnimatePresence mode="wait">
                   <motion.div
@@ -204,9 +204,21 @@ export default () => {
               </svg>
             </span>
           </div>
+          <div className="mt-14 max-w-screen-2xl mx-auto">
+            <video
+              className="w-full shadow-lg rounded-lg border"
+              src={"/dashboardvideo.mp4"}
+              controls
+              autoPlay
+              muted
+              loop
+            >
+              Your browser does not support the video tag.
+            </video>
+          </div>
         </div>
         <div className="bg-gradient-to-b from-white via-blue-50 to-white pb-20 overflow-hidden">
-          <section className="max-w-screen-2xl text-center mx-auto py-16 px-4 md:px-8 pt-12">
+          <section className="max-w-screen-2xl text-center mx-auto  pb-8 px-4 md:px-8 pt-12">
             <div>
               <div className="py-4">
                 <h3 className="text-3xl md:text-5xl lg:text-6xl font-extrabold leading-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-700">
@@ -297,37 +309,21 @@ export default () => {
             </div>
           </div>
         </div>
-        <div className="max-w-screen-2xl mx-auto mt-28">
-          <div className="items-center gap-x-12 sm:px-4 md:px-0 lg:flex">
-            <div className="flex-1 sm:hidden lg:block">
-              <video
-                className="w-full shadow-lg rounded-lg border"
-                src={"/dashboardvideo.mp4"}
-                controls
-                autoPlay
-                muted
-                loop
-              >
-                Your browser does not support the video tag.
-              </video>
+        <div className="max-w-screen-2xl mx-auto mt-28  bg-gradient-to-b from-[#5c3cbb] to-[#8b6ecb] py-4 lg:py-8 rounded-3xl">
+          <p className="text-white text-2xl font-semibold sm:text-3xl text-center">
+            "AiTeacha Saved me 15 hours a week"
+          </p>
+          <h3 className="text-white font-semibold text-center">
+            Teacher in Lagos, Nigeria
+          </h3>
+          <div className="flex flex-col md:flex-row space-y-8 md:space-y-0 md:space-x-16 mt-8 text-white justify-center">
+            <div className="text-center">
+              <h2 className="text-4xl font-bold text-white">19,000+</h2>
+              <p className="text-lg">Teachers Onboard</p>
             </div>
-            <div className="max-w-xl px-4 space-y-3 mt-6 sm:px-0 md:mt-0 lg:max-w-2xl">
-              <p className="text-gray-800 text-2xl font-semibold sm:text-3xl">
-                "AiTeacha Saved me 15 hours a week"
-              </p>
-              <h3 className="text-indigo-600 font-semibold">
-                Teacher in Lagos, Nigeria
-              </h3>
-              <div className="flex flex-col md:flex-row space-y-8 md:space-y-0 md:space-x-16 mt-8 text-gray-600">
-                <div className="text-center">
-                  <h2 className="text-4xl font-bold text-black">15,000+</h2>
-                  <p className="text-lg">Teachers Onboard</p>
-                </div>
-                <div className="text-center">
-                  <h2 className="text-4xl font-bold text-black">500,000+</h2>
-                  <p className="text-lg">Students Impacted</p>
-                </div>
-              </div>
+            <div className="text-center">
+              <h2 className="text-4xl font-bold text-white">200,000+</h2>
+              <p className="text-lg">Students Impacted</p>
             </div>
           </div>
         </div>
@@ -359,7 +355,7 @@ export default () => {
         </div>
       </div> */}
 
-      <div className="py-12">
+      <div className="py-32">
         <p className="text-center text-xl text-gray-900 font-bold">Backed By</p>
         <div className="flex justify-center items-center flex-wrap gap-x-12 gap-y-6 mt-6 mb-6">
           <a

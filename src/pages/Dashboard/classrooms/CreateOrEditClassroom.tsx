@@ -512,7 +512,7 @@ const CreateOrEditClassroom: React.FC<CreateOrEditClassroomProps> = ({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-xl lg:text-2xl">
-                        Enter Classroom Topic
+                        Enter Classroom Name
                       </FormLabel>
                       <FormControl>
                         <TextArea
