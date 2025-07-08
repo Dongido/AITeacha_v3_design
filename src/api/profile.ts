@@ -11,7 +11,13 @@ export interface User {
   role_id: number;
   imageurl: string;
   about: string | null;
+  country: string | null;
+  state: string | null;
+  city: string | null;
   host_team_id: number;
+  country_isoCode: string | null;
+  state_isoCode: string | null;
+  gender: string | null;
   phone: string;
   organization: string | null;
   passcode: string;
@@ -64,23 +70,27 @@ export const fetchUserDetailsFromAuth = async (): Promise<User> => {
     );
   }
 };
+export interface UpdateProfilePayload {
+  firstname?: string;
+  lastname?: string;
+  about?: string;
+  phone?: string;
+  gender?: string;
+  country?: string;
+  state?: string;
+  city?: string;
+}
+
 export const updateUserName = async (
-  firstname: string,
-  lastname: string,
-  about: string,
-  phone: string
+  userData: UpdateProfilePayload
 ): Promise<void> => {
   try {
-    const response = await apiClient.put(`profile/update/user`, {
-      firstname,
-      lastname,
-      about,
-      phone,
-    });
-    console.log("User name updated successfully:", response.data);
+    const response = await apiClient.put(`profile/update/user`, userData);
+    console.log("User profile updated successfully:", response.data);
   } catch (error: any) {
     throw new Error(
-      error.response?.data || "Failed to update user name. Please try again."
+      error.response?.data?.message ||
+        "Failed to update user profile. Please try again."
     );
   }
 };
@@ -135,7 +145,6 @@ export const generateReferralCode = async (): Promise<string> => {
     );
   }
 };
-
 
 // change pasword
 export const changeUserPassword = async (
