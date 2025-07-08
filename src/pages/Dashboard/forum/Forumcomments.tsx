@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { FiCopy } from "react-icons/fi";
 import { VscPinned } from "react-icons/vsc";
 import { TbPinnedOff } from "react-icons/tb";
-import { ZyraType } from "../../../api/staffchat"; // Assuming ZyraType defines the structure of the zyra chat response
+import { ZyraType } from "../../../api/staffchat"; 
+import { Link } from "react-router-dom";
 
 interface Message {
   id: string;
@@ -13,7 +14,8 @@ interface Message {
   topic: string;
   parent_id?: string | null;
   zyraResponse?: string | null; 
-   isZyraLoading?: boolean;     
+  isZyraLoading?: boolean;  
+  user_id?:number   
 }
 
 interface Props {
@@ -100,13 +102,17 @@ const Forumcomments: React.FC<Props> = ({
     return (
       <div className="ml-6 mt-2 p-2 bg-purple-50 border-l-4 border-purple-200 rounded-md lg:max-w-[450px] w-[90%]">
         <div className="flex items-center gap-2 mb-1">
+         <Link to={`/dashboard/user-profile/${reply?.user_id}`}>
           <img
             src={reply.avatar}
             alt={reply.sender}
             className="w-6 h-6 rounded-full object-cover"
           />
+           </Link>
           <div className="flex flex-col">
+            <Link to={`/dashboard/user-profile/${reply?.user_id}`}>
             <span className="text-sm font-medium text-purple-700">{reply.sender}</span>
+            </Link>
             <span className="text-xs text-gray-400">{reply.date}</span>
           </div>
         </div>
@@ -144,13 +150,17 @@ const Forumcomments: React.FC<Props> = ({
         <div className="border border-purple-100 bg-purple-50 p-3 rounded-md shadow max-w-[600px] w-full">
           <div className="flex justify-between items-center mb-2">
             <div className="flex items-center gap-3">
+              <Link to={`/dashboard/user-profile/${pinnedMessage?.user_id}`}> 
               <img
                 src={pinnedMessage.avatar}
                 alt={pinnedMessage.sender}
                 className="w-8 h-8 rounded-full object-cover"
               />
+              </Link>
               <div className="flex flex-col">
-                <span className="font-semibold text-black">{pinnedMessage.sender}</span>
+              <Link to={`/dashboard/user-profile/${pinnedMessage?.user_id}`}> 
+              <span className="font-semibold text-black">{pinnedMessage.sender}</span>
+              </Link>
                 <span className="text-xs text-gray-800">{pinnedMessage.date}</span>
               </div>
             </div>
@@ -176,13 +186,17 @@ const Forumcomments: React.FC<Props> = ({
             {/* Comment Box */}
             <div className="bg-white border-b border-b-purple-100 p-3 rounded-md shadow-sm max-w-[600px] w-full">
               <div className="flex items-center gap-3 mb-2">
+               <Link to={`/dashboard/user-profile/${msg?.user_id}`}>
                 <img
                   src={msg.avatar}
                   alt={msg.sender}
                   className="w-8 h-8 rounded-full object-cover"
                 />
+                </Link> 
                 <div className="flex flex-col">
+                   <Link to={`/dashboard/user-profile/${msg?.user_id}`}>
                   <span className="font-semibold text-black">{msg.sender}</span>
+                  </Link>
                   <span className="text-xs text-gray-800">{msg.date}</span>
                 </div>
               </div>

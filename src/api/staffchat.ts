@@ -53,6 +53,19 @@ interface Topic {
   lastname:string ;
 }
 
+export interface ChatUser {
+  user_id: number;
+  name: string;
+  email: string;
+  imageurl: string | null;
+  unreadMessageCount: number;
+  lastMessage: string | null;
+  lastMessageTime: string | null;
+}
+export interface unreadChat {
+  senderId:string
+ }
+
 export const CreateStaffTopic = async (
   data: CreateTopicPayload
 ): Promise<Topic> => {
@@ -70,7 +83,33 @@ export const CreateStaffTopic = async (
     if (response.status !== 201 && response.status !== 200) {
       throw new Error("Failed to create staff topic.");
     }
-  console.log("response api create" , response)
+  // console.log("response api create" , response)
+    return response.data.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data?.message || "Failed to create staff topic."
+    );
+  }
+};
+
+
+export const CreateStudentTopic = async (
+  data: CreateTopicPayload
+): Promise<Topic> => {
+  try {
+    const response = await apiClient.post<{
+      status: string;
+      message: string;
+      data: Topic;
+    }>("/chat/student", data,{
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    if (response.status !== 201 && response.status !== 200) {
+      throw new Error("Failed to create staff topic.");
+    }
+    console.log(response, "create response")
     return response.data.data;
   } catch (error: any) {
     throw new Error(
@@ -92,6 +131,28 @@ export const getAllStaffTopic = async (id:string): Promise<Topics[]> => {
       throw new Error("Failed to fetch staff topics.");
     }
   // console.log("response fetch", response)
+    return response.data.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data?.message || "Failed to fetch staff topics."
+    );
+  }
+};
+
+
+// get all student forum topic
+export const getAllStudentTopic = async (id:string): Promise<Topics[]> => {
+  try {
+    const response = await apiClient.get<{
+      status: string;
+      message: string;
+      data: Topics[];
+    }>(`chat/getstudent/user/topics/${id}`);
+
+    if (response.status !== 200) {
+      throw new Error("Failed to fetch staff topics.");
+    }
+    console.log("response fetch", response)
     return response.data.data;
   } catch (error: any) {
     throw new Error(
@@ -234,13 +295,70 @@ export const getParticipant = async(paylod:number):Promise<any[]> => {
       throw new Error("Failed to get chat");
     }
 
-    console.log("response", response);
+    // console.log("response", response);
     return response.data.data;
   } catch (error: any) {
     console.error("❌ Error fetching messages:", error?.response?.data || error.message);
     throw new Error(error?.response?.data?.message || "Failed to fetch messages");
   }
 };
+
+
+export const getuserChats = async():Promise<ChatUser[]> => {
+  try {
+    const response = await apiClient.get<{
+      status:string;
+      message:string;
+      data:ChatUser[];
+    }>("chat/get/retrieveuserchat")
+      if (response.status !== 200) {
+      throw new Error("Failed to get chat");
+    }
+    // console.log("response", response);
+    return response.data.data;
+    
+  } catch (error:any) {
+    console.error("❌ Error fetching user chat", error?.response?.data || error.message);
+    throw new Error(error?.response?.data?.message || "Failed to fetch user chat");
+  }
+}
+
+export const getmessageCount = async():Promise<any[]> => {
+  try {
+    const response = await apiClient.get<{
+      status:string;
+      message:string;
+      data:any[];
+    }>("chat/get/messagecount")
+      if (response.status !== 200) {
+      throw new Error("Failed to get chat count");
+    }
+    console.log("response", response);
+    return response.data.data;
+    
+  } catch (error:any) {
+    console.error("❌ Error fetching user chat count", error?.response?.data || error.message);
+    throw new Error(error?.response?.data?.message || "Failed to fetch user chat count");
+  }
+}
+export const unreadMessage = async(payload:unreadChat):Promise<any[]> => {
+  try {
+    const response = await apiClient.put<{
+      status:string;
+      message:string;
+      data:any[];
+    }>("chat/get/updateunreadmessage", payload)
+      if (response.status !== 200) {
+      throw new Error("Failed to unread message");
+    }
+    console.log("response", response);
+    return response.data.data;
+    
+  } catch (error:any) {
+    console.error("❌ Error unreading message", error?.response?.data || error.message);
+    throw new Error(error?.response?.data?.message || "Failed to unread message");
+  }
+}
 
 
 

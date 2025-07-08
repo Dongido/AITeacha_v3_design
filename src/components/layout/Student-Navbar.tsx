@@ -25,11 +25,14 @@ import {
   DialogClose,
 } from "../ui/Dialogue";
 import { useSelector, useDispatch } from "react-redux";
-import { AppDispatch } from "../../store";
+import { AppDispatch, RootState } from "../../store";
 import {
   loadProfileImage,
   resetProfileState,
 } from "../../store/slices/profileSlice";
+import { useAppSelector } from "../../store/hooks";
+import { getCount } from "../../store/slices/staffchats";
+import { FaRocketchat } from "react-icons/fa";
 
 export function DashboardNavbar() {
   const { controller, dispatch: uiDispatch } = useMaterialTailwindController();
@@ -41,12 +44,16 @@ export function DashboardNavbar() {
   
   const dispatch = useDispatch<AppDispatch>();
   const { imageUrl, loading } = useSelector((state: any) => state.profile);
+  //  const [unreadCount, setUnreadCount] = useState<number>(4);
+    const {  messageCount } = useAppSelector((state: RootState) => state.staffChats);
+
 
   useEffect(() => {
     if (!imageUrl) {
       dispatch(loadProfileImage());
     }
-    console.log(imageUrl);
+    dispatch(getCount());
+    // console.log(imageUrl);
   }, [dispatch, imageUrl]);
 
   const { pathname } = useLocation();
@@ -91,6 +98,18 @@ export function DashboardNavbar() {
               className="w-full bg-gray-100 border-transparent"
             />
           </div>
+            <Link to="/student/particpant/chat">
+            <div className="relative flex items-center gap-2 hover:bg-purple-50 rounded-full px-3 py-1 transition cursor-pointer">
+                <FaRocketchat className=" font-medium text-purple-400 text-lg" />
+              {/* <span className="text-sm font-medium text-purple-400">Chat</span> */}
+              {messageCount.length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px]
+                  font-semibold rounded-full h-5 w-5 flex items-center justify-center shadow-md">
+                  {messageCount.length > 9 ? "9+" : messageCount.length}
+                </span>
+              )}
+            </div>
+            </Link>
           <Button
             variant="text"
             color="blue-gray"

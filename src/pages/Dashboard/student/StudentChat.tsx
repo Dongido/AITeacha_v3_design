@@ -6,7 +6,7 @@ import { CalendarDays, Plus, UserRound } from "lucide-react";
 import { Undo2 } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { RootState } from "../../../store";
-import { createStaffTopic, getAllStaffTopics } from "../../../store/slices/staffchats";
+import { createStudentTopics, getAllStudentTopics,  } from "../../../store/slices/staffchats";
 import RestrictedPage from "../classrooms/RestrictionPage";
 import { Button } from "../../../components/ui/Button";
 import { Skeleton } from "../../../components/ui/Skeleton";
@@ -28,7 +28,7 @@ const StudentClass = () => {
   const [isEmailVerified, setIsEmailVerified] = useState<number>(0);
   const [userTopics, setUserTopics] = useState<any[]>([]);
    const dialogRef = useRef<{ openDialog: () => void }>(null);
-  const { topics, loading, error } = useAppSelector(
+  const { studentTopic:topics, loading, error } = useAppSelector(
     (state: RootState) => state.staffChats
   );
   
@@ -37,7 +37,7 @@ const StudentClass = () => {
 
 
     useEffect(() => {
-    dispatch(getAllStaffTopics(id as string));
+    dispatch(getAllStudentTopics(id as string));
   }, [dispatch]);
 
 
@@ -105,109 +105,24 @@ const StudentClass = () => {
       thumbnail?: File | null
    ) => {
 
-   const result = await dispatch(createStaffTopic({
+   const result = await dispatch(createStudentTopics({
       category,
       topic,
       description,
       thumbnail,
       content_from:"student chat",
       classroom_id:id,
-    team_host_id:"",
+      team_host_id:"",
    }));
-//    console.log(result, "result")
-
     if (result) {
-      dispatch(getAllStaffTopics( id as string));
+      dispatch(getAllStudentTopics( id as string));
     }  
   };
   
-if (
-    error === "Permission restricted: upgrade to premium account to gain access"
-  ) {
-    return (
-      <div>
-        {userDetails && isEmailVerified === 1 && (
-          <div
-            className="bg-[#e5dbff] mt-3 mb-4 text-black p-4 rounded-md flex justify-center items-center"
-            style={{
-              background:
-                "linear-gradient(143.6deg, rgba(192, 132, 252, 0) 20.79%, rgba(232, 121, 249, 0.26) 40.92%, rgba(204, 171, 238, 0) 70.35%)",
-            }}
-          >
-            <span className="text-center text-xl font-bold">
-              Teachers Are Heroes🎉
-            </span>
-          </div>
-        )}
-        <RestrictedPage error={error} />
-      </div>
-    );
-  }
-  if (error === "Permission restricted: for free account") {
-    return (
-      <div>
-        {userDetails && isEmailVerified === 1 && (
-          <div
-            className="bg-[#e5dbff] mt-3 mb-4 text-black p-4 rounded-md flex justify-center items-center"
-            style={{
-              background:
-                "linear-gradient(143.6deg, rgba(192, 132, 252, 0) 20.79%, rgba(232, 121, 249, 0.26) 40.92%, rgba(204, 171, 238, 0) 70.35%)",
-            }}
-          >
-            <span className="text-center text-xl font-bold">
-              Teachers Are Heroes🎉
-            </span>
-          </div>
-        )}
-        <RestrictedPage error={error} />
-      </div>
-    );
-  }
 
-  if (error === "Permission restricted for unverified email") {
-    return (
-      <div>
-        {userDetails && isEmailVerified === 1 && (
-          <div
-            className="bg-[#e5dbff] mt-3 mb-4 text-black p-4 rounded-md flex justify-center items-center"
-            style={{
-              background:
-                "linear-gradient(143.6deg, rgba(192, 132, 252, 0) 20.79%, rgba(232, 121, 249, 0.26) 40.92%, rgba(204, 171, 238, 0) 70.35%)",
-            }}
-          >
-            <span className="text-center text-xl font-bold">
-              Teachers Are Heroes🎉
-            </span>
-          </div>
-        )}
-        <RestrictedPage error={error} />
-      </div>
-    );
-  }
+ 
 
-  if (error) {
-    return (
-      <div>
-        {userDetails && isEmailVerified === 1 && (
-          <div
-            className="bg-[#e5dbff] mt-3 mb-4 text-black p-4 rounded-md flex justify-center items-center"
-            style={{
-              background:
-                "linear-gradient(143.6deg, rgba(192, 132, 252, 0) 20.79%, rgba(232, 121, 249, 0.26) 40.92%, rgba(204, 171, 238, 0) 70.35%)",
-            }}
-          >
-            <button
-              onClick={handleVerifyEmail}
-              className="text-primary hover:underline"
-            >
-              Verify Email
-            </button>
-          </div>
-        )}
-        <p className="text-red-500">{error}</p>
-      </div>
-    );
-  }
+
   return (
   <div className="lg:mt-12 md:mt-6 overflow-x-hidden">
       {/* Integrate the GroupChatForm component */}
@@ -294,10 +209,10 @@ if (
       >
       <div className="flex items-start gap-3">
       {/* Circle with first letter */}
-      <div className="w-10 h-10 rounded-full bg-purple-100 flex 
+      <Link to={`/student/user-profile/${topicItem.user_id}`} className="w-10 h-10 rounded-full bg-purple-100 flex 
       items-center justify-center text-purple-700 font-bold text-lg">
         {topicItem.topic.charAt(0).toUpperCase()}
-      </div>
+      </Link>
 
       <div className="flex-1">
       {/* Topic title */}
@@ -309,9 +224,11 @@ if (
 
       {/* Author name */}
       {(topicItem.firstname || topicItem.lastname) && (
-        <p className="text-sm text-purple-700 mt-1">
+        <Link
+        to={`/student/user-profile/${topicItem.user_id}`}
+         className="text-sm text-purple-700 mt-1">
           By {topicItem.firstname} {topicItem.lastname}
-        </p>
+        </Link>
       )}
 
       {/* Date */}

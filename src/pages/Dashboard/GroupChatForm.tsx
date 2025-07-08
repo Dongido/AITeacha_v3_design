@@ -48,6 +48,7 @@ const GroupChatForm: React.FC = () => {
   const { selectedTopic, loading, error, conversation:chats, userRole, zyrachat } = useAppSelector(
     (state: RootState) => state.staffChats
   );
+  //  console.log(chats)
 
   const [userDetails, setUserDetails] = useState<any>();
   const [userId, setUserId] = useState<string>("");
@@ -109,6 +110,7 @@ const isAdmin = useMemo(() => {
           ? `https://${chat.imageurl}`
           : "https://i.pravatar.cc/150?img=10",
         sender: `${chat.firstname || ""} ${chat.lastname || "User"}`.trim(),
+        user_id:chat.user_id,
         text: chat.content,
         date: new Date(chat.created_at).toLocaleString(),
         topic: chat.topic || "General",
@@ -179,13 +181,14 @@ const isAdmin = useMemo(() => {
       console.warn("❌ Disconnected from socket server");
     });
 
-  socket.on("receiveMessage", (savedMessage: SavedMessage) => {
+  socket.on("receiveMessage", (savedMessage: SavedMessage) => { 
+    // console.log("Received message", savedMessage)
   const newMsg: Message = {
     id: savedMessage.id?.toString() || crypto.randomUUID(),
     avatar: savedMessage.imageurl
       ? `https://${savedMessage.imageurl}`
       : "https://i.pravatar.cc/150?img=10",
-    sender: savedMessage.sender || "User",
+    sender: savedMessage.firstname || "User",
     text: savedMessage.content,
     date: new Date(savedMessage.created_at).toLocaleString(),
     topic: savedMessage.topic || "General",
@@ -267,13 +270,13 @@ const isAdmin = useMemo(() => {
 
     const messageText = plainTextMessage.trim();
     if (!messageText || !userId || !id) return;
-
+  // console.log("name", userDetails?.firstname)
     const payload = {
       user_id: userId,
       forum_id: id,
       content: messageText,
       parent_id: repliedMessage?.id || null,
-      sender: userDetails?.name || "User",
+      sender: userDetails?.firstname || "User",
     };
 
     socket.emit("sendMessage", payload);
@@ -336,42 +339,7 @@ const isAdmin = useMemo(() => {
     ? `https://${iteratedTopic.thumbnail}`
     : null;
 
-  if (loading) {
-    return (
-      <div className="overflow-x-auto">
-        <table className="min-w-full border-collapse">
-          <thead>
-            <tr>
-              {[...Array(5)].map((_, index) => (
-                <th key={index} className="p-4 border-b">
-                  <Skeleton className="h-4 w-16 rounded" />
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {[...Array(6)].map((_, rowIndex) => (
-              <tr key={rowIndex} className="border-b">
-                {[...Array(5)].map((_, colIndex) => (
-                  <td key={colIndex} className="p-4">
-                    <Skeleton className="h-4 w-full rounded" />
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="text-red-600 text-center py-10">
-        Error loading chat: {error || "An unknown error occurred."}
-      </div>
-    );
-  }
+ 
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-10 min-h-screen
