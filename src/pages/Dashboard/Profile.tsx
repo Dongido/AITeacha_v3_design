@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../store";
 import {
@@ -25,6 +25,15 @@ import Withdrawals from "./_components/Withdrawals";
 import { fetchBalance } from "../../api/bankaccount";
 import { Skeleton } from "../../components/ui/Skeleton";
 
+import {
+  Country,
+  State,
+  City,
+  ICountry,
+  IState,
+  ICity,
+} from "country-state-city";
+
 const Profile: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { user, loading, error, updateNameLoading, updatePhotoLoading } =
@@ -43,6 +52,11 @@ const Profile: React.FC = () => {
   const [generating, setGenerating] = useState<boolean>(false);
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
 
+  const [selectedCountryCode, setSelectedCountryCode] = useState<string>("");
+  const [selectedStateCode, setSelectedStateCode] = useState<string>("");
+  const [selectedCityName, setSelectedCityName] = useState<string>("");
+  const [gender, setGender] = useState<string>("");
+
   const [walletBalances, setWalletBalances] = useState<any>({
     usd: 0,
     ngn: 0,
@@ -52,9 +66,26 @@ const Profile: React.FC = () => {
   const [balanceError, setBalanceError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
+  const allCountries: ICountry[] = useMemo(() => Country.getAllCountries(), []);
+
+  const statesOfSelectedCountry: IState[] = useMemo(() => {
+    if (selectedCountryCode) {
+      return State.getStatesOfCountry(selectedCountryCode);
+    }
+    return [];
+  }, [selectedCountryCode]);
+
+  const citiesOfSelectedState: ICity[] = useMemo(() => {
+    if (selectedCountryCode && selectedStateCode) {
+      return City.getCitiesOfState(selectedCountryCode, selectedStateCode);
+    }
+    return [];
+  }, [selectedCountryCode, selectedStateCode]);
+
   const userDetails = JSON.parse(
     localStorage.getItem("ai-teacha-user") || "{}"
   );
+
   useEffect(() => {
     if (activeTab === "wallet" && userDetails.role_id !== 3) {
       handleFetchBalance();
@@ -74,6 +105,15 @@ const Profile: React.FC = () => {
       setAbout(user.about || "N/A");
       setReferral_code(user.referral_code || "");
       setRole(user.role_id || 3);
+      setGender(user.gender || "");
+
+      // Populate selectedCountryCode directly from user.country
+      setSelectedCountryCode(user.country || "");
+
+      // Populate selectedStateCode directly from user.state
+      setSelectedStateCode(user.state || "");
+
+      setSelectedCityName(user.city || "");
     }
   }, [user]);
 
@@ -82,7 +122,6 @@ const Profile: React.FC = () => {
     setBalanceError(null);
     try {
       const data = await fetchBalance();
-
       setWalletBalances(data[0]);
     } catch (err: any) {
       setBalanceError(err.message || "Failed to load balance.");
@@ -90,12 +129,12 @@ const Profile: React.FC = () => {
       setIsFetchingBalance(false);
     }
   };
+
   const handleCopyReferralLink = () => {
     navigator.clipboard.writeText(
       `https://aiteacha.com/auth/onboarding?referralCode=${referral_code}`
     );
     setCopied(true);
-
     setTimeout(() => setCopied(false), 1500);
   };
 
@@ -116,9 +155,13 @@ const Profile: React.FC = () => {
           lastname: lastName,
           about,
           phone,
+          gender,
+          country: selectedCountryCode, // Send ISO code
+          state: selectedStateCode, // Send ISO code
+          city: selectedCityName,
         })
       ).unwrap();
-      const updatedProfile = await dispatch(loadUserProfile()).unwrap();
+      await dispatch(loadUserProfile()).unwrap();
 
       setToastMessage("Profile updated successfully!");
       setEditMode(false);
@@ -144,32 +187,38 @@ const Profile: React.FC = () => {
       }
     }
   };
-  const handleRoleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setRole(Number(e.target.value));
-  };
 
-  const handleGenerateReferralCode = async () => {
-    setGenerating(true);
-    try {
-      const code = await generateReferralCode();
-      dispatch(loadUserProfile());
-      setReferral_code(code);
-    } catch (error) {
-      console.error("Error generating referral code:", error);
-    } finally {
-      setGenerating(false);
-    }
-  };
   const handleCancel = () => {
     if (user) {
       setFirstName(user.firstname || "");
       setLastName(user.lastname || "");
+      setPhone(user.phone || "N/A");
+      setEmail(user.email || "N/A");
+      setAbout(user.about || "N/A");
+      setReferral_code(user.referral_code || "");
+      setRole(user.role_id || 3);
+      setGender(user.gender || "");
+
+      // Reset to user's country and state ISO codes
+      setSelectedCountryCode(user.country || "");
+      setSelectedStateCode(user.state || "");
+      setSelectedCityName(user.city || "");
     }
     setProfilePicture(null);
     setEditMode(false);
   };
 
   const passwordDialogRef = useRef<any>(null);
+
+  const getCountryDisplayName = (isoCode: string) => {
+    const country = allCountries.find((c) => c.isoCode === isoCode);
+    return country ? country.name : "N/A";
+  };
+
+  const getStateDisplayName = (stateCode: string, countryCode: string) => {
+    const state = State.getStateByCodeAndCountry(stateCode, countryCode);
+    return state ? state.name : "N/A";
+  };
 
   return (
     <ToastProvider>
@@ -275,13 +324,13 @@ const Profile: React.FC = () => {
                       </div>
                       <div>
                         <label
-                          htmlFor="last-name"
+                          htmlFor="phone"
                           className="block text-sm font-semibold text-gray-700 mb-2"
                         >
                           Phone
                         </label>
                         <Input
-                          id="last-name"
+                          id="phone"
                           value={phone}
                           onChange={(e) => setPhone(e.target.value)}
                           placeholder="Enter your Phone Number"
@@ -291,13 +340,13 @@ const Profile: React.FC = () => {
                       </div>
                       <div>
                         <label
-                          htmlFor="last-name"
+                          htmlFor="email"
                           className="block text-sm font-semibold text-gray-700 mb-2"
                         >
                           Email
                         </label>
                         <Input
-                          id="last-name"
+                          id="email"
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           placeholder="Enter your email"
@@ -305,7 +354,147 @@ const Profile: React.FC = () => {
                           readOnly
                         />
                       </div>
+
+                      <div>
+                        <label
+                          htmlFor="country"
+                          className="block text-sm font-semibold text-gray-700 mb-2"
+                        >
+                          Country
+                        </label>
+                        {editMode ? (
+                          <select
+                            id="country"
+                            value={selectedCountryCode}
+                            onChange={(e) => {
+                              setSelectedCountryCode(e.target.value);
+                              setSelectedStateCode("");
+                              setSelectedCityName("");
+                            }}
+                            className="w-full border p-2 rounded-md border-gray-300"
+                          >
+                            <option value="">Select Country</option>
+                            {allCountries.map((country) => (
+                              <option
+                                key={country.isoCode}
+                                value={country.isoCode}
+                              >
+                                {country.name}
+                              </option>
+                            ))}
+                          </select>
+                        ) : (
+                          <Input
+                            id="country"
+                            value={getCountryDisplayName(selectedCountryCode)}
+                            readOnly
+                            className="w-full"
+                          />
+                        )}
+                      </div>
+
+                      <div>
+                        <label
+                          htmlFor="state"
+                          className="block text-sm font-semibold text-gray-700 mb-2"
+                        >
+                          State
+                        </label>
+                        {editMode ? (
+                          <select
+                            id="state"
+                            value={selectedStateCode}
+                            onChange={(e) => {
+                              setSelectedStateCode(e.target.value);
+                              setSelectedCityName("");
+                            }}
+                            className="w-full border p-2 rounded-md border-gray-300"
+                            disabled={!selectedCountryCode}
+                          >
+                            <option value="">Select State</option>
+                            {statesOfSelectedCountry.map((state) => (
+                              <option key={state.isoCode} value={state.isoCode}>
+                                {state.name}
+                              </option>
+                            ))}
+                          </select>
+                        ) : (
+                          <Input
+                            id="state"
+                            value={getStateDisplayName(
+                              selectedStateCode,
+                              selectedCountryCode
+                            )}
+                            readOnly
+                            className="w-full"
+                          />
+                        )}
+                      </div>
+
+                      <div>
+                        <label
+                          htmlFor="city"
+                          className="block text-sm font-semibold text-gray-700 mb-2"
+                        >
+                          City
+                        </label>
+                        {editMode ? (
+                          <select
+                            id="city"
+                            value={selectedCityName}
+                            onChange={(e) =>
+                              setSelectedCityName(e.target.value)
+                            }
+                            className="w-full border p-2 rounded-md border-gray-300"
+                            disabled={!selectedStateCode}
+                          >
+                            <option value="">Select City</option>
+                            {citiesOfSelectedState.map((city) => (
+                              <option key={city.name} value={city.name}>
+                                {city.name}
+                              </option>
+                            ))}
+                          </select>
+                        ) : (
+                          <Input
+                            id="city"
+                            value={selectedCityName || "N/A"}
+                            readOnly
+                            className="w-full"
+                          />
+                        )}
+                      </div>
+
+                      <div>
+                        <label
+                          htmlFor="gender"
+                          className="block text-sm font-semibold text-gray-700 mb-2"
+                        >
+                          Gender
+                        </label>
+                        {editMode ? (
+                          <select
+                            id="gender"
+                            value={gender}
+                            onChange={(e) => setGender(e.target.value)}
+                            className="w-full border p-2 rounded-md border-gray-300"
+                          >
+                            <option value="">Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                          </select>
+                        ) : (
+                          <Input
+                            id="gender"
+                            value={gender || "N/A"}
+                            readOnly
+                            className="w-full"
+                          />
+                        )}
+                      </div>
                     </div>
+
                     <div className="mb-2">
                       <label
                         htmlFor="role"
@@ -346,7 +535,7 @@ const Profile: React.FC = () => {
                         </div>
                       ) : (
                         <button
-                          onClick={handleGenerateReferralCode}
+                          onClick={generateReferralCode}
                           className="w-full bg-primary text-white p-2 rounded-md"
                           disabled={generating}
                         >
@@ -359,13 +548,13 @@ const Profile: React.FC = () => {
 
                     <div>
                       <label
-                        htmlFor="last-name"
+                        htmlFor="about"
                         className="block text-sm font-semibold text-gray-700 mb-2"
                       >
                         About
                       </label>
                       <TextArea
-                        id="last-name"
+                        id="about"
                         value={about}
                         onChange={(e) => setAbout(e.target.value)}
                         placeholder="Write about yourself"
@@ -414,7 +603,7 @@ const Profile: React.FC = () => {
                             <Button
                               onClick={handleUpdatePhoto}
                               variant={"gradient"}
-                              className="mt-3   text-white py-2 px-6 rounded-full"
+                              className="mt-3  text-white py-2 px-6 rounded-full"
                             >
                               {updatePhotoLoading
                                 ? "Updating..."

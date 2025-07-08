@@ -8,14 +8,12 @@ import {
   FormLabel,
   FormMessage,
 } from "../../../components/ui/Form";
-import { Label } from "../../../components/ui/Label";
 import { Input } from "../../../components/ui/Input";
 import { cn } from "../../../lib/utils";
 import { Button } from "../../../components/ui/Button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PasswordInput } from "../../../components/ui/PasswordInput";
-
 import {
   ToastProvider,
   Toast,
@@ -31,10 +29,10 @@ import {
   SelectItem,
   SelectValue,
 } from "../../../components/ui/Select";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { registerUser, SignupResponse } from "../../../api/auth";
 import { FcGoogle } from "react-icons/fc";
-import { Country } from "country-state-city";
+import { Country, State } from "country-state-city";
 import { Checkbox } from "../../../components/ui/Checkbox";
 
 interface SignupFormProps extends HTMLAttributes<HTMLDivElement> {}
@@ -46,7 +44,7 @@ const formSchema = z
       .min(3, { message: "First name must be at least 3 characters long" }),
     lastName: z
       .string()
-      .min(3, { message: "Last name must be at least 3 characters long" }), // Fixed typo
+      .min(3, { message: "Last name must be at least 3 characters long" }),
     email: z
       .string()
       .min(1, { message: "Please enter your email" })
@@ -58,6 +56,7 @@ const formSchema = z
       .string()
       .min(1, { message: "Please Input Organization or School Name" }),
     country: z.string().min(1, { message: "Please select a country" }),
+    state: z.string().min(1, { message: "Please select a state" }),
     city: z.string().min(1, { message: "Please enter your city" }),
     gender: z.enum(["Male", "Female"], {
       errorMap: () => ({ message: "Please select a gender" }),
@@ -109,6 +108,9 @@ export function TeacherSignupForm({ className, ...props }: SignupFormProps) {
   const [toastVariant, setToastVariant] = useState<"default" | "destructive">(
     "default"
   );
+  const [statesOfSelectedCountry, setStatesOfSelectedCountry] = useState<
+    Option[]
+  >([]);
 
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
@@ -133,7 +135,8 @@ export function TeacherSignupForm({ className, ...props }: SignupFormProps) {
       email: "",
       phone: "",
       organization: "",
-      country: "Nigeria",
+      country: "NG",
+      state: "",
       city: "",
       gender: "Male",
       ageRange: "",
@@ -148,6 +151,7 @@ export function TeacherSignupForm({ className, ...props }: SignupFormProps) {
   });
 
   const hasDisability = form.watch("hasDisability");
+  const selectedCountry = form.watch("country");
 
   useEffect(() => {
     const storedReferralCode = localStorage.getItem("referralCode");
@@ -155,6 +159,19 @@ export function TeacherSignupForm({ className, ...props }: SignupFormProps) {
       form.setValue("referred_by", storedReferralCode);
     }
   }, [form]);
+
+  useEffect(() => {
+    if (selectedCountry) {
+      const states = State.getStatesOfCountry(selectedCountry).map((state) => ({
+        value: state.isoCode,
+        label: state.name,
+      }));
+      setStatesOfSelectedCountry(states);
+      form.setValue("state", "");
+    } else {
+      setStatesOfSelectedCountry([]);
+    }
+  }, [selectedCountry, form]);
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true);
@@ -178,7 +195,9 @@ export function TeacherSignupForm({ className, ...props }: SignupFormProps) {
         data.gender,
         data.ageRange,
         data.hasDisability ? data.disabilityDetails : undefined,
-        data.referred_by
+        data.referred_by,
+        undefined,
+        data.state
       );
 
       console.log("Signup data submitted:", data);
@@ -322,7 +341,7 @@ export function TeacherSignupForm({ className, ...props }: SignupFormProps) {
                         Country
                       </FormLabel>
                       <Select
-                        onValueChange={field.onChange} // Directly update the form field value
+                        onValueChange={field.onChange}
                         value={field.value}
                       >
                         <FormControl>
@@ -345,24 +364,54 @@ export function TeacherSignupForm({ className, ...props }: SignupFormProps) {
 
                 <FormField
                   control={form.control}
-                  name="city"
+                  name="state"
                   render={({ field }) => (
-                    <FormItem className="space-y-1 w-full">
-                      <FormLabel className="font-semibold">City</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Enter City"
-                          className="rounded-full"
-                          {...field}
-                        />
-                      </FormControl>
+                    <FormItem className="flex flex-col w-full space-y-2">
+                      <FormLabel className="font-semibold mt-2">
+                        State
+                      </FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                        disabled={statesOfSelectedCountry.length === 0}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="h-10 rounded-full">
+                            <SelectValue placeholder="Select a State" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {statesOfSelectedCountry.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       <FormMessage className="text-red-700" />
                     </FormItem>
                   )}
                 />
               </div>
 
-              {/* New Gender and Age Fields */}
+              <FormField
+                control={form.control}
+                name="city"
+                render={({ field }) => (
+                  <FormItem className="space-y-1 w-full">
+                    <FormLabel className="font-semibold">City</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Enter City"
+                        className="rounded-full"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage className="text-red-700" />
+                  </FormItem>
+                )}
+              />
+
               <div className="flex space-x-4">
                 <FormField
                   control={form.control}
@@ -421,7 +470,6 @@ export function TeacherSignupForm({ className, ...props }: SignupFormProps) {
                 />
               </div>
 
-              {/* New Disability Fields */}
               <div className="grid gap-2">
                 <FormField
                   control={form.control}
@@ -430,9 +478,9 @@ export function TeacherSignupForm({ className, ...props }: SignupFormProps) {
                     <FormItem className="flex flex-row items-start space-x-3 space-y-0 p-4 border border-gray-200 rounded-lg">
                       <FormControl>
                         <Checkbox
+                          id="hasDisability"
                           checked={field.value}
                           onCheckedChange={field.onChange}
-                          id="hasDisability"
                         />
                       </FormControl>
                       <div className="space-y-1 leading-none">

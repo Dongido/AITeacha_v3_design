@@ -16,6 +16,7 @@ export default () => {
   );
 
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
+  const myRef = useRef(null);
   const carouselRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -41,6 +42,20 @@ export default () => {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    const autoScrollInterval = setInterval(() => {
+      if (window.innerWidth < 768) {
+        setCurrentCardIndex((prevIndex) => {
+          const nextIndex = (prevIndex + 1) % cardsData.length;
+          scrollToCard(nextIndex);
+          return nextIndex;
+        });
+      }
+    }, 3000);
+
+    return () => clearInterval(autoScrollInterval);
+  }, []);
+
   const scrollToSectionOnHome = (id: string) => {
     if (window.location.pathname === "/") {
       const section = document.getElementById(id);
@@ -48,21 +63,6 @@ export default () => {
         section.scrollIntoView({ behavior: "smooth" });
       }
     }
-  };
-
-  const nextCard = (): void => {
-    setCurrentCardIndex(
-      (prevIndex: number) => (prevIndex + 1) % cardsData.length
-    );
-    scrollToCard(currentCardIndex + 1);
-  };
-
-  const prevCard = (): void => {
-    setCurrentCardIndex(
-      (prevIndex: number) =>
-        (prevIndex - 1 + cardsData.length) % cardsData.length
-    );
-    scrollToCard(currentCardIndex - 1);
   };
 
   const scrollToCard = (index: number): void => {
@@ -91,14 +91,29 @@ export default () => {
     }
   };
 
+  const nextCard = (): void => {
+    setCurrentCardIndex((prevIndex: number) => {
+      const nextIdx = (prevIndex + 1) % cardsData.length;
+      scrollToCard(nextIdx);
+      return nextIdx;
+    });
+  };
+
+  const prevCard = (): void => {
+    setCurrentCardIndex((prevIndex: number) => {
+      const nextIdx = (prevIndex - 1 + cardsData.length) % cardsData.length;
+      scrollToCard(nextIdx);
+      return nextIdx;
+    });
+  };
+
   const handleCardButtonClick = async (cardId: string, roleId: number) => {
     setLoading(true);
-
     localStorage.setItem("selectedRole", cardId);
     localStorage.setItem("roleId", roleId.toString());
-
     navigate("/auth/sign-up");
   };
+
   return (
     <section>
       <Navbar />
@@ -232,27 +247,27 @@ export default () => {
               </div>
             </div>
           </section>
-          <div className="max-w-screen-2xl mx-auto px-4 md:px-8">
+          <div className="max-w-screen-2xl mx-auto px-2 md:px-4 lg:px-8">
             <div
               ref={carouselRef}
               className="flex transition-transform duration-500 ease-in-out
-            md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-8 gap-x-6
-            md:overflow-visible overflow-x-auto snap-x snap-mandatory scrollbar-hide"
+          md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-8 gap-x-6
+          md:overflow-visible overflow-x-auto snap-x snap-mandatory scrollbar-hide"
               style={{
                 scrollSnapType: "x mandatory",
                 paddingLeft:
-                  window.innerWidth < 768 ? "calc(50% - 140px)" : "0",
+                  window.innerWidth < 768 ? "calc(50% - 160px)" : "0",
                 paddingRight:
-                  window.innerWidth < 768 ? "calc(50% - 140px)" : "0",
+                  window.innerWidth < 768 ? "calc(50% - 160px)" : "0",
               }}
             >
               {cardsData.map((card: any, index: number) => (
                 <div
                   key={card.id}
-                  className="flex-shrink-0 w-full md:w-auto snap-center bg-white rounded-xl shadow-xl p-8 m-4 md:m-0 flex flex-col justify-between
-                transform transition-all duration-500 ease-in-out hover:scale-105 hover:shadow-2xl border border-gray-100"
+                  className="flex-shrink-0 w-full md:w-auto snap-center bg-white rounded-xl shadow-xl px-2 md:px-4 lg:px-8 py-8 m-0 md:m-4 flex flex-col justify-between
+              transform transition-all duration-500 ease-in-out hover:scale-105 hover:shadow-2xl border border-gray-100"
                   style={{
-                    minWidth: "280px",
+                    minWidth: window.innerWidth < 768 ? "320px" : "280px", // Increased minWidth for small screens
                     transform:
                       currentCardIndex === index || window.innerWidth >= 768
                         ? "scale(1)"
@@ -299,7 +314,7 @@ export default () => {
                   </div>
                   <Button
                     onClick={() => handleCardButtonClick(card.id, card.roleId)}
-                    className={`w-full text-white font-bold py-3 px-6 rounded-full transition duration-300 ease-in-out shadow-md hover:shadow-lg hover:brightness-90 focus:outline-none focus:ring-2 focus:ring-opacity-50`}
+                    className="w-full text-white font-bold py-3 px-6 rounded-full transition duration-300 ease-in-out shadow-md hover:shadow-lg hover:brightness-90 focus:outline-none focus:ring-2 focus:ring-opacity-50"
                     variant="gradient"
                   >
                     {card.buttonText}
@@ -309,9 +324,9 @@ export default () => {
             </div>
           </div>
         </div>
-        <div className="max-w-screen-2xl mx-auto mt-28  bg-gradient-to-b from-[#5c3cbb] to-[#8b6ecb] py-4 lg:py-8 rounded-3xl">
+        <div className="max-w-screen-2xl mx-auto mt-28 bg-gradient-to-b from-[#5c3cbb] to-[#8b6ecb] py-4 lg:py-8 rounded-3xl">
           <p className="text-white text-2xl font-semibold sm:text-3xl text-center">
-            "AiTeacha Saved me 15 hours a week"
+            "AiTeacha saved me 15 hours a week!"
           </p>
           <h3 className="text-white font-semibold text-center">
             Teacher in Lagos, Nigeria
@@ -320,6 +335,10 @@ export default () => {
             <div className="text-center">
               <h2 className="text-4xl font-bold text-white">19,000+</h2>
               <p className="text-lg">Teachers Onboard</p>
+            </div>
+            <div className="text-center">
+              <h2 className="text-4xl font-bold text-white">3,000+</h2>
+              <p className="text-lg">Schools Partnered</p>
             </div>
             <div className="text-center">
               <h2 className="text-4xl font-bold text-white">200,000+</h2>

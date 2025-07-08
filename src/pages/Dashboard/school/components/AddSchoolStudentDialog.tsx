@@ -1,4 +1,9 @@
-import React, { useImperativeHandle, useState, forwardRef } from "react";
+import React, {
+  useImperativeHandle,
+  useState,
+  forwardRef,
+  useEffect,
+} from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,8 +24,8 @@ import {
   ToastTitle,
   ToastViewport,
 } from "../../../../components/ui/Toast";
-import { registerUser } from "../../../../api/auth";
-import { uploadStudents } from "../../../../api/school";
+import { registerUser } from "../../../../api/auth"; // Assuming registerUser is imported correctly
+import { uploadStudents } from "../../../../api/school"; // This import seems unused in this component
 import {
   Form,
   FormControl,
@@ -39,6 +44,7 @@ import {
   SelectValue,
 } from "../../../../components/ui/Select";
 import { LuLoader2 } from "react-icons/lu";
+import { Country, State, City } from "country-state-city";
 
 interface AddSingleStudentDialogProps {
   onSuccess?: () => void;
@@ -80,6 +86,9 @@ const singleStudentFormSchema = z
       .refine((val) => !containsUrl(val || ""), {
         message: "Student ID cannot contain URLs",
       }),
+    country: z.string().min(1, { message: "Please select a country" }),
+    state: z.string().min(1, { message: "Please select a state" }),
+    city: z.string().min(1, { message: "Please enter your city" }),
     gender: z.enum(["Male", "Female"], {
       errorMap: () => ({ message: "Please select a gender" }),
     }),
@@ -119,7 +128,7 @@ const singleStudentFormSchema = z
 
 type SingleStudentFormData = z.infer<typeof singleStudentFormSchema>;
 
-type AgeRangeOption = {
+type Option = {
   value: string;
   label: string;
 };
@@ -133,6 +142,12 @@ const AddSingleStudentDialog = forwardRef(
     const [toastVariant, setToastVariant] = useState<"default" | "destructive">(
       "default"
     );
+    const [statesOfSelectedCountry, setStatesOfSelectedCountry] = useState<
+      Option[]
+    >([]);
+    const [citiesOfSelectedState, setCitiesOfSelectedState] = useState<
+      Option[]
+    >([]);
 
     const singleStudentForm = useForm<SingleStudentFormData>({
       resolver: zodResolver(singleStudentFormSchema),
@@ -142,6 +157,9 @@ const AddSingleStudentDialog = forwardRef(
         email: "",
         phone: "",
         student_number: "",
+        country: "",
+        state: "",
+        city: "",
         gender: undefined,
         ageRange: "",
         password: "",
@@ -153,8 +171,10 @@ const AddSingleStudentDialog = forwardRef(
     });
 
     const hasDisability = singleStudentForm.watch("hasDisability");
+    const selectedCountry = singleStudentForm.watch("country");
+    const selectedState = singleStudentForm.watch("state");
 
-    const ageRanges: AgeRangeOption[] = [
+    const ageRanges: Option[] = [
       { value: "5-10", label: "5-10" },
       { value: "11-15", label: "11-15" },
       { value: "16-21", label: "16-21" },
@@ -174,6 +194,41 @@ const AddSingleStudentDialog = forwardRef(
       },
     }));
 
+    // Effect to update states when country changes
+    useEffect(() => {
+      if (selectedCountry) {
+        const states = State.getStatesOfCountry(selectedCountry).map(
+          (state) => ({
+            value: state.isoCode,
+            label: state.name,
+          })
+        );
+        setStatesOfSelectedCountry(states);
+        singleStudentForm.setValue("state", ""); // Reset state when country changes
+        singleStudentForm.setValue("city", ""); // Reset city when country changes
+      } else {
+        setStatesOfSelectedCountry([]);
+        setCitiesOfSelectedState([]); // Clear cities if no country
+      }
+    }, [selectedCountry, singleStudentForm]);
+
+    // Effect to update cities when state changes
+    useEffect(() => {
+      if (selectedState && selectedCountry) {
+        const cities = City.getCitiesOfState(
+          selectedCountry,
+          selectedState
+        ).map((city) => ({
+          value: city.name,
+          label: city.name,
+        }));
+        setCitiesOfSelectedState(cities);
+        singleStudentForm.setValue("city", ""); // Reset city when state changes
+      } else {
+        setCitiesOfSelectedState([]);
+      }
+    }, [selectedState, selectedCountry, singleStudentForm]);
+
     const handleSingleStudentSubmit = async (data: SingleStudentFormData) => {
       setLoading(true);
       try {
@@ -188,13 +243,14 @@ const AddSingleStudentDialog = forwardRef(
           false,
           data.phone,
           undefined,
-          undefined,
-          undefined,
+          data.country,
+          data.city,
           data.gender,
           data.ageRange,
           data.hasDisability ? data.disabilityDetails : undefined,
           data.referred_by,
-          data.student_number
+          data.student_number,
+          data.state
         );
         setToastMessage("Student account created successfully!");
         setToastVariant("default");
@@ -210,6 +266,13 @@ const AddSingleStudentDialog = forwardRef(
         setLoading(false);
       }
     };
+
+    const countryOptions: Option[] = Country.getAllCountries().map(
+      (country) => ({
+        value: country.isoCode,
+        label: country.name,
+      })
+    );
 
     return (
       <ToastProvider swipeDirection="right">
@@ -338,6 +401,103 @@ const AddSingleStudentDialog = forwardRef(
                     <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
                       <FormField
                         control={singleStudentForm.control}
+                        name="country"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-col w-full space-y-2">
+                            <FormLabel className="font-semibold mt-2">
+                              Country
+                            </FormLabel>
+                            <Select
+                              onValueChange={field.onChange}
+                              value={field.value}
+                              disabled={loading}
+                            >
+                              <FormControl>
+                                <SelectTrigger className="h-10 rounded-full">
+                                  <SelectValue placeholder="Select a Country" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {countryOptions.map((option) => (
+                                  <SelectItem
+                                    key={option.value}
+                                    value={option.value}
+                                  >
+                                    {option.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormMessage className="text-red-700" />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={singleStudentForm.control}
+                        name="state"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-col w-full space-y-2">
+                            <FormLabel className="font-semibold mt-2">
+                              State
+                            </FormLabel>
+                            <Select
+                              onValueChange={field.onChange}
+                              value={field.value}
+                              disabled={
+                                loading || statesOfSelectedCountry.length === 0
+                              }
+                            >
+                              <FormControl>
+                                <SelectTrigger className="h-10 rounded-full">
+                                  <SelectValue placeholder="Select a State" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {statesOfSelectedCountry.length > 0 ? (
+                                  statesOfSelectedCountry.map((option) => (
+                                    <SelectItem
+                                      key={option.value}
+                                      value={option.value}
+                                    >
+                                      {option.label}
+                                    </SelectItem>
+                                  ))
+                                ) : (
+                                  <SelectItem value="" disabled>
+                                    No states available
+                                  </SelectItem>
+                                )}
+                              </SelectContent>
+                            </Select>
+                            <FormMessage className="text-red-700" />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <FormField
+                      control={singleStudentForm.control}
+                      name="city"
+                      render={({ field }) => (
+                        <FormItem className="space-y-1 w-full">
+                          <FormLabel className="font-semibold">City</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Enter City"
+                              className="rounded-full"
+                              {...field}
+                              disabled={loading}
+                            />
+                          </FormControl>
+                          <FormMessage className="text-red-700" />
+                        </FormItem>
+                      )}
+                    />
+
+                    <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+                      <FormField
+                        control={singleStudentForm.control}
                         name="gender"
                         render={({ field }) => (
                           <FormItem className="flex flex-col w-full space-y-2">
@@ -445,46 +605,48 @@ const AddSingleStudentDialog = forwardRef(
                       )}
                     </div>
 
-                    <FormField
-                      control={singleStudentForm.control}
-                      name="password"
-                      render={({ field }) => (
-                        <FormItem className="space-y-1">
-                          <FormLabel className="font-semibold">
-                            Password
-                          </FormLabel>
-                          <FormControl>
-                            <PasswordInput
-                              placeholder="********"
-                              className="rounded-full"
-                              {...field}
-                              disabled={loading}
-                            />
-                          </FormControl>
-                          <FormMessage className="text-red-700" />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={singleStudentForm.control}
-                      name="confirmPassword"
-                      render={({ field }) => (
-                        <FormItem className="space-y-1">
-                          <FormLabel className="font-semibold">
-                            Confirm Password
-                          </FormLabel>
-                          <FormControl>
-                            <PasswordInput
-                              placeholder="********"
-                              className="rounded-full"
-                              {...field}
-                              disabled={loading}
-                            />
-                          </FormControl>
-                          <FormMessage className="text-red-700" />
-                        </FormItem>
-                      )}
-                    />
+                    <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+                      <FormField
+                        control={singleStudentForm.control}
+                        name="password"
+                        render={({ field }) => (
+                          <FormItem className="space-y-1">
+                            <FormLabel className="font-semibold">
+                              Password
+                            </FormLabel>
+                            <FormControl>
+                              <PasswordInput
+                                placeholder="********"
+                                className="rounded-full"
+                                {...field}
+                                disabled={loading}
+                              />
+                            </FormControl>
+                            <FormMessage className="text-red-700" />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={singleStudentForm.control}
+                        name="confirmPassword"
+                        render={({ field }) => (
+                          <FormItem className="space-y-1">
+                            <FormLabel className="font-semibold">
+                              Confirm Password
+                            </FormLabel>
+                            <FormControl>
+                              <PasswordInput
+                                placeholder="********"
+                                className="rounded-full"
+                                {...field}
+                                disabled={loading}
+                              />
+                            </FormControl>
+                            <FormMessage className="text-red-700" />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
                     <FormField
                       control={singleStudentForm.control}
                       name="referred_by"

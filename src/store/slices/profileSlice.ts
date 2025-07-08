@@ -51,45 +51,40 @@ export const loadUserProfile = createAsyncThunk(
 export const changePasswordThunk = createAsyncThunk(
   "profile/changePassword",
   async (
-    {
-      oldPassword,
-      password,
-    }: { oldPassword: string; password: string },
+    { oldPassword, password }: { oldPassword: string; password: string },
     { rejectWithValue }
   ) => {
     try {
       await changeUserPassword(oldPassword, password);
       return "Password updated successfully.";
     } catch (error: any) {
-      return rejectWithValue(
-        error.message || "Failed to change password."
-      );
+      return rejectWithValue(error.message || "Failed to change password.");
     }
   }
 );
 
+export interface UpdateUserNamePayload {
+  firstname?: string;
+  lastname?: string;
+  about?: string;
+  phone?: string;
+  gender?: string;
+  country?: string;
+  state?: string;
+  city?: string;
+}
 
-// Async thunk for updating user's name
 export const updateUserNameThunk = createAsyncThunk(
   "profile/updateUserName",
-  async (
-    {
-      firstname,
-      lastname,
-      about,
-      phone,
-    }: { firstname: string; lastname: string; about: string; phone: string },
-    { rejectWithValue }
-  ) => {
+  async (userData: UpdateUserNamePayload, { rejectWithValue }) => {
     try {
-      await updateUserName(firstname, lastname, about, phone);
-      return { firstname, lastname };
+      await updateUserName(userData);
+      return userData;
     } catch (error: any) {
       return rejectWithValue(error.message || "Failed to update user name.");
     }
   }
 );
-
 // Async thunk for updating profile photo
 export const updateProfilePhotoThunk = createAsyncThunk(
   "profile/updateProfilePhoto",
@@ -136,7 +131,7 @@ const profileSlice = createSlice({
       })
 
       // change password
-     .addCase(changePasswordThunk.pending, (state) => {
+      .addCase(changePasswordThunk.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
@@ -155,13 +150,21 @@ const profileSlice = createSlice({
       })
       .addCase(
         updateUserNameThunk.fulfilled,
-        (
-          state,
-          action: PayloadAction<{ firstname: string; lastname: string }>
-        ) => {
+        (state, action: PayloadAction<UpdateUserNamePayload>) => {
           state.updateNameLoading = false;
           if (state.user) {
-            state.user.name = `${action.payload.firstname} ${action.payload.lastname}`;
+            // Safely update user properties if they exist in the payload
+            if (action.payload.firstname !== undefined) {
+              state.user.name = `${action.payload.firstname} ${
+                action.payload.lastname || ""
+              }`;
+            }
+            // You can add more updates here based on other fields in UpdateUserNamePayload
+            // For example:
+            // if (action.payload.about !== undefined) {
+            //   state.user.about = action.payload.about;
+            // }
+            // etc.
           }
         }
       )
