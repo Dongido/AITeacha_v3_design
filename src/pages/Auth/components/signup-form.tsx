@@ -23,10 +23,7 @@ import {
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../../store";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  registerUser,
-  SignupResponse,
-} from "../../../api/auth";
+import { registerUser, SignupResponse } from "../../../api/auth";
 import { FcGoogle } from "react-icons/fc";
 import { Checkbox } from "../../../components/ui/Checkbox";
 import {
@@ -95,7 +92,10 @@ const formSchema = z
   })
   .refine(
     (data) => {
-      if (data.hasDisability && (!data.disabilityDetails || data.disabilityDetails.trim() === '')) {
+      if (
+        data.hasDisability &&
+        (!data.disabilityDetails || data.disabilityDetails.trim() === "")
+      ) {
         return false;
       }
       return true;
@@ -142,7 +142,7 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
       lastName: "",
       email: "",
       phone: "",
-      gender: undefined,
+      gender: "Male",
       ageRange: "",
       referred_by: "",
       password: "",
@@ -299,8 +299,13 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
                   name="gender"
                   render={({ field }) => (
                     <FormItem className="flex flex-col w-full space-y-2">
-                      <FormLabel className="font-semibold mt-2">Gender</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
+                      <FormLabel className="font-semibold mt-2">
+                        Gender
+                      </FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
                         <FormControl>
                           <SelectTrigger className="h-10 rounded-full">
                             <SelectValue placeholder="Select Gender" />
@@ -320,8 +325,13 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
                   name="ageRange"
                   render={({ field }) => (
                     <FormItem className="flex flex-col w-full space-y-2">
-                      <FormLabel className="font-semibold mt-2">Age Range</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
+                      <FormLabel className="font-semibold mt-2">
+                        Age Range
+                      </FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
                         <FormControl>
                           <SelectTrigger className="h-10 rounded-full">
                             <SelectValue placeholder="Select Age Range" />
