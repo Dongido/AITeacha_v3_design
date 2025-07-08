@@ -113,6 +113,8 @@ import StudentClass from "../pages/Dashboard/student/StudentChat";
 import JitsiStudentMeeting from "../pages/Dashboard/student/JitsiMeeting";
 import Participants from "../pages/Dashboard/student/Particpant"
 import AdminResourcesPage from "../pages/Dashboard/admin/AdminResources";
+import ChatListPage from "../pages/Dashboard/chats/ChatListPage";
+import { FaRocketchat } from "react-icons/fa";
 
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -335,6 +337,12 @@ export const Paramroutes = [
         name: "classrooms",
         path: "/classrooms/joined",
         element: <Classes />,
+      },
+       {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "Chats",
+        path: "/particpant/chat",
+        element: <ChatListPage />,
       },
       {
         icon: <GlobeAltIcon {...icon} />,
@@ -698,6 +706,12 @@ export const Studentroutes = [
         path: "/assignments",
         element: <StudentAssignments />,
       },
+       {
+        icon: <FaRocketchat {...icon} />,
+        name: "messages",
+        path: "/particpant/chat",
+        element: <ChatListPage />,
+      },
     ],
   },
 ];
@@ -796,6 +810,12 @@ export const StudentParamroutes = [
         name: "participant",
         path: "/participant/:id",
         element: <Participants/>
+      },
+       {
+        icon: <DocumentTextIcon {...icon} />,
+        name: "profile",
+        path: "/user-profile/:id",
+        element: <UserProfilePage />,
       },
     ],
   },

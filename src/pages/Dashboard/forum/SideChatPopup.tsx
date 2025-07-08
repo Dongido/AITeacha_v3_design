@@ -4,7 +4,7 @@ import io from "socket.io-client";
 import EmojiPicker from "emoji-picker-react";
 import { RootState } from "../../../store";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getMessages } from "../../../store/slices/staffchats";
+import { getCount, getMessages, unreadMessageCounts } from "../../../store/slices/staffchats";
 
 const socket = io("https://api.aiteacha.com");
 
@@ -24,16 +24,16 @@ interface ChatMessage {
   time: string;
 }
 
-const SideChatPopup: React.FC<SideChatPopupProps> = ({ isOpen, onClose, id: receiverId }) => {
+const SideChatPopup: React.FC<SideChatPopupProps> = ({ isOpen, onClose, id:receiverId }) => {
   const dispatch = useAppDispatch();
-  const { message, loading } = useAppSelector((state: RootState) => state.staffChats);
+  const { message, loading , messageCount } = useAppSelector((state: RootState) => state.staffChats);
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [senderId, setSenderId] = useState<number | null>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
-
+ 
   useEffect(() => {
     const userDetailsFromStorage = localStorage.getItem("ai-teacha-user");
     if (userDetailsFromStorage) {
@@ -42,11 +42,21 @@ const SideChatPopup: React.FC<SideChatPopupProps> = ({ isOpen, onClose, id: rece
     }
   }, []);
 
-  useEffect(() => {
+  useEffect(() => {  
     if (senderId !== null) {
       dispatch(getMessages({ senderId, receiverId: parseInt(receiverId, 10) }));
     }
+  
   }, [dispatch, senderId, receiverId]);
+
+ 
+useEffect(() => {
+  const payload = { senderId: receiverId };
+  if (payload.senderId) {
+    dispatch(unreadMessageCounts(payload));
+  }
+}, [isOpen, dispatch, receiverId]);
+
 
   useEffect(() => {
     if (message && Array.isArray(message)) {
@@ -123,6 +133,7 @@ const SideChatPopup: React.FC<SideChatPopupProps> = ({ isOpen, onClose, id: rece
     socket.emit("sendChat", messageData);
     setInput("");
     setShowEmojiPicker(false);
+    //  dispatch(getCount())
   };
 
   const handleEmojiClick = (emojiData: any) => {
@@ -164,14 +175,15 @@ const SideChatPopup: React.FC<SideChatPopupProps> = ({ isOpen, onClose, id: rece
                 />
               )}
               <div
-                className={`max-w-[70%] px-4 py-2 rounded-2xl text-sm break-words ${
+                className={`max-w-[40%] px-3 py-2 rounded-2xl text-sm flex flex-col  h-auto ${
                   msg.isMe
-                    ? "bg-gray-800 text-white rounded-br-none ml-auto"
+                    ? "bg-gray-600 text-white rounded-br-none ml-auto"
                     : "bg-gray-100 text-gray-900 rounded-bl-none mr-auto"
                 }`}
               >
-                <p className="leading-relaxed">{msg.text}</p>
-                <p className="text-[10px] mt-1 text-right opacity-70">{msg.time}</p>
+                <span className=" text-sm mt-1">{msg.text}</span>
+               <span className="text-[10px] text-right opacity-70 mt-0">{msg.time}</span>
+
               </div>
               {msg.isMe && (
                 <img
