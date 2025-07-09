@@ -38,7 +38,6 @@ export function DashboardNavbar() {
     openSidenav: boolean;
   };
 
-  
   const dispatch = useDispatch<AppDispatch>();
   const { imageUrl, loading } = useSelector((state: any) => state.profile);
 
@@ -84,13 +83,13 @@ export function DashboardNavbar() {
           </Text>
         </div>
         <div className="flex items-center gap-0">
-          <div className="mr-auto sm:ml-6 md:mr-4 sm:mr-0 md:w-56">
+          {/* <div className="mr-auto sm:ml-6 md:mr-4 sm:mr-0 md:w-56">
             <Input
               placeholder="Search for anything.."
               type="search"
               className="w-full bg-gray-100 border-transparent"
             />
-          </div>
+          </div> */}
           <Button
             variant="text"
             color="blue-gray"

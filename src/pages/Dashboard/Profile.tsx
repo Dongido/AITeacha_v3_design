@@ -106,13 +106,8 @@ const Profile: React.FC = () => {
       setReferral_code(user.referral_code || "");
       setRole(user.role_id || 3);
       setGender(user.gender || "");
-
-      // Populate selectedCountryCode directly from user.country
       setSelectedCountryCode(user.country || "");
-
-      // Populate selectedStateCode directly from user.state
       setSelectedStateCode(user.state || "");
-
       setSelectedCityName(user.city || "");
     }
   }, [user]);

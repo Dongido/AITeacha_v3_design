@@ -86,13 +86,13 @@ export function DashboardNavbar() {
         </div>
 
         <div className="flex items-center gap-0">
-          <div className="mr-auto sm:ml-6 md:mr-4 sm:mr-0 md:w-56 hidden md:block">
+          {/* <div className="mr-auto sm:ml-6 md:mr-4 sm:mr-0 md:w-56 hidden md:block">
             <Input
               placeholder="Search for anything.."
               type="search"
               className="w-full bg-gray-100 border-transparent"
             />
-          </div>
+          </div> */}
           <Button
             variant="text"
             color="blue-gray"

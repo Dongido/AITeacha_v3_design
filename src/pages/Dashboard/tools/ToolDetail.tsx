@@ -57,6 +57,8 @@ import { pdf, Document, Page, Text, StyleSheet } from "@react-pdf/renderer";
 import PropsDialog from "./PropsDialogue";
 import { setGlobalResponseMessage } from "../../../store/slices/responseSlice";
 import Cookies from "js-cookie";
+import { fetchCurriculumByCountry } from "../../../api/tools";
+import { Loader2 } from "lucide-react";
 const gradeOptions = [
   "Pre School",
   "Early Years",
@@ -91,7 +93,7 @@ const ToolDetail = () => {
   const [tool, setTool] = useState<any>(null);
   const [loadingTool, setLoadingTool] = useState(true);
   const [formData, setFormData] = useState<{ [key: string]: any }>({
-    grade: "Pre School",
+    grade: "Grade 1",
   });
   const [formFields, setFormFields] = useState<FormField[]>([]);
   const [formLabels, setFormLabels] = useState<{ [key: string]: string }>({});
@@ -106,7 +108,10 @@ const ToolDetail = () => {
 
   const [imageUrl, setImageUrl] = useState<string | "">("");
   const [visibleFieldPairs, setVisibleFieldPairs] = useState(1);
-  const [countries, setCountries] = useState<string[]>([]);
+  const [countries, setCountries] = useState<
+    { name: string; isoCode: string }[]
+  >([]);
+
   const [selectedCountry, setSelectedCountry] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -115,6 +120,10 @@ const ToolDetail = () => {
   const [toastVariant, setToastVariant] = useState<"default" | "destructive">(
     "default"
   );
+  const [curriculums, setCurriculums] = useState<any[]>([]);
+  const [isCurriculumLoading, setIsCurriculumLoading] =
+    useState<boolean>(false);
+
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   interface Field {
     req_param: string;
@@ -147,10 +156,15 @@ const ToolDetail = () => {
   }, [responseMessage]);
 
   useEffect(() => {
-    const countryList = Country.getAllCountries().map(
-      (country) => country.name
-    );
-    setCountries(countryList);
+    try {
+      const allCountries = Country.getAllCountries().map((country) => ({
+        name: country.name,
+        isoCode: country.isoCode,
+      }));
+      setCountries(allCountries);
+    } catch (error) {
+      console.error("Error fetching countries from country-state-city:", error);
+    }
   }, []);
 
   useEffect(() => {
@@ -212,12 +226,35 @@ const ToolDetail = () => {
     }));
   };
 
-  const handleCountryChange = (countryName: string) => {
+  const handleCountryChange = async (countryName: any) => {
     setSelectedCountry(countryName);
     setFormData((prevData) => ({
       ...prevData,
-      curriculum_type: countryName,
+      country: countryName,
     }));
+    const selectedCountry = countries.find((c) => c.name === countryName);
+    const countryCode = selectedCountry?.isoCode;
+
+    if (countryCode) {
+      setIsCurriculumLoading(true);
+      setCurriculums([]);
+      try {
+        const fetchedCurriculums = await fetchCurriculumByCountry(countryCode);
+        setCurriculums(fetchedCurriculums);
+        console.log(
+          `Fetched Curriculums for ${countryName} (${countryCode}):`,
+          fetchedCurriculums
+        );
+      } catch (error) {
+        console.error("Error fetching curriculum:", error);
+        setCurriculums([]);
+      } finally {
+        setIsCurriculumLoading(false);
+      }
+    } else {
+      console.warn(`No ISO code found for: ${countryName}`);
+      setCurriculums([]);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -350,9 +387,8 @@ const ToolDetail = () => {
   const handleSubTopicChange = (index: number, value: string) => {
     setSubTopicInputList((prev) =>
       prev.map((item, i) => (i === index ? value : item))
-    ); // Update the value of a specific input
+    );
   };
-
   const handleRemoveSubTopic = (index: number) => {
     if (index === 0) return;
     setSubTopicInputList((prev) => prev.filter((_, i) => i !== index));
@@ -389,7 +425,12 @@ const ToolDetail = () => {
       [key: string]: { time: string; subject: string }[];
     };
   };
-
+  const handleCurriculumTypeChange = (curriculumName: string) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      curriculum_type: curriculumName,
+    }));
+  };
   const handleEditWithZyra = () => {
     Cookies.set("prevPath", window.location.pathname, { expires: 1 / 288 });
     dispatch(setGlobalResponseMessage(powerUrl));
@@ -613,20 +654,80 @@ const ToolDetail = () => {
                         </Select>
                       </div>
                     )}
+                  {field.name === "country" &&
+                    tool.req_param?.includes("country") && (
+                      <div>
+                        <Label>{field.label}</Label>
+                        <Select
+                          onValueChange={handleCountryChange}
+                          value={formData.country}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select Country" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {countries.map(
+                              (country: { name: string; isoCode: string }) => (
+                                <SelectItem
+                                  key={country.isoCode}
+                                  value={country.name}
+                                >
+                                  {country.name}
+                                </SelectItem>
+                              )
+                            )}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
                   {field.name === "curriculum_type" &&
                     tool.req_param?.includes("curriculum_type") && (
                       <div>
-                        <Label>{field.label}</Label>
-                        <Select onValueChange={handleCountryChange}>
+                        <Label htmlFor={field.name}>{field.label}</Label>
+                        <Select
+                          onValueChange={handleCurriculumTypeChange}
+                          disabled={
+                            isCurriculumLoading ||
+                            !formData.country ||
+                            curriculums.length === 0
+                          }
+                          value={formData.curriculum_type}
+                        >
                           <SelectTrigger>
-                            <SelectValue placeholder="Select Curriculum Type" />
+                            {isCurriculumLoading ? (
+                              <div className="flex items-center gap-2 text-gray-500">
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />{" "}
+                                Loading Curriculums...
+                              </div>
+                            ) : (
+                              <SelectValue
+                                placeholder={
+                                  formData.country
+                                    ? "Select Curriculum Type"
+                                    : "Select a Country First"
+                                }
+                              />
+                            )}
                           </SelectTrigger>
                           <SelectContent>
-                            {countries.map((countryName) => (
-                              <SelectItem key={countryName} value={countryName}>
-                                {countryName}
+                            {curriculums.length === 0 &&
+                            !isCurriculumLoading ? (
+                              <SelectItem value="no-curriculum" disabled>
+                                {formData.country
+                                  ? "No curriculums found"
+                                  : "Select a country first"}
                               </SelectItem>
-                            ))}
+                            ) : null}
+                            {curriculums.length > 0
+                              ? curriculums.map((curriculumName: string) => (
+                                  <SelectItem
+                                    key={curriculumName}
+                                    value={curriculumName}
+                                  >
+                                    {curriculumName}
+                                  </SelectItem>
+                                ))
+                              : null}
                           </SelectContent>
                         </Select>
                       </div>
