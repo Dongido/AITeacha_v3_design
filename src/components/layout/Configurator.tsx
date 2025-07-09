@@ -161,6 +161,14 @@ export function Configurator() {
           </Link>
         )}
 
+          {userDetails?.role_id !== 3 && (
+          <Link to={"/dashboard/Messageconfiguration"}>
+            <Button className="w-full hover:bg-gray-100 transition duration-300">
+              Messages Configuration
+            </Button>
+          </Link>
+        )}
+
         {userDetails && userDetails.role_id !== 3 && (
           <Link to={upgradeLink}>
             <Button className="flex hover:bg-pink-200 items-center bg-pink-100 text-black font-semibold py-2 px-4 rounded-md text-sm w-full">

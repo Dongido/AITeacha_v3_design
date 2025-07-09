@@ -98,8 +98,8 @@ export function DashboardNavbar() {
               className="w-full bg-gray-100 border-transparent"
             />
           </div>
-            <Link to="/student/particpant/chat">
-            <div className="relative flex items-center gap-2 hover:bg-purple-50 rounded-full px-3 py-1 transition cursor-pointer">
+            <Link to="/student/participant/chat">
+            <div className="relative flex items-center gap-2 bg-purple-50 rounded-full px-3 py-1 transition cursor-pointer">
                 <FaRocketchat className=" font-medium text-purple-400 text-lg" />
               {/* <span className="text-sm font-medium text-purple-400">Chat</span> */}
               {messageCount.length > 0 && (
