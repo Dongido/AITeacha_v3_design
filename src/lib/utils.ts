@@ -5,6 +5,10 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+const isProd = process.env.NODE_ENV === "production";
+
+
+
 
 const BACKEND_URL =
   window.location.hostname === "localhost"
