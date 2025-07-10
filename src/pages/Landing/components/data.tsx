@@ -51,6 +51,7 @@ export const cardsData = [
       "Teacher Onboarding Support",
       " Identify Struggling Students Early",
       " Offline AI (Coming Soon)",
+      "Centralized Curriculum Management",
     ],
     buttonText: "Register as a School",
     buttonBgColor: "#5c3cbb",

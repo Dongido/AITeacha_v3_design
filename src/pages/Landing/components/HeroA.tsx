@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 
 import { cardsData } from "./data";
 import Navbar from "./Navbar";
@@ -14,12 +14,12 @@ export default () => {
   const [text, setText] = useState(
     "Customizable, effortless lesson plans with"
   );
-
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
-  const myRef = useRef(null);
-  const carouselRef = useRef(null);
-  const [loading, setLoading] = useState(false);
+  const carouselRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const autoScrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [loading, setLoading] = useState(false);
+
   const texts = [
     "Customizable, effortless lesson plans with",
     "Tailored, standards-aligned curriculum with",
@@ -40,10 +40,31 @@ export default () => {
     }, 2000);
 
     return () => clearInterval(interval);
+  }, [texts]);
+
+  const scrollToCard = useCallback((index: number): void => {
+    const carouselElement = carouselRef.current;
+    if (carouselElement) {
+      if (carouselElement.children.length > 0) {
+        const firstChild = carouselElement.children[0] as HTMLElement;
+        if (firstChild) {
+          const cardWidth = firstChild.offsetWidth;
+          const gap = window.innerWidth < 768 ? 24 : 32;
+          const scrollPosition = index * (cardWidth + gap);
+          carouselElement.scrollTo({
+            left: scrollPosition,
+            behavior: "smooth",
+          });
+        }
+      }
+    }
   }, []);
 
-  useEffect(() => {
-    const autoScrollInterval = setInterval(() => {
+  const startAutoScroll = useCallback(() => {
+    if (autoScrollIntervalRef.current) {
+      clearInterval(autoScrollIntervalRef.current);
+    }
+    autoScrollIntervalRef.current = setInterval(() => {
       if (window.innerWidth < 768) {
         setCurrentCardIndex((prevIndex) => {
           const nextIndex = (prevIndex + 1) % cardsData.length;
@@ -52,9 +73,56 @@ export default () => {
         });
       }
     }, 3000);
+  }, [scrollToCard]);
 
-    return () => clearInterval(autoScrollInterval);
+  const stopAutoScroll = useCallback(() => {
+    if (autoScrollIntervalRef.current) {
+      clearInterval(autoScrollIntervalRef.current);
+      autoScrollIntervalRef.current = null;
+    }
   }, []);
+
+  useEffect(() => {
+    startAutoScroll();
+    return () => stopAutoScroll();
+  }, [startAutoScroll, stopAutoScroll]);
+
+  useEffect(() => {
+    const carouselElement = carouselRef.current;
+    if (!carouselElement || window.innerWidth < 768) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const index = Array.from(carouselElement.children).indexOf(
+              entry.target
+            );
+            if (index !== -1 && index !== currentCardIndex) {
+              setCurrentCardIndex(index);
+            }
+          }
+        });
+      },
+      {
+        root: carouselElement,
+        rootMargin: "0px",
+        threshold: 0.8,
+      }
+    );
+
+    Array.from(carouselElement.children).forEach((child) => {
+      observer.observe(child);
+    });
+
+    return () => {
+      if (carouselElement) {
+        Array.from(carouselElement.children).forEach((child) => {
+          observer.unobserve(child);
+        });
+      }
+    };
+  }, [carouselRef, currentCardIndex]);
 
   const scrollToSectionOnHome = (id: string) => {
     if (window.location.pathname === "/") {
@@ -63,48 +131,6 @@ export default () => {
         section.scrollIntoView({ behavior: "smooth" });
       }
     }
-  };
-
-  const scrollToCard = (index: number): void => {
-    const carouselElement = carouselRef.current;
-    if (carouselElement) {
-      const divElement = carouselElement as HTMLDivElement;
-
-      if (divElement.children.length > 0) {
-        const firstChild = divElement.children[0];
-        if (firstChild instanceof HTMLElement) {
-          const cardWidth = firstChild.offsetWidth;
-          const gap = 32;
-          const scrollPosition = index * (cardWidth + gap);
-          divElement.scrollTo({
-            left: scrollPosition,
-            behavior: "smooth",
-          });
-        } else {
-          console.warn("First child of carousel is not an HTMLElement.");
-        }
-      } else {
-        console.warn("Carousel has no children to scroll.");
-      }
-    } else {
-      console.warn("Carousel ref current is null.");
-    }
-  };
-
-  const nextCard = (): void => {
-    setCurrentCardIndex((prevIndex: number) => {
-      const nextIdx = (prevIndex + 1) % cardsData.length;
-      scrollToCard(nextIdx);
-      return nextIdx;
-    });
-  };
-
-  const prevCard = (): void => {
-    setCurrentCardIndex((prevIndex: number) => {
-      const nextIdx = (prevIndex - 1 + cardsData.length) % cardsData.length;
-      scrollToCard(nextIdx);
-      return nextIdx;
-    });
   };
 
   const handleCardButtonClick = async (cardId: string, roleId: number) => {
@@ -117,7 +143,7 @@ export default () => {
   return (
     <section>
       <Navbar />
-      <div className="pt-32 pb-12 gap-12 text-gray-600 ">
+      <div className="pt-16 lg:pt-32 pb-12 gap-12 text-gray-600 ">
         <div
           style={{
             background:
@@ -250,11 +276,10 @@ export default () => {
           <div className="max-w-screen-2xl mx-auto px-2 md:px-4 lg:px-8">
             <div
               ref={carouselRef}
-              className="flex transition-transform duration-500 ease-in-out
-          md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-8 gap-x-6
-          md:overflow-visible overflow-x-auto snap-x snap-mandatory scrollbar-hide"
+              className="flex md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-8 gap-x-6
+                   overflow-x-auto snap-x snap-mandatory scrollbar-hide
+                   md:overflow-visible md:snap-none"
               style={{
-                scrollSnapType: "x mandatory",
                 paddingLeft:
                   window.innerWidth < 768 ? "calc(50% - 160px)" : "0",
                 paddingRight:
@@ -264,15 +289,20 @@ export default () => {
               {cardsData.map((card: any, index: number) => (
                 <div
                   key={card.id}
-                  className="flex-shrink-0 w-full md:w-auto snap-center bg-white rounded-xl shadow-xl px-2 md:px-4 lg:px-8 py-8 m-0 md:m-4 flex flex-col justify-between
-              transform transition-all duration-500 ease-in-out hover:scale-105 hover:shadow-2xl border border-gray-100"
-                  style={{
-                    minWidth: window.innerWidth < 768 ? "320px" : "280px", 
-                    transform:
-                      currentCardIndex === index || window.innerWidth >= 768
-                        ? "scale(1)"
-                        : "scale(0.95)",
-                  }}
+                  className={`
+              flex-shrink-0 w-[320px] md:w-auto snap-center
+              bg-white rounded-xl shadow-xl px-2 md:px-4 lg:px-8 py-8 md:m-0 flex flex-col justify-between
+              transform transition-all duration-500 ease-in-out hover:scale-105 hover:shadow-2xl border border-gray-100
+              ${
+                currentCardIndex === index && window.innerWidth < 768
+                  ? "scale-100"
+                  : window.innerWidth < 768
+                  ? "scale-95"
+                  : "scale-100"
+              }
+            `}
+                  onMouseEnter={stopAutoScroll}
+                  onMouseLeave={startAutoScroll}
                 >
                   <div>
                     <div className="flex items-center mb-5">
@@ -314,8 +344,8 @@ export default () => {
                   </div>
                   <Button
                     onClick={() => handleCardButtonClick(card.id, card.roleId)}
+                    variant={"gradient"}
                     className="w-full text-white font-bold py-3 px-6 rounded-full transition duration-300 ease-in-out shadow-md hover:shadow-lg hover:brightness-90 focus:outline-none focus:ring-2 focus:ring-opacity-50"
-                    variant="gradient"
                   >
                     {card.buttonText}
                   </Button>
