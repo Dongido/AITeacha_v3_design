@@ -74,7 +74,7 @@ const ChatListPage = () => {
                           src={
                             chat.imageurl.startsWith("https:")
                               ? chat.imageurl
-                              : `https:${chat.imageurl}`
+                              : `https:\\${chat.imageurl}`
                           }
                           alt={chat.name}
                           className="w-12 h-12 rounded-full object-cover"

@@ -23,6 +23,7 @@ interface Message {
   parent_id?: string | null;
   zyraResponse?: string | null;
   isZyraLoading?: boolean;
+  lastname?:string
 }
 
 interface SavedMessage {
@@ -34,6 +35,7 @@ interface SavedMessage {
   topic?: string;
   imageurl?: string;
   parent_id?: string | null;
+  lastname?:string
 }
 
 interface ZyraRequestPayload {
@@ -188,7 +190,7 @@ const isAdmin = useMemo(() => {
     avatar: savedMessage.imageurl
       ? `https://${savedMessage.imageurl}`
       : "https://i.pravatar.cc/150?img=10",
-    sender: savedMessage.firstname || "User",
+    sender:`${ savedMessage.firstname || "" } ${ savedMessage?.lastname || ""} `|| "User",
     text: savedMessage.content,
     date: new Date(savedMessage.created_at).toLocaleString(),
     topic: savedMessage.topic || "General",

@@ -115,6 +115,7 @@ import Participants from "../pages/Dashboard/student/Particpant"
 import AdminResourcesPage from "../pages/Dashboard/admin/AdminResources";
 import ChatListPage from "../pages/Dashboard/chats/ChatListPage";
 import { FaRocketchat } from "react-icons/fa";
+import MessageConfiguration from "../pages/Dashboard/forum/MessageConfiguration";
 
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -341,7 +342,7 @@ export const Paramroutes = [
        {
         icon: <AcademicCapIcon {...icon} />,
         name: "Chats",
-        path: "/particpant/chat",
+        path: "/participant/chat",
         element: <ChatListPage />,
       },
       {
@@ -674,6 +675,12 @@ export const Paramroutes = [
         path: "/user-profile/:id",
         element: <UserProfilePage />,
       },
+      {
+        icon: <DocumentTextIcon {...icon} />,
+        name: "profile",
+        path: "/Messageconfiguration",
+        element: <MessageConfiguration />,
+      },
     ],
   },
 ];
@@ -709,7 +716,7 @@ export const Studentroutes = [
        {
         icon: <FaRocketchat {...icon} />,
         name: "messages",
-        path: "/particpant/chat",
+        path: "/participant/chat",
         element: <ChatListPage />,
       },
     ],
