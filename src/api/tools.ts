@@ -49,6 +49,23 @@ export const fetchStudentTools = async (): Promise<Tool[]> => {
   }
 };
 
+export const fetchCurriculumByCountry = async (
+  country: string
+): Promise<any> => {
+  try {
+    const response = await apiClient.get<{
+      status: string;
+      message: string;
+      data: string[];
+    }>(`/assistant/suggest/country/curriculum/${country}`);
+    return response.data.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data ||
+        `Failed to fetch curriculum for ${country}. Please try again.`
+    );
+  }
+};
 export const fetchToolsCategory = async (): Promise<any[]> => {
   try {
     const response = await apiClient.get<{

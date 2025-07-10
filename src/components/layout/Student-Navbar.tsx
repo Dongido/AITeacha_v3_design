@@ -41,7 +41,6 @@ export function DashboardNavbar() {
     openSidenav: boolean;
   };
 
-  
   const dispatch = useDispatch<AppDispatch>();
   const { imageUrl, loading } = useSelector((state: any) => state.profile);
   //  const [unreadCount, setUnreadCount] = useState<number>(4);
@@ -91,12 +90,15 @@ export function DashboardNavbar() {
           </Text>
         </div>
         <div className="flex items-center gap-0">
-          <div className="mr-auto sm:ml-6 md:mr-4 sm:mr-0 md:w-56">
+          {/* <div className="mr-auto sm:ml-6 md:mr-4 sm:mr-0 md:w-56">
             <Input
               placeholder="Search for anything.."
               type="search"
               className="w-full bg-gray-100 border-transparent"
             />
+
+          </div> */}
+
           </div>
             <Link to="/student/participant/chat">
             <div className="relative flex items-center gap-2 bg-purple-50 rounded-full px-3 py-1 transition cursor-pointer">
@@ -110,6 +112,7 @@ export function DashboardNavbar() {
               )}
             </div>
             </Link>
+
           <Button
             variant="text"
             color="blue-gray"
