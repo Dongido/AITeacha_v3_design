@@ -267,7 +267,7 @@ export default () => {
                   className="flex-shrink-0 w-full md:w-auto snap-center bg-white rounded-xl shadow-xl px-2 md:px-4 lg:px-8 py-8 m-0 md:m-4 flex flex-col justify-between
               transform transition-all duration-500 ease-in-out hover:scale-105 hover:shadow-2xl border border-gray-100"
                   style={{
-                    minWidth: window.innerWidth < 768 ? "320px" : "280px", // Increased minWidth for small screens
+                    minWidth: window.innerWidth < 768 ? "320px" : "280px", 
                     transform:
                       currentCardIndex === index || window.innerWidth >= 768
                         ? "scale(1)"

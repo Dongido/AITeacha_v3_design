@@ -51,12 +51,10 @@ const Profile: React.FC = () => {
   const [toastMessage, setToastMessage] = useState<string>("");
   const [generating, setGenerating] = useState<boolean>(false);
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
-
   const [selectedCountryCode, setSelectedCountryCode] = useState<string>("");
   const [selectedStateCode, setSelectedStateCode] = useState<string>("");
   const [selectedCityName, setSelectedCityName] = useState<string>("");
   const [gender, setGender] = useState<string>("");
-
   const [walletBalances, setWalletBalances] = useState<any>({
     usd: 0,
     ngn: 0,
@@ -91,7 +89,7 @@ const Profile: React.FC = () => {
       handleFetchBalance();
     }
   }, [activeTab, userDetails.role_id]);
-
+  
   useEffect(() => {
     dispatch(loadUserProfile());
   }, [dispatch]);
