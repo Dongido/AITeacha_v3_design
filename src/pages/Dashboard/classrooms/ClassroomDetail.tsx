@@ -177,7 +177,20 @@ const ClassroomDetail = () => {
                   View Students
                   <ArrowRightIcon className="h-5 w-5 ml-2" />
                 </button>
+
+                 <button
+                  onClick={() =>
+                    navigate(
+                      `/dashboard/Studentforum/${classroom?.classroom_id}`
+                    )
+                  }
+                  className="w-full sm:w-auto flex items-center justify-center hover:bg-gray-200 bg-white text-[#5C3CBB] font-semibold py-2 px-4 rounded-full text-sm shadow-md"
+                >
+                  Group Chats
+                  <ArrowRightIcon className="h-5 w-5 ml-2" />
+                </button>
               </div>
+              
 
               <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mt-4 sm:mt-0">
                 <button
