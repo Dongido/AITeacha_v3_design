@@ -99,6 +99,16 @@ html {
   color: rgb(79 70 229 / var(--tw-text-opacity));
 }
 
+.mentions-input {
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.5;
+  width: 100%;
+  border-radius: 0.5rem;
+}
+
+
+
 /* In your global CSS file (e.g., src/index.css) */
 
 /* Apply this class to the scrollable div in your Sidenav.tsx */

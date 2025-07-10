@@ -589,3 +589,4 @@ legend + * {
 .routes-scroll-area {
   overflow-y: scroll; /* Use 'scroll' instead of 'auto' if you want it always visible */
 }
+

@@ -195,7 +195,7 @@ const Classrooms = () => {
   }
 
   return (
-    <div className="mt-4">
+    <div className="mt-4 routes-scroll-area">
       {userDetails && isEmailVerified === 1 && (
         <div
           className="bg-[#e5dbff] mt-3 mb-4 text-black p-4 rounded-md flex justify-center items-center"
@@ -210,8 +210,8 @@ const Classrooms = () => {
         </div>
       )}
 
-      <div className="flex w-full mt-12 mb-6 items-center justify-between flex-col sm:flex-row">
-        <h2 className="text-xl md:text-2xl lg:text-2xl font-bold text-gray-900 sm:mb-0 mb-4 whitespace-nowrap ">
+      <div className="flex w-full mt-12 mb-6 items-center justify-between flex-col sm:flex-row routes-scroll-area">
+        <h2 className="text-xl md:text-2xl lg:text-2xl font-bold text-gray-900 sm:mb-0 mb-4 whitespace-nowrap routes-scroll-area ">
           {selectedType === "teamClassrooms"
             ? "Team Classrooms"
             : "My Classrooms"}

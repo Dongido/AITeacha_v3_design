@@ -24,10 +24,11 @@ interface CreateTopicDialogProps {
     thumbnail?: File | null
   ) => void;
   loading: boolean;
+  categories: string[];
 }
 
 const CreateTopicDialog = forwardRef(
-  ({ onCreate, loading }: CreateTopicDialogProps, ref) => {
+  ({ onCreate, loading,categories }: CreateTopicDialogProps, ref) => {
     const [open, setOpen] = useState(false);
     const [topic, setTopic] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("");
@@ -91,16 +92,7 @@ const CreateTopicDialog = forwardRef(
       }
     };
 
-    const categories = [
-      "General Discussions",
-      "Exam Timetables",
-      "Events & Activities",
-      "Public Holidays",
-      "Results & Reports",
-      "School Fees",
-      "Discipline & Conduct",
-      "Academic Calendar",
-    ];
+   
 
     return (
       <ToastProvider>
@@ -120,7 +112,7 @@ const CreateTopicDialog = forwardRef(
                   className="w-full border rounded-md p-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-700"
                 >
                   <option value="">Select a Category</option>
-                  {categories.map((cat) => (
+                  {categories?.map((cat) => (
                     <option key={cat} value={cat}>
                       {cat}
                     </option>
