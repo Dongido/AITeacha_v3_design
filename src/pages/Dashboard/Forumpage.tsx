@@ -18,7 +18,7 @@ const { checkuser ,loading, error } = useAppSelector(
 );
  const  users =  Array.isArray(checkuser) ? checkuser  : []
 
- console.log("user", users)
+ console.log("user", checkuser)
 
 useEffect(() => {
 dispatch(getpremiumUsers());
@@ -192,7 +192,7 @@ return (
       )}
 
       {!loading && users?.length === 0 && (
-        <p className="text-center text-gray-500">No premium users found.</p>
+        <p className="text-center text-gray-500 ">No premium users found.</p>
       )}
     </div>
   );
