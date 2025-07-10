@@ -37,7 +37,7 @@ import { FaRocketchat } from "react-icons/fa";
 
 export function DashboardNavbar() {
   const { controller, dispatch: uiDispatch } = useMaterialTailwindController();
-    
+
   const { fixedNavbar, openSidenav } = controller as {
     fixedNavbar: boolean;
     openSidenav: boolean;
@@ -45,15 +45,17 @@ export function DashboardNavbar() {
 
   const dispatch = useDispatch<AppDispatch>();
   const { imageUrl, loading } = useSelector((state: any) => state.profile);
-  const {  messageCount } = useAppSelector((state: RootState) => state.staffChats);
+  const { messageCount } = useAppSelector(
+    (state: RootState) => state.staffChats
+  );
 
-//  console.log("count", messageCount)
+  //  console.log("count", messageCount)
 
   useEffect(() => {
     if (!imageUrl) {
       dispatch(loadProfileImage());
     }
-    dispatch(getCount())
+    dispatch(getCount());
     // console.log(imageUrl);
   }, [dispatch, imageUrl]);
 
@@ -102,19 +104,21 @@ export function DashboardNavbar() {
               className="w-full bg-gray-100 border-transparent"
             />
           </div>
-           <Link to="/dashboard/participant/chat" className="hidden lg:flex">
-          <div className="relative items-center gap-2 bg-purple-50 rounded-full px-3 py-1 transition cursor-pointer flex ">
-            <FaRocketchat className=" font-medium text-purple-400 text-lg" />
-            {/* <span className="text-sm font-medium text-purple-400">Chat</span> */}
+          <Link to="/dashboard/participant/chat" className="hidden lg:flex">
+            <div className="relative items-center gap-2 bg-purple-50 rounded-full px-3 py-1 transition cursor-pointer flex ">
+              <FaRocketchat className=" font-medium text-purple-400 text-lg" />
+              {/* <span className="text-sm font-medium text-purple-400">Chat</span> */}
 
-            {messageCount.length > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px]
-               font-semibold rounded-full h-5 w-5 flex items-center justify-center shadow-md">
-                {messageCount.length > 9 ? "9+" : messageCount.length}
-              </span>
-            )}
-          </div>
-        </Link>
+              {messageCount.length > 0 && (
+                <span
+                  className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px]
+               font-semibold rounded-full h-5 w-5 flex items-center justify-center shadow-md"
+                >
+                  {messageCount.length > 9 ? "9+" : messageCount.length}
+                </span>
+              )}
+            </div>
+          </Link>
 
           <Button
             variant="text"
@@ -127,21 +131,24 @@ export function DashboardNavbar() {
           </Button>
 
           <div className="flex items-center gap-4 ml-auto">
+            <Link to="/dashboard/participant/chat" className="flex lg:hidden">
+              <div
+                className="relative items-center gap-2 bg-purple-50 rounded-full 
+          px-3 py-1 transition cursor-pointer flex "
+              >
+                <FaRocketchat className=" font-medium text-purple-400 text-lg" />
+                {/* <span className="text-sm font-medium text-purple-400">Chat</span> */}
 
-           <Link to="/dashboard/participant/chat" className="flex lg:hidden">
-          <div className="relative items-center gap-2 bg-purple-50 rounded-full 
-          px-3 py-1 transition cursor-pointer flex ">
-            <FaRocketchat className=" font-medium text-purple-400 text-lg" />
-            {/* <span className="text-sm font-medium text-purple-400">Chat</span> */}
-
-            {messageCount.length > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px]
-               font-semibold rounded-full h-5 w-5 flex items-center justify-center shadow-md">
-                {messageCount.length > 9 ? "9+" : messageCount.length}
-              </span>
-            )}
-          </div>
-        </Link>
+                {messageCount.length > 0 && (
+                  <span
+                    className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px]
+               font-semibold rounded-full h-5 w-5 flex items-center justify-center shadow-md"
+                  >
+                    {messageCount.length > 9 ? "9+" : messageCount.length}
+                  </span>
+                )}
+              </div>
+            </Link>
             <Link to="/dashboard/profile">
               <Button variant="text" color="blue-gray" className="grid mb-2">
                 <img

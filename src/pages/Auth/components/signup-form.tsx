@@ -23,10 +23,7 @@ import {
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../../store";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  registerUser,
-  SignupResponse,
-} from "../../../api/auth";
+import { registerUser, SignupResponse } from "../../../api/auth";
 import { FcGoogle } from "react-icons/fc";
 import { Checkbox } from "../../../components/ui/Checkbox";
 import {
@@ -36,6 +33,8 @@ import {
   SelectItem,
   SelectValue,
 } from "../../../components/ui/Select";
+
+declare const apiClient: any;
 
 interface SignupFormProps extends HTMLAttributes<HTMLDivElement> {}
 
@@ -63,16 +62,22 @@ const formSchema = z
       .string()
       .min(1, { message: "Please enter your email" })
       .email({ message: "Invalid email address" }),
-    phone: z.string().refine((val) => !containsUrl(val), {
-      message: "Phone number cannot contain URLs",
-    }),
-    gender: z.enum(["Male", "Female"], {
+    phone: z
+      .string()
+      .min(10, { message: "Phone number must be at least 10 characters" })
+      .refine((val) => !containsUrl(val), {
+        message: "Phone number cannot contain URLs",
+      }),
+    gender: z.enum(["Male", "Female", "Other"], {
       errorMap: () => ({ message: "Please select a gender" }),
     }),
     ageRange: z.string().min(1, { message: "Please select an age range" }),
+    country: z.string().min(1, { message: "Please enter your country" }),
+    state: z.string().min(1, { message: "Please enter your state" }),
+    city: z.string().min(1, { message: "Please enter your city" }),
     password: z
       .string()
-      .min(8, { message: "Password must be at least 7 characters long" }),
+      .min(8, { message: "Password must be at least 8 characters long" }),
     referred_by: z
       .string()
       .optional()
@@ -95,7 +100,10 @@ const formSchema = z
   })
   .refine(
     (data) => {
-      if (data.hasDisability && (!data.disabilityDetails || data.disabilityDetails.trim() === '')) {
+      if (
+        data.hasDisability &&
+        (!data.disabilityDetails || data.disabilityDetails.trim() === "")
+      ) {
         return false;
       }
       return true;
@@ -142,8 +150,11 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
       lastName: "",
       email: "",
       phone: "",
-      gender: undefined,
+      gender: "Male",
       ageRange: "",
+      country: "",
+      state: "",
+      city: "",
       referred_by: "",
       password: "",
       confirmPassword: "",
@@ -186,12 +197,14 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
         data.receiveNewsletters,
         data.phone,
         undefined,
-        undefined,
-        undefined,
+        data.country,
+        data.city,
         data.gender,
         data.ageRange,
         data.hasDisability ? data.disabilityDetails : undefined,
-        data.referred_by
+        data.referred_by,
+        undefined,
+        data.state
       );
       setToastMessage(res.message || "Signup successful! Redirecting...");
       setToastVariant("default");
@@ -299,8 +312,13 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
                   name="gender"
                   render={({ field }) => (
                     <FormItem className="flex flex-col w-full space-y-2">
-                      <FormLabel className="font-semibold mt-2">Gender</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
+                      <FormLabel className="font-semibold mt-2">
+                        Gender
+                      </FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
                         <FormControl>
                           <SelectTrigger className="h-10 rounded-full">
                             <SelectValue placeholder="Select Gender" />
@@ -309,6 +327,7 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
                         <SelectContent>
                           <SelectItem value="Male">Male</SelectItem>
                           <SelectItem value="Female">Female</SelectItem>
+                          <SelectItem value="Other">Other</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage className="text-red-700" />
@@ -320,8 +339,13 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
                   name="ageRange"
                   render={({ field }) => (
                     <FormItem className="flex flex-col w-full space-y-2">
-                      <FormLabel className="font-semibold mt-2">Age Range</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
+                      <FormLabel className="font-semibold mt-2">
+                        Age Range
+                      </FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
                         <FormControl>
                           <SelectTrigger className="h-10 rounded-full">
                             <SelectValue placeholder="Select Age Range" />
@@ -340,6 +364,60 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
                   )}
                 />
               </div>
+
+              <div className="flex space-x-4">
+                <FormField
+                  control={form.control}
+                  name="country"
+                  render={({ field }) => (
+                    <FormItem className="space-y-1 w-full">
+                      <FormLabel className="font-semibold">Country</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter Country"
+                          className="rounded-full"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-red-700" />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="state"
+                  render={({ field }) => (
+                    <FormItem className="space-y-1 w-full">
+                      <FormLabel className="font-semibold">State</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter State"
+                          className="rounded-full"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-red-700" />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <FormField
+                control={form.control}
+                name="city"
+                render={({ field }) => (
+                  <FormItem className="space-y-1 w-full">
+                    <FormLabel className="font-semibold">City</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Enter City"
+                        className="rounded-full"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage className="text-red-700" />
+                  </FormItem>
+                )}
+              />
 
               <div className="grid gap-2">
                 <FormField

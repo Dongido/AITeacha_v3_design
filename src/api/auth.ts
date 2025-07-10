@@ -46,17 +46,18 @@ export const registerUser = async (
   lastname: string,
   password: string,
   role_id: number,
-  confirm_policy?: boolean,
-  confirm_newsletter?: boolean,
-  phone?: string,
-  organization?: string,
-  country?: string,
-  city?: string,
-  gender?: "Male" | "Female",
-  ageRange?: string,
-  disabilityDetails?: string,
-  referred_by?: string,
-  assigned_number?: string
+  confirm_policy: boolean,
+  confirm_newsletter: boolean,
+  phone: string,
+  organization: string | undefined,
+  country: string,
+  city: string,
+  gender: "Male" | "Female" | "Other",
+  ageRange: string,
+  disabilityDetails: string | undefined,
+  referred_by: string | undefined,
+  assigned_number: string | undefined,
+  state: string
 ): Promise<SignupResponse> => {
   try {
     const response = await apiClient.post<SignupResponse>("auth/register", {
@@ -76,6 +77,7 @@ export const registerUser = async (
       disability_details: disabilityDetails,
       referred_by,
       assigned_number,
+      state,
     });
     if (response.status === 201) {
       return response.data;

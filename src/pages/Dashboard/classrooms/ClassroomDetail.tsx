@@ -156,7 +156,7 @@ const ClassroomDetail = () => {
 
             <div className="flex flex-col sm:flex-row items-center mt-4 justify-between gap-4 sm:gap-6 flex-wrap">
               <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-                {/* <button
+                <button
                   onClick={() =>
                     navigate(`/dashboard/liveclass/${classroom?.classroom_id}`)
                   }
@@ -164,7 +164,7 @@ const ClassroomDetail = () => {
                 >
                   Go to Live Class
                   <ArrowRightIcon className="h-5 w-5 ml-2" />
-                </button> */}
+                </button>
 
                 <button
                   onClick={() =>

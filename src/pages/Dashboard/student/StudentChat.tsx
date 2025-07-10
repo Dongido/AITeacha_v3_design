@@ -6,7 +6,7 @@ import { CalendarDays, Plus, UserRound } from "lucide-react";
 import { Undo2 } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { RootState } from "../../../store";
-import { createStudentTopics, getAllStudentTopics,  } from "../../../store/slices/staffchats";
+import { createStudentTopics, getAllStudentTopics, resetTopic,  } from "../../../store/slices/staffchats";
 import RestrictedPage from "../classrooms/RestrictionPage";
 import { Button } from "../../../components/ui/Button";
 import { Skeleton } from "../../../components/ui/Skeleton";
@@ -37,6 +37,7 @@ const StudentClass = () => {
 
 
     useEffect(() => {
+    dispatch(resetTopic())
     dispatch(getAllStudentTopics(id as string));
   }, [dispatch]);
 

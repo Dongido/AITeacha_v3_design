@@ -171,6 +171,15 @@ const JoinClassroom = () => {
   const handleJoinClassroom = async () => {
     if (!classroom) return;
 
+    if (isInClassroom) {
+      setToastMessage("You are already enrolled in this classroom!");
+      setToastVariant("default");
+      setShowToast(true);
+      setTimeout(() => {
+        navigate(navigateToClassroom);
+      }, 2000);
+      return;
+    }
     if (classroom.class_type === "Paid") {
       handlePayment();
     } else {

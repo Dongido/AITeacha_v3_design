@@ -50,3 +50,10 @@ To learn React, check out the [React documentation](https://reactjs.org/).
 studentemail@gmail.com
 
 Infinixhot8
+
+
+
+
+<iframe src="https://www.linkedin.com/embed/feed/update/urn:li:share:7346098429279797249?collapsed=1" height="549" width="504" frameborder="0" allowfullscreen="" title="Embedded post"></iframe>
+
+https://www.linkedin.com/posts/willi-sommer_the-biggest-lesson-i-learned-while-being-activity-7346098430252875777-UEyj?utm_source=share&utm_medium=member_desktop&rcm=ACoAAC7FrMEBvV8ivdH5oocxiPIZ0mEFMFI26ro
