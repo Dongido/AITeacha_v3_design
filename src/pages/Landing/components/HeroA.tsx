@@ -354,25 +354,49 @@ export default () => {
             </div>
           </div>
         </div>
-        <div className="max-w-screen-2xl mx-auto mt-28 bg-gradient-to-b from-[#5c3cbb] to-[#8b6ecb] py-4 lg:py-8 rounded-3xl">
-          <p className="text-white text-2xl font-semibold sm:text-3xl text-center">
-            "AiTeacha saved me 15 hours a week!"
-          </p>
-          <h3 className="text-white font-semibold text-center">
-            Teacher in Lagos, Nigeria
-          </h3>
-          <div className="flex flex-col md:flex-row space-y-8 md:space-y-0 md:space-x-16 mt-8 text-white justify-center">
-            <div className="text-center">
-              <h2 className="text-4xl font-bold text-white">19,000+</h2>
-              <p className="text-lg">Teachers Onboard</p>
-            </div>
-            <div className="text-center">
-              <h2 className="text-4xl font-bold text-white">3,000+</h2>
-              <p className="text-lg">Schools Partnered</p>
-            </div>
-            <div className="text-center">
-              <h2 className="text-4xl font-bold text-white">200,000+</h2>
-              <p className="text-lg">Students Impacted</p>
+        <div
+          className="max-w-screen-2xl mx-auto mt-28 bg-gradient-to-b from-[#5c3cbb] to-[#8b6ecb] py-4 lg:py-8 rounded-3xl
+                    flex flex-col lg:flex-row lg:items-center lg:justify-start lg:space-x-12 px-4 relative"
+        >
+          {" "}
+          {/* Modified for left alignment on large screens */}
+          {/* Large Circular Image (hidden on small/medium screens, on the far left on large) */}
+          <div className="hidden lg:block lg:flex-shrink-0 w-48 h-48 md:w-64 md:h-64 rounded-full overflow-hidden border-4 border-white shadow-lg ml-8">
+            {" "}
+            {/* Added ml-8 for spacing from left edge */}
+            <img
+              src="https://www.shutterstock.com/image-photo/young-teacher-teaching-lesson-600nw-2330337877.jpg"
+              alt="Young teacher"
+              className="w-full h-full object-cover"
+            />
+          </div>
+          {/* Content Area (Testimonial + Stats) - takes up remaining space */}
+          <div className="flex flex-col items-center lg:items-start text-white text-center lg:text-left flex-grow lg:pl-4">
+            {" "}
+            {/* Added flex-grow and lg:pl-4 */}
+            {/* Testimonial Text */}
+            <p className="text-2xl font-semibold sm:text-3xl mb-2">
+              "AiTeacha saved me 15 hours a week!"
+            </p>
+            <h3 className="font-semibold text-lg mb-8">
+              Teacher in Lagos, Nigeria
+            </h3>
+            {/* Stats Section - remains below testimonial on small, adjusts on medium/large */}
+            <div className="flex flex-col md:flex-row space-y-8 md:space-y-0 md:space-x-16 mt-8 text-white justify-center lg:justify-start lg:mt-0">
+              {" "}
+              {/* Adjusted margin and alignment */}
+              <div className="text-center lg:text-left">
+                <h2 className="text-4xl font-bold text-white">19,000+</h2>
+                <p className="text-lg">Teachers Onboard</p>
+              </div>
+              <div className="text-center lg:text-left">
+                <h2 className="text-4xl font-bold text-white">3,000+</h2>
+                <p className="text-lg">Schools Partnered</p>
+              </div>
+              <div className="text-center lg:text-left">
+                <h2 className="text-4xl font-bold text-white">200,000+</h2>
+                <p className="text-lg">Students Impacted</p>
+              </div>
             </div>
           </div>
         </div>
