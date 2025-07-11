@@ -335,6 +335,12 @@ export const Paramroutes = [
       },
       {
         icon: <AcademicCapIcon {...icon} />,
+        name: "chat",
+        path: "/Studentforum/:id",
+        element: <StudentClass />,
+      },
+      {
+        icon: <AcademicCapIcon {...icon} />,
         name: "classrooms",
         path: "/classrooms/joined",
         element: <Classes />,
