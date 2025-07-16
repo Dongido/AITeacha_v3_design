@@ -63,6 +63,26 @@ export interface messageResponse {
   message: string;
   data: string;
 }
+
+interface AddStudentToClassroomData {
+  email: string;
+  classroom_id: string;
+}
+
+export const manuallyAddStudentToClassroom = async (
+  data: AddStudentToClassroomData
+): Promise<any> => {
+  try {
+    const response = await apiClient.post<any>("/classroom/add/student", data);
+    return response.data;
+  } catch (error: any) {
+    const errorMessage =
+      error.response?.data?.message ||
+      "Failed to add student to classroom. Please check the email and classroom ID.";
+    throw new Error(errorMessage);
+  }
+};
+
 export const sendClassroomMessage = async (
   data: SubmitClassroomData
 ): Promise<messageResponse> => {

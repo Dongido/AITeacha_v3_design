@@ -16,6 +16,26 @@ export const getTeamMembers = async (): Promise<any[]> => {
   }
 };
 
+export const getTeamMemberClasses = async (userId: string): Promise<any[]> => {
+  try {
+    const response = await apiClient.get(`/team/user/classrooms/${userId}`);
+    return response.data.data;
+  } catch (error: any) {
+    if (error.response?.status === 403) {
+      throw new Error(
+        error.response?.data?.message ||
+          "Permission denied to view this member's classrooms."
+      );
+    } else if (error.response?.status === 404) {
+      throw new Error("Team member or classrooms not found.");
+    } else {
+      throw new Error(
+        "Failed to fetch team member classrooms. Please try again."
+      );
+    }
+  }
+};
+
 export const changeTeamMemberRole = async (
   teamId: string,
   userId: string,

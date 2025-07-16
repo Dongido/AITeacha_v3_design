@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "../../../components/ui/Button";
 import { Skeleton } from "../../../components/ui/Skeleton";
@@ -9,7 +9,7 @@ import { RootState, AppDispatch } from "../../../store";
 import { Tool } from "../../../api/interface";
 import BaseTable from "../../../components/table/BaseTable";
 import { studentColumns } from "./components/column.student";
-
+import AddStudentDialog from "./components/AddStudentManually";
 const Students = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
@@ -19,6 +19,13 @@ const Students = () => {
   const fetchingStudents = useSelector(
     (state: RootState) => state.classrooms.fetchingStudents
   );
+  const addStudentDialogRef = useRef<any>(null);
+
+  const handleOpenAddStudentDialog = (classroomId?: string) => {
+    if (addStudentDialogRef.current) {
+      addStudentDialogRef.current.openDialog(classroomId);
+    }
+  };
 
   useEffect(() => {
     if (id) {
@@ -26,6 +33,9 @@ const Students = () => {
     }
   }, [dispatch, id]);
 
+  const handleStudentAddedSuccessfully = () => {
+    dispatch(fetchStudentsForClassroomThunk(Number(id)));
+  };
   const handleBack = () => {
     navigate(-1);
   };
@@ -45,6 +55,14 @@ const Students = () => {
             Students
           </h2>
         </div>
+
+        <Button
+          onClick={() => handleOpenAddStudentDialog(id)}
+          variant={"gradient"}
+          className="rounded-md"
+        >
+          Add Student
+        </Button>
       </div>
 
       {fetchingStudents ? (
@@ -75,6 +93,12 @@ const Students = () => {
       ) : (
         <BaseTable data={students} columns={studentColumns(id)} />
       )}
+
+      <AddStudentDialog
+        ref={addStudentDialogRef}
+        onSuccess={handleStudentAddedSuccessfully}
+        initialClassroomId={id}
+      />
     </div>
   );
 };

@@ -513,9 +513,9 @@ const Upgrade: React.FC = () => {
                 ? "bg-gray-300 text-gray-700 cursor-not-allowed"
                 : "bg-primary text-white hover:bg-[#4a2fa3] transition"
             }`}
-            disabled={userDetails?.package === "AiTeacha Free"}
+            disabled={userDetails?.package === "AI Teacha Free"}
           >
-            {userDetails?.package === "AiTeacha Free"
+            {userDetails?.package === "AI Teacha Free"
               ? "Current Plan"
               : "Downgrade to Free"}
           </button>
@@ -572,7 +572,7 @@ const Upgrade: React.FC = () => {
               setIsDialogOpen(true);
             }}
             disabled={
-              loadingPlan === "pro" || userDetails?.package === "AiTeacha Pro"
+              loadingPlan === "pro" || userDetails?.package === "AI Teacha Pro"
             }
             className={`bg-primary text-white w-full py-2 rounded-md transition mt-auto text-center ${
               userDetails?.package === "AiTeacha Pro"
@@ -580,7 +580,7 @@ const Upgrade: React.FC = () => {
                 : "hover:bg-[#4a2fa3]"
             }`}
           >
-            {userDetails?.package === "AiTeacha Pro"
+            {userDetails?.package === "AI Teacha Pro"
               ? "Current Plan"
               : loadingPlan === "pro"
               ? "Processing..."
@@ -641,7 +641,7 @@ const Upgrade: React.FC = () => {
             }}
             disabled={
               loadingPlan === "premium" ||
-              userDetails?.package === "AiTeacha Premium"
+              userDetails?.package === "AI Teacha Premium"
             }
             className={`bg-primary text-white w-full py-2 rounded-md transition mt-auto text-center ${
               userDetails?.package === "premium"
@@ -649,7 +649,7 @@ const Upgrade: React.FC = () => {
                 : "hover:bg-[#4a2fa3]"
             }`}
           >
-            {userDetails?.package === "AiTeacha Premium"
+            {userDetails?.package === "AI Teacha Premium"
               ? "Current Plan"
               : loadingPlan === "premium"
               ? "Processing..."
@@ -748,7 +748,7 @@ const Upgrade: React.FC = () => {
             onClick={() => navigate("/dashboard/upgrade/support")}
             disabled={
               loadingPlan === "enterprise" ||
-              userDetails?.package === "AiTeacha Enterprise"
+              userDetails?.package === "AI Teacha Enterprise"
             }
             className={`bg-primary text-white w-full lg:w-1/4  py-2 rounded-md transition mt-auto text-center ${
               userDetails?.package === "AiTeacha Enterprise"
@@ -757,7 +757,7 @@ const Upgrade: React.FC = () => {
             }`}
           >
             {" "}
-            {userDetails?.package === "AiTeacha Enterprise"
+            {userDetails?.package === "AI Teacha Enterprise"
               ? "Current Plan"
               : loadingPlan === "enterprise"
               ? "Processing..."

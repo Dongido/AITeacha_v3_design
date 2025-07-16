@@ -111,10 +111,12 @@ import GroupChatForm from "../pages/Dashboard/GroupChatForm";
 import Forumpage from "../pages/Dashboard/Forumpage";
 import StudentClass from "../pages/Dashboard/student/StudentChat";
 import JitsiStudentMeeting from "../pages/Dashboard/student/JitsiMeeting";
-import Participants from "../pages/Dashboard/student/Particpant"
+import Participants from "../pages/Dashboard/student/Particpant";
 import AdminResourcesPage from "../pages/Dashboard/admin/AdminResources";
+import TeamMemberClassroomsPage from "../pages/Dashboard/team/TeamMemberClassroomsPage";
 import ChatListPage from "../pages/Dashboard/chats/ChatListPage";
 import { FaRocketchat } from "react-icons/fa";
+
 import MessageConfiguration from "../pages/Dashboard/forum/MessageConfiguration";
 
 const icon = {
@@ -319,6 +321,12 @@ export const routes = [
         element: <HeroesWallAdmin />,
         adminOnly: true,
       },
+      {
+        icon: <FaRocketchat {...icon} />,
+        name: "Heroes Wall",
+        path: "/dashboard/participant/chat",
+        element: <ChatListPage />,
+      },
     ],
   },
 ];
@@ -339,7 +347,7 @@ export const Paramroutes = [
         path: "/classrooms/joined",
         element: <Classes />,
       },
-       {
+      {
         icon: <AcademicCapIcon {...icon} />,
         name: "Chats",
         path: "/participant/chat",
@@ -681,6 +689,12 @@ export const Paramroutes = [
         path: "/Messageconfiguration",
         element: <MessageConfiguration />,
       },
+      {
+        icon: <DocumentTextIcon {...icon} />,
+        name: "TeamClass",
+        path: "/premium/classrooms/user/:userId",
+        element: <TeamMemberClassroomsPage />,
+      },
     ],
   },
 ];
@@ -713,7 +727,7 @@ export const Studentroutes = [
         path: "/assignments",
         element: <StudentAssignments />,
       },
-       {
+      {
         icon: <FaRocketchat {...icon} />,
         name: "messages",
         path: "/participant/chat",
@@ -788,7 +802,7 @@ export const StudentParamroutes = [
         path: "/verify-email",
         element: <VerifyEmail />,
       },
-       {
+      {
         icon: <AcademicCapIcon {...icon} />,
         name: "chat",
         path: "/Studentforum/:id",
@@ -810,15 +824,15 @@ export const StudentParamroutes = [
         icon: <DocumentTextIcon {...icon} />,
         name: "profile",
         path: "/user-profile/:id",
-        element: <UserProfilePage />
+        element: <UserProfilePage />,
       },
       {
         icon: <DocumentTextIcon {...icon} />,
         name: "participant",
         path: "/participant/:id",
-        element: <Participants/>
+        element: <Participants />,
       },
-       {
+      {
         icon: <DocumentTextIcon {...icon} />,
         name: "profile",
         path: "/user-profile/:id",

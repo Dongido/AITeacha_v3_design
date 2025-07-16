@@ -17,15 +17,14 @@
       content="Join the future of education with AI-powered teaching tools and personalized learning."
     />
     <style>
-      /* Styles for the floating WhatsApp button */
       .whatsapp-button {
         position: fixed;
-        bottom: 280px; /* Shifted up */
+        bottom: 180px;
         right: 20px;
         left: auto;
         top: auto;
         z-index: 1000;
-        cursor: grab;
+        cursor: grab; /* Initial cursor style */
       }
 
       .whatsapp-button img {
@@ -192,6 +191,7 @@
         offsetX = e.clientX - whatsappBtn.getBoundingClientRect().left;
         offsetY = e.clientY - whatsappBtn.getBoundingClientRect().top;
         whatsappBtn.style.transition = "none";
+        whatsappBtn.style.cursor = "grabbing";
       });
 
       document.addEventListener("mousemove", function (e) {
@@ -207,6 +207,7 @@
       document.addEventListener("mouseup", function () {
         isDragging = false;
         whatsappBtn.style.transition = "";
+        whatsappBtn.style.cursor = "grab";
       });
     </script>
   </body>
