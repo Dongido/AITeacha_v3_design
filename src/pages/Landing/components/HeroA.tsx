@@ -38,10 +38,8 @@ export default () => {
         return texts[nextIndex];
       });
     }, 2000);
-
     return () => clearInterval(interval);
   }, [texts]);
-
   const scrollToCard = useCallback((index: number): void => {
     const carouselElement = carouselRef.current;
     if (carouselElement) {
@@ -64,17 +62,16 @@ export default () => {
     if (autoScrollIntervalRef.current) {
       clearInterval(autoScrollIntervalRef.current);
     }
-    autoScrollIntervalRef.current = setInterval(() => {
-      if (window.innerWidth < 768) {
+    if (window.innerWidth < 768) {
+      autoScrollIntervalRef.current = setInterval(() => {
         setCurrentCardIndex((prevIndex) => {
           const nextIndex = (prevIndex + 1) % cardsData.length;
           scrollToCard(nextIndex);
           return nextIndex;
         });
-      }
-    }, 3000);
+      }, 3000);
+    }
   }, [scrollToCard]);
-
   const stopAutoScroll = useCallback(() => {
     if (autoScrollIntervalRef.current) {
       clearInterval(autoScrollIntervalRef.current);
@@ -83,13 +80,21 @@ export default () => {
   }, []);
 
   useEffect(() => {
-    startAutoScroll();
-    return () => stopAutoScroll();
-  }, [startAutoScroll, stopAutoScroll]);
+    const handleResize = () => {
+      stopAutoScroll();
+      startAutoScroll();
+    };
 
+    startAutoScroll();
+    window.addEventListener("resize", handleResize);
+    return () => {
+      stopAutoScroll();
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [startAutoScroll, stopAutoScroll]);
   useEffect(() => {
     const carouselElement = carouselRef.current;
-    if (!carouselElement || window.innerWidth < 768) return;
+    if (!carouselElement || window.innerWidth >= 768) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -122,7 +127,7 @@ export default () => {
         });
       }
     };
-  }, [carouselRef, currentCardIndex]);
+  }, [carouselRef, currentCardIndex]); // currentCardIndex is a dependency here
 
   const scrollToSectionOnHome = (id: string) => {
     if (window.location.pathname === "/") {
@@ -259,7 +264,7 @@ export default () => {
           </div>
         </div>
         <div className="bg-gradient-to-b from-white via-blue-50 to-white pb-20 overflow-hidden">
-          <section className="max-w-screen-2xl text-center mx-auto  pb-8 px-4 md:px-8 pt-12">
+          <section className="max-w-screen-2xl text-center mx-auto  pb-8 px-4 md:px-8 pt-12">
             <div>
               <div className="py-4">
                 <h3 className="text-3xl md:text-5xl lg:text-6xl font-extrabold leading-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-700">
@@ -277,8 +282,8 @@ export default () => {
             <div
               ref={carouselRef}
               className="flex md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-8 gap-x-6
-                   overflow-x-auto snap-x snap-mandatory scrollbar-hide
-                   md:overflow-visible md:snap-none"
+                    overflow-x-auto snap-x snap-mandatory scrollbar-hide
+                    md:overflow-visible md:snap-none"
               style={{
                 paddingLeft:
                   window.innerWidth < 768 ? "calc(50% - 160px)" : "0",
@@ -290,17 +295,17 @@ export default () => {
                 <div
                   key={card.id}
                   className={`
-              flex-shrink-0 w-[320px] md:w-auto snap-center
-              bg-white rounded-xl shadow-xl px-2 md:px-4 lg:px-8 py-8 md:m-0 flex flex-col justify-between
-              transform transition-all duration-500 ease-in-out hover:scale-105 hover:shadow-2xl border border-gray-100
-              ${
-                currentCardIndex === index && window.innerWidth < 768
-                  ? "scale-100"
-                  : window.innerWidth < 768
-                  ? "scale-95"
-                  : "scale-100"
-              }
-            `}
+                  flex-shrink-0 w-[320px] md:w-auto snap-center
+                  bg-white rounded-xl shadow-xl px-2 md:px-4 lg:px-8 py-8 md:m-0 flex flex-col justify-between
+                  transform transition-all duration-500 ease-in-out hover:scale-105 hover:shadow-2xl border border-gray-100
+                  ${
+                    currentCardIndex === index && window.innerWidth < 768
+                      ? "scale-100"
+                      : window.innerWidth < 768
+                      ? "scale-95"
+                      : "scale-100"
+                  }
+                `}
                   onMouseEnter={stopAutoScroll}
                   onMouseLeave={startAutoScroll}
                 >
@@ -356,7 +361,7 @@ export default () => {
         </div>
         <div
           className="max-w-screen-2xl mx-auto mt-28 bg-gradient-to-b from-[#5c3cbb] to-[#8b6ecb] py-4 lg:py-8 rounded-3xl
-                    flex flex-col lg:flex-row lg:items-center lg:justify-start lg:space-x-12 px-4 relative"
+                      flex flex-col lg:flex-row lg:items-center lg:justify-start lg:space-x-12 px-4 relative"
         >
           <div className="hidden lg:block lg:flex-shrink-0 w-48 h-48 md:w-64 md:h-64 rounded-full overflow-hidden border-4 border-white shadow-lg ml-8">
             <img
@@ -390,32 +395,6 @@ export default () => {
           </div>
         </div>
       </div>
-
-      {/* <div className="bg-gray-200">
-        <div className="container grid grid-cols-1 gap-8 px-4 py-12 mx-auto lg:grid-cols-2 ">
-          <div className="flex flex-col  max-w-lg mx-auto ">
-            <h2 className="text-3xl font-semibold tracking-tight text-gray-800  dark:text-white">
-              For Schools & Governments
-            </h2>
-
-            <ul>
-              <li>School Onboarding process</li>
-              <li>Data dashboard preview</li>
-            </ul>
-          </div>
-
-          <div className="flex flex-col  max-w-lg mx-auto ">
-            <h2 className="text-3xl font-semibold tracking-tight text-gray-800  dark:text-white">
-              Partner with Us
-            </h2>
-
-            <ul>
-              <li>School Onboarding process</li>
-              <li>Data dashboard preview</li>
-            </ul>
-          </div>
-        </div>
-      </div> */}
 
       <div className="py-32">
         <p className="text-center text-xl text-gray-900 font-bold">Backed By</p>
