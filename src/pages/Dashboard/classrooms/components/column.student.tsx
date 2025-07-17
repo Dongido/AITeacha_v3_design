@@ -15,7 +15,7 @@ export const studentColumns = (classroomId: string | undefined) => [
     header: ({ column }) => <Header title="" column={column} />,
     sortingFn: "text",
     cell: (info) => {
-      const profileImage = info.getValue();
+      const profileImage =  info.getValue();
       const student = info.row.original;
       const displayText = `${student.firstname.charAt(
         0
@@ -23,13 +23,13 @@ export const studentColumns = (classroomId: string | undefined) => [
 
       return profileImage ? (
         <img
-          src={profileImage}
+          src={`https://${profileImage}`}
           alt="Student Profile"
           className="w-8 h-8 rounded-full object-cover"
-          onError={(e) => {
-            e.currentTarget.src =
-              "https://via.placeholder.com/400?text=Image+Unavailable";
-          }}
+          // onError={(e) => {
+          //   e.currentTarget.src =
+          //     "https://via.placeholder.com/400?text=Image+Unavailable";
+          // }}
         />
       ) : (
         <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-[#7a5ef8] to-[#5c3cbb] text-white font-semibold">

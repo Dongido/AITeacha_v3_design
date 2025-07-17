@@ -40,7 +40,7 @@ const initialPrices = {
     GBP: { month: 4, threeMonths: 12, year: 50 },
   },
   premium: {
-    NGN: { month: 20000, threeMonths: 60000, year: 200000 },
+    NGN: { month: 20000, threeMonths: 60000, year: 200000},
     USD: { month: 20, threeMonths: 60, year: 200 },
     GBP: { month: 18, threeMonths: 54, year: 190 },
   },
@@ -572,7 +572,7 @@ const Upgrade: React.FC = () => {
               setIsDialogOpen(true);
             }}
             disabled={
-              loadingPlan === "pro" || userDetails?.package === "AiTeacha Pro"
+              loadingPlan === "pro" || userDetails?.package === "AI Teacha Pro"
             }
             className={`bg-primary text-white w-full py-2 rounded-md transition mt-auto text-center ${
               userDetails?.package === "AiTeacha Pro"
@@ -580,7 +580,7 @@ const Upgrade: React.FC = () => {
                 : "hover:bg-[#4a2fa3]"
             }`}
           >
-            {userDetails?.package === "AiTeacha Pro"
+            {userDetails?.package === "AI Teacha Pro"
               ? "Current Plan"
               : loadingPlan === "pro"
               ? "Processing..."
@@ -641,7 +641,7 @@ const Upgrade: React.FC = () => {
             }}
             disabled={
               loadingPlan === "premium" ||
-              userDetails?.package === "AiTeacha Premium"
+              userDetails?.package === "AI Teacha Premium"
             }
             className={`bg-primary text-white w-full py-2 rounded-md transition mt-auto text-center ${
               userDetails?.package === "premium"
@@ -649,7 +649,7 @@ const Upgrade: React.FC = () => {
                 : "hover:bg-[#4a2fa3]"
             }`}
           >
-            {userDetails?.package === "AiTeacha Premium"
+            {userDetails?.package === "AI Teacha Premium"
               ? "Current Plan"
               : loadingPlan === "premium"
               ? "Processing..."

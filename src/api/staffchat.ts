@@ -164,7 +164,7 @@ export const getAllStudentTopic = async (id:string): Promise<Topics[]> => {
     if (response.status !== 200) {
       throw new Error("Failed to fetch staff topics.");
     }
-    console.log("response fetch", response)
+    // console.log("response fetch", response)
     return response.data.data;
   } catch (error: any) {
     throw new Error(

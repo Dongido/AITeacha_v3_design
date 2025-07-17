@@ -820,8 +820,8 @@ export const StudentParamroutes = [
       },
       {
         icon: <DocumentTextIcon {...icon} />,
-        name: "participant",
-        path: "/participant/:id",
+        name: "Classparticipant",
+        path: "/Classparticipant/:id",
         element: <Participants/>
       },
        {

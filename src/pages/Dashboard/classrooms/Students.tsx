@@ -19,6 +19,7 @@ const Students = () => {
   const fetchingStudents = useSelector(
     (state: RootState) => state.classrooms.fetchingStudents
   );
+  console.log("students",students)
 
   useEffect(() => {
     if (id) {
