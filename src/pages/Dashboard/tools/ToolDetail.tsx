@@ -128,7 +128,7 @@ const ToolDetail = () => {
   const [curriculums, setCurriculums] = useState<any[]>([]);
   const [isCurriculumLoading, setIsCurriculumLoading] =
     useState<boolean>(false);
-
+  const [selectedImageType, setSelectedImageType] = useState("");
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   interface Field {
     req_param: string;
@@ -365,6 +365,14 @@ const ToolDetail = () => {
         file: formData.get("file"),
       }));
     }
+  };
+
+  const handleImageSelectionChange = (imageType: string) => {
+    setSelectedImageType(imageType);
+    setFormData((prevData) => ({
+      ...prevData,
+      image_type: imageType,
+    }));
   };
 
   const handleSave = async () => {
@@ -786,6 +794,28 @@ const ToolDetail = () => {
                                   </SelectItem>
                                 ))
                               : null}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+                  {field.name === "image_type" &&
+                    tool.req_param?.includes("image_type") && (
+                      <div>
+                        <Label>Image Type</Label>
+                        <Select
+                          onValueChange={handleImageSelectionChange}
+                          value={formData.image_type || ""}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select Image Type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="labelled diagram">
+                              Labelled Diagram
+                            </SelectItem>
+                            <SelectItem value="non labelled diagram">
+                              Non-Labelled Diagram
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -1336,6 +1366,7 @@ const ToolDetail = () => {
                     field.name != "ageGroup" &&
                     field.name != "voiceType" &&
                     field.name !=   "lower_grade" &&
+                    field.name != "image_type" &&
                     field.name != "supportResources" &&
                     field.name != "questionFormat" &&
                     field.name != "curriculum_type" &&

@@ -22,7 +22,7 @@ export interface Classroom {
 
 const classroomColumnHelper = createColumnHelper<Classroom>();
 
-export const teamClassroomColumns = [
+export const teamMemberClassroomColumns = [
   classroomColumnHelper.accessor("classroom_id", {
     header: ({ column }) => <Header title="Classroom ID" column={column} />,
     sortingFn: "text",
@@ -79,25 +79,6 @@ export const teamClassroomColumns = [
   classroomColumnHelper.accessor("number_of_students_joined", {
     header: ({ column }) => <Header title="Joined Students" column={column} />,
     sortingFn: "basic",
-    cell: (info) => <span>{info.getValue()}</span>,
-  }),
-  classroomColumnHelper.accessor("email", {
-    header: ({ column }) => <Header title="Teacher Email" column={column} />,
-    sortingFn: "text",
-    cell: (info) => (
-      <span className="whitespace-nowrap">{info.getValue()}</span>
-    ),
-  }),
-  classroomColumnHelper.accessor("phone", {
-    header: ({ column }) => <Header title="Teacher Phone" column={column} />,
-    sortingFn: "text",
-    cell: (info) => <span>{info.getValue()}</span>,
-  }),
-  classroomColumnHelper.accessor((row) => `${row.firstname} ${row.lastname}`, {
-    id: "full_name",
-    header: ({ column }) => <Header title="Teacher FullName" column={column} />,
-    sortingFn: "text",
-
     cell: (info) => <span>{info.getValue()}</span>,
   }),
 
