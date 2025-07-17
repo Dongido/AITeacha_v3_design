@@ -161,6 +161,9 @@ const Classroom = () => {
   const [submissionSuccess, setSubmissionSuccess] = useState(false);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
   const [isAssessmentCompleted, setIsAssessmentCompleted] = useState(false);
+  
+  console.log("isLiveclassroom:", classroom?.isLiveclassroom);
+
 
   const handleOverviewClick = () => {
     setSelectedOverview(true);
@@ -928,7 +931,7 @@ const Classroom = () => {
           <DashboardNavbar />
           <div className="mt-4 md:mt-6 lg:mt-10">
             <div className="flex items-center  justify-between flex-col sm:flex-row">
-              <div className="mt-4 ml-4 sm:mt-0 flex items-center justify-between w-full">
+              <div className="mt-4 ml-4 sm:mt-0 flex  items-center justify-between w-full">
                 <div className="text-left">
                   <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
                     {classroom?.classroom_name}
@@ -943,20 +946,21 @@ const Classroom = () => {
                   </h2>
                 </div>
               </div>
-            <div className=" flex gap-4">              
-             <Link
-              to={`/student/Studentforum/${id}`}
-              className="relative flex items-center justify-center bg-white border border-[#5c3cbb]
-               hover:border-purple-600 hover:bg-purple-50 rounded-full px-3 py-2 text-sm text-[#5c3cbb] font-medium shadow-sm transition-all"
-            >
-              Chat
-              <span className="absolute -top-1.5 -right-1.5 bg-[#5c3cbb]
-               text-white rounded-full p-1 flex items-center justify-center shadow-md">
-                <FiMessageCircle size={14} />
-              </span>
-            </Link> 
-            
-              {classroom?.isLiveclassroom && viewState !== "liveclass" && (
+            <div className=" flex gap-4 md:items-center pr-6 ">              
+            <Button
+              onClick={() => navigate(`/student/Studentforum/${id}`)}
+                className="relative flex items-center justify-center bg-white border border-[#5c3cbb] mt-4
+                  hover:border-purple-600 hover:bg-purple-50 rounded-full px-3 py-2 text-sm text-[#5c3cbb] pt-1 font-medium shadow-sm transition-all"
+              >
+                Chat
+                <span className="absolute -top-1.5 -right-1.5 bg-[#5c3cbb]
+                  text-white rounded-full p-1 flex items-center justify-center shadow-md">
+                  <FiMessageCircle size={14} />
+                </span>
+              </Button>
+
+
+              {classroom?.isLiveclassroom === 1 || viewState !== "liveclass" && (
                 <Button
                   variant={"gradient"}
                   className="rounded-full mt-4"
@@ -965,7 +969,7 @@ const Classroom = () => {
                   Preview Live Class
                 </Button>
               )}
-              {classroom?.isLiveclassroom && viewState !== "classroom" && (
+              {classroom?.isLiveclassroom === 1 || viewState !== "classroom" && (
                 <Button
                   variant={"gradient"}
                   className="rounded-full mt-4"

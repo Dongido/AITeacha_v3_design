@@ -115,6 +115,7 @@ const StudentClass = () => {
       classroom_id:id,
       team_host_id:"",
    }));
+   console.log("classroom_id",id)
     if (result) {
       dispatch(getAllStudentTopics( id as string));
     }  
