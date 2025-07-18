@@ -8,6 +8,10 @@ const voiceTypelist = [
   { label: "Male Voice", value: "alloy" },
   { label: "Female Voice", value: "nova" },
 ];
+const ClassroomVoiceTypelist = [
+  { label: "Male Voice", value: "alloy" },
+  { label: "Female Voice", value: "ash" },
+];
 
 const ageGroupList = [
   { label: "1 - 3 years", value: "1 - 3 years" },
@@ -157,6 +161,24 @@ const appraisalTypeList = [
   { label: "General progress", value: "general progress" },
 ];
 
+const languageOptions = [
+  { label: "English", value: "en-US" },
+  { label: "Spanish", value: "es-ES" },
+  { label: "French", value: "fr-FR" },
+  { label: "Yoruba", value: "yo-NG" },
+  { label: "Hausa", value: "ha-NG" },
+  { label: "Igbo", value: "ig-NG" },
+];
+
+const gradeOptions = [
+  "Pre School",
+  "Early Years",
+  "Nursery 1",
+  "Nursery 2",
+  ...Array.from({ length: 12 }, (_, i) => `Grade ${i + 1}`),
+  ...Array.from({ length: 5 }, (_, i) => `Higher Institution Year ${i + 1}`),
+];
+// -
 export {
   activityList,
   appraisalTypeList,
@@ -168,6 +190,9 @@ export {
   examTypeList,
   curriculumFocus,
   mediaTypelist,
+  gradeOptions,
+  ClassroomVoiceTypelist,
+  languageOptions,
   difficultyList,
   voiceTypelist,
 };

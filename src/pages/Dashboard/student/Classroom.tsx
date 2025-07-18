@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   FiSend,
@@ -57,6 +57,8 @@ import {
   DialogDescription,
   DialogTitle,
   DialogTrigger,
+  DialogHeader,
+  DialogFooter,
 } from "../../../components/ui/Dialogue";
 import { Skeleton } from "../../../components/ui/Skeleton";
 import {
@@ -70,10 +72,18 @@ import {
   ToastTitle,
   ToastViewport,
 } from "../../../components/ui/Toast";
-
+import { getEphemeralKey } from "../../../api/chat";
+import CallPopup from "./CallPopUp";
+import {
+  ClassroomVoiceTypelist,
+  gradeOptions,
+  languageOptions,
+} from "../tools/data";
+import VoiceIcon from "../../../assets/img/voiceIcon.svg";
 const Classroom = () => {
   const [inputText, setInputText] = useState("");
   const [isRecording, setIsRecording] = useState(false);
+  const [isVoiceRecording, setIsVoiceRecording] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [toastOpen, setToastOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
@@ -101,6 +111,30 @@ const Classroom = () => {
   const [toolHistoryPage, setToolHistoryPage] = useState(0);
   const toolHistoryLimit = 40;
   const [allToolHistoryLoaded, setAllToolHistoryLoaded] = useState(false);
+  const [audioChunks, setAudioChunks] = useState<Blob[]>([]);
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  // OpenAI Realtime API specific refs and states
+  const wsRef = useRef<WebSocket | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
+  const sourceNodeRef = useRef<MediaStreamAudioSourceNode | null>(null);
+  const audioWorkletNodeRef = useRef<AudioWorkletNode | null>(null);
+  const mediaStreamRef = useRef<MediaStream | null>(null);
+  const audioQueueRef = useRef<Int16Array[]>([]);
+  const audioPlayerRef = useRef<HTMLAudioElement | null>(null);
+  const audioSourceRef = useRef<AudioBufferSourceNode | null>(null);
+  const isPlayingAudioRef = useRef(false);
+
+  // WebRTC specific refs and states
+  const [isSessionActive, setIsSessionActive] = useState(false);
+  const [dataChannel, setDataChannel] = useState<RTCDataChannel | null>(null);
+  const peerConnection = useRef<RTCPeerConnection | null>(null);
+  const audioElement = useRef<HTMLAudioElement | null>(null);
+  const [showCallPopup, setShowCallPopup] = useState(false);
 
   const [messages, setMessages] = useState<{
     [key: string]: { text: string; fromUser: boolean; isLoading?: boolean }[];
@@ -161,15 +195,541 @@ const Classroom = () => {
   const [submissionSuccess, setSubmissionSuccess] = useState(false);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
   const [isAssessmentCompleted, setIsAssessmentCompleted] = useState(false);
-  
-  console.log("isLiveclassroom:", classroom?.isLiveclassroom);
+  const [showVoiceSettingsDialog, setShowVoiceSettingsDialog] = useState(false);
+  const [selectedVoiceType, setSelectedVoiceType] = useState("alloy");
+  const [selectedLanguage, setSelectedLanguage] = useState("en-US");
+  const [selectedGrade, setSelectedGrade] = useState("");
 
-
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [remainingCallTime, setRemainingCallTime] = useState(0);
+  const MAX_CALL_DURATION_SECONDS = 30 * 60;
   const handleOverviewClick = () => {
     setSelectedOverview(true);
     console.log("selectedOverview set to true in handler");
     console.log("selectedOverview", selectedOverview);
   };
+  const playNextAudioChunk = useCallback(() => {
+    if (
+      !audioContextRef.current ||
+      !isPlayingAudioRef.current ||
+      audioQueueRef.current.length === 0
+    ) {
+      return;
+    }
+
+    const chunk = audioQueueRef.current.shift();
+    if (!chunk) return;
+
+    const audioBuffer = audioContextRef.current.createBuffer(
+      1,
+      chunk.length,
+      audioContextRef.current.sampleRate
+    );
+    const float32Data = audioBuffer.getChannelData(0);
+
+    for (let i = 0; i < chunk.length; i++) {
+      float32Data[i] = chunk[i] / 32768.0;
+    }
+
+    audioSourceRef.current = audioContextRef.current.createBufferSource();
+    audioSourceRef.current.buffer = audioBuffer;
+    audioSourceRef.current.connect(audioContextRef.current.destination);
+
+    audioSourceRef.current.onended = () => {
+      if (isPlayingAudioRef.current) {
+        playNextAudioChunk();
+      }
+    };
+
+    audioSourceRef.current.start();
+  }, []);
+
+  useEffect(() => {
+    if (!audioContextRef.current) {
+      audioContextRef.current = new (window.AudioContext ||
+        (window as any).webkitAudioContext)();
+    }
+    if (!analyserRef.current) {
+      analyserRef.current = audioContextRef.current.createAnalyser();
+      analyserRef.current.fftSize = 256;
+    }
+
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+      if (
+        mediaRecorderRef.current &&
+        mediaRecorderRef.current.state !== "inactive"
+      ) {
+        mediaRecorderRef.current.stop();
+      }
+      if (sourceNodeRef.current) {
+        sourceNodeRef.current.disconnect();
+        sourceNodeRef.current = null;
+      }
+      if (audioWorkletNodeRef.current) {
+        audioWorkletNodeRef.current.disconnect();
+        audioWorkletNodeRef.current = null;
+      }
+      if (wsRef.current) {
+        wsRef.current.close();
+        wsRef.current = null;
+      }
+      if (mediaStreamRef.current) {
+        mediaStreamRef.current.getTracks().forEach((track) => track.stop());
+        mediaStreamRef.current = null;
+      }
+      if (audioSourceRef.current) {
+        audioSourceRef.current.stop();
+        audioSourceRef.current.disconnect();
+        audioSourceRef.current = null;
+      }
+      isPlayingAudioRef.current = false;
+      audioQueueRef.current = [];
+
+      if (
+        audioContextRef.current &&
+        audioContextRef.current.state !== "closed"
+      ) {
+        audioContextRef.current
+          .close()
+          .catch((e) => console.error("Error closing AudioContext:", e));
+        audioContextRef.current = null;
+      }
+      analyserRef.current = null;
+    };
+  }, []);
+
+  const drawVisualization = () => {
+    const canvas = canvasRef.current;
+    const analyser = analyserRef.current;
+
+    if (!canvas || !analyser) {
+      return;
+    }
+
+    const canvasCtx = canvas.getContext("2d");
+    if (!canvasCtx) {
+      return;
+    }
+    console.log("Wave visualization started.");
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+
+    const draw = () => {
+      animationFrameRef.current = requestAnimationFrame(draw);
+
+      if (!isVoiceRecording || !analyser) {
+        canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+        return;
+      }
+
+      analyser.getByteFrequencyData(dataArray);
+
+      canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+      canvasCtx.fillStyle = "rgb(0, 0, 0)";
+      canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const barWidth = (canvas.width / bufferLength) * 2.5;
+      let x = 0;
+
+      for (let i = 0; i < bufferLength; i++) {
+        const barHeight = dataArray[i];
+
+        canvasCtx.fillStyle = "rgb(" + (barHeight + 100) + ",50,50)";
+        canvasCtx.fillRect(
+          x,
+          canvas.height - barHeight / 2,
+          barWidth,
+          barHeight / 2
+        );
+
+        x += barWidth + 1;
+      }
+    };
+
+    draw();
+  };
+  const startAudioRecording = async (
+    voiceType: string,
+    language: string,
+    grade: string
+  ) => {
+    if (!navigator.mediaDevices || !window.RTCPeerConnection || !window.Audio) {
+      alert("Your browser does not support WebRTC or audio.");
+      return;
+    }
+
+    if (isSessionActive) {
+      console.log("Session already active.");
+      return;
+    }
+
+    setSubmittingAssessment(true);
+    setSubmissionError(null);
+    setShowCallPopup(true);
+    setShowVoiceSettingsDialog(false);
+
+    try {
+      const outlineTitlesString = classroom?.classroomoutlines
+        ?.map((outline) => outline.classroomoutline_title)
+        .filter(Boolean)
+        .join(", ");
+
+      const tokenResponse = await getEphemeralKey({
+        voice_type: voiceType,
+        language: language,
+        grade: grade,
+        description: classroom?.class_intro || "",
+        topics: outlineTitlesString || "",
+      });
+      const EPHEMERAL_KEY = tokenResponse.data.client_secret.value;
+
+      const pc = new RTCPeerConnection();
+      peerConnection.current = pc;
+
+      pc.onconnectionstatechange = () => {
+        console.log("Peer Connection State:", pc.connectionState);
+        if (
+          pc.connectionState === "disconnected" ||
+          pc.connectionState === "failed" ||
+          pc.connectionState === "closed"
+        ) {
+          console.warn("Peer connection no longer active, ensuring cleanup.");
+          if (isSessionActive) {
+            stopAudioRecording();
+          }
+        }
+      };
+
+      if (!audioElement.current) {
+        audioElement.current = new Audio();
+        audioElement.current.autoplay = true;
+        audioElement.current.onerror = (e) => {
+          console.error("Audio element error:", e);
+          setToastMessage("Audio playback error. Please try again.");
+          setToastVariant("destructive");
+          setToastOpen(true);
+        };
+      }
+      pc.ontrack = (e) => {
+        if (audioElement.current) {
+          audioElement.current.srcObject = e.streams[0];
+          setIsSpeaking(true);
+          audioElement.current.onended = () => setIsSpeaking(false);
+        }
+      };
+
+      const mediaStream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+      });
+      mediaStreamRef.current = mediaStream;
+      mediaStream
+        .getTracks()
+        .forEach((track) => pc.addTrack(track, mediaStream));
+
+      const dc = pc.createDataChannel("oai-events");
+      setDataChannel(dc);
+
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+
+      const baseUrl = "https://api.openai.com/v1/realtime";
+      const model = "gpt-4o-realtime-preview-2024-12-17";
+      const sdpResponse = await fetch(`${baseUrl}?model=${model}`, {
+        method: "POST",
+        body: offer.sdp,
+        headers: {
+          Authorization: `Bearer ${EPHEMERAL_KEY}`,
+          "Content-Type": "application/sdp",
+        },
+      });
+
+      const answer: RTCSessionDescriptionInit = {
+        type: "answer",
+        sdp: await sdpResponse.text(),
+      };
+      await pc.setRemoteDescription(answer);
+
+      setIsVoiceRecording(true);
+      setSubmittingAssessment(false);
+
+      dc.onmessage = (e) => {
+        const event = JSON.parse(e.data);
+        console.log("Received from OpenAI (DataChannel):", event);
+
+        switch (event.type) {
+          case "response.audio_transcript.delta": {
+            setMessages((prev) => {
+              const currentKey = selectedTool ? selectedTool : "main";
+              const currentMessagesForDisplay = [...(prev[currentKey] || [])];
+              const lastMessage =
+                currentMessagesForDisplay[currentMessagesForDisplay.length - 1];
+
+              if (lastMessage && !lastMessage.fromUser) {
+                if (lastMessage.isLoading) {
+                  lastMessage.text = event.delta;
+                  lastMessage.isLoading = false;
+                } else {
+                  lastMessage.text += event.delta;
+                }
+              } else {
+                currentMessagesForDisplay.push({
+                  text: event.delta,
+                  fromUser: false,
+                  isLoading: false,
+                });
+              }
+              return { ...prev, [currentKey]: currentMessagesForDisplay };
+            });
+            break;
+          }
+          case "response.done": {
+            console.log("OpenAI response done.");
+            setMessages((prev) => {
+              const currentKey = selectedTool ? selectedTool : "main";
+              return {
+                ...prev,
+                [currentKey]: (prev[currentKey] || []).map((msg) =>
+                  msg.isLoading ? { ...msg, isLoading: false } : msg
+                ),
+              };
+            });
+            break;
+          }
+          case "conversation.item.created": {
+            if (event.item.type === "message" && event.item.role === "user") {
+              const userTranscript = event.item.content[0]?.text;
+              if (userTranscript) {
+                setMessages((prev) => {
+                  const currentKey = selectedTool ? selectedTool : "main";
+                  const filteredMessages = (prev[currentKey] || []).filter(
+                    (msg) => !(msg.fromUser && msg.isLoading)
+                  );
+                  return {
+                    ...prev,
+                    [currentKey]: [
+                      ...filteredMessages,
+                      {
+                        text: userTranscript,
+                        fromUser: true,
+                        isLoading: false,
+                      },
+                    ],
+                  };
+                });
+              }
+            }
+            break;
+          }
+          case "error": {
+            console.error("OpenAI WebRTC Error:", event);
+            setToastMessage(
+              `OpenAI Error: ${event.message || "An unknown error occurred."}`
+            );
+            setToastVariant("destructive");
+            setToastOpen(true);
+            stopAudioRecording();
+            break;
+          }
+          default: {
+            console.log(
+              "Unhandled OpenAI event (DataChannel):",
+              event.type,
+              event
+            );
+          }
+        }
+      };
+
+      dc.onopen = () => {
+        setIsSessionActive(true);
+        console.log("Data Channel Opened.");
+        setMessages((prev) => ({ ...prev, [getMessageKey()]: [] }));
+
+        setRemainingCallTime(MAX_CALL_DURATION_SECONDS);
+        countdownIntervalRef.current = setInterval(() => {
+          setRemainingCallTime((prevTime) => {
+            if (prevTime <= 1) {
+              clearInterval(countdownIntervalRef.current as NodeJS.Timeout);
+              countdownIntervalRef.current = null;
+              return 0;
+            }
+            return prevTime - 1;
+          });
+        }, 1000);
+
+        timerRef.current = setTimeout(() => {
+          console.log("30-minute timer expired. Ending call...");
+          stopAudioRecording();
+          setToastMessage("Your voice session has ended after 30 minutes.");
+          setToastVariant("default");
+          setToastOpen(true);
+        }, MAX_CALL_DURATION_SECONDS * 1000);
+
+        drawVisualization();
+      };
+
+      dc.onclose = () => {
+        console.log("Data Channel Closed.");
+        stopAudioRecording();
+      };
+
+      dc.onerror = (error) => {
+        console.error("Data Channel Error:", error);
+        setToastMessage("Data channel error. Please try again.");
+        setToastVariant("destructive");
+        setToastOpen(true);
+        stopAudioRecording();
+      };
+    } catch (err: any) {
+      console.error("Error starting WebRTC session:", err);
+      setSubmissionError(
+        err.message ||
+          "Failed to start WebRTC session. Check microphone permissions."
+      );
+      setToastMessage(
+        err.message ||
+          "Failed to start WebRTC session. Check microphone permissions."
+      );
+      setToastVariant("destructive");
+      setToastOpen(true);
+      setSubmittingAssessment(false);
+      stopAudioRecording();
+    }
+  };
+
+  const stopAudioRecording = () => {
+    console.log("Stopping WebRTC session...");
+
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+      console.log("Call duration auto-end timer cleared.");
+    }
+    if (countdownIntervalRef.current) {
+      clearInterval(countdownIntervalRef.current);
+      countdownIntervalRef.current = null;
+      console.log("Countdown interval cleared.");
+    }
+    setRemainingCallTime(0);
+
+    if (dataChannel) {
+      dataChannel.close();
+      setDataChannel(null);
+    }
+
+    if (peerConnection.current) {
+      peerConnection.current.getSenders().forEach((sender) => {
+        if (sender.track) {
+          sender.track.stop();
+        }
+      });
+      peerConnection.current.close();
+      peerConnection.current = null;
+    }
+
+    if (audioElement.current) {
+      audioElement.current.pause();
+      audioElement.current.srcObject = null;
+    }
+
+    if (mediaStreamRef.current) {
+      mediaStreamRef.current.getTracks().forEach((track) => track.stop());
+      mediaStreamRef.current = null;
+    }
+
+    setIsSessionActive(false);
+    setIsVoiceRecording(false);
+    setIsSpeaking(false);
+    setShowCallPopup(false);
+
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = null;
+    }
+
+    audioQueueRef.current = [];
+    isPlayingAudioRef.current = false;
+    if (audioSourceRef.current) {
+      try {
+        audioSourceRef.current.stop();
+        audioSourceRef.current.disconnect();
+      } catch (e) {
+        console.warn("AudioSourceNode already stopped or not connected:", e);
+      } finally {
+        audioSourceRef.current = null;
+      }
+    }
+    if (audioContextRef.current && audioContextRef.current.state !== "closed") {
+      audioContextRef.current
+        .close()
+        .catch((e) => console.error("Error closing AudioContext:", e));
+      audioContextRef.current = null;
+    }
+    analyserRef.current = null;
+
+    console.log("WebRTC Session stopped.");
+  };
+  useEffect(() => {
+    if (!audioContextRef.current) {
+      audioContextRef.current = new (window.AudioContext ||
+        (window as any).webkitAudioContext)();
+    }
+    if (!analyserRef.current) {
+      analyserRef.current = audioContextRef.current.createAnalyser();
+      analyserRef.current.fftSize = 256;
+    }
+
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+      if (
+        mediaRecorderRef.current &&
+        mediaRecorderRef.current.state !== "inactive"
+      ) {
+        mediaRecorderRef.current.stop();
+      }
+      if (sourceNodeRef.current) {
+        sourceNodeRef.current.disconnect();
+        sourceNodeRef.current = null;
+      }
+      if (audioWorkletNodeRef.current) {
+        audioWorkletNodeRef.current.disconnect();
+        audioWorkletNodeRef.current = null;
+      }
+      if (wsRef.current) {
+        wsRef.current.close();
+        wsRef.current = null;
+      }
+      if (mediaStreamRef.current) {
+        mediaStreamRef.current.getTracks().forEach((track) => track.stop());
+        mediaStreamRef.current = null;
+      }
+      if (audioSourceRef.current) {
+        audioSourceRef.current.stop();
+        audioSourceRef.current.disconnect();
+        audioSourceRef.current = null;
+      }
+      isPlayingAudioRef.current = false;
+      audioQueueRef.current = [];
+
+      if (
+        audioContextRef.current &&
+        audioContextRef.current.state !== "closed"
+      ) {
+        audioContextRef.current
+          .close()
+          .catch((e) => console.error("Error closing AudioContext:", e));
+        audioContextRef.current = null;
+      }
+      analyserRef.current = null;
+    };
+  }, []);
+
   useEffect(() => {
     if (id) {
       dispatch(fetchClassroomByIdThunk(Number(id)));
@@ -203,6 +763,29 @@ const Classroom = () => {
   }, [classroom]);
 
   useEffect(() => {
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+      if (audioContextRef.current) {
+        audioContextRef.current
+          .close()
+          .catch((e) => console.error("Error closing AudioContext:", e));
+        audioContextRef.current = null;
+      }
+      if (
+        mediaRecorderRef.current &&
+        mediaRecorderRef.current.state !== "inactive"
+      ) {
+        mediaRecorderRef.current.stop();
+      }
+      if (sourceNodeRef.current) {
+        sourceNodeRef.current.disconnect();
+      }
+    };
+  }, []);
+
+  useEffect(() => {
     let newMessage: string = classroom?.content || "";
     console.log("selectedOverview", selectedOverview);
     if (selectedOverview) {
@@ -232,6 +815,7 @@ const Classroom = () => {
 
     setWelcomeMessage(newMessage);
   }, [selectedOutline, selectedTool, classroom, userDetails, selectedOverview]);
+
   useEffect(() => {
     const fetchClassroomHistory = async () => {
       if (id && !selectedTool && !previouslySelectedTool && historyPage === 0) {
@@ -924,16 +1508,16 @@ const Classroom = () => {
           onToggleView={handleToggleView}
         />
         <div
-          className={`flex-1 transition-all duration-300 px-2  ${
+          className={`flex-1 transition-all duration-3 px-2  ${
             isCollapsed ? "xl:ml-28" : "xl:ml-72"
           }`}
         >
           <DashboardNavbar />
           <div className="mt-4 md:mt-6 lg:mt-10">
             <div className="flex items-center  justify-between flex-col sm:flex-row">
-              <div className="mt-4 ml-4 sm:mt-0 flex  items-center justify-between w-full">
+              <div className="mt-4 ml-4 sm:mt-0 flex items-center justify-between w-full">
                 <div className="text-left">
-                  <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
+                  <h2 className="text-lg sm:text-xl font-semibold text-gray-9">
                     {classroom?.classroom_name}
                     {selectedTool && (
                       <>
@@ -946,58 +1530,170 @@ const Classroom = () => {
                   </h2>
                 </div>
               </div>
-            <div className=" flex gap-4 md:items-center pr-6 ">              
-            <Button
-              onClick={() => navigate(`/student/Studentforum/${id}`)}
-                className="relative flex items-center justify-center bg-white border border-[#5c3cbb] mt-4
-                  hover:border-purple-600 hover:bg-purple-50 rounded-full px-3 py-2 text-sm text-[#5c3cbb] pt-1 font-medium shadow-sm transition-all"
-              >
-                Chat
-                <span className="absolute -top-1.5 -right-1.5 bg-[#5c3cbb]
-                  text-white rounded-full p-1 flex items-center justify-center shadow-md">
-                  <FiMessageCircle size={14} />
-                </span>
-              </Button>
-
-
-              {classroom?.isLiveclassroom === 1 || viewState !== "liveclass" && (
-                <Button
-                  variant={"gradient"}
-                  className="rounded-full mt-4"
-                  onClick={() => setViewState("liveclass")}
+              <div className=" flex gap-4">
+                <Dialog
+                  open={showVoiceSettingsDialog}
+                  onOpenChange={setShowVoiceSettingsDialog}
                 >
-                  Preview Live Class
-                </Button>
-              )}
-              {classroom?.isLiveclassroom === 1 || viewState !== "classroom" && (
-                <Button
-                  variant={"gradient"}
-                  className="rounded-full mt-4"
-                  onClick={() => setViewState("classroom")}
+                  <DialogTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className={`rounded-full hover:bg-gray-400 mt-5 ${
+                        isVoiceRecording
+                          ? "bg-red-500 text-white"
+                          : "bg-gray-200 text-black"
+                      }`}
+                      disabled={isVoiceRecording}
+                    >
+                      {isVoiceRecording ? (
+                        <FiX className="h-5 w-5" />
+                      ) : (
+                        <img
+                          src={VoiceIcon}
+                          alt="Microphone"
+                          className="h-16 w-5"
+                        />
+                      )}
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                      <DialogTitle>Voice Session Settings</DialogTitle>
+                      <DialogDescription>
+                        Choose your preferred voice, language, and grade for the
+                        AI.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <label htmlFor="voiceType" className="text-right">
+                          Voice
+                        </label>
+                        <select
+                          id="voiceType"
+                          value={selectedVoiceType}
+                          onChange={(e) => setSelectedVoiceType(e.target.value)}
+                          className="col-span-3 border rounded-md p-2"
+                        >
+                          {ClassroomVoiceTypelist.map((voice) => (
+                            <option key={voice.value} value={voice.value}>
+                              {voice.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <label htmlFor="language" className="text-right">
+                          Language
+                        </label>
+                        <select
+                          id="language"
+                          value={selectedLanguage}
+                          onChange={(e) => setSelectedLanguage(e.target.value)}
+                          className="col-span-3 border rounded-md p-2"
+                        >
+                          {languageOptions.map((lang) => (
+                            <option key={lang.value} value={lang.value}>
+                              {lang.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <label htmlFor="grade" className="text-right">
+                          Grade
+                        </label>
+                        <select
+                          id="grade"
+                          value={selectedGrade}
+                          onChange={(e) => setSelectedGrade(e.target.value)}
+                          className="col-span-3 border rounded-md p-2"
+                        >
+                          <option value="">Select Grade (Optional)</option>
+                          {gradeOptions.map((grade, index) => (
+                            <option key={index} value={grade}>
+                              {grade}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button
+                        onClick={() =>
+                          startAudioRecording(
+                            selectedVoiceType,
+                            selectedLanguage,
+                            selectedGrade
+                          )
+                        }
+                        variant={"gradient"}
+                        className="w-full rounded-md"
+                        disabled={submittingAssessment}
+                      >
+                        {submittingAssessment
+                          ? "Connecting..."
+                          : "Start Voice Session"}
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+
+                <Link
+                  to={`/student/Studentforum/${id}`}
+                  className="relative flex items-center justify-center bg-white border border-[#5c3cbb]
+               hover:border-purple-6 hover:bg-purple-50 rounded-full px-3 py-2 text-sm text-[#5c3cbb] font-medium shadow-sm transition-all"
                 >
-                  Back to Classroom
-                </Button>
-              )}
+                  Chat
+                  <span
+                    className="absolute -top-1.5 -right-1.5 bg-[#5c3cbb]
+               text-white rounded-full p-1 flex items-center justify-center shadow-md"
+                  >
+                    <FiMessageCircle size={14} />
+                  </span>
+                </Link>
+
+                {classroom?.isLiveclassroom === 1 ||
+                  (viewState !== "liveclass" && (
+                    <Button
+                      variant={"gradient"}
+                      className="rounded-full mt-4"
+                      onClick={() => setViewState("liveclass")}
+                    >
+                      Preview Live Class
+                    </Button>
+                  ))}
+                {classroom?.isLiveclassroom === 1 ||
+                  (viewState !== "classroom" && (
+                    <Button
+                      variant={"gradient"}
+                      className="rounded-full mt-4"
+                      onClick={() => setViewState("classroom")}
+                    >
+                      Back to Classroom
+                    </Button>
+                  ))}
               </div>
             </div>
 
             {viewState === "classroom" ? (
               <>
-                <div className="relative flex flex-col lg:flex-row max-h-[550px]  overflow-y-auto pb-[100px] lg:pb-[70px]">
+                <div className="relative flex flex-col lg:flex-row max-h-[550px]  overflow-y-auto pb-[1px] lg:pb-[70px]">
                   <div
                     ref={chatContainerRef}
-                    className="flex-grow overflow-y-auto bg-gray-50 border border-gray-300 rounded-lg shadow-inner space-y-2 m-4 p-4 max-h-[450px]"
+                    className="flex-grow overflow-y-auto bg-gray-50 border border-gray-3 rounded-lg shadow-inner space-y-2 m-4 p-4 max-h-[450px]"
                   >
                     {selectedOverview ? (
                       <MarkdownRenderer
                         content={welcomeMessage}
-                        className="text-sm lg:text-md text-gray-800"
+                        className="text-sm lg:text-md text-gray-8"
                       />
                     ) : currentMessages.length === 0 ? (
                       <>
                         <MarkdownRenderer
                           content={welcomeMessage}
-                          className="text-sm lg:text-md text-gray-800"
+                          className="text-sm lg:text-md text-gray-8"
                         />
                         {selectedOutline &&
                         selectedOutline.mark_as_read === 0 ? (
@@ -1113,7 +1809,7 @@ const Classroom = () => {
                             <div className="flex justify-center items-center h-full">
                               <svg
                                 className="animate-spin h-6 w-6 text-primary"
-                                xmlns="http://www.w3.org/2000/svg"
+                                xmlns="http://www.w3.org/20/svg"
                                 fill="none"
                                 viewBox="0 0 24 24"
                               >
@@ -1134,7 +1830,7 @@ const Classroom = () => {
                             </div>
                           )}
                         {errorHistory && !selectedTool && (
-                          <div className="text-center text-red-400">
+                          <div className="text-center text-red-4">
                             Error loading history: {errorHistory}
                           </div>
                         )}
@@ -1144,7 +1840,7 @@ const Classroom = () => {
                             <div className="flex justify-center items-center h-full">
                               <svg
                                 className="animate-spin h-6 w-6 text-primary"
-                                xmlns="http://www.w3.org/2000/svg"
+                                xmlns="http://www.w3.org/20/svg"
                                 fill="none"
                                 viewBox="0 0 24 24"
                               >
@@ -1165,7 +1861,7 @@ const Classroom = () => {
                             </div>
                           )}
                         {errorToolHistory && selectedTool && (
-                          <div className="text-center text-red-400">
+                          <div className="text-center text-red-4">
                             Error loading tool history: {errorToolHistory}
                           </div>
                         )}
@@ -1183,14 +1879,14 @@ const Classroom = () => {
                             {loadingHistory &&
                               !selectedTool &&
                               historyPage > 0 && (
-                                <div className="text-gray-500 text-sm">
+                                <div className="text-gray-5 text-sm">
                                   Loading more history...
                                 </div>
                               )}
                             {loadingToolHistory &&
                               selectedTool &&
                               toolHistoryPage > 0 && (
-                                <div className="text-gray-500 text-sm">
+                                <div className="text-gray-5 text-sm">
                                   Loading more tool history...
                                 </div>
                               )}
@@ -1210,7 +1906,7 @@ const Classroom = () => {
                               <div className="flex justify-end space-x-4 mb-1">
                                 <button
                                   onClick={() => handleCopy(message.text)}
-                                  className="text-gray-600 hover:text-gray-800 flex gap-1"
+                                  className="text-gray-6 hover:text-gray-8 flex gap-1"
                                 >
                                   <FiCopy />{" "}
                                   <span className="text-sm">Copy</span>
@@ -1219,7 +1915,7 @@ const Classroom = () => {
                                   onClick={() =>
                                     handleTextToSpeech(message.text)
                                   }
-                                  className="text-gray-600 hover:text-gray-800 flex gap-1"
+                                  className="text-gray-6 hover:text-gray-8 flex gap-1"
                                 >
                                   {isSpeaking ? <FiPause /> : <FiVolume2 />}
                                   <span className="text-sm">
@@ -1233,7 +1929,7 @@ const Classroom = () => {
                               className={`p-3 text-sm ${
                                 message.fromUser
                                   ? "bg-primary max-w-xs text-white rounded-tl-lg"
-                                  : "bg-gray-200 max-w-xl text-black rounded-tr-lg"
+                                  : "bg-gray-2 max-w-xl text-black rounded-tr-lg"
                               }`}
                               style={{
                                 wordWrap: "break-word",
@@ -1254,7 +1950,7 @@ const Classroom = () => {
                       className="w-64 h-20 bg-cover bg-center relative hidden lg:block"
                       style={{ backgroundImage: `url(${greyImg})` }}
                     >
-                      <span className="absolute inset-0 flex items-center text-sm italic justify-center text-white text-lg font-bold bg-black bg-opacity-20">
+                      <span className="absolute inset-0 flex items-center italic justify-center text-white text-lg font-bold bg-black bg-opacity-20">
                         Powered By <span className="text-lg ml-1"> Zyra</span>
                       </span>
                     </div>
@@ -1299,11 +1995,11 @@ const Classroom = () => {
               </>
             ) : viewState === "liveclass" ? (
               <div className="liveclass-div">
-                <div className="my-8 p-6 bg-gradient-to-r from-gray-50 to-purple-50 border border-purple-200 rounded-lg shadow-sm">
+                <div className="my-8 p-6 bg-gradient-to-r from-gray-50 to-purple-50 border border-purple-2 rounded-lg shadow-sm">
                   {classroom?.liveclassroomassessments &&
                   classroom.liveclassroomassessments.length > 0 ? (
                     <>
-                      <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-800 mb-6 text-center">
+                      <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-8 mb-6 text-center">
                         Live Class Assessments
                       </h2>
                       {classroom.liveclassroomassessments.map(
@@ -1336,24 +2032,24 @@ const Classroom = () => {
                                 question.liveclassroomassessment_id ||
                                 `q-${qIndex}`
                               }
-                              className="mb-6 p-4 border border-gray-200 rounded-md bg-gray-50"
+                              className="mb-6 p-4 border border-gray-2 rounded-md bg-gray-50"
                             >
-                              <p className="text-lg font-medium text-gray-800 mb-3 flex items-center">
+                              <p className="text-lg font-medium text-gray-8 mb-3 flex items-center">
                                 {qIndex + 1}.{" "}
                                 {question.liveclassroomassessment_question}
                                 {isAssessmentCompleted && (
                                   <span className="ml-3">
                                     {didStudentFailToAnswer ? (
-                                      <span className="text-red-500 font-bold">
-                                        &#10006; Unanswered
+                                      <span className="text-red-5 font-bold">
+                                        &#106; Unanswered
                                       </span>
                                     ) : isCorrect ? (
-                                      <span className="text-green-500 font-bold">
-                                        &#10003; Correct
+                                      <span className="text-green-5 font-bold">
+                                        &#103; Correct
                                       </span>
                                     ) : (
-                                      <span className="text-red-500 font-bold">
-                                        &#10006; Incorrect
+                                      <span className="text-red-5 font-bold">
+                                        &#106; Incorrect
                                       </span>
                                     )}
                                   </span>
@@ -1377,29 +2073,29 @@ const Classroom = () => {
                                     return (
                                       <label
                                         key={optionKey}
-                                        className={`flex items-center space-x-2 p-2 rounded-md transition-colors duration-200
+                                        className={`flex items-center space-x-2 p-2 rounded-md transition-colors duration-2
                         ${
                           !isAssessmentCompleted
-                            ? "cursor-pointer hover:bg-gray-100"
+                            ? "cursor-pointer hover:bg-gray-1"
                             : "cursor-not-allowed"
                         }
                         ${
                           isAssessmentCompleted &&
                           isChecked &&
                           isCorrect &&
-                          "bg-green-100 border border-green-300"
+                          "bg-green-1 border border-green-3"
                         }
                         ${
                           isAssessmentCompleted &&
                           isChecked &&
                           !isCorrect &&
-                          "bg-red-100 border border-red-300"
+                          "bg-red-1 border border-red-3"
                         }
                         ${
                           isAssessmentCompleted &&
                           !isChecked &&
                           isCorrectAnswerOption &&
-                          "bg-blue-50 border border-blue-200"
+                          "bg-blue-50 border border-blue-2"
                         }
                       `}
                                       >
@@ -1417,20 +2113,20 @@ const Classroom = () => {
                                           className={`form-radio h-4 w-4 ${
                                             isAssessmentCompleted
                                               ? "cursor-not-allowed"
-                                              : "text-purple-600 focus:ring-purple-500"
+                                              : "text-purple-6 focus:ring-purple-5"
                                           }`}
                                           readOnly={isAssessmentCompleted}
                                           disabled={isAssessmentCompleted}
                                         />
-                                        <span className="text-gray-700">
+                                        <span className="text-gray-7">
                                           {optionKey}. {optionValue}
                                         </span>
                                         {isAssessmentCompleted &&
                                           !didStudentFailToAnswer &&
                                           isCorrectAnswerOption &&
                                           !isChecked && (
-                                            <span className="ml-2 text-green-600">
-                                              &#10003; (Correct Answer)
+                                            <span className="ml-2 text-green-6">
+                                              &#103; (Correct Answer)
                                             </span>
                                           )}
                                       </label>
@@ -1439,7 +2135,7 @@ const Classroom = () => {
                                 )}
                                 {isAssessmentCompleted &&
                                   didStudentFailToAnswer && (
-                                    <p className="text-sm text-blue-600 mt-1">
+                                    <p className="text-sm text-blue-6 mt-1">
                                       Correct Answer:{" "}
                                       {
                                         question.liveclassroomassessment_correct_answer
@@ -1468,7 +2164,7 @@ const Classroom = () => {
                               )
                             }
                             disabled={submittingAssessment}
-                            className="mt-2 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700"
+                            className="mt-2 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition-all duration-3 hover:scale-105 hover:shadow-xl bg-gradient-to-r from-green-6 to-teal-6 hover:from-green-7 hover:to-teal-7"
                             variant={"gradient"}
                           >
                             {submittingAssessment
@@ -1476,28 +2172,28 @@ const Classroom = () => {
                               : "Submit Answers"}
                           </Button>
                         ) : (
-                          <div className="p-4 bg-blue-50 border border-blue-200 rounded-md">
-                            <p className="text-lg font-bold text-blue-800">
+                          <div className="p-4 bg-blue-50 border border-blue-2 rounded-md">
+                            <p className="text-lg font-bold text-blue-8">
                               Assessment Completed!
                             </p>
                             {submissionSuccess && (
-                              <p className="text-green-600 mt-2">
+                              <p className="text-green-6 mt-2">
                                 Your answers have been submitted.
                               </p>
                             )}
-                            <p className="text-gray-700 mt-2">
+                            <p className="text-gray-7 mt-2">
                               Review your answers above.
                             </p>
                           </div>
                         )}
 
                         {submissionError && (
-                          <p className="text-red-600 mt-2">{submissionError}</p>
+                          <p className="text-red-6 mt-2">{submissionError}</p>
                         )}
                       </div>
                       {classroom?.meeting_url && (
                         <div className="mt-6">
-                          <p className="text-gray-700 text-lg mb-4">
+                          <p className="text-gray-7 text-lg mb-4">
                             Ready to dive into the learning?
                           </p>
                           <Button
@@ -1509,7 +2205,7 @@ const Classroom = () => {
                                 `/student/meeting-view?url=${encodedMeetingUrl}`
                               );
                             }}
-                            className="mt-2 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+                            className="mt-2 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition-all duration-3 hover:scale-105 hover:shadow-xl bg-gradient-to-r from-purple-6 to-indigo-6 hover:from-purple-7 hover:to-indigo-7"
                             variant={"gradient"}
                           >
                             🚀 Join the Live Session Now!
@@ -1519,11 +2215,11 @@ const Classroom = () => {
                     </>
                   ) : (
                     <div className="text-center">
-                      <LightBulbIcon className="w-16 h-16 text-yellow-500 mb-4 animate-pulse mx-auto" />
-                      <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-800 mb-2">
+                      <LightBulbIcon className="w-16 h-16 text-yellow-5 mb-4 animate-pulse mx-auto" />
+                      <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-8 mb-2">
                         No Live Class Assessments Available Yet!
                       </h2>
-                      <p className="text-md sm:text-lg text-gray-600 max-w-prose mx-auto">
+                      <p className="text-md sm:text-lg text-gray-6 max-w-prose mx-auto">
                         It looks like the{" "}
                         <span className="font-bold">
                           assessment for this live session isn't ready yet.
@@ -1533,7 +2229,7 @@ const Classroom = () => {
                       </p>
                       {classroom?.meeting_url && (
                         <div className="mt-6">
-                          <p className="text-gray-700 text-lg mb-4">
+                          <p className="text-gray-7 text-lg mb-4">
                             Ready to dive into the learning?
                           </p>
                           <Button
@@ -1545,7 +2241,7 @@ const Classroom = () => {
                                 `/student/meeting-view?url=${encodedMeetingUrl}`
                               );
                             }}
-                            className="mt-2 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+                            className="mt-2 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition-all duration-3 hover:scale-105 hover:shadow-xl bg-gradient-to-r from-purple-6 to-indigo-6 hover:from-purple-7 hover:to-indigo-7"
                             variant={"gradient"}
                           >
                             🚀 Join the Live Session Now!
@@ -1557,15 +2253,15 @@ const Classroom = () => {
                 </div>
               </div>
             ) : (
-              <div className="bg-white border border-gray-200 rounded-lg shadow-md p-6 mt-6 space-y-6">
+              <div className="bg-white border border-gray-2 rounded-lg shadow-md p-6 mt-6 space-y-6">
                 <h2 className="text-xl font-semibold text-primary">
                   Explore Classroom Resources
                 </h2>
 
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                  <h3 className="text-lg font-semibold text-gray-8 mb-3">
                     <svg
-                      xmlns="http://www.w3.org/2000/svg"
+                      xmlns="http://www.w3.org/20/svg"
                       className="h-5 w-5 inline-block mr-2 text-primary"
                       fill="none"
                       viewBox="0 0 24 24"
@@ -1575,7 +2271,7 @@ const Classroom = () => {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={2}
-                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H10a2 2 0 01-2-2v-4a2 2 0 012-2h4v-2a2 2 0 012-2h1m-2 8H9a2 2 0 00-2 2v4a2 2 0 002 2h1m2-8h2m-2 8H9"
+                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H10a2 2 0 01-2-2v-4a2 2 0 012-2h4v-2a2 2 0 012-2h1m-2 8H9a2 2 0 -2 2v4a2 2 0 2 2h1m2-8h2m-2 8H9"
                       />
                     </svg>
                     Uploaded Files
@@ -1586,12 +2282,12 @@ const Classroom = () => {
                       {classroom.classroomresources.map((resource) => (
                         <div
                           key={resource.resources_id}
-                          className="bg-gray-50 border border-gray-300 rounded-md p-4 flex flex-col items-center justify-between"
+                          className="bg-gray-50 border border-gray-3 rounded-md p-4 flex flex-col items-center justify-between"
                         >
                           <div className="flex items-center w-full">
                             <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-6 w-6 mr-2 text-gray-600"
+                              xmlns="http://www.w3.org/20/svg"
+                              className="h-6 w-6 mr-2 text-gray-6"
                               fill="none"
                               viewBox="0 0 24 24"
                               stroke="currentColor"
@@ -1603,7 +2299,7 @@ const Classroom = () => {
                                 d="M12 16v-4m0 0l-2-2m2 2l2-2m12-8v14l-4-4H8l-4 4V4h16z"
                               />
                             </svg>
-                            <p className="text-sm font-medium text-gray-800 truncate">
+                            <p className="text-sm font-medium text-gray-8 truncate">
                               {resource.resources_filename}
                             </p>
                           </div>
@@ -1624,7 +2320,7 @@ const Classroom = () => {
                               }}
                               variant="outline"
                               size="sm"
-                              className="rounded-md text-primary border-indigo-300 hover:bg-indigo-50"
+                              className="rounded-md text-primary border-indigo-3 hover:bg-indigo-50"
                             >
                               Download
                             </Button>
@@ -1633,16 +2329,14 @@ const Classroom = () => {
                       ))}
                     </div>
                   ) : (
-                    <p className="text-gray-500 italic">
-                      No files uploaded yet.
-                    </p>
+                    <p className="text-gray-5 italic">No files uploaded yet.</p>
                   )}
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                  <h3 className="text-lg font-semibold text-gray-8 mb-3">
                     <svg
-                      xmlns="http://www.w3.org/2000/svg"
+                      xmlns="http://www.w3.org/20/svg"
                       className="h-5 w-5 inline-block mr-2 text-primary"
                       fill="none"
                       viewBox="0 0 24 24"
@@ -1652,7 +2346,7 @@ const Classroom = () => {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={2}
-                        d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.99a4 4 0 005.656 0l4-4a4 4 0 10-5.656-5.656l-1.1 1.1"
+                        d="M13.828 10.172a4 4 0 -5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.99a4 4 0 5.656 0l4-4a4 4 0 10-5.656-5.656l-1.1 1.1"
                       />
                     </svg>
                     External Links
@@ -1668,7 +2362,7 @@ const Classroom = () => {
                               href={link}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-indigo-600 hover:text-indigo-800 hover:underline text-sm"
+                              className="text-indigo-6 hover:text-indigo-8 hover:underline text-sm"
                             >
                               {link || "No link provided"}
                             </a>
@@ -1677,17 +2371,17 @@ const Classroom = () => {
                       )}
                     </ul>
                   ) : (
-                    <p className="text-gray-500 italic">
+                    <p className="text-gray-5 italic">
                       No external links provided.
                     </p>
                   )}
                 </div>
-                <hr className="my-6 border-t border-gray-600" />
+                <hr className="my-6 border-t border-gray-6" />
 
-                <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                <h3 className="text-lg font-semibold text-gray-8 mb-3">
                   <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 inline-block mr-2 text-green-500"
+                    xmlns="http://www.w3.org/20/svg"
+                    className="h-5 w-5 inline-block mr-2 text-green-5"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -1731,14 +2425,14 @@ const Classroom = () => {
                   (outline) =>
                     outline.assessments && outline.assessments.length > 0
                 ) && (
-                  <p className="text-sm text-gray-500 mt-2 italic">
+                  <p className="text-sm text-gray-5 mt-2 italic">
                     No assessments available for this classroom.
                   </p>
                 )}
                 <Button
                   onClick={handleToggleView}
                   variant="outline"
-                  className="rounded-md text-indigo-600 border-indigo-300 hover:bg-indigo-50"
+                  className="rounded-md text-indigo-6 border-indigo-3 hover:bg-indigo-50"
                 >
                   Back to Classroom
                 </Button>
@@ -1792,30 +2486,30 @@ const Classroom = () => {
                   ))}
                 </div>
               ) : errorGrade ? (
-                <p className="text-red-500">{errorGrade}</p>
+                <p className="text-red-5">{errorGrade}</p>
               ) : reportData && reportData.length > 0 ? (
                 <div className="mt-4 overflow-x-auto">
-                  <table className="min-w-full divide-y text-left divide-gray-200 shadow-md rounded-md bg-white">
+                  <table className="min-w-full divide-y text-left divide-gray-2 shadow-md rounded-md bg-white">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-xs font-medium text-gray-5 uppercase tracking-wider">
                           Outline
                         </th>
-                        <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-xs font-medium text-gray-5 uppercase tracking-wider">
                           Total Score
                         </th>
-                        <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-xs font-medium text-gray-5 uppercase tracking-wider">
                           No. of Questions
                         </th>
-                        <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-xs font-medium text-gray-5 uppercase tracking-wider">
                           Passed
                         </th>
-                        <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-xs font-medium text-gray-5 uppercase tracking-wider">
                           Failed
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+                    <tbody className="bg-white divide-y divide-gray-2">
                       {reportData.map((item, index) => (
                         <tr
                           key={index}
@@ -1855,7 +2549,15 @@ const Classroom = () => {
           </DialogContent>
         </Dialog>
       </div>
-
+      {showCallPopup && (
+        <CallPopup
+          onClose={stopAudioRecording}
+          isSpeaking={isSpeaking}
+          isVoiceRecording={isVoiceRecording}
+          remainingTime={remainingCallTime}
+        />
+      )}
+      <audio ref={audioPlayerRef} autoPlay style={{ display: "none" }} />
       <Toast
         open={toastOpen}
         onOpenChange={setToastOpen}

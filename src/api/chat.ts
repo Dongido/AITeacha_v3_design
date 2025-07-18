@@ -21,7 +21,26 @@ export const sendChatMessage = async (data: FormData) => {
     throw new Error(errorMessage);
   }
 };
-
+export const getEphemeralKey = async (data: {
+  voice_type: string;
+  language: string;
+  grade: string;
+  description: string;
+  topics: string;
+}) => {
+  try {
+    const response = await apiClient.post(
+      "/assistant/realtime/session/token",
+      data
+    );
+    return response.data;
+  } catch (error: any) {
+    const errorMessage =
+      error.response?.data?.message ||
+      "Failed to retrieve ephemeral key. Please try again.";
+    throw new Error(errorMessage);
+  }
+};
 export const loadClassroomChatHistory = async (
   classroom_id: number,
   limit: number,
