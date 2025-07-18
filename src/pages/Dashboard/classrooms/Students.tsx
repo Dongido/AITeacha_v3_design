@@ -19,6 +19,7 @@ const Students = () => {
   const fetchingStudents = useSelector(
     (state: RootState) => state.classrooms.fetchingStudents
   );
+
   const addStudentDialogRef = useRef<any>(null);
 
   const handleOpenAddStudentDialog = (classroomId?: string) => {

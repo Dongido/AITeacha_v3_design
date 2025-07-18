@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { ChatUser, CreateStaffTopic, CreateStudentTopic, getAllStaffTopic, getAllStudentTopic, getforumConversationByforumId, 
-  getforumConversationById, getMessage,  getmessageCount,  getParticipant,  getpremiumUser,  getuserChats,  getUserRoles, getZaraChats,  Message, Topics, unreadChat, unreadMessage, ZyraChat, ZyraType  } from "../../api/staffchat";
+  getforumConversationById, getMessage,  getmessageCount,  getParticipant,  getpremiumUser,  getSettings,  getuserChats,  getUserRoles, getZaraChats,  Message, MessageSetting, messageSettings, Topics, unreadChat, unreadMessage, updateSettings, ZyraChat, ZyraType  } from "../../api/staffchat";
 
 
 export type CreateTopicPayload = {
@@ -40,6 +40,8 @@ interface StaffTopicState {
   userChat:ChatUser[] 
   messageCount: any[];
   unreadMessageCount: any | null;
+  messageSettings: any | null;
+  messageSettingsId:MessageSetting | null
 }
 
 const initialState: StaffTopicState = {
@@ -58,6 +60,8 @@ const initialState: StaffTopicState = {
   userChat:[],
   messageCount: [],
   unreadMessageCount: null,
+  messageSettings: null,
+  messageSettingsId: null,
 };
 
 // 🔁 GET all topics
@@ -150,7 +154,7 @@ export const getpremiumUsers = createAsyncThunk<PremiumUsertype[], void, { rejec
       const premiumUsers = await getpremiumUser(); 
       return premiumUsers;  
     } catch (error: any) {
-      return thunkAPI.rejectWithValue(error.message || "Failed to fetch premium users.");
+      return thunkAPI.rejectWithValue(error.message);
     }
   }
 );
@@ -219,7 +223,7 @@ export const getuserChat = createAsyncThunk(
    })
 
    // unread message count
-   export const  getCount   = createAsyncThunk("staffTopic/unreadmessage", async(_, {rejectWithValue}) => {
+   export const  getCount  = createAsyncThunk("staffTopic/unreadmessage", async(_, {rejectWithValue}) => {
      try {
       const response = await  getmessageCount()
       return response  
@@ -227,6 +231,40 @@ export const getuserChat = createAsyncThunk(
         return rejectWithValue(error.message || "failed to get chat count");  
      }
    })
+
+
+  //  createmessagesettings
+    export const createmessageSetting = createAsyncThunk("staffTopic/messagesettings", async(payload:any, {rejectWithValue}) => {
+     try {
+      const response = await  messageSettings(payload)
+      return response  
+     } catch (error:any) {
+        return rejectWithValue(error.message || "failed to create message settings");  
+     }
+   })
+
+   
+  //  createmessagesettings
+    export const updatemessageSetting = createAsyncThunk("staffTopic/updatesettings", async(payload:any, {rejectWithValue}) => {
+     try {
+      const response = await  updateSettings(payload)
+      return response  
+     } catch (error:any) {
+        return rejectWithValue(error.message || "failed to update message settings");  
+     }
+   })
+
+
+    //  getmessagesettings
+    export const getmessageSetting = createAsyncThunk("staffTopic/getmessagesettings", async(_, {rejectWithValue}) => {
+     try {
+      const response = await  getSettings()
+      return response  
+     } catch (error:any) {
+        return rejectWithValue(error.message || "failed to get message settings");  
+     }
+   })
+
 
  
 
@@ -252,6 +290,9 @@ export const staffTopicSlice = createSlice({
   },
   resetParticipant(state){
    state.participant = [] 
+  },
+  resetTopic(state){
+    state.studentTopic = []
   }
   },
   extraReducers: (builder) => {
@@ -357,6 +398,47 @@ export const staffTopicSlice = createSlice({
       state.error = action.payload as string
      })
 
+    // create message settings  
+    .addCase(createmessageSetting.pending, (state) => {
+      state.loading = true
+      state.error = null
+    })
+    .addCase(createmessageSetting.fulfilled, (state, action) => {
+      state.loading = false
+      state.messageSettings = action.payload
+    })
+    .addCase(createmessageSetting.rejected, (state, action) => {
+      state.loading = false
+      state.error = action.payload as string
+    })
+  
+  // update message settings 
+   .addCase(updatemessageSetting.pending, (state) => {
+      state.loading = true
+      state.error = null
+    })
+    .addCase(updatemessageSetting.fulfilled, (state, action) => {
+      state.loading = false
+      state.messageSettings = action.payload
+    })
+    .addCase(updatemessageSetting.rejected, (state, action) => {
+      state.loading = false
+      state.error = action.payload as string
+    })
+
+    // get message settings
+    .addCase(getmessageSetting.pending, (state) => {
+      state.loading = true
+      state.error = null
+    })
+    .addCase(getmessageSetting.fulfilled, (state, action) => {
+      state.loading = false
+      state.messageSettingsId = action.payload
+    })
+    .addCase(getmessageSetting.rejected, (state, action) => {
+      state.loading = false
+      state.error = action.payload as string
+    })
 
     //  get user role
     .addCase(getUserRole.pending, (state) => {
@@ -465,5 +547,5 @@ export const staffTopicSlice = createSlice({
 });
 
 export default staffTopicSlice.reducer;
-export const { resetZyraChat , resetConversation, resetParticipant } = staffTopicSlice.actions;
+export const { resetZyraChat , resetConversation, resetParticipant , resetTopic } = staffTopicSlice.actions;
 

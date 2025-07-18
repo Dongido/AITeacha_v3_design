@@ -29,6 +29,7 @@ const ChatListPage = () => {
   }, []);
 
   const filteredChats = userChat?.filter(chat => chat.user_id !== userId);
+  //  console.log("Filtered Chats:", filteredChats);
 
 
   const handleShowChat = (chat:any) => {
@@ -71,11 +72,7 @@ const ChatListPage = () => {
                     <div className="relative">
                       {chat.imageurl ? (
                         <img
-                          src={
-                            chat.imageurl.startsWith("https:")
-                              ? chat.imageurl
-                              : `https:\\${chat.imageurl}`
-                          }
+                          src={`https://${chat.imageurl}`}
                           alt={chat.name}
                           className="w-12 h-12 rounded-full object-cover"
                         />
