@@ -203,7 +203,7 @@ const Classroom = () => {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const [remainingCallTime, setRemainingCallTime] = useState(0);
-  const MAX_CALL_DURATION_SECONDS = 1 * 60;
+  const MAX_CALL_DURATION_SECONDS = 30 * 60;
   const handleOverviewClick = () => {
     setSelectedOverview(true);
     console.log("selectedOverview set to true in handler");
