@@ -1386,7 +1386,8 @@ const ToolDetail = () => {
           <div className="lg:w-1/2 mt-8 lg:mt-0">
             <h3 className="text-xl font-bold mb-4">Submission Response</h3>
             {(tool.service_id === "image creator" ||
-              tool.service_id === "worksheeteid generator") &&
+              tool.service_id === "worksheeteid generator" ||
+              tool.service_id === "colouring image") &&
             responseMessage ? (
               <>
                 <div className="p-2 bg-white border border-gray-300 rounded-md">

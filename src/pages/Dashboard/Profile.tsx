@@ -89,7 +89,7 @@ const Profile: React.FC = () => {
       handleFetchBalance();
     }
   }, [activeTab, userDetails.role_id]);
-  
+
   useEffect(() => {
     dispatch(loadUserProfile());
   }, [dispatch]);
@@ -233,18 +233,19 @@ const Profile: React.FC = () => {
               >
                 Profile Details
               </button>
-              {userDetails.role_id !== 3 && (
-                <button
-                  className={`px-4 py-2 rounded-t-lg ${
-                    activeTab === "wallet"
-                      ? "bg-purple-50"
-                      : "bg-gray-100 hover:bg-gray-200"
-                  }`}
-                  onClick={() => setActiveTab("wallet")}
-                >
-                  Wallet Details
-                </button>
-              )}
+              {userDetails.role_id !== 3 ||
+                (userDetails.role !== 3 && (
+                  <button
+                    className={`px-4 py-2 rounded-t-lg ${
+                      activeTab === "wallet"
+                        ? "bg-purple-50"
+                        : "bg-gray-100 hover:bg-gray-200"
+                    }`}
+                    onClick={() => setActiveTab("wallet")}
+                  >
+                    Wallet Details
+                  </button>
+                ))}
             </div>
 
             {activeTab === "profile" && (

@@ -117,10 +117,15 @@ export const teamClassroomColumns = [
     cell: (info) => {
       const classroom = info.row.original;
       const deleteDialogRef = useRef<{ openDialog: () => void }>(null);
-
+      const classroomId = info.row.original.classroom_id;
       return (
         <div className="flex items-center gap-2">
           <Actions
+            viewLink={
+              status === "inactive"
+                ? undefined
+                : `/dashboard/classrooms/details/${classroomId}`
+            }
             deleteFunction={() => {
               deleteDialogRef.current?.openDialog();
               return Promise.resolve();

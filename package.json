@@ -6,7 +6,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@babel/standalone": "^7.27.0",
+    "@babel/standalone": "^7.28.1",
     "@headlessui/react": "^1.7.17",
     "@heroicons/react": "^2.1.5",
     "@hookform/resolvers": "^3.9.1",
@@ -109,6 +109,7 @@
     ]
   },
   "devDependencies": {
+    "@types/babel__standalone": "^7.1.9",
     "@types/draft-js": "^0.11.18",
     "@types/js-cookie": "^3.0.6",
     "@types/marked": "^5.0.2",
