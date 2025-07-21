@@ -107,7 +107,7 @@ const ChatListPage = () => {
                             : ""}
                         </span>
                       </div>
-                      <p className="text-sm text-gray-600 truncate max-w-[90%]">
+                      <p className="text-sm text-gray-600 break-words line-clamp-2">
                         {chat.lastMessage || "No messages yet."}
                       </p>
                     </div>

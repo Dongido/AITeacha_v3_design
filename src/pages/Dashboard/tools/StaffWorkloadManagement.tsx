@@ -4,9 +4,13 @@ import { Button } from "../../../components/ui/Button";
 import MarkdownRenderer from "../_components/MarkdownRenderer";
 import { useParams, useNavigate } from "react-router-dom";
 import { Undo2 } from "lucide-react";
+import { sampleToolData } from "../../../Data/ToolData";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../store";
 const StaffWorkloadManagementForm = () => {
   const [result, setResult] = useState<string>("No response yet.");
   const navigate = useNavigate();
+   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<{
     workload_type: string;
     teachers_school_name: string;
@@ -38,6 +42,8 @@ const StaffWorkloadManagementForm = () => {
     administrative_requirements: "",
     file: null,
   });
+  console.log("formDate", formData)
+  // const { tools, loading } = useSelector((state: RootState) => state.tools);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -74,23 +80,50 @@ const StaffWorkloadManagementForm = () => {
     formDataToSubmit.append("serviceId", "school staff workload management");
 
     try {
+      setIsSubmitting(true)
       const response = await submitToolData(formDataToSubmit);
       setResult(response.data.data);
     } catch (error: any) {
       console.error("Error submitting form:", error.message);
       setResult("Failed to get a response.");
+    }finally{
+      setIsSubmitting(false)
+    }
+  };
+
+    const handleSampleData = () => {
+     const sample = sampleToolData?.["Staff Workload"]
+     console.log("sample", sample)
+     
+  
+    if (sample) {
+      setFormData((prev) => ({
+        ...prev,
+        ...sample,
+      }));
+    } else {
+      alert("No sample data available for this tool.");
     }
   };
 
   return (
     <div className="mt-4">
+      <div className="flex gap-4">
       <Button
-        className="flex items-center bg-white rounded-md text-black w-fit h-full gap-3 py-2 mb-4"
+        className="flex items-center bg-white  rounded-md text-black w-fit h-full gap-3 py-2 mb-4"
         onClick={() => navigate(-1)}
       >
         <Undo2 size={"1.1rem"} color="black" />
         Back
       </Button>
+      {/* <Button
+        variant="gradient"
+        className="flex items-center bg-red-500 text-white rounded-md  w-fit h-full gap-3 py-2 mb-4"
+        onClick={handleSampleData}
+      >
+        Auto Fill Form With Sample Data
+      </Button> */}
+    </div>
       <h2 className="text-2xl font-bold text-center mb-4">
         Staff Workload Management Form
       </h2>
@@ -288,8 +321,9 @@ const StaffWorkloadManagementForm = () => {
               type="submit"
               className="mt-4 w-full  text-white py-2 rounded-md "
               variant={"gradient"}
+              disabled={isSubmitting}
             >
-              Submit
+              {isSubmitting ? "AiTeacha is Typing..." : "Submit"}
             </Button>
           </form>
         </div>

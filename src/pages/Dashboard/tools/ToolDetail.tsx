@@ -59,6 +59,8 @@ import { setGlobalResponseMessage } from "../../../store/slices/responseSlice";
 import Cookies from "js-cookie";
 import { fetchCurriculumByCountry } from "../../../api/tools";
 import { Loader2 } from "lucide-react";
+import { sampleToolData } from "../../../Data/ToolData";
+
 const gradeOptions = [
   "Pre School",
   "Early Years",
@@ -100,6 +102,8 @@ const ToolDetail = () => {
   const [formData, setFormData] = useState<{ [key: string]: any }>({
     grade: "Grade 1",
   });
+   
+   console.log("formdata nn", formData)
   const [formFields, setFormFields] = useState<FormField[]>([]);
   const [formLabels, setFormLabels] = useState<{ [key: string]: string }>({});
   const [responseMessage, setResponseMessage] = useState<any | "">("");
@@ -137,6 +141,8 @@ const ToolDetail = () => {
     placeholder: string;
   }
   const [fields, setFields] = useState<Field[]>([]);
+
+  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -218,6 +224,7 @@ const ToolDetail = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
+
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
@@ -238,7 +245,7 @@ const ToolDetail = () => {
     }));
   };
 
-
+ 
   const handleCountryChange = async (countryName: any) => {
     setSelectedCountry(countryName);
     setFormData((prevData) => ({
@@ -324,7 +331,7 @@ const ToolDetail = () => {
 
     setIsSubmitting(true);
     try {
-      console.log(data);
+  
       const response = await submitToolData(formDataToSubmit);
       const plainTextResponse = await markdownToPlainText(response.data.data);
       const markedResponse = marked(response.data.data);
@@ -337,12 +344,13 @@ const ToolDetail = () => {
       setImageUrl(quotedImageUrl);
     } catch (error: any) {
       const errorMessage = error.message || "Failed to submit tool data.";
+      console.log(`error : ${errorMessage}`)
       if (errorMessage.includes("Limit")) {
         setPropsDialogContent(errorMessage);
         setShowPropsDialog(true);
       } else {
         setResponseMessage(errorMessage);
-        console.log(error);
+    
         setToastMessage(errorMessage);
         setToastVariant("destructive");
         setShowToast(true);
@@ -470,6 +478,20 @@ const ToolDetail = () => {
     navigate("/dashboard/chats");
   };
 
+  const handleSampleData = () => {
+  const sample = sampleToolData?.[tool?.name || ""];
+   console.log("handle sumit", tool?.name)
+
+  if (sample) {
+    setFormData((prev) => ({
+      ...prev,
+      ...sample,
+    }));
+  } else {
+    alert("No sample data available for this tool.");
+  }
+};
+
   if (loading || loadingTool) {
     return (
       <p>
@@ -489,13 +511,23 @@ const ToolDetail = () => {
   return (
     <ToastProvider>
       <div className="mt-12 px-4">
-        <Button
-          className="flex items-center bg-white rounded-md text-black w-fit h-full gap-3 py-2 mb-4"
+       <div className="flex gap-4">
+         <Button
+          className="flex items-center bg-white  rounded-md text-black w-fit h-full gap-3 py-2 mb-4"
           onClick={() => navigate(-1)}
         >
           <Undo2 size={"1.1rem"} color="black" />
           Back
         </Button>
+         <Button
+         
+          variant="gradient"
+          className="flex items-center bg-red-500 text-white rounded-md  w-fit h-full gap-3 py-2 mb-4"
+          onClick={handleSampleData}
+        >
+          Auto Fill Form With Sample Data
+        </Button>
+       </div>
         <div className="flex flex-col lg:flex-row lg:space-x-8">
           <div className="lg:w-1/2">
             <div className="flex gap-3 mb-4">
@@ -1416,7 +1448,9 @@ const ToolDetail = () => {
           <div className="lg:w-1/2 mt-8 lg:mt-0">
             <h3 className="text-xl font-bold mb-4">Submission Response</h3>
             {(tool.service_id === "image creator" ||
-              tool.service_id === "worksheeteid generator") &&
+              tool.service_id === "worksheeteid generator" ||
+              tool.service_id === "colouring image"
+            ) &&
             responseMessage ? (
               <>
                 <div className="p-2 bg-white border border-gray-300 rounded-md">
