@@ -49,6 +49,7 @@ const CareerGuidanceForm = () => {
   const {
     register,
     handleSubmit,
+     reset,
     formState: { errors },
     watch,
   } = useForm<CareerGuidanceFormData>();
@@ -107,15 +108,57 @@ const CareerGuidanceForm = () => {
     setSelectedCountry(countryName);
   };
 
+
+const handleSampleData = () => {
+  const sampleData: CareerGuidanceFormData = {
+    counseling_type: "career",
+    career_student_name: "Chinaza Okoro",
+    career_age: 17,
+    career_strength: "Analytical thinking, creativity, problem-solving",
+    career_personal_interest: "Technology, design, environmental issues",
+    career_work_style: "Independent with collaborative flexibility",
+    career_future_goals: "Pursue a career in sustainable engineering",
+    career_Location: "Canada",
+    career_others: "Interested in internships and volunteer experience",
+    scholarship_student_name: "",
+    scholarship_country: "",
+    scholarship_course: "",
+    scholarship_academic_performance: "",
+    scholarship_extracurricular_activities: "",
+    scholarship_financial_need: "",
+    scholarship_application_deadline: "",
+    support_student_name: "",
+    support_age: 0,
+    support_current_challenge: "",
+    support_stress_level: "",
+    support_support_needed: "",
+    file: undefined,
+  };
+
+  reset(sampleData); 
+  setCounselingType("career"); 
+};
+
+
   return (
     <div className="mt-4">
-      <Button
-        className="flex items-center bg-white rounded-md text-black w-fit h-full gap-3 py-2 mb-4"
-        onClick={() => navigate(-1)}
-      >
-        <Undo2 size={"1.1rem"} color="black" />
-        Back
-      </Button>
+    <div className="flex gap-4">
+    <Button
+      className="flex items-center bg-white  rounded-md text-black w-fit h-full gap-3 py-2 mb-4"
+      onClick={() => navigate(-1)}
+     >
+      <Undo2 size={"1.1rem"} color="black" />
+      Back
+    </Button>
+    {/* <Button
+    
+      variant="gradient"
+      className="flex items-center bg-red-500 text-white rounded-md  w-fit h-full gap-3 py-2 mb-4"
+      onClick={handleSampleData}
+    >
+      Auto Fill Form With Sample Data
+    </Button> */}
+      </div>
       <h2 className="text-2xl text-center font-semibold mb-4">
         Career Guidance & Counseling
       </h2>
