@@ -7,6 +7,7 @@ import RestrictedPage from './classrooms/RestrictionPage';
 import { Skeleton } from '../../components/ui/Skeleton';
 import { FaGraduationCap } from 'react-icons/fa';
 import { User } from 'lucide-react';
+import GeneralRestrictedPage from './_components/GeneralRestrictedPage';
 
 const Forumpage = () => {
 const dispatch = useAppDispatch();
@@ -18,7 +19,7 @@ const { checkuser ,loading, error } = useAppSelector(
 );
  const  users =  Array.isArray(checkuser) ? checkuser  : []
 
- console.log("user", checkuser)
+//  console.log("user", checkuser)
 
 useEffect(() => {
 dispatch(getpremiumUsers());
@@ -36,95 +37,107 @@ setIsEmailVerified(parsedDetails.is_email_verified);
 const handleVerifyEmail = () => {
 navigate("/dashboard/verify-email");
 };
+ console.log("errors", error)
+
+  if (loading) {
+    return (
+      <div className="overflow-x-auto">
+        <table className="min-w-full border-collapse">
+          <thead>
+            <tr>
+              {[...Array(5)].map((_, index) => (
+                <th key={index} className="p-4 border-b">
+                  <Skeleton className="h-4 w-16 rounded" />
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {[...Array(6)].map((_, rowIndex) => (
+              <tr key={rowIndex} className="border-b">
+                {[...Array(5)].map((_, colIndex) => (
+                  <td key={colIndex} className="p-4">
+                    <Skeleton className="h-4 w-full rounded" />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  }
 
 
-if (
-error === "Permission restricted: upgrade to premium account to gain access"
-) {
-return (
-<div>
-{userDetails && isEmailVerified === 1 && (
-<div
-className="bg-[#e5dbff] mt-3 mb-4 text-black p-4 rounded-md flex justify-center items-center"
-style={{
-background:
-"linear-gradient(143.6deg, rgba(192, 132, 252, 0) 20.79%, rgba(232, 121, 249, 0.26) 40.92%, rgba(204, 171, 238, 0) 70.35%)",
-}}
->
-<span className="text-center text-xl font-bold">
-Teachers Are Heroes🎉
-</span>
-</div>
-)}
-<RestrictedPage error={error} />
-</div>
-);
-}
-if (error === "Permission restricted: for free account") {
-return (
-<div>
-{userDetails && isEmailVerified === 1 && (
-<div
-className="bg-[#e5dbff] mt-3 mb-4 text-black p-4 rounded-md flex justify-center items-center"
-style={{
-background:
-"linear-gradient(143.6deg, rgba(192, 132, 252, 0) 20.79%, rgba(232, 121, 249, 0.26) 40.92%, rgba(204, 171, 238, 0) 70.35%)",
-}}
->
-<span className="text-center text-xl font-bold">
-Teachers Are Heroes🎉
-</span>
-</div>
-)}
-<RestrictedPage error={error} />
-</div>
-);
-}
+  if (
+    error === "Permission restricted: upgrade to premium account to gain access"
+  ) {
+    return (
+      <div>
+    {userDetails && isEmailVerified === 1 && (
+      <div
+        className="bg-[#e5dbff] mt-3 mb-4 text-black p-4 rounded-md flex justify-center items-center"
+        style={{
+          background:
+            "linear-gradient(143.6deg, rgba(192, 132, 252, 0) 20.79%, rgba(232, 121, 249, 0.26) 40.92%, rgba(204, 171, 238, 0) 70.35%)",
+        }}
+      >
+        <span className="text-center text-xl font-bold">
+          Teachers Are Heroes🎉
+        </span>
+      </div>
+    )}
+        <GeneralRestrictedPage error={error} />
+      </div>
+    );
+  }
 
-if (error === "Permission restricted for unverified email") {
-return (
-<div>
-{userDetails && isEmailVerified === 1 && (
-<div
-className="bg-[#e5dbff] mt-3 mb-4 text-black p-4 rounded-md flex justify-center items-center"
-style={{
-background:
-"linear-gradient(143.6deg, rgba(192, 132, 252, 0) 20.79%, rgba(232, 121, 249, 0.26) 40.92%, rgba(204, 171, 238, 0) 70.35%)",
-}}
->
-<span className="text-center text-xl font-bold">
-Teachers Are Heroes🎉
-</span>
-</div>
-)}
-<RestrictedPage error={error} />
-</div>
-);
-}
+   if (
+    error === "Failed to fetch premium users"
+  ) {
+    return (
+      <div>
+    {userDetails && isEmailVerified === 1 && (
+      <div
+        className="bg-[#e5dbff] mt-3 mb-4 text-black p-4 rounded-md flex justify-center items-center"
+        style={{
+          background:
+            "linear-gradient(143.6deg, rgba(192, 132, 252, 0) 20.79%, rgba(232, 121, 249, 0.26) 40.92%, rgba(204, 171, 238, 0) 70.35%)",
+        }}
+      >
+        <span className="text-center text-xl font-bold">
+          Teachers Are Heroes🎉
+        </span>
+      </div>
+    )}
+        <GeneralRestrictedPage error={error} />
+      </div>
+    );
+  }
 
-if (error) {
-return (
-<div>
-{userDetails && isEmailVerified === 1 && (
-    <div
-    className="bg-[#e5dbff] mt-3 mb-4 text-black p-4 rounded-md flex justify-center items-center"
-    style={{
-        background:
-        "linear-gradient(143.6deg, rgba(192, 132, 252, 0) 20.79%, rgba(232, 121, 249, 0.26) 40.92%, rgba(204, 171, 238, 0) 70.35%)",
-    }}
-    >
-    <button
-        onClick={handleVerifyEmail}
-        className="text-primary hover:underline"
-    >
-        Verify Email
-    </button>
-    </div>
-)}
-<p className="text-red-500">{error}</p>
-</div>
-);
-}
+  if (error) {
+    return (
+      <div>
+        {userDetails && isEmailVerified === 1 && (
+          <div
+            className="bg-[#e5dbff] mt-3 mb-4 text-black p-4 rounded-md flex justify-center items-center"
+            style={{
+              background:
+                "linear-gradient(143.6deg, rgba(192, 132, 252, 0) 20.79%, rgba(232, 121, 249, 0.26) 40.92%, rgba(204, 171, 238, 0) 70.35%)",
+            }}
+          >
+            <button
+              onClick={handleVerifyEmail}
+              className="text-primary hover:underline"
+            >
+              Verify Email
+            </button>
+          </div>
+        )}
+        <p className="text-red-500">{error}</p>
+      </div>
+    );
+  }
 
 
 

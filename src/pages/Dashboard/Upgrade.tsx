@@ -45,7 +45,7 @@ const initialPrices = {
     GBP: { month: 4, threeMonths: 12, year: 50 },
   },
   premium: {
-    NGN: { month: 20000, threeMonths: 60000, year: 200000 },
+    NGN: { month: 20000, threeMonths: 60000, year: 200000},
     USD: { month: 20, threeMonths: 60, year: 200 },
     GBP: { month: 18, threeMonths: 54, year: 190 },
   },

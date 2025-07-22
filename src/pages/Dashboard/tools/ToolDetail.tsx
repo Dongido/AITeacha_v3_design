@@ -69,6 +69,11 @@ const gradeOptions = [
   ...Array.from({ length: 5 }, (_, i) => `Higher Institution Year ${i + 1}`),
 ];
 
+const lowergGrade = [
+  "Nursery",
+  "Lower Primary"
+]
+
 interface FormField {
   name: string;
   label: string;
@@ -227,6 +232,14 @@ const ToolDetail = () => {
     }));
   };
 
+    const handleLowerGradeChange = (value: string) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      grade: value,
+    }));
+  };
+
+
   const handleCountryChange = async (countryName: any) => {
     setSelectedCountry(countryName);
     setFormData((prevData) => ({
@@ -241,11 +254,31 @@ const ToolDetail = () => {
       setCurriculums([]);
       try {
         const fetchedCurriculums = await fetchCurriculumByCountry(countryCode);
-        setCurriculums(fetchedCurriculums);
-        console.log(
-          `Fetched Curriculums for ${countryName} (${countryCode}):`,
-          fetchedCurriculums
-        );
+
+        if(countryName === "Nigeria"){
+          console.log("contryname niger", countryName)
+          const blendedCurriculums = [
+          "American Nigeria Blended",
+          "British Nigeria Blended",
+          "Blended Curriculum",
+          "IGSCE Curriculum",
+          "Cambridge Curriculum",
+        ];
+         const fetchedCurriculum  = [...fetchedCurriculums, ...blendedCurriculums]
+         setCurriculums(fetchedCurriculum)
+      //    console.log(
+      //   `Final Curriculums for ${countryName} (${countryCode}):`,
+      //   fetchedCurriculum
+      // );
+        }else{
+         setCurriculums(fetchedCurriculums);
+        //    console.log(
+        //   `Fetched Curriculums for ${countryName} (${countryCode}):`,
+        //   fetchedCurriculums
+        // );
+        }
+       
+      
       } catch (error) {
         console.error("Error fetching curriculum:", error);
         setCurriculums([]);
@@ -663,6 +696,31 @@ const ToolDetail = () => {
                         </Select>
                       </div>
                     )}
+
+                    {field.name === "lower_grade" &&
+                    tool.req_param?.includes("lower_grade") && (
+                      <div>
+                        <Label>{field.label}</Label>
+                        <Select
+                          onValueChange={handleLowerGradeChange}
+                          defaultValue="Nursery"
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select grade" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {["Nursery", "Lower Primary"].map(
+                              (grade) => (
+                                <SelectItem key={grade} value={grade}>
+                                  {grade}
+                                </SelectItem>
+                              )
+                            )}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+
                   {field.name === "country" &&
                     tool.req_param?.includes("country") && (
                       <div>
@@ -1308,6 +1366,7 @@ const ToolDetail = () => {
                     field.name != "assessmentType" &&
                     field.name != "ageGroup" &&
                     field.name != "voiceType" &&
+                    field.name !=   "lower_grade" &&
                     field.name != "image_type" &&
                     field.name != "supportResources" &&
                     field.name != "questionFormat" &&
@@ -1373,6 +1432,8 @@ const ToolDetail = () => {
                     )}
                 </div>
               ))}
+
+              
               <Button
                 type="submit"
                 variant={"gradient"}

@@ -38,6 +38,18 @@ interface Topic {
 }
 
 
+export interface MessageSetting {
+  id: number;
+  user_id: number;
+  enable_teacher_student_chat: number;
+  enable_student_teacher: number;
+  enable_teacher_teacher: number;
+  enable_student_student: number;
+  created_at: string;
+  updated_at: string;
+}
+
+
 
  export interface Topics {
   id?: number;
@@ -152,7 +164,7 @@ export const getAllStudentTopic = async (id:string): Promise<Topics[]> => {
     if (response.status !== 200) {
       throw new Error("Failed to fetch staff topics.");
     }
-    console.log("response fetch", response)
+    // console.log("response fetch", response)
     return response.data.data;
   } catch (error: any) {
     throw new Error(
@@ -361,7 +373,63 @@ export const unreadMessage = async(payload:unreadChat):Promise<any[]> => {
 }
 
 
+// message settings
+export const messageSettings = async(payload:any):Promise<any[]> => {
+  try {
+    const response = await apiClient.post<{
+      status:string;
+      message:string;
+      data:any[];
+    }>("settings/", payload)
+      if (response.status !== 200) {
+      throw new Error("Failed to create settings");
+    }
+    console.log("response", response);
+    return response.data.data;
+    
+  } catch (error:any) {
+    console.error("❌ Failed to create settings", error?.response?.data || error.message);
+    throw new Error(error?.response?.data?.message || "Failed to create settings");
+  }
+}
 
+export const updateSettings = async(payload:any):Promise<any[]> => {
+  try {
+    const response = await apiClient.put<{
+      status:string;
+      message:string;
+      data:any[];
+    }>("settings/", payload)
+      if (response.status !== 200) {
+      throw new Error("Failed to update settings");
+    }
+    console.log("response", response);
+    return response.data.data;
+    
+  } catch (error:any) {
+    console.error("❌ Failed to update settings", error?.response?.data || error.message);
+    throw new Error(error?.response?.data?.message || "Failed to update settings");
+  }
+}
+
+export const getSettings = async():Promise<any> => {
+  try {
+    const response = await apiClient.get<{
+      status:string;
+      message:string;
+      data:MessageSetting;
+    }>("settings/")
+      if (response.status !== 200) {
+      throw new Error("Failed to update settings");
+    }
+    console.log("response", response);
+    return response.data.data;
+    
+  } catch (error:any) {
+    console.error("❌ Failed to update settings", error?.response?.data || error.message);
+    throw new Error(error?.response?.data?.message || "Failed to update settings");
+  }
+}
 
 
 
