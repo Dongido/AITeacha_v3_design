@@ -77,3 +77,26 @@ export const loadToolChatHistory = async (
     throw new Error(errorMessage);
   }
 };
+export interface SimulationResponse {
+  status: string;
+  message: string;
+  data: any;
+}
+
+export const getSimulation = async (
+  grade: string,
+  topics: string
+): Promise<any> => {
+  try {
+    const response = await apiClient.post("/assistant/generate/lab/simulator", {
+      grade,
+      topics,
+    });
+    return response.data;
+  } catch (error: any) {
+    const errorMessage =
+      error.response?.data?.message ||
+      "Failed to fetch simulation. Please try again.";
+    throw new Error(errorMessage);
+  }
+};

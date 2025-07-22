@@ -243,14 +243,14 @@ html {
 }
 
 .call-wave-animation .bar {
-  width: 1.5px; /* VERY SLIM */
-  min-width: 1px; /* Ensures they don't disappear */
-  height: 20px; /* LONGER BASE HEIGHT */
+  width: 1.5px; 
+  min-width: 1px; 
+  height: 20px; 
   background: linear-gradient(to bottom, #a7d9ff, #62a0ee);
-  margin: 0 0.5px; /* Minimal margin between bars */
+  margin: 0 0.5px; 
   flex-grow: 1;
   animation: wave-scale 1.2s ease-in-out infinite alternate;
-  border-radius: 0.5px; /* Even smaller border-radius for slim bars */
+  border-radius: 0.5px; 
 }
 
 @keyframes wave-scale {

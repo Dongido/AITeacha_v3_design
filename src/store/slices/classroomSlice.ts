@@ -186,6 +186,8 @@ export const createClassroomThunk = createAsyncThunk(
       class_type: string;
       currency: string | undefined;
       amount: any;
+      curriculum_type: any;
+      country: any;
       number_of_students: number;
       scope_restriction: boolean;
       tools: {
@@ -212,6 +214,8 @@ export const createClassroomThunk = createAsyncThunk(
       formData.append("class_type", data.class_type);
       formData.append("currency", data.currency || "");
       formData.append("amount", data.amount);
+      formData.append("curriculum_type", data.curriculum_type);
+      formData.append("country", data.country);
       formData.append("scope_restriction", data.scope_restriction.toString());
       formData.append("number_of_students", data.number_of_students.toString());
       formData.append("tools", JSON.stringify(data.tools));

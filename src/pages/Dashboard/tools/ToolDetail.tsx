@@ -59,6 +59,8 @@ import { setGlobalResponseMessage } from "../../../store/slices/responseSlice";
 import Cookies from "js-cookie";
 import { fetchCurriculumByCountry } from "../../../api/tools";
 import { Loader2 } from "lucide-react";
+import TypingEffectRenderer from "./TypingEffectRenderer";
+
 import { sampleToolData } from "../../../Data/ToolData";
 
 const gradeOptions = [
@@ -1693,9 +1695,10 @@ const handleSampleData = () => {
                     "AiTeacha is Typing..."
                   ) : (
                     <div>
-                      {responseMessage
-                        ? parse(responseMessage)
-                        : responseMessage || "No response available."}
+                      <TypingEffectRenderer
+                        content={responseMessage || "No response available."}
+                        typingSpeed={30}
+                      />
                     </div>
                   )}
                 </div>
