@@ -57,7 +57,8 @@ import {
 } from "./parsedInputs";
 import { Chip } from "../../../components/ui/Chip";
 import { DateTimePicker } from "../../../components/ui/DatePicker";
-
+import { Country } from "country-state-city";
+import { fetchCurriculumByCountry } from "../../../api/tools";
 interface ToolData {
   id: number;
   name: string;
@@ -120,7 +121,13 @@ const CreateOrEditClassroom: React.FC<CreateOrEditClassroomProps> = ({
   const [selectedDateTime, setSelectedDateTime] = React.useState<
     any | undefined
   >(undefined);
-
+  const [countries, setCountries] = useState<
+    { name: string; isoCode: string }[]
+  >([]);
+  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
+  const [curriculums, setCurriculums] = useState<any[]>([]);
+  const [isCurriculumLoading, setIsCurriculumLoading] =
+    useState<boolean>(false);
   const [selectedTools, setSelectedTools] = useState<ToolData[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [toastOpen, setToastOpen] = useState(false);
@@ -164,6 +171,10 @@ const CreateOrEditClassroom: React.FC<CreateOrEditClassroomProps> = ({
       }),
     grade: z.string(),
     status: z.string(),
+    country: z.string().min(1, { message: "Country is required" }),
+    curriculum_type: z
+      .string()
+      .min(1, { message: "Curriculum type is required" }),
     number_of_students: z
       .number({ required_error: "Number of students is required" })
       .min(1, { message: "Number of students must be at least 1" }),
@@ -202,7 +213,8 @@ const CreateOrEditClassroom: React.FC<CreateOrEditClassroomProps> = ({
       status: "inactive",
       number_of_students: 1,
       resource_links: [],
-
+      country: "",
+      curriculum_type: "",
       tools: [],
       resources: [],
       scope_restriction: true,
@@ -224,6 +236,18 @@ const CreateOrEditClassroom: React.FC<CreateOrEditClassroomProps> = ({
   const resourceLinks = useWatch({ control, name: "resource_links" });
   const [inputValue, setInputValue] = useState<string | null>(null);
   useEffect(() => {
+    try {
+      const allCountries = Country.getAllCountries().map((country) => ({
+        name: country.name,
+        isoCode: country.isoCode,
+      }));
+      setCountries(allCountries);
+    } catch (error) {
+      console.error("Error fetching countries from country-state-city:", error);
+    }
+  }, []);
+
+  useEffect(() => {
     if (studentTools.length === 0) {
       dispatch(loadStudentTools());
     }
@@ -235,6 +259,34 @@ const CreateOrEditClassroom: React.FC<CreateOrEditClassroomProps> = ({
       setSelectedTools(selectedTools.filter((t) => t.id !== tool.id));
     } else {
       setSelectedTools([...selectedTools, tool]);
+    }
+  };
+
+  const handleCountryChange = async (countryName: any) => {
+    setSelectedCountry(countryName);
+    setValue("curriculum_type", "");
+    const selectedCountry = countries.find((c) => c.name === countryName);
+    const countryCode = selectedCountry?.isoCode;
+
+    if (countryCode) {
+      setIsCurriculumLoading(true);
+      setCurriculums([]);
+      try {
+        const fetchedCurriculums = await fetchCurriculumByCountry(countryCode);
+        setCurriculums(fetchedCurriculums);
+        console.log(
+          `Fetched Curriculums for ${countryName} (${countryCode}):`,
+          fetchedCurriculums
+        );
+      } catch (error) {
+        console.error("Error fetching curriculum:", error);
+        setCurriculums([]);
+      } finally {
+        setIsCurriculumLoading(false);
+      }
+    } else {
+      console.warn(`No ISO code found for: ${countryName}`);
+      setCurriculums([]);
     }
   };
 
@@ -634,6 +686,85 @@ const CreateOrEditClassroom: React.FC<CreateOrEditClassroomProps> = ({
                         </SelectContent>
                       </Select>
                       <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={control}
+                  name="country"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xl lg:text-2xl">
+                        Country
+                      </FormLabel>
+                      <Select
+                        onValueChange={(value) => {
+                          field.onChange(value);
+                          handleCountryChange(value);
+                        }}
+                        defaultValue={field.value}
+                      >
+                        <SelectTrigger className="text-xl">
+                          <SelectValue placeholder="Select country" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {countries.map((country) => (
+                            <SelectItem
+                              key={country.isoCode}
+                              value={country.name}
+                            >
+                              {country.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={control}
+                  name="curriculum_type"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xl lg:text-2xl">
+                        Curriculum Type
+                      </FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        disabled={!selectedCountry || isCurriculumLoading}
+                      >
+                        <SelectTrigger className="text-xl">
+                          <SelectValue
+                            placeholder={
+                              isCurriculumLoading
+                                ? "Loading curriculums..."
+                                : selectedCountry
+                                ? "Select curriculum type"
+                                : "Select a country first"
+                            }
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {curriculums.length > 0 ? (
+                            curriculums.map((curriculumName: string) => (
+                              <SelectItem
+                                key={curriculumName}
+                                value={curriculumName}
+                              >
+                                {curriculumName}
+                              </SelectItem>
+                            ))
+                          ) : (
+                            <SelectItem value="no-value" disabled>
+                              No curriculums available for this country
+                            </SelectItem>
+                          )}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage className="text-red-400" />
                     </FormItem>
                   )}
                 />
