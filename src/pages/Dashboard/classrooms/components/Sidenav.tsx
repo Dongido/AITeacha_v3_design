@@ -91,6 +91,8 @@ export function Sidenav({
 
   const [loadingGrade, setLoadingGrade] = React.useState(false);
   const [errorGrade, setErrorGrade] = React.useState<string | null>(null);
+  const openSidenavRef = React.useRef(openSidenav);
+
 
   const sidenavRef = React.useRef<HTMLDivElement>(null);
 
@@ -176,6 +178,32 @@ export function Sidenav({
 
     handleSelectToolInternal(null);
   };
+
+  React.useEffect(() => {
+    openSidenavRef.current = openSidenav;
+  }, [openSidenav]);
+
+  React.useEffect(() => {
+  function handleClickOutside(event: MouseEvent) {
+    if (
+      openSidenavRef.current &&
+      sidenavRef.current &&
+      !sidenavRef.current.contains(event.target as Node)
+    ) {
+      setOpenSidenav(dispatch, false);
+    }
+  }
+
+  if (openSidenav) {
+    document.addEventListener("mousedown", handleClickOutside);
+  }
+
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, [openSidenav, dispatch]);
+//  console.log(outlines, "outlines")
+
   return (
     <aside
       ref={sidenavRef}

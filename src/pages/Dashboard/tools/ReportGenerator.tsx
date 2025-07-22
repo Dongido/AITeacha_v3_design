@@ -5,6 +5,7 @@ import { Button } from "../../../components/ui/Button";
 import MarkdownRenderer from "../_components/MarkdownRenderer";
 import { useParams, useNavigate } from "react-router-dom";
 import { Undo2 } from "lucide-react";
+import { sampleToolData } from "../../../Data/ToolData";
 type FormData = {
   report_type: string;
   progress_report_school_name: string;
@@ -62,15 +63,51 @@ const ReportGenerator: React.FC = () => {
     }
   };
 
+  const handleSampleData = () => {
+  reset({
+    report_type: "progress_report",
+    progress_report_school_name: "Sunrise International School",
+    progress_report_student_name: "Adaeze Obi",
+    progress_report_grade: "Grade 9",
+    progress_report_subject_grade: "Math - B+, English - A, Science - B",
+    progress_report_teacher_comment:"Adaeze is a motivated student who shows great potential in written assignments and participates actively in class.",
+    progress_report_additional_note:"Continued support in science and math recommended.",
+    official_letter_school_name: "",
+    official_letter_recipient: "",
+    official_letter_student_name: "",
+    official_letter_outstanding_fees: "",
+    official_letter_deadline: "",
+    official_letter_additional_note: "",
+    meeting_minutes_meeting_date: "",
+    meeting_minutes_type: "",
+    meeting_minutes_agenda_items: "",
+    meeting_minutes_key_decisions: "",
+    file: undefined as unknown as FileList, 
+  });
+
+  setSelectedReportType("progress_report");
+};
+
+
   return (
     <div className="mt-4">
+      <div className="flex gap-4">
       <Button
-        className="flex items-center bg-white rounded-md text-black w-fit h-full gap-3 py-2 mb-4"
+        className="flex items-center bg-white  rounded-md text-black w-fit h-full gap-3 py-2 mb-4"
         onClick={() => navigate(-1)}
       >
         <Undo2 size={"1.1rem"} color="black" />
         Back
       </Button>
+      {/* <Button
+      
+        variant="gradient"
+        className="flex items-center bg-red-500 text-white rounded-md  w-fit h-full gap-3 py-2 mb-4"
+        onClick={handleSampleData}
+      >
+        Auto Fill Form With Sample Data
+      </Button> */}
+      </div>
       <h1 className="text-2xl font-bold mb-6 text-center">
         School Document & Report Generator
       </h1>

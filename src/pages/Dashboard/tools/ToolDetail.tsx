@@ -59,6 +59,8 @@ import { setGlobalResponseMessage } from "../../../store/slices/responseSlice";
 import Cookies from "js-cookie";
 import { fetchCurriculumByCountry } from "../../../api/tools";
 import { Loader2 } from "lucide-react";
+import { sampleToolData } from "../../../Data/ToolData";
+
 const gradeOptions = [
   "Pre School",
   "Early Years",
@@ -99,7 +101,11 @@ const ToolDetail = () => {
   const [loadingTool, setLoadingTool] = useState(true);
   const [formData, setFormData] = useState<{ [key: string]: any }>({
     grade: "Grade 1",
+    curriculum_type: "American Nigeria Blended",
+    subject:"english"
   });
+   
+   console.log("formdata nn", formData)
   const [formFields, setFormFields] = useState<FormField[]>([]);
   const [formLabels, setFormLabels] = useState<{ [key: string]: string }>({});
   const [responseMessage, setResponseMessage] = useState<any | "">("");
@@ -137,6 +143,8 @@ const ToolDetail = () => {
     placeholder: string;
   }
   const [fields, setFields] = useState<Field[]>([]);
+
+  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -218,6 +226,7 @@ const ToolDetail = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
+
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
@@ -238,7 +247,7 @@ const ToolDetail = () => {
     }));
   };
 
-
+ 
   const handleCountryChange = async (countryName: any) => {
     setSelectedCountry(countryName);
     setFormData((prevData) => ({
@@ -324,7 +333,7 @@ const ToolDetail = () => {
 
     setIsSubmitting(true);
     try {
-      console.log(data);
+  
       const response = await submitToolData(formDataToSubmit);
       const plainTextResponse = await markdownToPlainText(response.data.data);
       const markedResponse = marked(response.data.data);
@@ -337,12 +346,13 @@ const ToolDetail = () => {
       setImageUrl(quotedImageUrl);
     } catch (error: any) {
       const errorMessage = error.message || "Failed to submit tool data.";
+      console.log(`error : ${errorMessage}`)
       if (errorMessage.includes("Limit")) {
         setPropsDialogContent(errorMessage);
         setShowPropsDialog(true);
       } else {
         setResponseMessage(errorMessage);
-        console.log(error);
+    
         setToastMessage(errorMessage);
         setToastVariant("destructive");
         setShowToast(true);
@@ -478,6 +488,51 @@ const ToolDetail = () => {
     navigate("/dashboard/chats");
   };
 
+  useEffect(() => {
+  if (
+    formData.country === "Nigeria" &&
+    curriculums.includes("American Nigeria Blended")
+  ) {
+    setFormData((prev) => ({
+      ...prev,
+      curriculum_type: "American Nigeria Blended",
+    }));
+  }
+}, [curriculums, formData.country]);
+
+
+const handleSampleData = () => {
+    const sample = sampleToolData?.[tool?.name || ""];
+    console.log("handle sumit", tool?.name)
+    if (sample) {
+      setFormData((prev) => {
+        const updatedData = {
+          ...prev,
+          ...sample,
+        };
+        if (sample.hasOwnProperty('curriculum_type')) {
+          handleCountryChange("Nigeria");
+          setIsCurriculumLoading(false);
+          setFormData((prev) =>({
+            ...prev,
+            curriculum_type: "American Nigeria Blended"
+          }) )
+          updatedData.country = "Nigeria";
+          if (curriculums.length === 0) {
+            const finalCurriculums = [
+            "American Nigeria Blended",
+            ]
+            setCurriculums(finalCurriculums)
+            
+          }
+        }
+        return updatedData;
+      });
+    } else {
+      alert("No sample data available for this tool.");
+    }
+  };
+
   if (loading || loadingTool) {
     return (
       <p>
@@ -497,13 +552,23 @@ const ToolDetail = () => {
   return (
     <ToastProvider>
       <div className="mt-12 px-4">
-        <Button
-          className="flex items-center bg-white rounded-md text-black w-fit h-full gap-3 py-2 mb-4"
+       <div className="flex gap-4">
+         <Button
+          className="flex items-center bg-white  rounded-md text-black w-fit h-full gap-3 py-2 mb-4"
           onClick={() => navigate(-1)}
         >
           <Undo2 size={"1.1rem"} color="black" />
           Back
         </Button>
+         {/* <Button
+         
+          variant="gradient"
+          className="flex items-center bg-red-500 text-white rounded-md  w-fit h-full gap-3 py-2 mb-4"
+          onClick={handleSampleData}
+        >
+          Auto Fill Form With Sample Data
+        </Button> */}
+       </div>
         <div className="flex flex-col lg:flex-row lg:space-x-8">
           <div className="lg:w-1/2">
             <div className="flex gap-3 mb-4">
@@ -680,7 +745,7 @@ const ToolDetail = () => {
                         <Label>{field.label}</Label>
                         <Select
                           onValueChange={handleGradeChange}
-                          defaultValue="University"
+                          value={formData.grade}
                         >
                           <SelectTrigger>
                             <SelectValue placeholder="Select grade" />
@@ -702,7 +767,7 @@ const ToolDetail = () => {
                         <Label>{field.label}</Label>
                         <Select
                           onValueChange={handleLowerGradeChange}
-                          defaultValue="Nursery"
+                          value={formData.grade}
                         >
                           <SelectTrigger>
                             <SelectValue placeholder="Select grade" />
@@ -755,9 +820,11 @@ const ToolDetail = () => {
                           disabled={
                             isCurriculumLoading ||
                             !formData.country ||
-                            curriculums.length === 0
+                             curriculums.length === 0
+                           
                           }
-                          value={formData.curriculum_type}
+                          value={formData.curriculum_type} 
+      
                         >
                           <SelectTrigger>
                             {isCurriculumLoading ? (
@@ -866,6 +933,7 @@ const ToolDetail = () => {
                               subject: value,
                             }))
                           }
+                          value={formData.subject}
                         >
                           <SelectTrigger>
                             <SelectValue placeholder="Select subject" />
@@ -1000,7 +1068,7 @@ const ToolDetail = () => {
                             activityType: value,
                           }))
                         }
-                        defaultValue={formData.activityType || ""}
+                        value={formData.activityType || ""}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select activity type" />
@@ -1028,7 +1096,7 @@ const ToolDetail = () => {
                             voiceType: value,
                           }))
                         }
-                        defaultValue={formData.voiceType || ""}
+                        value={formData.voiceType || "Female Voice"}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select Voice Type" />
@@ -1056,7 +1124,7 @@ const ToolDetail = () => {
                             examType: value,
                           }))
                         }
-                        defaultValue={formData.examType || ""}
+                        value={formData.examType || ""}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select Exam Type" />
@@ -1141,7 +1209,7 @@ const ToolDetail = () => {
                             ageGroup: value,
                           }))
                         }
-                        defaultValue={formData.ageGroup || ""}
+                        value={formData.ageGroup || ""}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select Age Group" />
@@ -1169,7 +1237,7 @@ const ToolDetail = () => {
                             wordType: value,
                           }))
                         }
-                        defaultValue={formData.wordType || ""}
+                        value={formData.wordType || ""}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select Word Type" />
@@ -1197,7 +1265,7 @@ const ToolDetail = () => {
                             questionFormat: value,
                           }))
                         }
-                        defaultValue={formData.questionFormat || ""}
+                        value={formData.questionFormat || ""}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select Question Format" />
@@ -1225,7 +1293,7 @@ const ToolDetail = () => {
                             feedbackType: value,
                           }))
                         }
-                        defaultValue={formData.type || ""}
+                        value={formData.type || ""}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select  Feedback Type" />
@@ -1253,7 +1321,7 @@ const ToolDetail = () => {
                             assessmentType: value,
                           }))
                         }
-                        defaultValue={formData.assessmentType || ""}
+                        value={formData.assessmentType || ""}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select Assessment Type" />
@@ -1282,7 +1350,7 @@ const ToolDetail = () => {
                             curriculum_focus: value,
                           }))
                         }
-                        defaultValue={formData.curriculum_focus || ""}
+                        value={formData.curriculum_focus || ""}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select Curriculum Focus" />
@@ -1310,7 +1378,7 @@ const ToolDetail = () => {
                             type: value,
                           }))
                         }
-                        defaultValue={formData.type || ""}
+                        value={formData.type || ""}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select Question Type Focus" />
@@ -1338,7 +1406,7 @@ const ToolDetail = () => {
                             mediaType: value,
                           }))
                         }
-                        defaultValue={formData.mediaType || ""}
+                        value={formData.mediaType || ""}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select Media Type" />

@@ -1,4 +1,4 @@
-import * as React from "react";
+import  React , {useEffect} from "react";
 import { Link, NavLink } from "react-router-dom";
 import {
   XMarkIcon,
@@ -64,6 +64,7 @@ export function Sidenav({
   };
 
   const sidenavRef = React.useRef<HTMLDivElement>(null);
+  const openSidenavRef = React.useRef(openSidenav);
 
   const handleToggle = () => {
     const newCollapsedState = !isCollapsed;
@@ -72,6 +73,31 @@ export function Sidenav({
       onToggle(newCollapsedState);
     }
   };
+
+  useEffect(() => {
+  openSidenavRef.current = openSidenav;
+}, [openSidenav]);
+
+
+useEffect(() => {
+  function handleClickOutside(event: MouseEvent) {
+    if (
+      openSidenavRef.current &&
+      sidenavRef.current &&
+      !sidenavRef.current.contains(event.target as Node)
+    ) {
+      setOpenSidenav(dispatch, false);
+    }
+  }
+
+  if (openSidenav) {
+    document.addEventListener("mousedown", handleClickOutside);
+  }
+
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, [openSidenav, dispatch]);
 
   return (
     <aside

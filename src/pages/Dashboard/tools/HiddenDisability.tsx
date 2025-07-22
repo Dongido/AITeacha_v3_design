@@ -15,6 +15,7 @@ import { Country } from "country-state-city";
 import { Label } from "../../../components/ui/Label";
 import { useParams, useNavigate } from "react-router-dom";
 import { Undo2 } from "lucide-react";
+import { sampleToolData } from "../../../Data/ToolData";
 const HiddenDisability: React.FC = () => {
   const [studentName, setStudentName] = useState("");
   const [age, setAge] = useState("");
@@ -167,15 +168,39 @@ const HiddenDisability: React.FC = () => {
     doc.text(content, 10, 10);
     doc.save("generated-test.pdf");
   };
+
+   const handleSampleData = () => {
+  const sample = sampleToolData?.["Staff Workload"];
+
+    setStudentName("Happy");
+    setAge("21"); 
+    setGrade("Higher Institution Year 1"); 
+    setSelectedUser("student"); 
+    setTestFocus("Attention and Focus"); 
+    setSelectedCountry("Nigeria"); 
+    setTestType("Multiple-choice questions");
+};
+
+
   return (
-    <div className="p-6 mt-8 mx-auto bg-white shadow-lg rounded-xl flex gap-6">
+    <div className="p-6 mt-8 mx-auto bg-white shadow-lg rounded-xl flex flex-col gap-6">
+      <div className="flex gap-4">
       <Button
-        className="flex items-center bg-white rounded-md text-black w-fit h-full gap-3 py-2 mb-4"
+        className="flex items-center bg-white  rounded-md text-black w-fit h-full gap-3 py-2 mb-4"
         onClick={() => navigate(-1)}
       >
         <Undo2 size={"1.1rem"} color="black" />
         Back
       </Button>
+      {/* <Button
+      
+        variant="gradient"
+        className="flex items-center bg-red-500 text-white rounded-md  w-fit h-full gap-3 py-2 mb-4"
+        onClick={handleSampleData}
+      >
+        Auto Fill Form With Sample Data
+      </Button> */}
+      </div>
       <div className="flex flex-col lg:flex-row gap-4 w-full">
         <div className="flex-1 max-h-[500px] overflow-y-auto ">
           <form onSubmit={handleSubmit}>
