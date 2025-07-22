@@ -4,11 +4,8 @@ import { twMerge } from "tailwind-merge";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
-
+//my default it is supposed to reflect to every students classroom when they create a test and an exam
 const isProd = process.env.NODE_ENV === "production";
-
-
-
 
 const BACKEND_URL =
   window.location.hostname === "localhost"

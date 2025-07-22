@@ -101,6 +101,8 @@ const ToolDetail = () => {
   const [loadingTool, setLoadingTool] = useState(true);
   const [formData, setFormData] = useState<{ [key: string]: any }>({
     grade: "Grade 1",
+    curriculum_type: "American Nigeria Blended",
+    subject:"english"
   });
    
    console.log("formdata nn", formData)
@@ -132,7 +134,7 @@ const ToolDetail = () => {
   const [curriculums, setCurriculums] = useState<any[]>([]);
   const [isCurriculumLoading, setIsCurriculumLoading] =
     useState<boolean>(false);
-
+  const [selectedImageType, setSelectedImageType] = useState("");
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   interface Field {
     req_param: string;
@@ -375,6 +377,14 @@ const ToolDetail = () => {
     }
   };
 
+  const handleImageSelectionChange = (imageType: string) => {
+    setSelectedImageType(imageType);
+    setFormData((prevData) => ({
+      ...prevData,
+      image_type: imageType,
+    }));
+  };
+
   const handleSave = async () => {
     setSaving(true);
     const currentDate = new Date().toLocaleDateString();
@@ -478,19 +488,50 @@ const ToolDetail = () => {
     navigate("/dashboard/chats");
   };
 
-  const handleSampleData = () => {
-  const sample = sampleToolData?.[tool?.name || ""];
-   console.log("handle sumit", tool?.name)
-
-  if (sample) {
+  useEffect(() => {
+  if (
+    formData.country === "Nigeria" &&
+    curriculums.includes("American Nigeria Blended")
+  ) {
     setFormData((prev) => ({
       ...prev,
-      ...sample,
+      curriculum_type: "American Nigeria Blended",
     }));
-  } else {
-    alert("No sample data available for this tool.");
   }
-};
+}, [curriculums, formData.country]);
+
+
+const handleSampleData = () => {
+    const sample = sampleToolData?.[tool?.name || ""];
+    console.log("handle sumit", tool?.name)
+    if (sample) {
+      setFormData((prev) => {
+        const updatedData = {
+          ...prev,
+          ...sample,
+        };
+        if (sample.hasOwnProperty('curriculum_type')) {
+          handleCountryChange("Nigeria");
+          setIsCurriculumLoading(false);
+          setFormData((prev) =>({
+            ...prev,
+            curriculum_type: "American Nigeria Blended"
+          }) )
+          updatedData.country = "Nigeria";
+          if (curriculums.length === 0) {
+            const finalCurriculums = [
+            "American Nigeria Blended",
+            ]
+            setCurriculums(finalCurriculums)
+            
+          }
+        }
+        return updatedData;
+      });
+    } else {
+      alert("No sample data available for this tool.");
+    }
+  };
 
   if (loading || loadingTool) {
     return (
@@ -519,14 +560,14 @@ const ToolDetail = () => {
           <Undo2 size={"1.1rem"} color="black" />
           Back
         </Button>
-         <Button
+         {/* <Button
          
           variant="gradient"
           className="flex items-center bg-red-500 text-white rounded-md  w-fit h-full gap-3 py-2 mb-4"
           onClick={handleSampleData}
         >
           Auto Fill Form With Sample Data
-        </Button>
+        </Button> */}
        </div>
         <div className="flex flex-col lg:flex-row lg:space-x-8">
           <div className="lg:w-1/2">
@@ -704,7 +745,7 @@ const ToolDetail = () => {
                         <Label>{field.label}</Label>
                         <Select
                           onValueChange={handleGradeChange}
-                          defaultValue="University"
+                          value={formData.grade}
                         >
                           <SelectTrigger>
                             <SelectValue placeholder="Select grade" />
@@ -726,7 +767,7 @@ const ToolDetail = () => {
                         <Label>{field.label}</Label>
                         <Select
                           onValueChange={handleLowerGradeChange}
-                          defaultValue="Nursery"
+                          value={formData.grade}
                         >
                           <SelectTrigger>
                             <SelectValue placeholder="Select grade" />
@@ -779,9 +820,11 @@ const ToolDetail = () => {
                           disabled={
                             isCurriculumLoading ||
                             !formData.country ||
-                            curriculums.length === 0
+                             curriculums.length === 0
+                           
                           }
-                          value={formData.curriculum_type}
+                          value={formData.curriculum_type} 
+      
                         >
                           <SelectTrigger>
                             {isCurriculumLoading ? (
@@ -818,6 +861,28 @@ const ToolDetail = () => {
                                   </SelectItem>
                                 ))
                               : null}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+                  {field.name === "image_type" &&
+                    tool.req_param?.includes("image_type") && (
+                      <div>
+                        <Label>Image Type</Label>
+                        <Select
+                          onValueChange={handleImageSelectionChange}
+                          value={formData.image_type || ""}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select Image Type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="labelled diagram">
+                              Labelled Diagram
+                            </SelectItem>
+                            <SelectItem value="non labelled diagram">
+                              Non-Labelled Diagram
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -868,6 +933,7 @@ const ToolDetail = () => {
                               subject: value,
                             }))
                           }
+                          value={formData.subject}
                         >
                           <SelectTrigger>
                             <SelectValue placeholder="Select subject" />
@@ -1002,7 +1068,7 @@ const ToolDetail = () => {
                             activityType: value,
                           }))
                         }
-                        defaultValue={formData.activityType || ""}
+                        value={formData.activityType || ""}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select activity type" />
@@ -1030,7 +1096,7 @@ const ToolDetail = () => {
                             voiceType: value,
                           }))
                         }
-                        defaultValue={formData.voiceType || ""}
+                        value={formData.voiceType || "Female Voice"}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select Voice Type" />
@@ -1058,7 +1124,7 @@ const ToolDetail = () => {
                             examType: value,
                           }))
                         }
-                        defaultValue={formData.examType || ""}
+                        value={formData.examType || ""}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select Exam Type" />
@@ -1143,7 +1209,7 @@ const ToolDetail = () => {
                             ageGroup: value,
                           }))
                         }
-                        defaultValue={formData.ageGroup || ""}
+                        value={formData.ageGroup || ""}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select Age Group" />
@@ -1171,7 +1237,7 @@ const ToolDetail = () => {
                             wordType: value,
                           }))
                         }
-                        defaultValue={formData.wordType || ""}
+                        value={formData.wordType || ""}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select Word Type" />
@@ -1199,7 +1265,7 @@ const ToolDetail = () => {
                             questionFormat: value,
                           }))
                         }
-                        defaultValue={formData.questionFormat || ""}
+                        value={formData.questionFormat || ""}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select Question Format" />
@@ -1227,7 +1293,7 @@ const ToolDetail = () => {
                             feedbackType: value,
                           }))
                         }
-                        defaultValue={formData.type || ""}
+                        value={formData.type || ""}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select  Feedback Type" />
@@ -1255,7 +1321,7 @@ const ToolDetail = () => {
                             assessmentType: value,
                           }))
                         }
-                        defaultValue={formData.assessmentType || ""}
+                        value={formData.assessmentType || ""}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select Assessment Type" />
@@ -1284,7 +1350,7 @@ const ToolDetail = () => {
                             curriculum_focus: value,
                           }))
                         }
-                        defaultValue={formData.curriculum_focus || ""}
+                        value={formData.curriculum_focus || ""}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select Curriculum Focus" />
@@ -1312,7 +1378,7 @@ const ToolDetail = () => {
                             type: value,
                           }))
                         }
-                        defaultValue={formData.type || ""}
+                        value={formData.type || ""}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select Question Type Focus" />
@@ -1340,7 +1406,7 @@ const ToolDetail = () => {
                             mediaType: value,
                           }))
                         }
-                        defaultValue={formData.mediaType || ""}
+                        value={formData.mediaType || ""}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select Media Type" />
@@ -1368,6 +1434,7 @@ const ToolDetail = () => {
                     field.name != "ageGroup" &&
                     field.name != "voiceType" &&
                     field.name !=   "lower_grade" &&
+                    field.name != "image_type" &&
                     field.name != "supportResources" &&
                     field.name != "questionFormat" &&
                     field.name != "curriculum_type" &&
@@ -1449,8 +1516,7 @@ const ToolDetail = () => {
             <h3 className="text-xl font-bold mb-4">Submission Response</h3>
             {(tool.service_id === "image creator" ||
               tool.service_id === "worksheeteid generator" ||
-              tool.service_id === "colouring image"
-            ) &&
+              tool.service_id === "colouring image") &&
             responseMessage ? (
               <>
                 <div className="p-2 bg-white border border-gray-300 rounded-md">

@@ -10,7 +10,8 @@ export const sampleToolData: { [key: string]: { [key: string]: any } } = {
   grade: "Grade 12",
   description: "This lesson introduces students to the concept of genetic inheritance and explores Mendel's laws.",
   country: "Nigeria",
-  curriculum_type: "American Nigeria Blended",
+  curriculum_type:"American Nigeria Blended",
+  curriculum_focus: "Integrated curriculum",
   title: "Genetics and Heredity",
   subtopic: ["Mendelian Inheritance", "Punnett Squares", "Dominant and Recessive Traits"],
   previous_kownledge: "Students should already understand basic cell structure and the process of reproduction."
@@ -21,24 +22,28 @@ export const sampleToolData: { [key: string]: { [key: string]: any } } = {
   grade: "Grade 8",
   file: ""
   },
-  "text to speech": {
-     text: "Education is the key to unlocking the potential of every child.",
-     voiceType: "Female Voice",
+    "text to speech": {
+    text: "Education is the key to unlocking the potential of every child.",
+    voiceType: "nova", 
+    voiceOptions: [
+      { label: "Male Voice", value: "alloy" },
+      { label: "Female Voice", value: "nova" },
+    ],
   },
   "visual teaching aid": {
   name: "Alphabet and Animal Chart",
   description: "Colorful visual chart showing letters A-Z with animals to help preschool learners recognize alphabets and relate them to real-world objects.",
   grade: "Pre School",
-  image_type: "Illustration",
+  image_type: "labelled diagram",
   country: "Nigeria",
-  curriculu_type: "American-Nigeria Blended"
+  curriculum_type:"American-Nigeria Blended"
 },
 "power point slide": {
   name: "Advanced Organic Chemistry Concepts",
   topic: "Alkanes, Alkenes and Alkynes",
   subject: "Chemistry",
   grade: "Higher Institution Year 5",
-  numberOfSlides: "321",
+  numberOfSlides: "11",
   file: ""
 },
 "assignment generator": {
@@ -184,11 +189,11 @@ export const sampleToolData: { [key: string]: { [key: string]: any } } = {
 },
 "practice test generator": {
   topic: "Fundamentals of Organic Chemistry",
+  examType:"JAMB",
   grade: "University",
-  examType: "JAMB",
   difficultyLevel: "intermediate",
   questionFormat: "Multiple choice",
-  numberofQuestions: "131",
+  numberofQuestions: "11",
   timeLimit: "120 minutes",
   file: "",
   additionalNotes: "Ensure students have covered hydrocarbons, functional groups, and basic reactions before attempting this test."
@@ -333,7 +338,8 @@ export const sampleToolData: { [key: string]: { [key: string]: any } } = {
 },
 "SDG integration": {
     "subject": "Environmental Science",
-    "grade": "Grade 11"
+    "grade": "Grade 11",
+    sdg:['Good Health and Well-being']
 },
 "behavior intervention generator": {
   "studentinformation": "Individualized Behavior Intervention Plan for Middle School",
@@ -379,10 +385,13 @@ export const sampleToolData: { [key: string]: { [key: string]: any } } = {
   "administrative_requirements": "Daily reporting, compliance with district policies, and coordination with teaching staff", 
   "file": ""
 },
-
-
-
-
-
-
+"audio transcriber": {
+  "description": "Responsible for converting spoken classroom discussions, meetings, and lesson recordings into accurate text format for daily reporting, recordkeeping, and improved communication between educators, students, and school administrators.",
+  "file": ""
+},
+"Image Colouring": {
+  "description": "A fun and engaging activity designed to help nursery children develop fine motor skills, hand-eye coordination, and creativity by colouring simple images with a variety of colours.",
+  "lower_grade": "Nursery",
+  "grade":"Nursery"
+}
 };

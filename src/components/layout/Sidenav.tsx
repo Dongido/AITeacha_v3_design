@@ -72,6 +72,26 @@ export function Sidenav({
     localStorage.getItem("ai-teacha-user") || "{}"
   );
 
+
+  useEffect(() => {
+  function handleClickOutside(event: MouseEvent) {
+    if (
+      openSidenav &&
+      sidenavRef.current &&
+      !sidenavRef.current.contains(event.target as Node)
+    ) {
+      setOpenSidenav(dispatch, false);
+    }
+  }
+  if (openSidenav && window.innerWidth < 1280) {
+    document.addEventListener("mousedown", handleClickOutside);
+  }
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, [openSidenav, dispatch]);
+
+
   useEffect(() => {
     if (!user) {
       appdispatch(loadUserProfile());
@@ -114,6 +134,7 @@ export function Sidenav({
     }
   };
   return (
+   <>
     <aside
       ref={sidenavRef}
       className={` routes-scroll-area ${sidenavTypes[sidenavType]} ${
@@ -336,6 +357,7 @@ export function Sidenav({
         </div>
       )}
     </aside>
+   </>
   );
 }
 

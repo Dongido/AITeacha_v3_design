@@ -192,14 +192,14 @@ const HiddenDisability: React.FC = () => {
         <Undo2 size={"1.1rem"} color="black" />
         Back
       </Button>
-      <Button
+      {/* <Button
       
         variant="gradient"
         className="flex items-center bg-red-500 text-white rounded-md  w-fit h-full gap-3 py-2 mb-4"
         onClick={handleSampleData}
       >
         Auto Fill Form With Sample Data
-      </Button>
+      </Button> */}
       </div>
       <div className="flex flex-col lg:flex-row gap-4 w-full">
         <div className="flex-1 max-h-[500px] overflow-y-auto ">

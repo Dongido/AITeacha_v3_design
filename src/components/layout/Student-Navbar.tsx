@@ -84,20 +84,24 @@ export function DashboardNavbar() {
           : "px-0 py-1"
       }`}
     >
-      <div className="flex flex-col-reverse justify-between gap-6 md:flex-row md:items-center">
-        <div className="capitalize px-4">
+      <div className="flex items-center justify-between lg:justify-between md:gap-6 lg:md:flex-row md:items-center ">
+        <div className="flex gap-2 items-center">
+           <Button
+            variant="text"
+            color="blue-gray"
+            className="grid xl:hidden"
+            onClick={() => setOpenSidenav(uiDispatch, !openSidenav)}
+            aria-label="Toggle sidenav"
+          >
+            <Bars3Icon strokeWidth={3} className="h-6 w-6 text-blue-gray-500" />
+          </Button>
+        <div className="capitalize px-4 hidden sm:block">
           <Text variant="large" color="blue-gray">
             {page}
           </Text>
         </div>
-        <div className="flex items-center gap-0">
-          <div className="mr-auto sm:ml-6 md:mr-4 sm:mr-0 md:w-56">
-            <Input
-              placeholder="Search for anything.."
-              type="search"
-              className="w-full bg-gray-100 border-transparent"
-            />
-          </div>
+        </div>
+        <div className="flex md:items-center gap-0 items-center ">
           <Link to="/student/participant/chat">
             <div className="relative flex items-center gap-2 bg-purple-50 rounded-full px-3 py-1 transition cursor-pointer">
               <FaRocketchat className=" font-medium text-purple-400 text-lg" />
@@ -112,15 +116,7 @@ export function DashboardNavbar() {
               )}
             </div>
           </Link>
-          <Button
-            variant="text"
-            color="blue-gray"
-            className="grid xl:hidden"
-            onClick={() => setOpenSidenav(uiDispatch, !openSidenav)}
-            aria-label="Toggle sidenav"
-          >
-            <Bars3Icon strokeWidth={3} className="h-6 w-6 text-blue-gray-500" />
-          </Button>
+         
           <Link to="/student/profile">
             <Button variant="text" color="blue-gray" className="grid mb-2">
               <img
