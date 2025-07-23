@@ -45,7 +45,7 @@ const initialPrices = {
     GBP: { month: 4, threeMonths: 12, year: 50 },
   },
   premium: {
-    NGN: { month: 20000, threeMonths: 60000, year: 200000},
+    NGN: { month: 20000, threeMonths: 60000, year: 200000 },
     USD: { month: 20, threeMonths: 60, year: 200 },
     GBP: { month: 18, threeMonths: 54, year: 190 },
   },
@@ -550,17 +550,22 @@ const Upgrade: React.FC = () => {
                 </span>
               )}
             </p>
-            <p className="mb-4 mt-2 text-sm text-gray-600 flex-grow">
+            <p className="mb-4 mt-2 text-sm text-gray-600">
               Ideal for individual educators starting their journey with
-              AI-powered tools.
+              AI-powered tools and exploring core functionalities.
             </p>
-            <ul className="list-disc pl-5 space-y-2 mb-6 text-gray-700">
+
+            <ul className="list-disc pl-5 space-y-2 mb-6 flex-grow">
               <strong>Everything in Free, Plus...</strong>
-              <li>Access to 25 essential AI tools</li>
-              <li>Limited content generation </li>
-              <li>Limited AI-powered slides </li>
+              <li>
+                Access to <strong>25 essential AI tools</strong> to streamline
+                basic tasks
+              </li>
+              <li>Limited monthly content generation credits </li>
+              <li>Limited AI-powered slides generation </li>
               <li>Limited assignments</li>
-              <li>Basic student performance reports</li>
+              <li>Basic student performance reports with key insights</li>
+              <li>Standard customer support</li>
             </ul>
             <Button
               onClick={() => {
