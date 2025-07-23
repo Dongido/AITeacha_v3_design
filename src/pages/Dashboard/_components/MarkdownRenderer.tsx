@@ -6,14 +6,14 @@ interface MarkdownRendererProps {
   content: string | Promise<string>;
   className?: string;
   style?: React.CSSProperties;
-  typingSpeed?: number; // in ms
+  typingSpeed?: number;
 }
 
 const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
   content,
   className,
   style,
-  typingSpeed = 15,
+  typingSpeed = 30,
 }) => {
   const [fullHtml, setFullHtml] = useState<string>("");
   const [displayedHtml, setDisplayedHtml] = useState<string>("");

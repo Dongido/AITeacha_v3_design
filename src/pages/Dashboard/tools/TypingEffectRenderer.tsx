@@ -10,7 +10,7 @@ interface TypingEffectRendererProps {
 
 const TypingEffectRenderer: React.FC<TypingEffectRendererProps> = ({
   content,
-  typingSpeed = 15,
+  typingSpeed = 30,
   className,
   style,
 }) => {
