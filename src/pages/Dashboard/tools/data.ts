@@ -162,12 +162,12 @@ const appraisalTypeList = [
 ];
 
 const languageOptions = [
-  { label: "English", value: "en-US" },
-  { label: "Spanish", value: "es-ES" },
-  { label: "French", value: "fr-FR" },
-  { label: "Yoruba", value: "yo-NG" },
-  { label: "Hausa", value: "ha-NG" },
-  { label: "Igbo", value: "ig-NG" },
+  { label: "English", value: "English" },
+  { label: "Spanish", value: "Spanish" },
+  { label: "French", value: "French" },
+  { label: "Yoruba", value: "Yoruba" },
+  { label: "Hausa", value: "Hausa" },
+  { label: "Igbo", value: "Igbo" },
 ];
 
 const gradeOptions = [

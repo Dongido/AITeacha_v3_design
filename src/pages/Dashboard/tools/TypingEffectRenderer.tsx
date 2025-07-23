@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import parse from "html-react-parser";
+import React, { useEffect, useState } from "react";
+import parse, { Element } from "html-react-parser";
 
 interface TypingEffectRendererProps {
   content: string;
@@ -10,39 +10,55 @@ interface TypingEffectRendererProps {
 
 const TypingEffectRenderer: React.FC<TypingEffectRendererProps> = ({
   content,
-  typingSpeed = 10,
+  typingSpeed = 30,
   className,
   style,
 }) => {
-  const [typedContent, setTypedContent] = useState<string>("");
-  const [isTypingComplete, setIsTypingComplete] = useState<boolean>(false);
+  const [displayedContent, setDisplayedContent] = useState<string>("");
 
   useEffect(() => {
-    setTypedContent("");
-    setIsTypingComplete(false);
-
-    if (!content) {
-      return;
-    }
-
+    setDisplayedContent("");
     let index = 0;
-    const intervalId = setInterval(() => {
-      if (index < content.length) {
-        setTypedContent((prev) => prev + content.charAt(index));
+    const interval = setInterval(() => {
+      setDisplayedContent((prev) => {
+        const next = content.slice(0, index);
         index++;
-      } else {
-        clearInterval(intervalId);
-        setIsTypingComplete(true);
-      }
+        if (index > content.length) clearInterval(interval);
+        return next;
+      });
     }, typingSpeed);
 
-    return () => clearInterval(intervalId);
+    return () => clearInterval(interval);
   }, [content, typingSpeed]);
+
+  const renderHtml = (html: string) => {
+    return parse(html, {
+      replace: (domNode) => {
+        if (
+          (domNode as Element).name === "iframe" &&
+          (domNode as Element).attribs
+        ) {
+          const { width, height, src, frameborder, allow } = (
+            domNode as Element
+          ).attribs;
+          return (
+            <iframe
+              width={width}
+              height={height}
+              src={src}
+              frameBorder={frameborder || "0"}
+              allow={allow}
+              allowFullScreen
+            />
+          );
+        }
+      },
+    });
+  };
 
   return (
     <div className={className} style={style}>
-      {parse(typedContent)}
-      {!isTypingComplete && <span className="animate-pulse">_</span>}
+      {renderHtml(displayedContent)}
     </div>
   );
 };

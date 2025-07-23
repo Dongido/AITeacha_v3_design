@@ -81,7 +81,6 @@ import {
 } from "../tools/data";
 import VoiceIcon from "../../../assets/img/voiceIcon.svg";
 
-
 type OutlineType = {
   name: string;
   path: string;
@@ -208,7 +207,7 @@ const Classroom = () => {
   const [isAssessmentCompleted, setIsAssessmentCompleted] = useState(false);
   const [showVoiceSettingsDialog, setShowVoiceSettingsDialog] = useState(false);
   const [selectedVoiceType, setSelectedVoiceType] = useState("alloy");
-  const [selectedLanguage, setSelectedLanguage] = useState("en-US");
+  const [selectedLanguage, setSelectedLanguage] = useState("English");
   const [selectedGrade, setSelectedGrade] = useState("");
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -257,21 +256,20 @@ const Classroom = () => {
     audioSourceRef.current.start();
   }, []);
 
-
   useEffect(() => {
-  if (classroom?.classroomoutlines) {
-    const mappedOutlines = classroom.classroomoutlines.map((outline) => ({
-      name: outline.classroomoutline_title,
-      path: outline.classroomoutline_content || "#",
-      classroomoutline_id: outline.classroomoutline_id,
-      assessmentStatus: outline.assessment_status,
-      assessments: outline.assessments,
-      mark_as_read: outline.mark_as_read,
-    }));
-    setOutlines(mappedOutlines);
-    setSelectedOutline(mappedOutlines[0]); 
-  }
-}, [classroom]);
+    if (classroom?.classroomoutlines) {
+      const mappedOutlines = classroom.classroomoutlines.map((outline) => ({
+        name: outline.classroomoutline_title,
+        path: outline.classroomoutline_content || "#",
+        classroomoutline_id: outline.classroomoutline_id,
+        assessmentStatus: outline.assessment_status,
+        assessments: outline.assessments,
+        mark_as_read: outline.mark_as_read,
+      }));
+      setOutlines(mappedOutlines);
+      setSelectedOutline(mappedOutlines[0]);
+    }
+  }, [classroom]);
 
   useEffect(() => {
     if (!audioContextRef.current) {
@@ -1667,17 +1665,19 @@ const Classroom = () => {
                     </DialogFooter>
                   </DialogContent>
                 </Dialog>
-               <Button
-                onClick={() => navigate(`/student/Studentforum/${id}`)}
-                className="relative flex items-center justify-center bg-white border border-[#5c3cbb] mt-5
+                <Button
+                  onClick={() => navigate(`/student/Studentforum/${id}`)}
+                  className="relative flex items-center justify-center bg-white border border-[#5c3cbb] mt-5
                   hover:border-purple-600 hover:bg-purple-50 rounded-full  text-sm text-[#5c3cbb] pt-1 font-medium shadow-sm transition-all"
-              >
-                Chat
-                <span className="absolute -top-1.5 -right-1.5 bg-[#5c3cbb]
-                  text-white rounded-full p-1 flex items-center justify-center shadow-md">
-                  <FiMessageCircle size={14} />
-                </span>
-              </Button>
+                >
+                  Chat
+                  <span
+                    className="absolute -top-1.5 -right-1.5 bg-[#5c3cbb]
+                  text-white rounded-full p-1 flex items-center justify-center shadow-md"
+                  >
+                    <FiMessageCircle size={14} />
+                  </span>
+                </Button>
                 {classroom?.isLiveclassroom === 1 ||
                   (viewState !== "liveclass" && (
                     <Button
@@ -1722,33 +1722,30 @@ const Classroom = () => {
 
                         <div>
                           {selectedOutline &&
-                        selectedOutline.mark_as_read === 0 ? (
-                          <Button
-                            onClick={() =>
-                              handleMarkAsRead(
-                                selectedOutline.classroomoutline_id
-                              )
-                            }
-                            variant={"gradient"}
-                            className="rounded-md"
-                            disabled={loading}
-                          >
-                            {loading ? "Marking..." : "Mark as Read"}
-                          </Button>
-                        ) : selectedOutline &&
-                          selectedOutline.mark_as_read === 1 ? (
-                          <Button
-                            variant={"gray"}
-                            className="rounded-md"
-                            disabled
-                          >
-                            Completed
-                          </Button>
-                        ) : null}
-                        <div>
-                          
-                        </div>
-
+                          selectedOutline.mark_as_read === 0 ? (
+                            <Button
+                              onClick={() =>
+                                handleMarkAsRead(
+                                  selectedOutline.classroomoutline_id
+                                )
+                              }
+                              variant={"gradient"}
+                              className="rounded-md"
+                              disabled={loading}
+                            >
+                              {loading ? "Marking..." : "Mark as Read"}
+                            </Button>
+                          ) : selectedOutline &&
+                            selectedOutline.mark_as_read === 1 ? (
+                            <Button
+                              variant={"gray"}
+                              className="rounded-md"
+                              disabled
+                            >
+                              Completed
+                            </Button>
+                          ) : null}
+                          <div></div>
                         </div>
 
                         {selectedOutline &&
@@ -1975,22 +1972,20 @@ const Classroom = () => {
                     <div ref={messagesEndRef} />
                   </div>
                 </div>
-                
-                
 
-
-
-
-
-                <div className="fixed bottom-0 left-0 w-full bg-white 
-                 border-t lg:flex lg:w-[calc(100%-5rem)] lg:ml-[5rem] flex-col lg:flex-row">
+                <div
+                  className="fixed bottom-0 left-0 w-full bg-white 
+                 border-t lg:flex lg:w-[calc(100%-5rem)] lg:ml-[5rem] flex-col lg:flex-row"
+                >
                   <div className="flex justify-between items-center gap-24 w-full">
                     <div
                       className="w-64 h-20 bg-cover bg-center relative hidden lg:block"
                       style={{ backgroundImage: `url(${greyImg})` }}
                     >
-                      <span className="absolute inset-0 flex items-center italic justify-center
-                       text-white text-lg font-bold bg-black bg-opacity-20">
+                      <span
+                        className="absolute inset-0 flex items-center italic justify-center
+                       text-white text-lg font-bold bg-black bg-opacity-20"
+                      >
                         Powered By <span className="text-lg ml-1"> Zyra</span>
                       </span>
                     </div>
