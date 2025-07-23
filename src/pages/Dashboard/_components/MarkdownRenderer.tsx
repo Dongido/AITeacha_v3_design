@@ -8,7 +8,7 @@ interface MarkdownRendererProps {
   content: string | Promise<string>;
   className?: string;
   style?: React.CSSProperties;
-  typingSpeed?: number; // Speed in milliseconds per character
+  typingSpeed?: number; 
 }
 
 const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
@@ -22,7 +22,6 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
   const [displayedHtmlContent, setDisplayedHtmlContent] = useState<string>("");
   const [isTypingComplete, setIsTypingComplete] = useState<boolean>(false);
 
-  // Effect to resolve the input 'content' into full raw Markdown
   useEffect(() => {
     const resolveAndSetMarkdown = async () => {
       setIsTypingComplete(false);
