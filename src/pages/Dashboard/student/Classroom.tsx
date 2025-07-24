@@ -1711,8 +1711,8 @@ const Classroom = () => {
                       variant="outline"
                       size="icon"
                       className={`rounded-full hover:bg-gray-400 mt-5 border-[#5c3cbb]  ${isVoiceRecording
-                          ? "bg-red-500 text-white"
-                          : "bg-gray-200 text-black"
+                        ? "bg-red-500 text-white"
+                        : "bg-gray-200 text-black"
                         }`}
                       disabled={isVoiceRecording}
                     >
@@ -1901,7 +1901,7 @@ const Classroom = () => {
                               const actualPrevIndex = prevIndex !== -1 ? currentIndex - prevIndex - 1 : -1;
                               return (
                                 <>
-                                  
+
                                   {actualPrevIndex !== -1 && (
                                     <Button
                                       variant="gradient"
@@ -1912,14 +1912,14 @@ const Classroom = () => {
                                     </Button>
                                   )}
 
-                                  
+
                                   {next && (
                                     <Button
                                       variant="gradient"
                                       className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md transition-all duration-200 ml-2"
                                       onClick={() => setSelectedOutline(next)}
                                     >
-                                      Next 
+                                      Next
                                     </Button>
                                   )}
                                 </>
@@ -2177,8 +2177,8 @@ const Classroom = () => {
                             <MarkdownRenderer
                               content={message.text}
                               className={`p-3 text-sm ${message.fromUser
-                                  ? "bg-primary max-w-xs text-white rounded-tl-lg"
-                                  : "bg-gray-2 max-w-xl text-black rounded-tr-lg"
+                                ? "bg-primary max-w-xs text-white rounded-tl-lg"
+                                : "bg-gray-2 max-w-xl text-black rounded-tr-lg"
                                 }`}
                               style={{
                                 wordWrap: "break-word",
@@ -2219,8 +2219,8 @@ const Classroom = () => {
                       <button
                         onClick={toggleRecording}
                         className={`absolute right-16 top-1/2 transform -translate-y-1/2 p-3 rounded-full ${isRecording
-                            ? "bg-red-500 text-white"
-                            : "bg-gray-200 text-black"
+                          ? "bg-red-500 text-white"
+                          : "bg-gray-200 text-black"
                           }`}
                       >
                         <FiMic />
@@ -2359,8 +2359,8 @@ const Classroom = () => {
                                             )
                                           }
                                           className={`form-radio h-4 w-4 ${isAssessmentCompleted
-                                              ? "cursor-not-allowed"
-                                              : "text-purple-6 focus:ring-purple-5"
+                                            ? "cursor-not-allowed"
+                                            : "text-purple-6 focus:ring-purple-5"
                                             }`}
                                           readOnly={isAssessmentCompleted}
                                           disabled={isAssessmentCompleted}
@@ -2706,8 +2706,8 @@ const Classroom = () => {
                     <li
                       key={tool.tool_id}
                       className={`capitalize cursor-pointer px-4 py-2 rounded-lg ${selectedTool === tool.tool_name
-                          ? "bg-primary text-white"
-                          : ""
+                        ? "bg-primary text-white"
+                        : ""
                         }`}
                       onClick={() => setSelectedTool(tool.tool_name)}
                     >
