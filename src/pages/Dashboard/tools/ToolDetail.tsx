@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "../../../store";
@@ -104,10 +104,11 @@ const ToolDetail = () => {
   const [formData, setFormData] = useState<{ [key: string]: any }>({
     grade: "Grade 1",
     curriculum_type: "American Nigeria Blended",
-    subject:"english"
+    subject: "english"
   });
-   
-   console.log("formdata nn", formData)
+  const responseRef = useRef<HTMLDivElement>(null);
+
+  //  console.log("formdata nn", formData)
   const [formFields, setFormFields] = useState<FormField[]>([]);
   const [formLabels, setFormLabels] = useState<{ [key: string]: string }>({});
   const [responseMessage, setResponseMessage] = useState<any | "">("");
@@ -116,6 +117,8 @@ const ToolDetail = () => {
   const [tunedResponseMessage, setTunedResponseMessage] = useState<any | null>(
     null
   );
+  const [showModal, setShowModal] = useState(true);
+  const [showResponseModal, setResponseShowModal] = useState(false);
   const [showPropsDialog, setShowPropsDialog] = useState(false);
   const [propsDialogContent, setPropsDialogContent] = useState<string>("");
 
@@ -125,6 +128,8 @@ const ToolDetail = () => {
     { name: string; isoCode: string }[]
   >([]);
 
+  const submitRef = useRef<HTMLDivElement>(null);
+  const [showSubmitModal, setShowSubmitModal] = useState(false)
   const [selectedCountry, setSelectedCountry] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -136,6 +141,7 @@ const ToolDetail = () => {
   const [curriculums, setCurriculums] = useState<any[]>([]);
   const [isCurriculumLoading, setIsCurriculumLoading] =
     useState<boolean>(false);
+  const [responseModal, setResponseModal] = useState(false)
   const [selectedImageType, setSelectedImageType] = useState("");
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   interface Field {
@@ -146,7 +152,7 @@ const ToolDetail = () => {
   }
   const [fields, setFields] = useState<Field[]>([]);
 
-  
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -181,6 +187,34 @@ const ToolDetail = () => {
       console.error("Error fetching countries from country-state-city:", error);
     }
   }, []);
+
+  useEffect(() => {
+    const today = new Date().toLocaleDateString();
+    const storedDate = localStorage.getItem("userguide-date");
+    const storedCount = parseInt(localStorage.getItem("modal-count") || "0", 10);
+    const usedTools = JSON.parse(localStorage.getItem("used-tools") || "[]");
+    if (storedDate !== today) {
+      localStorage.setItem("userguide-date", today);
+      localStorage.setItem("userguide-count", "0");
+      localStorage.setItem("userguide-tools", JSON.stringify([]));
+    }
+    const count = parseInt(localStorage.getItem("userguide-count") || "0", 10);
+    const tools = JSON.parse(localStorage.getItem("userguide-tools") || "[]");
+    if (tools.includes(tool?.service_id)) {
+      setShowModal(false);
+      return;
+    }
+    if (tool?.service_id && count < 2) {
+      tools.push(tool?.service_id);
+      localStorage.setItem("userguide-tools", JSON.stringify(tools));
+      localStorage.setItem("userguide-count", (count + 1).toString());
+      setShowModal(true);
+    } else {
+      setShowModal(false);
+    }
+  }, [tool?.service_id]);
+
+
 
   useEffect(() => {
     if (!loadingTool) {
@@ -235,6 +269,15 @@ const ToolDetail = () => {
     }));
   };
 
+  const handleNext = () => {
+    setResponseShowModal(true)
+    setShowSubmitModal(false)
+    setTimeout(() => {
+      responseRef.current?.scrollIntoView({ behavior: "smooth", });
+      // ({ behavior: "smooth", block: "center" });
+    }, 300);
+  };
+
   const handleGradeChange = (value: string) => {
     setFormData((prevData) => ({
       ...prevData,
@@ -242,14 +285,14 @@ const ToolDetail = () => {
     }));
   };
 
-    const handleLowerGradeChange = (value: string) => {
+  const handleLowerGradeChange = (value: string) => {
     setFormData((prevData) => ({
       ...prevData,
       grade: value,
     }));
   };
 
- 
+
   const handleCountryChange = async (countryName: any) => {
     setSelectedCountry(countryName);
     setFormData((prevData) => ({
@@ -265,30 +308,30 @@ const ToolDetail = () => {
       try {
         const fetchedCurriculums = await fetchCurriculumByCountry(countryCode);
 
-        if(countryName === "Nigeria"){
+        if (countryName === "Nigeria") {
           console.log("contryname niger", countryName)
           const blendedCurriculums = [
-          "American Nigeria Blended",
-          "British Nigeria Blended",
-          "Blended Curriculum",
-          "IGSCE Curriculum",
-          "Cambridge Curriculum",
-        ];
-         const fetchedCurriculum  = [...fetchedCurriculums, ...blendedCurriculums]
-         setCurriculums(fetchedCurriculum)
-      //    console.log(
-      //   `Final Curriculums for ${countryName} (${countryCode}):`,
-      //   fetchedCurriculum
-      // );
-        }else{
-         setCurriculums(fetchedCurriculums);
-        //    console.log(
-        //   `Fetched Curriculums for ${countryName} (${countryCode}):`,
-        //   fetchedCurriculums
-        // );
+            "American Nigeria Blended",
+            "British Nigeria Blended",
+            "Blended Curriculum",
+            "IGSCE Curriculum",
+            "Cambridge Curriculum",
+          ];
+          const fetchedCurriculum = [...fetchedCurriculums, ...blendedCurriculums]
+          setCurriculums(fetchedCurriculum)
+          //    console.log(
+          //   `Final Curriculums for ${countryName} (${countryCode}):`,
+          //   fetchedCurriculum
+          // );
+        } else {
+          setCurriculums(fetchedCurriculums);
+          //    console.log(
+          //   `Fetched Curriculums for ${countryName} (${countryCode}):`,
+          //   fetchedCurriculums
+          // );
         }
-       
-      
+
+
       } catch (error) {
         console.error("Error fetching curriculum:", error);
         setCurriculums([]);
@@ -335,7 +378,7 @@ const ToolDetail = () => {
 
     setIsSubmitting(true);
     try {
-  
+
       const response = await submitToolData(formDataToSubmit);
       const plainTextResponse = await markdownToPlainText(response.data.data);
       const markedResponse = marked(response.data.data);
@@ -354,7 +397,7 @@ const ToolDetail = () => {
         setShowPropsDialog(true);
       } else {
         setResponseMessage(errorMessage);
-    
+
         setToastMessage(errorMessage);
         setToastVariant("destructive");
         setShowToast(true);
@@ -491,41 +534,42 @@ const ToolDetail = () => {
   };
 
   useEffect(() => {
-  if (
-    formData.country === "Nigeria" &&
-    curriculums.includes("American Nigeria Blended")
-  ) {
-    setFormData((prev) => ({
-      ...prev,
-      curriculum_type: "American Nigeria Blended",
-    }));
-  }
-}, [curriculums, formData.country]);
+    if (
+      formData.country === "Nigeria" &&
+      curriculums.includes("American Nigeria Blended")
+    ) {
+      setFormData((prev) => ({
+        ...prev,
+        curriculum_type: "American Nigeria Blended",
+      }));
+    }
+  }, [curriculums, formData.country]);
 
 
-const handleSampleData = () => {
+  const handleSampleData = () => {
     const sample = sampleToolData?.[tool?.name || ""];
-    console.log("handle sumit", tool?.name)
+
     if (sample) {
       setFormData((prev) => {
         const updatedData = {
           ...prev,
           ...sample,
         };
+
         if (sample.hasOwnProperty('curriculum_type')) {
           handleCountryChange("Nigeria");
           setIsCurriculumLoading(false);
-          setFormData((prev) =>({
+          setFormData((prev) => ({
             ...prev,
             curriculum_type: "American Nigeria Blended"
-          }) )
+          }))
           updatedData.country = "Nigeria";
           if (curriculums.length === 0) {
             const finalCurriculums = [
-            "American Nigeria Blended",
+              "American Nigeria Blended",
             ]
             setCurriculums(finalCurriculums)
-            
+
           }
         }
         return updatedData;
@@ -554,24 +598,65 @@ const handleSampleData = () => {
   return (
     <ToastProvider>
       <div className="mt-12 px-4">
-       <div className="flex gap-4">
-         <Button
-          className="flex items-center bg-white  rounded-md text-black w-fit h-full gap-3 py-2 mb-4"
-          onClick={() => navigate(-1)}
-        >
-          <Undo2 size={"1.1rem"} color="black" />
-          Back
-        </Button>
-         {/* <Button
-         
-          variant="gradient"
-          className="flex items-center bg-red-500 text-white rounded-md  w-fit h-full gap-3 py-2 mb-4"
-          onClick={handleSampleData}
-        >
-          Auto Fill Form With Sample Data
-        </Button> */}
-       </div>
-        <div className="flex flex-col lg:flex-row lg:space-x-8">
+        <div className="flex gap-4">
+          {/* Back Button */}
+          <Button
+            className="flex items-center bg-white rounded-md text-black w-fit h-full gap-3 py-2 mb-4"
+            onClick={() => navigate(-1)}
+          >
+            <Undo2 size={"1.1rem"} color="black" />
+            Back
+          </Button>
+
+          <div className=" flex flex-col items-center">
+            <Button
+              variant="gradient"
+              className="flex items-center text-white  rounded-md w-fit h-full gap-3 py-2 mb-2 shadow-md"
+              onClick={handleSampleData}
+            >
+              Auto Fill Form
+            </Button>
+            {showModal && (
+              <div className="fixed top-48  bg-gradient-to-br from-[#85F4FF] via-[#85F4FF] to-[#B8FFF9]
+          text-white text-sm px-5 py-4 rounded-2xl mt-2 rounded-br-none shadow-lg max-w-sm
+          lg:translate-x-24 md:translate-x-24 border-2 border-white border-dashed mb-6 ">
+                <button
+                  className="absolute top-2 right-2 text-[#4b2aad] text-3xl pl-2 leading-none  "
+                  onClick={() => setShowModal(false)}
+                >
+                  &times;
+                </button>
+                <span className="block lg:text-left text-start font-medium leading-snug px-2 text-lg md:text-2xl  text-[#4b2aad] ">
+                  Click <span className="font-semibold">"Auto Fill Form"</span> button to fill the input boxes With Sample Data
+                </span>
+
+                <div className="mt-4 flex justify-between gap-2">
+                  <button
+                    className="bg-white text-[#4b2aad] font-semibold py-1 px-4 rounded hover:bg-[#e0eaff] transition"
+                    onClick={() => setShowModal(false)}
+                  >
+                    Close
+                  </button>
+                  <button
+                    className="bg-[#4b2aad] text-white font-semibold py-1 px-4 rounded hover:bg-[#3a2285] transition"
+                    onClick={() => {
+                      setShowModal(false);
+                      setShowSubmitModal(true);
+                      setTimeout(() => {
+                        submitRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+                      }, 200);
+                    }}
+
+                  >
+                    Next
+                  </button>
+                </div>
+                <div className="absolute -top-1 left-10 w-6 h-6 rotate-45 bg-[#85F4FF] "></div>
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="flex flex-col lg:flex-row lg:space-x-8 ">
           <div className="lg:w-1/2">
             <div className="flex gap-3 mb-4">
               <h2 className="text-2xl font-bold capitalize">
@@ -655,11 +740,10 @@ const handleSampleData = () => {
                           setVisibleFieldPairs((prev) => prev + 1);
                         }
                       }}
-                      className={`bg-gray-900 p-2 px-6 text-white rounded-full ${
-                        visibleFieldPairs >= fieldPairs.length
+                      className={`bg-gray-900 p-2 px-6 text-white rounded-full ${visibleFieldPairs >= fieldPairs.length
                           ? "cursor-not-allowed opacity-50"
                           : "hover:bg-gray-500"
-                      }`}
+                        }`}
                       disabled={visibleFieldPairs >= fieldPairs.length}
                     >
                       Add
@@ -672,11 +756,10 @@ const handleSampleData = () => {
                           setVisibleFieldPairs((prev) => prev - 1);
                         }
                       }}
-                      className={`bg-red-900 p-2 px-6 text-white rounded-full ${
-                        visibleFieldPairs <= 1
+                      className={`bg-red-900 p-2 px-6 text-white rounded-full ${visibleFieldPairs <= 1
                           ? "cursor-not-allowed opacity-50"
                           : "hover:bg-red-700"
-                      }`}
+                        }`}
                       disabled={visibleFieldPairs <= 1}
                     >
                       Remove
@@ -763,7 +846,7 @@ const handleSampleData = () => {
                       </div>
                     )}
 
-                    {field.name === "lower_grade" &&
+                  {field.name === "lower_grade" &&
                     tool.req_param?.includes("lower_grade") && (
                       <div>
                         <Label>{field.label}</Label>
@@ -822,11 +905,11 @@ const handleSampleData = () => {
                           disabled={
                             isCurriculumLoading ||
                             !formData.country ||
-                             curriculums.length === 0
-                           
+                            curriculums.length === 0
+
                           }
-                          value={formData.curriculum_type} 
-      
+                          value={formData.curriculum_type}
+
                         >
                           <SelectTrigger>
                             {isCurriculumLoading ? (
@@ -846,7 +929,7 @@ const handleSampleData = () => {
                           </SelectTrigger>
                           <SelectContent>
                             {curriculums.length === 0 &&
-                            !isCurriculumLoading ? (
+                              !isCurriculumLoading ? (
                               <SelectItem value="no-curriculum" disabled>
                                 {formData.country
                                   ? "No curriculums found"
@@ -855,13 +938,13 @@ const handleSampleData = () => {
                             ) : null}
                             {curriculums.length > 0
                               ? curriculums.map((curriculumName: string) => (
-                                  <SelectItem
-                                    key={curriculumName}
-                                    value={curriculumName}
-                                  >
-                                    {curriculumName}
-                                  </SelectItem>
-                                ))
+                                <SelectItem
+                                  key={curriculumName}
+                                  value={curriculumName}
+                                >
+                                  {curriculumName}
+                                </SelectItem>
+                              ))
                               : null}
                           </SelectContent>
                         </Select>
@@ -1435,7 +1518,7 @@ const handleSampleData = () => {
                     field.name != "assessmentType" &&
                     field.name != "ageGroup" &&
                     field.name != "voiceType" &&
-                    field.name !=   "lower_grade" &&
+                    field.name != "lower_grade" &&
                     field.name != "image_type" &&
                     field.name != "supportResources" &&
                     field.name != "questionFormat" &&
@@ -1470,8 +1553,8 @@ const handleSampleData = () => {
                           <Input
                             type={
                               field.name === "numberOfSlides" ||
-                              field.name === "numberOfQuestion" ||
-                              field.name === "numberOfVerse"
+                                field.name === "numberOfQuestion" ||
+                                field.name === "numberOfVerse"
                                 ? "number"
                                 : "text"
                             }
@@ -1480,15 +1563,15 @@ const handleSampleData = () => {
                               field.name === "previous_kownledge"
                                 ? false
                                 : field.name === "previous_knowledge"
-                                ? false
-                                : field.name === "theme"
-                                ? false
-                                : field.name === "description"
-                                ? tool.service_id === "transcribe"
                                   ? false
-                                  : tool.is_description_optional === 0
-                                : field.name !== "additionalNotes" &&
-                                  field.name !== "recommendations"
+                                  : field.name === "theme"
+                                    ? false
+                                    : field.name === "description"
+                                      ? tool.service_id === "transcribe"
+                                        ? false
+                                        : tool.is_description_optional === 0
+                                      : field.name !== "additionalNotes" &&
+                                      field.name !== "recommendations"
                             }
                             placeholder={
                               field.placeholder || `Enter ${field.label}`
@@ -1501,25 +1584,107 @@ const handleSampleData = () => {
                     )}
                 </div>
               ))}
+              <div
+                ref={submitRef}
+                className="relative w-full flex justify-center items-center mt-10">
+                {/* Modal Positioned Relative to the Button */}
+                {showSubmitModal && (
+                  <div className="absolute bottom-full mb-4 bg-gradient-to-br border-2 from-[#85F4FF] via-[#85F4FF] to-[#B8FFF9] 
+                text-white text-sm px-4 py-3 rounded-2xl shadow-lg max-w-sm 
+                border-white border-dashed z-50 animate-[bounce_0.6s_ease-out]">
+                    <button
+                      className="absolute top-1 right-2 text-[#4b2aad] text-2xl"
+                      onClick={() => setShowSubmitModal(false)}
+                    >
+                      &times;
+                    </button>
 
-              
-              <Button
+                    <span className="block text-center text-[#4b2aad] font-medium leading-snug text-2xl">
+                      You're almost done!
+                    </span>
+                    <p className="block text-center text-[#4b2aad] font-medium leading-snug text-2xl">
+                      After filling the form, Click <span className="font-bold">"Submit"</span> to complete the process.
+                    </p>
+                    <div className="flex justify-between gap-4 mt-4">
+                      <button
+                        className="bg-white text-[#4b2aad] font-semibold px-4 py-1 rounded-md shadow"
+                        onClick={() => setShowSubmitModal(false)}
+                      >
+                        Close
+                      </button>
+                      <button
+                        className="bg-[#4b2aad] text-white font-semibold px-4 py-1 rounded-md shadow"
+                        onClick={handleNext}
+                      >
+                        Next
+                      </button>
+                    </div>
+                    {/* Pointer triangle */}
+                    <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 rotate-45 w-4 h-4 bg-gradient-to-br from-[#85F4FF] via-[#85F4FF] to-[#B8FFF9] border-l border-t border-white border-dashed"></div>
+                  </div>
+                )}
+
+                {/* Submit Button */}
+                <Button
+                  type="submit"
+                  variant={"gradient"}
+                  className="text-white py-2 px-4 rounded-md w-full"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "AiTeacha is Typing..." : "Submit"}
+                </Button>
+              </div>
+
+
+              {/* <Button
                 type="submit"
                 variant={"gradient"}
                 className="text-white py-2 px-4 rounded-md w-full"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "AiTeacha is Typing..." : "Submit"}
-              </Button>
+              </Button> */}
+              {/* selectedImageType */}
             </form>
           </div>
 
-          <div className="lg:w-1/2 mt-8 lg:mt-0">
+          <div ref={responseRef} className="lg:w-1/2 mt-8 lg:mt-0 relative ">
+            {showResponseModal && (
+              <div className="absolute border-white border-dashed
+          -top-20 left-1/2 transform -translate-x-1/2  bg-gradient-to-br from-[#85F4FF] via-[#85F4FF] to-[#B8FFF9]
+           text-white border-2 text-sm px-4 py-3 rounded-2xl shadow-lg max-w-sm w-full z-[9999]">
+                <button
+                  className="absolute top-1 right-2 text-[#4b2aad] text-2xl"
+                  onClick={() => setResponseShowModal(false)}
+                >
+                  &times;
+                </button>
+                <span className="block text-center text-[#4b2aad] font-semibold leading-snug mb-2 text-2xl">
+                  ✅ You’re All Set!
+                </span>
+                <p className="text-center text-[#4b2aad] text-2xl">
+                  The preview section displays the generated result
+                </p>
+                <div className="flex justify-end gap-4 mt-4">
+                  <button
+                    className="bg-white text-[#4b2aad] font-semibold px-4 py-1 rounded-md shadow"
+                    onClick={() => setResponseShowModal(false)}
+                  >
+                    Close
+                  </button>
+                </div>
+                <div
+                  className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 rotate-45 w-4 h-4 
+              bg-gradient-to-br from-[#85F4FF] via-[#85F4FF] to-[#B8FFF9] shadow-md"
+                ></div>
+              </div>
+            )}
+
             <h3 className="text-xl font-bold mb-4">Submission Response</h3>
             {(tool.service_id === "image creator" ||
               tool.service_id === "worksheeteid generator" ||
               tool.service_id === "colouring image") &&
-            responseMessage ? (
+              responseMessage ? (
               <>
                 <div className="p-2 bg-white border border-gray-300 rounded-md">
                   <img
@@ -1678,11 +1843,10 @@ const handleSampleData = () => {
                   //   console.log(powerUrl);
                   //   window.open(powerUrl, "_blank");
                   // }}
-                  className={`py-2 px-4 rounded-md ${
-                    timeLeft && timeLeft > 0
+                  className={`py-2 px-4 rounded-md ${timeLeft && timeLeft > 0
                       ? "bg-green-500 text-white"
                       : "bg-gray-300 text-gray-500"
-                  }`}
+                    }`}
                   disabled={!timeLeft || timeLeft <= 0}
                 >
                   {timeLeft && timeLeft > 0 ? "Download Audio" : "Link Expired"}
@@ -1732,6 +1896,7 @@ const handleSampleData = () => {
               </>
             )}
           </div>
+
         </div>
 
         {showToast && (

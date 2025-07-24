@@ -772,6 +772,12 @@ export const StudentParamroutes = [
         element: <ExamSubmitted />,
       },
       {
+      icon: <FaRocketchat {...icon} />,
+      name: "messages",
+      path: "/participant/chats",
+      element: <ChatListPage />,
+      },
+      {
         icon: <AcademicCapIcon {...icon} />,
         name: "classrooms",
         path: "/test/submitted-details/:id",

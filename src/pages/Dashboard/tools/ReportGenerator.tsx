@@ -99,14 +99,14 @@ const ReportGenerator: React.FC = () => {
         <Undo2 size={"1.1rem"} color="black" />
         Back
       </Button>
-      {/* <Button
+      <Button
       
         variant="gradient"
         className="flex items-center bg-red-500 text-white rounded-md  w-fit h-full gap-3 py-2 mb-4"
         onClick={handleSampleData}
       >
         Auto Fill Form With Sample Data
-      </Button> */}
+      </Button>
       </div>
       <h1 className="text-2xl font-bold mb-6 text-center">
         School Document & Report Generator
