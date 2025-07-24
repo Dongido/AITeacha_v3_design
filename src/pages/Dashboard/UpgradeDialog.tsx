@@ -12,9 +12,9 @@ import { Button } from "../../components/ui/Button";
 const PaymentMethodDialog: React.FC<{
   onSelectPaymentMethod: (
     method: "stripe" | "flutterwave",
-    planName: "pro" | "premium" | "enterprise" | "admin"
+    planName: "basic" | "pro" | "premium" | "enterprise" | "admin"
   ) => void;
-  planName: "pro" | "premium" | "enterprise" | "admin";
+  planName: "basic" | "pro" | "premium" | "enterprise" | "admin";
   isOpen: boolean;
 
   onClose: () => void;

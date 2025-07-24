@@ -25,12 +25,17 @@ interface UserDetails {
   firstname: string;
 }
 
-type PlanType = "free" | "pro" | "premium" | "enterprise" | "admin";
+type PlanType = "free" | "basic" | "pro" | "premium" | "enterprise" | "admin";
 type CurrencyType = "NGN" | "USD" | "GBP";
 
 const initialPrices = {
   free: {
     NGN: { month: 0, threeMonths: 0, year: 0 },
+    USD: { month: 0, threeMonths: 0, year: 0 },
+    GBP: { month: 0, threeMonths: 0, year: 0 },
+  },
+  basic: {
+    NGN: { month: 2000, threeMonths: 6000, year: 12000 },
     USD: { month: 0, threeMonths: 0, year: 0 },
     GBP: { month: 0, threeMonths: 0, year: 0 },
   },
@@ -40,7 +45,7 @@ const initialPrices = {
     GBP: { month: 4, threeMonths: 12, year: 50 },
   },
   premium: {
-    NGN: { month: 20000, threeMonths: 60000, year: 200000},
+    NGN: { month: 20000, threeMonths: 60000, year: 200000 },
     USD: { month: 20, threeMonths: 60, year: 200 },
     GBP: { month: 18, threeMonths: 54, year: 190 },
   },
@@ -67,7 +72,7 @@ const Upgrade: React.FC = () => {
   const [currency, setCurrency] = useState<"NGN" | "USD" | "GBP">("NGN");
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   const [selectedPlan, setSelectedPlan] = useState<
-    "pro" | "premium" | "enterprise" | "admin" | null
+    "basic" | "pro" | "premium" | "enterprise" | "admin" | null
   >(null);
   const [loadingPlan, setLoadingPlan] = useState<null | string>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -152,13 +157,14 @@ const Upgrade: React.FC = () => {
 
   const packageMap = {
     free: 1,
+    basic: 5,
     pro: 2,
     premium: 3,
     enterprise: 4,
     admin: 2,
   };
   const getFlutterwaveConfig = (
-    plan: "pro" | "premium" | "enterprise" | "admin",
+    plan: "basic" | "pro" | "premium" | "enterprise" | "admin",
     userDetails: UserDetails | null,
     billingCycle: "month" | "threeMonths" | "year",
     currency: CurrencyType,
@@ -196,7 +202,7 @@ const Upgrade: React.FC = () => {
   };
   const handlePayment = async (
     method: "stripe" | "flutterwave",
-    plan: "pro" | "premium" | "enterprise" | "admin"
+    plan: "basic" | "pro" | "premium" | "enterprise" | "admin"
   ) => {
     setLoadingPlan(plan);
     setSelectedPlan(plan);
@@ -423,241 +429,417 @@ const Upgrade: React.FC = () => {
 
   return (
     <div className="mt-12">
-      <div className="flex justify-between">
-        <h2 className="text-xl font-bold text-gray-900 mb-4">Welcome! 👋</h2>
-        <div className="w-60">
-          <label className="text-gray-700 font-medium mb-2 block">
-            Select Currency
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 md:mb-0">
+            Welcome! 👋
+          </h2>
+          <div className="w-full md:w-60">
+            <label
+              htmlFor="currency-select"
+              className="text-gray-700 font-medium mb-2 block"
+            >
+              Select Currency
+            </label>
+            <select
+              id="currency-select"
+              className="border border-[#4b2aad] rounded-md w-full py-2 px-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={currency}
+              onChange={handleCurrencyChange}
+            >
+              <option value="NGN">NGN (Naira)</option>
+              <option value="USD">USD (Dollar)</option>
+              <option value="GBP">GBP (Pounds)</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="mt-6">
+          <label
+            htmlFor="coupon-input"
+            className="text-gray-700 font-medium mb-2 block"
+          >
+            Enter Coupon Code
+          </label>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <input
+              id="coupon-input"
+              type="text"
+              value={couponCode}
+              onChange={(e) => setCouponCode(e.target.value)}
+              className="border border-[#4b2aad] rounded-md w-full sm:flex-grow py-2 px-3 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter your coupon code"
+            />
+            <button
+              onClick={handleVerifyCoupon}
+              disabled={loading || !couponCode}
+              className="w-full sm:w-auto mt-2 sm:mt-0 bg-[#4b2aad] text-white rounded-md px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#3a2588] transition duration-200 ease-in-out"
+            >
+              {loading ? "Verifying..." : "Apply Coupon"}
+            </button>
+          </div>
+          {verificationMessage && (
+            <p className="mt-2 text-sm text-gray-600">{verificationMessage}</p>
+          )}
+        </div>
+
+        <div className="mb-4 mt-8 w-full md:w-60 mx-auto flex flex-col items-center">
+          <label htmlFor="billing-cycle-select" className="sr-only">
+            Select Billing Cycle
           </label>
           <select
-            className="border border-[#4b2aad] rounded-md w-full py-2 px-3"
-            value={currency}
-            onChange={handleCurrencyChange}
+            id="billing-cycle-select"
+            value={billingCycle}
+            onChange={(e) =>
+              setBillingCycle(
+                e.target.value as "month" | "threeMonths" | "year"
+              )
+            }
+            className="w-full p-2 border border-gray-300 rounded-md text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <option value="NGN">NGN (Naira)</option>
-            <option value="USD">USD (Dollar)</option>
-            <option value="GBP">GBP (Pounds)</option>
+            <option value="month">Monthly</option>
+            <option value="threeMonths">3 Months</option>
+            <option value="year">Yearly</option>
           </select>
         </div>
       </div>
-      <div className="mt-4">
-        <label className="text-gray-700 font-medium mb-2 block">
-          Enter Coupon Code
-        </label>
-        <div className="flex gap-2 ">
-          <input
-            type="text"
-            value={couponCode}
-            onChange={(e) => setCouponCode(e.target.value)}
-            className="border border-[#4b2aad] rounded-md  px-3"
-            placeholder="Enter your coupon code"
-          />
-          <button
-            onClick={handleVerifyCoupon}
-            disabled={loading || !couponCode}
-            className="mt-2 bg-[#4b2aad] text-white rounded-md px-2 py-4 disabled:opacity-50"
-          >
-            {loading ? "Verifying..." : "Apply Coupon"}
-          </button>
+
+      <div>
+        <div className=" mx-auto px-4 py-8">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-10 text-gray-800">
+            For Individuals
+          </h2>
+
+          <div className="flex flex-col lg:flex-row justify-center items-stretch lg:space-x-8 space-y-8 lg:space-y-0">
+            <div className="border rounded-lg p-6 bg-gray-50 shadow-md flex flex-col flex-1">
+              <h3 className="text-lg font-semibold mb-4">AiTeacha Free</h3>
+              <p className="text-2xl font-bold mb-2">
+                {getCurrencySign(currency)}{" "}
+                {prices.free[currency][billingCycle]}
+              </p>
+
+              {billingCycle === "year" && (
+                <span className="font-medium text-sm text-gray-700"> </span>
+              )}
+              <p className="mb-4 mt-2 text-sm text-gray-600">
+                Get started for Free, learn how AiTeacha saves you time and
+                generates tailored resources.
+              </p>
+              <ul className="list-disc pl-5 space-y-2 mb-6 flex-grow">
+                <strong>Save time, get resources...</strong>
+                <li>Unlimited use of our essential free tools</li>
+                <li>Generate tailored, high-quality resources</li>
+                <li>
+                  15 Time-Saving Tools to simplify lesson planning, assessments,
+                  and more
+                </li>
+                <li>Easily download and save your generated resources</li>
+                <li>
+                  Interact with Zyra, our AI Chat Assistant, built exclusively
+                  for educators and students
+                </li>
+                <li>AI Image generation for educators and students</li>
+              </ul>
+              <button
+                className={`w-full py-2 rounded-md mt-auto ${
+                  userDetails?.package === "AiTeacha Free"
+                    ? "bg-gray-300 text-gray-700 cursor-not-allowed"
+                    : "bg-primary text-white hover:bg-[#4a2fa3] transition"
+                }`}
+                disabled={userDetails?.package === "AiTeacha Free"}
+              >
+                {userDetails?.package === "AiTeacha Free"
+                  ? "Current Plan"
+                  : "Downgrade to Free"}
+              </button>
+            </div>
+
+            {currency === "NGN" && (
+              <div className="border rounded-lg p-6 bg-white shadow-md flex flex-col flex-1">
+                <h3 className="text-xl font-semibold mb-4 text-black">
+                  AiTeacha Basic
+                </h3>
+                <p className="text-3xl font-bold mb-2">
+                  {getCurrencySign(currency)}
+                  {prices.basic[currency][billingCycle].toLocaleString()}
+                  <span className="text-base font-normal text-gray-500">
+                    {billingCycle === "month" && "/month"}
+                    {billingCycle === "threeMonths" && "/3 months"}
+                    {billingCycle === "year" && "/year"}
+                  </span>
+                  {billingCycle === "year" && (
+                    <span className="font-medium text-sm text-gray-700 block mt-1">
+                      {" "}
+                      {getCurrencySign(currency)}
+                      {(
+                        prices.basic[currency][billingCycle] / 12
+                      ).toLocaleString()}{" "}
+                      monthly
+                    </span>
+                  )}
+                </p>
+                <p className="mb-4 mt-2 text-sm text-gray-600">
+                  An affordable entry plan for teachers with access to essential
+                  AI tools for lesson planning and content creation.
+                </p>
+
+                <ul className="list-disc pl-5 space-y-2 mb-6 flex-grow">
+                  <strong>Everything in Free, Plus...</strong>
+                  <li>
+                    Access to all<strong> 45 AI tools </strong> under the{" "}
+                    <strong>"My Tools"</strong> section
+                  </li>
+                  <li>
+                    {" "}
+                    Unlimited content generation for lesson plans, assessments,
+                    and more.{" "}
+                  </li>
+                  <li>
+                    Generate AI-powered slides and export directly to Microsoft
+                    PowerPoint
+                  </li>
+                  <li>Unlimited AI-generated images and labeled diagrams.</li>
+                  <li>
+                    Download and save all your generated resources for offline
+                    use.
+                  </li>
+                  <li> No Classroom Management</li>
+                </ul>
+                <Button
+                  onClick={() => {
+                    setSelectedPlan("basic");
+                    setIsDialogOpen(true);
+                  }}
+                  disabled={
+                    loadingPlan === "basic" ||
+                    userDetails?.package?.toLowerCase() === "aiteacha basic"
+                  }
+                  className={`bg-primary text-white w-full py-2 rounded-md transition duration-200 mt-auto text-lg font-medium ${
+                    userDetails?.package?.toLowerCase() === "aiteacha basic"
+                      ? "bg-gray-300 text-gray-700 cursor-not-allowed"
+                      : "hover:bg-[#4a2fa3]"
+                  }`}
+                >
+                  {userDetails?.package?.toLowerCase() === "aiteacha basic"
+                    ? "Current Plan"
+                    : loadingPlan === "basic"
+                    ? "Processing..."
+                    : "Upgrade to Basic"}
+                </Button>
+              </div>
+            )}
+
+            <div className="border rounded-lg p-6 bg-gray-50 shadow-md flex flex-col flex-1">
+              <h3 className="text-lg font-semibold mb-4">AiTeacha Pro</h3>
+              <p className="text-2xl font-bold mb-2">
+                {getCurrencySign(currency)} {prices.pro[currency][billingCycle]}
+                {currency === "USD" && billingCycle === "year" && (
+                  <span className="font-medium text-sm text-gray-700">
+                    {" "}
+                    {getCurrencySign(currency)}
+                    {(prices.pro[currency][billingCycle] / 12).toFixed(2)}{" "}
+                    monthly
+                  </span>
+                )}
+                {currency === "GBP" && billingCycle === "year" && (
+                  <span className="font-medium text-sm text-gray-700">
+                    {" "}
+                    {getCurrencySign(currency)}
+                    {(prices.pro[currency][billingCycle] / 12).toFixed(2)}{" "}
+                    monthly
+                  </span>
+                )}
+                {billingCycle === "year" && currency === "NGN" && (
+                  <span className="font-medium text-sm text-gray-700">
+                    {" "}
+                    ₦4,585 monthly
+                  </span>
+                )}
+              </p>
+              <p className="mb-4 mt-2 text-sm text-gray-600">
+                Upgrade to AiTeacha Pro for unlimited access to all resources
+                and pro tools.
+              </p>
+              <ul className="list-disc pl-5 space-y-2 mb-6 flex-grow">
+                <strong>Everything in Basic, Plus...</strong>
+                <li>Unlock all 45 advanced, time-saving AI tools</li>
+                <li>Unlimited content generation as you need</li>
+                <li>
+                  Generate unlimited AI-powered slides, exportable directly to
+                  Microsoft PowerPoint
+                </li>
+                <li>Unlimited assignments for student evaluation needs</li>
+                <li>
+                  Unlimited student performance reports to track and enhance
+                  learning outcomes
+                </li>
+                <li>
+                  Unlimited AI-generated images perfect for engaging lessons
+                </li>
+                <li>Exclusive early access to new features and tools</li>
+              </ul>
+              <Button
+                onClick={() => {
+                  setSelectedPlan("pro");
+                  setIsDialogOpen(true);
+                }}
+                disabled={
+                  loadingPlan === "pro" ||
+                  userDetails?.package === "AI Teacha Pro"
+                }
+                className={`bg-primary text-white w-full py-2 rounded-md transition mt-auto text-center ${
+                  userDetails?.package === "AiTeacha Pro"
+                    ? "bg-gray-300 text-gray-700 cursor-not-allowed"
+                    : "hover:bg-[#4a2fa3]"
+                }`}
+              >
+                {userDetails?.package === "AI Teacha Pro"
+                  ? "Current Plan"
+                  : loadingPlan === "pro"
+                  ? "Processing..."
+                  : "Upgrade to Pro"}
+              </Button>
+            </div>
+          </div>
         </div>
-        {verificationMessage && (
-          <p className="mt-2 text-gray-600">{verificationMessage}</p>
-        )}
+
+        <div className="container mx-auto px-4 py-16">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-10 text-gray-800">
+            For Schools
+          </h2>
+
+          <div className="flex flex-col lg:flex-row justify-center items-stretch lg:space-x-8 space-y-8 lg:space-y-0  mx-auto">
+            <div className="border rounded-lg p-6 bg-gray-50 shadow-md flex flex-col flex-1">
+              <h3 className="text-lg font-semibold mb-4">AiTeacha Premium</h3>
+              <p className="text-2xl font-bold mb-2">
+                {getCurrencySign(currency)}{" "}
+                {prices.premium[currency][billingCycle]}
+                {currency === "USD" && billingCycle === "year" && (
+                  <span className="font-medium text-sm text-gray-700">
+                    {" "}
+                    {getCurrencySign(currency)}
+                    {(prices.premium[currency][billingCycle] / 12).toFixed(
+                      2
+                    )}{" "}
+                    monthly
+                  </span>
+                )}
+                {currency === "GBP" && billingCycle === "year" && (
+                  <span className="font-medium text-sm text-gray-700">
+                    {" "}
+                    {getCurrencySign(currency)}
+                    {(prices.premium[currency][billingCycle] / 12).toFixed(
+                      2
+                    )}{" "}
+                    monthly
+                  </span>
+                )}
+                {billingCycle === "year" && currency === "NGN" && (
+                  <span className="font-medium text-sm text-gray-700">
+                    {" "}
+                    ₦20,385 monthly
+                  </span>
+                )}
+              </p>
+              <p className="mb-4 mt-2 text-sm text-gray-600">
+                Full AiTeacha suite for schools with classroom, assignment, and
+                report features.
+              </p>
+              <ul className="list-disc pl-5 space-y-2 mb-6 flex-grow">
+                <strong>Everything in Pro, Plus...</strong>
+                <li>
+                  Institution-wide monitoring of teachers and students activity
+                </li>
+                <li>
+                  Moderation features to prioritize student safety and
+                  compliance
+                </li>
+                <li>Data Privacy Agreements (DPA)</li>
+                <li>Personalized AI training and tool customizations</li>
+                <li>
+                  Special pricing and discounts on bulk licenses for schools
+                </li>
+                <li>Unlimited chat and resource histories</li>
+                <li>Unlimited number of educators</li>
+                <li>Dedicated support for your school or institution</li>
+              </ul>
+              <Button
+                onClick={() => {
+                  setSelectedPlan("premium");
+                  setIsDialogOpen(true);
+                }}
+                disabled={
+                  loadingPlan === "premium" ||
+                  userDetails?.package === "AI Teacha Premium"
+                }
+                className={`bg-primary text-white w-full py-2 rounded-md transition mt-auto text-center ${
+                  userDetails?.package === "premium"
+                    ? "bg-gray-300 text-gray-700 cursor-not-allowed"
+                    : "hover:bg-[#4a2fa3]"
+                }`}
+              >
+                {userDetails?.package === "AI Teacha Premium"
+                  ? "Current Plan"
+                  : loadingPlan === "premium"
+                  ? "Processing..."
+                  : "Upgrade to Premium"}
+              </Button>
+            </div>
+
+            <div className="border rounded-lg p-6 bg-gray-50 shadow-md flex flex-col flex-1">
+              <h3 className="text-lg font-semibold mb-4">
+                AiTeacha Enterprise
+              </h3>
+              <p className="text-2xl font-bold mb-2">Custom Pricing</p>
+              <p className="mb-4 mt-2 text-sm text-gray-600">
+                Custom discounted pricing for schools, districts, institutions,
+                and tutorial centers.
+              </p>
+              <ul className="list-disc pl-5 space-y-2 mb-6 flex-grow">
+                <strong>Everything in Premium, Plus...</strong>
+                <li>Designed for large schools and institutions</li>
+                <li>
+                  The AiTeacha Enterprise Plan is tailored for organizations
+                  with 15 or more educators seeking comprehensive AI solutions
+                </li>
+                <li>Dedicated account manager and priority support</li>
+                <li>
+                  On-site training and implementation support (where applicable)
+                </li>
+                <li>
+                  Advanced analytics and reporting for institution-wide insights
+                </li>
+                <li>Custom integrations and API access</li>
+                <li>Scalable solutions for growing educational needs</li>
+                <li>
+                  Contact us today or use our Quote Calculator to receive
+                  customized pricing and exclusive discounts for your
+                  institution.
+                </li>
+              </ul>
+              <Button
+                onClick={() => navigate("/dashboard/upgrade/support")}
+                disabled={
+                  loadingPlan === "enterprise" ||
+                  userDetails?.package === "AI Teacha Enterprise"
+                }
+                className={`bg-primary text-white w-full py-2 rounded-md transition mt-auto text-center ${
+                  userDetails?.package === "AI Teacha Enterprise"
+                    ? "bg-gray-300 text-gray-700 cursor-not-allowed"
+                    : "hover:bg-[#4a2fa3]"
+                }`}
+              >
+                {userDetails?.package === "AI Teacha Enterprise"
+                  ? "Current Plan"
+                  : loadingPlan === "enterprise"
+                  ? "Processing..."
+                  : "Contact Sales"}{" "}
+              </Button>
+            </div>
+          </div>
+        </div>
       </div>
-      <div className="mb-4 mt-4 w-60 mx-auto flex flex-col items-center">
-        <select
-          value={billingCycle}
-          onChange={(e) =>
-            setBillingCycle(e.target.value as "month" | "threeMonths" | "year")
-          }
-          className="w-full p-2 border border-gray-300 rounded-md text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="month">Monthly</option>
-          <option value="threeMonths">3 Months</option>
-          <option value="year">Yearly</option>
-        </select>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
-        <div className="border rounded-lg p-6 bg-gray-50 shadow-sm flex flex-col">
-          <h3 className="text-lg font-semibold mb-4">AiTeacha Free</h3>
-          <p className="text-2xl font-bold mb-2">
-            {prices.free[currency][billingCycle]}
-          </p>
-
-          {billingCycle === "year" && (
-            <span className="font-medium text-sm text-gray-700"> </span>
-          )}
-          <p className="mb-4 mt-2 text-sm text-gray-600">
-            Get started for Free, learn how AiTeacha saves you time and
-            generates tailored resources.
-          </p>
-          <ul className="list-disc pl-5 space-y-2 mb-6 flex-grow">
-            <strong>Save time, get resources...</strong>
-            <li>Unlimited use of our essential free tools</li>
-            <li>Generate tailored, high-quality resources</li>
-            <li>
-              15 Time-Saving Tools to simplify lesson planning, assessments, and
-              more
-            </li>
-            <li>Easily download and save your generated resources</li>
-            <li>
-              Interact with Zyra, our AI Chat Assistant, built exclusively for
-              educators and students
-            </li>
-            <li>AI Image generation for educators and students</li>
-          </ul>
-          <button
-            className={`w-full py-2 rounded-md mt-auto ${
-              userDetails?.package === "AiTeacha Free"
-                ? "bg-gray-300 text-gray-700 cursor-not-allowed"
-                : "bg-primary text-white hover:bg-[#4a2fa3] transition"
-            }`}
-            disabled={userDetails?.package === "AI Teacha Free"}
-          >
-            {userDetails?.package === "AI Teacha Free"
-              ? "Current Plan"
-              : "Downgrade to Free"}
-          </button>
-        </div>
-
-        <div className="border rounded-lg p-6 bg-gray-50 shadow-md flex flex-col">
-          <h3 className="text-lg font-semibold mb-4">AiTeacha Pro</h3>
-          <p className="text-2xl font-bold mb-2">
-            {getCurrencySign(currency)} {prices.pro[currency][billingCycle]}
-            {currency === "USD" && billingCycle === "year" && (
-              <span className="font-medium text-sm text-gray-700">
-                {" "}
-                {getCurrencySign(currency)}
-                {(prices.pro[currency][billingCycle] / 12).toFixed(2)} monthly
-              </span>
-            )}
-            {currency === "GBP" && billingCycle === "year" && (
-              <span className="font-medium text-sm text-gray-700">
-                {" "}
-                {getCurrencySign(currency)}
-                {(prices.pro[currency][billingCycle] / 12).toFixed(2)} monthly
-              </span>
-            )}
-            {billingCycle === "year" && currency === "NGN" && (
-              <span className="font-medium text-sm text-gray-700">
-                {" "}
-                ₦4,585 monthly
-              </span>
-            )}
-          </p>
-          <p className="mb-4 mt-2 text-sm text-gray-600">
-            Upgrade to AiTeacha Pro for unlimited access to all resources and
-            pro tools.
-          </p>
-          <ul className="list-disc pl-5 space-y-2 mb-6 flex-grow">
-            <strong>Everything in Free, Plus...</strong>
-            <li>Unlock all 45 advanced, time-saving AI tools</li>
-            <li>Unlimited content generation as you need</li>
-            <li>
-              Generate unlimited AI-powered slides, exportable directly to
-              Microsoft PowerPoint
-            </li>
-            <li>Unlimited assignments for student evaluation needs</li>
-            <li>
-              Unlimited student performance reports to track and enhance
-              learning outcomes
-            </li>
-            <li>Unlimited AI-generated images perfect for engaging lessons</li>
-            <li>Exclusive early access to new features and tools</li>
-          </ul>
-          <Button
-            onClick={() => {
-              setSelectedPlan("pro");
-              setIsDialogOpen(true);
-            }}
-            disabled={
-              loadingPlan === "pro" || userDetails?.package === "AI Teacha Pro"
-            }
-            className={`bg-primary text-white w-full py-2 rounded-md transition mt-auto text-center ${
-              userDetails?.package === "AiTeacha Pro"
-                ? "bg-gray-300 text-gray-700 cursor-not-allowed"
-                : "hover:bg-[#4a2fa3]"
-            }`}
-          >
-            {userDetails?.package === "AI Teacha Pro"
-              ? "Current Plan"
-              : loadingPlan === "pro"
-              ? "Processing..."
-              : "Upgrade to Pro"}
-          </Button>
-        </div>
-
-        <div className="border rounded-lg p-6 bg-gray-50 shadow-md flex flex-col">
-          <h3 className="text-lg font-semibold mb-4">AiTeacha Premium</h3>
-          <p className="text-2xl font-bold mb-2">
-            {getCurrencySign(currency)} {prices.premium[currency][billingCycle]}
-            {currency === "USD" && billingCycle === "year" && (
-              <span className="font-medium text-sm text-gray-700">
-                {" "}
-                {getCurrencySign(currency)}
-                {(prices.premium[currency][billingCycle] / 12).toFixed(2)}{" "}
-                monthly
-              </span>
-            )}
-            {currency === "GBP" && billingCycle === "year" && (
-              <span className="font-medium text-sm text-gray-700">
-                {" "}
-                {getCurrencySign(currency)}
-                {(prices.premium[currency][billingCycle] / 12).toFixed(2)}{" "}
-                monthly
-              </span>
-            )}
-            {billingCycle === "year" && currency === "NGN" && (
-              <span className="font-medium text-sm text-gray-700">
-                {" "}
-                ₦20,385 monthly
-              </span>
-            )}
-          </p>
-          <p className="mb-4 mt-2 text-sm text-gray-600">
-            Full AiTeacha suite for schools with classroom, assignment, and
-            report features.
-          </p>
-          <ul className="list-disc pl-5 space-y-2 mb-6 flex-grow">
-            <strong>Everything in Pro, Plus...</strong>
-            <li>
-              Institution-wide monitoring of teachers and students activity
-            </li>
-            <li>
-              Moderation features to prioritize student safety and compliance
-            </li>
-            <li>Data Privacy Agreements (DPA)</li>
-            <li>Personalized AI training and tool customizations</li>
-            <li>Special pricing and discounts on bulk licenses for schools</li>
-            <li>Unlimited chat and resource histories</li>
-            <li>Unlimited number of educators</li>
-            <li>Dedicated support for your school or institution</li>
-          </ul>
-          <Button
-            onClick={() => {
-              setSelectedPlan("premium");
-              setIsDialogOpen(true);
-            }}
-            disabled={
-              loadingPlan === "premium" ||
-              userDetails?.package === "AI Teacha Premium"
-            }
-            className={`bg-primary text-white w-full py-2 rounded-md transition mt-auto text-center ${
-              userDetails?.package === "premium"
-                ? "bg-gray-300 text-gray-700 cursor-not-allowed"
-                : "hover:bg-[#4a2fa3]"
-            }`}
-          >
-            {userDetails?.package === "AI Teacha Premium"
-              ? "Current Plan"
-              : loadingPlan === "premium"
-              ? "Processing..."
-              : "Upgrade to Premium"}
-          </Button>
-        </div>
-
-        {isAdmin && (
+      {/* {isAdmin && (
           <div className="border rounded-lg p-6 bg-gray-50 shadow-md flex flex-col">
             <h3 className="text-lg font-semibold mb-4">AiTeacha Admin Plan</h3>
             <p className="text-2xl font-bold mb-2">
@@ -723,48 +905,8 @@ const Upgrade: React.FC = () => {
                 : "Switch to Admin Plan"}
             </Button>
           </div>
-        )}
-      </div>
-      <div className="border rounded-lg mt-4 text-center p-6 bg-gray-50 shadow-md flex flex-col">
-        <h3 className="text-lg font-semibold ">AiTeacha Enterprise</h3>
-        <p className="mb-4 mt-2 text-sm text-gray-600">
-          Custom discounted pricing for schools, districts, institutions, and
-          tutorial centers.
-        </p>
-        <ul className="list-none pl-5 space-y-2 mb-6 flex-grow">
-          <strong>Everything in Premium, Plus...</strong>
-          <li>Designed for large schools and institutions</li>
-          <li>
-            The AiTeacha Enterprise Plan is tailored for organizations with 15
-            or more educators seeking comprehensive AI solutions
-          </li>
-          <li>
-            Contact us today or use our Quote Calculator to receive customized
-            pricing and exclusive discounts for your institution.
-          </li>
-        </ul>
-        <center>
-          <Button
-            onClick={() => navigate("/dashboard/upgrade/support")}
-            disabled={
-              loadingPlan === "enterprise" ||
-              userDetails?.package === "AI Teacha Enterprise"
-            }
-            className={`bg-primary text-white w-full lg:w-1/4  py-2 rounded-md transition mt-auto text-center ${
-              userDetails?.package === "AiTeacha Enterprise"
-                ? "bg-gray-300 text-gray-700 cursor-not-allowed"
-                : "hover:bg-[#4a2fa3]"
-            }`}
-          >
-            {" "}
-            {userDetails?.package === "AI Teacha Enterprise"
-              ? "Current Plan"
-              : loadingPlan === "enterprise"
-              ? "Processing..."
-              : "Contact Support"}{" "}
-          </Button>
-        </center>{" "}
-      </div>
+        )} */}
+
       {isPaymentPage && (
         <center>
           <Link to="/dashboard/home">
