@@ -14,7 +14,7 @@ import { Button } from "../../../components/ui/Button";
 import { TextArea } from "../../../components/ui/TextArea";
 import { Undo2 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchClassroomByIdThunk } from "../../../store/slices/classroomSlice";
+import { createClassroomSuggestion, fetchClassroomByIdThunk } from "../../../store/slices/classroomSlice";
 import { RootState, AppDispatch } from "../../../store";
 import { motion } from "framer-motion";
 import {
@@ -194,6 +194,8 @@ const Classroom = () => {
   const fetchingClassroom = useSelector(
     (state: RootState) => state.classrooms.fetchingClassroom
   );
+    
+  
   const tools = classroom?.tools || [];
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -227,6 +229,11 @@ const Classroom = () => {
   const [remainingCallTime, setRemainingCallTime] = useState(0);
   const [outlines, setOutlines] = useState<OutlineType[]>([]);
   const [userrole, setIsuserRole] = useState<any>()
+     const {classroomTopic } = useSelector(
+      (state: RootState) => state.classrooms
+    );
+     
+    
 
   const MAX_CALL_DURATION_SECONDS = 30 * 60;
   const handleOverviewClick = () => {
@@ -286,6 +293,23 @@ const Classroom = () => {
 
     audioSourceRef.current.start();
   }, []);
+
+  useEffect(() => {
+  if (!classroom) return; 
+
+  // console.log("Dispatching createClassroomSuggestion with:", classroom);
+
+  dispatch(
+    createClassroomSuggestion({
+      description: classroom.classroom_description || "",
+      grade: classroom.grade || "",
+      classroom_id: classroom.classroom_id || "",
+      classroom_content: classroom.content || "",
+      outline_title: classroom.classroomoutlines || "",
+      outline_content: classroom.classroomoutlines || "",
+    })
+  );
+}, [classroom]); 
 
 
   useEffect(() => {
@@ -1069,6 +1093,7 @@ const Classroom = () => {
       setUserDetails(parsedDetails);
     }
   }, []);
+
 
   interface MessageData {
     classroom_id: number;
@@ -2129,7 +2154,7 @@ const Classroom = () => {
                                   <p className="text-sm leading-snug text-gray-200 mb-3">
                                     Here's a suggested topic for you:
                                   </p>
-                                  <p className="text-white font-semibold">Importance of Photosynthesis in the Ecosystem</p>
+                                  <p className="text-white font-semibold">{classroomTopic}</p>
 
                                   <button
                                     onClick={() => { handleSendTopic("Photosynthesis"), setShowTopicPopup(false) }}
