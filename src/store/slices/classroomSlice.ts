@@ -9,6 +9,7 @@ import {
   fetchStudentsInClassroom,
   editClassroom,
   editClassroomTools,
+  getSuggestedTopic,
 } from "../../api/classrooms";
 import { Student, Classroom } from "../../api/interface";
 
@@ -24,6 +25,7 @@ interface ClassroomsState {
   fetchingClassroom: boolean;
   fetchingStudents: boolean;
   error: string | null;
+  classroomTopic: string | null
 }
 
 const initialState: ClassroomsState = {
@@ -38,6 +40,7 @@ const initialState: ClassroomsState = {
   deleting: false,
   fetchingStudents: false,
   error: null,
+  classroomTopic:null
 };
 
 export const loadClassrooms = createAsyncThunk(
@@ -240,6 +243,31 @@ export const createClassroomThunk = createAsyncThunk(
   }
 );
 
+
+export const createClassroomSuggestion = createAsyncThunk(
+  "classrooms/createClassroomTopic", 
+  async (payload: any, { rejectWithValue }) => {
+    try {
+      console.log("🔍 Sending payload to getSuggestedTopic:", payload);
+
+      const classroomtopic = await getSuggestedTopic(payload);
+
+      if (!classroomtopic || classroomtopic.length === 0) {
+        console.log(" No classroom topic returned");
+        return rejectWithValue("No classroom topic returned");
+      }
+
+      console.log(" Received classroom topic:", classroomtopic);
+      return classroomtopic;
+
+    } catch (error) {
+      console.log(" Failed to get classroom topic", error);
+      return rejectWithValue("Failed to fetch classroom topic");
+    }
+  }
+);
+
+
 const classroomsSlice = createSlice({
   name: "classrooms",
   initialState,
@@ -380,6 +408,18 @@ const classroomsSlice = createSlice({
         state.deleting = false;
         state.error = action.payload as string;
       })
+      .addCase(createClassroomSuggestion.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+      })
+      .addCase(createClassroomSuggestion.fulfilled, (state, action) => {
+        state.loading = false;
+        state.classroomTopic = action.payload;
+      })
+      .addCase(createClassroomSuggestion.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
       .addCase(createClassroomThunk.pending, (state) => {
         state.creating = true;
       })
@@ -391,6 +431,7 @@ const classroomsSlice = createSlice({
         state.creating = false;
         state.error = action.payload as string;
       });
+      
   },
 });
 

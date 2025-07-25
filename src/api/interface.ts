@@ -105,3 +105,13 @@ export interface AssignmentData {
   submissionDate: string;
   studentId: number;
 }
+
+
+export interface Topicsuggestion {
+  description: string;
+  grade: string;
+  classroom_id: number;
+  classroom_content: string;
+  outline_title: string;
+  outline_content: string;
+}

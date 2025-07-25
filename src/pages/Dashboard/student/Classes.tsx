@@ -7,12 +7,15 @@ import JoinClassDialog from "./_components/JoinClassDialog";
 import { classroomColumns } from "./_components/column.classroom";
 import { Skeleton } from "../../../components/ui/Skeleton";
 import BaseTable from "../../../components/table/BaseTable";
+import { createClassroomSuggestion } from "../../../store/slices/classroomSlice";
 
 const Classes = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { classrooms, loading, error } = useSelector(
     (state: RootState) => state.studentClassrooms
   );
+ 
+
   const joinClassDialogRef = useRef<any>(null);
 
   const openJoinClassDialog = () => {
@@ -26,6 +29,10 @@ const Classes = () => {
       dispatch(loadStudentClassrooms());
     }
   }, [dispatch, classrooms.length]);
+
+  
+
+ 
 
   return (
     <div className="mt-12">
