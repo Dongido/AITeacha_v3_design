@@ -22,7 +22,6 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     const processContent = async () => {
       const resolvedContent =
         typeof content === "string" ? content : await content;
-
       const parsedHtml = marked(resolvedContent);
       const decodedHtml = decodeHtml(parsedHtml as string);
 
