@@ -148,7 +148,7 @@ const UpgradeSupport = () => {
     setIsPaymentDialogOpen(true);
   };
   const getFlutterwaveConfig = (
-    plan: "pro" | "premium" | "enterprise" | "admin"
+    plan: "basic" | "pro" | "premium" | "enterprise" | "admin"
   ) => {
     const unit = billingCycle === "threeMonths" ? "month" : billingCycle;
 
@@ -183,7 +183,7 @@ const UpgradeSupport = () => {
 
   const handlePayment = async (
     method: "stripe" | "flutterwave",
-    plan: "pro" | "premium" | "enterprise" | "admin"
+    plan: "basic" | "pro" | "premium" | "enterprise" | "admin"
   ) => {
     if (numberOfTeachers < 16) {
       setTeacherCountError("Number of teachers must be 16 or more.");

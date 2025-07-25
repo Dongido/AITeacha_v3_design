@@ -1,39 +1,53 @@
 import React, { useState, useEffect } from "react";
 import { marked } from "marked";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import parse, { Element } from "html-react-parser";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { dark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 interface MarkdownRendererProps {
   content: string | Promise<string>;
   className?: string;
   style?: React.CSSProperties;
+  typingSpeed?: number;
 }
 
 const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
   content,
   className,
   style,
+  typingSpeed = 30,
 }) => {
-  const [htmlContent, setHtmlContent] = useState<string>("");
+  const [fullHtml, setFullHtml] = useState<string>("");
+  const [displayedHtml, setDisplayedHtml] = useState<string>("");
 
   useEffect(() => {
     const processContent = async () => {
-      const resolvedContent = await (typeof content === "string"
-        ? Promise.resolve(content)
-        : content);
+      const resolvedContent =
+        typeof content === "string" ? content : await content;
 
       const parsedHtml = marked(resolvedContent);
-
       const decodedHtml = decodeHtml(parsedHtml as string);
 
-      setHtmlContent(decodedHtml);
+      setFullHtml(decodedHtml);
+      setDisplayedHtml("");
     };
 
     processContent();
   }, [content]);
+
+  useEffect(() => {
+    if (!fullHtml) return;
+
+    let index = 0;
+    const interval = setInterval(() => {
+      setDisplayedHtml((prev) => {
+        const next = fullHtml.slice(0, index);
+        index++;
+        if (index > fullHtml.length) clearInterval(interval);
+        return next;
+      });
+    }, typingSpeed);
+
+    return () => clearInterval(interval);
+  }, [fullHtml, typingSpeed]);
 
   const decodeHtml = (html: string) => {
     const txt = document.createElement("textarea");
@@ -59,7 +73,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
               frameBorder={frameborder || "0"}
               allow={allow}
               allowFullScreen
-            ></iframe>
+            />
           );
         }
       },
@@ -68,7 +82,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
 
   return (
     <div className={className} style={style}>
-      {renderHtml(htmlContent)}
+      {renderHtml(displayedHtml)}
     </div>
   );
 };
