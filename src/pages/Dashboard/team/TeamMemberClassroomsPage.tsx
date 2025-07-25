@@ -82,7 +82,7 @@ const TeamMemberClassroomsPage: React.FC = () => {
     return (
       <div className="p-6">
         <Button onClick={() => navigate(-1)} className="mb-4">
-          &larr; Back to Team Members
+          &larr; Back
         </Button>
         <h2 className="text-2xl font-semibold mb-4">Error</h2>
         <p className="text-red-500">{error}</p>
@@ -93,7 +93,7 @@ const TeamMemberClassroomsPage: React.FC = () => {
   return (
     <div className="p-6">
       <Button onClick={() => navigate(-1)} className="mb-4">
-        &larr; Back to Team Members
+        &larr; Back
       </Button>
 
       <BaseTable data={memberClassrooms} columns={teamMemberClassroomColumns} />
