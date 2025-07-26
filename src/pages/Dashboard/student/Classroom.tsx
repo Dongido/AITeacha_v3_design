@@ -1248,108 +1248,103 @@ const Classroom = () => {
   };
 
 
-  const handleSendTopic = async (topic: any) => {
-    if (!topic.trim()) return;
-    setSelectedOutline(null);
-    const currentKey = selectedTool ? selectedTool : "main";
-    console.log(currentKey);
-    setMessages((prev) => ({
-      ...prev,
-      [currentKey]: [
-        ...(prev[currentKey] || []),
-        { text: inputText, fromUser: true, isLoading: false },
-      ],
-    }));
+ const handleSendTopic = async () => {
+  if (!classroomTopic?.trim()) return;
 
-    setInputText("");
+  setSelectedOutline(null);
+  const currentKey = selectedTool ? selectedTool : "main";
+  console.log(currentKey);
 
-    setMessages((prev) => ({
-      ...prev,
-      [currentKey]: [
-        ...(prev[currentKey] || []),
-        {
-          text: `${classroom?.author} AI Assistant typing...`,
-          fromUser: false,
-          isLoading: true,
-        },
-      ],
-    }));
+  setMessages((prev) => ({
+    ...prev,
+    [currentKey]: [
+      ...(prev[currentKey] || []),
+      { text: classroomTopic, fromUser: true, isLoading: false },
+    ],
+  }));
 
-    let messageData: MessageData = selectedTool
-      ? {
+  setMessages((prev) => ({
+    ...prev,
+    [currentKey]: [
+      ...(prev[currentKey] || []),
+      {
+        text: `${classroom?.author} AI Assistant typing...`,
+        fromUser: false,
+        isLoading: true,
+      },
+    ],
+  }));
+
+  let messageData: MessageData = selectedTool
+    ? {
         classroom_id: classroom?.classroom_id || 0,
         classname: classroom?.classroom_name || "",
         description: classroom?.classroom_description || "",
-        scope_restriction: classroom?.scope_restriction || true,
+        scope_restriction: classroom?.scope_restriction ?? true,
         grade: classroom?.grade || "",
-        student_message: inputText,
+        student_message: classroomTopic,
         content_from: "classroom_tools",
         file_content:
           classroom?.classroomresources?.map(
             (resource) => resource.file_content
           ) || [],
-        tool_name: selectedTool || "",
+        tool_name: selectedTool,
         tool_id:
           tools.find((tool) => tool.tool_name === selectedTool)?.tool_id || 0,
         tool_description:
           tools.find((tool) => tool.tool_name === selectedTool)
             ?.tool_description || "",
       }
-      : {
+    : {
         classroom_id: classroom?.classroom_id || 0,
         classname: classroom?.classroom_name || "",
-        scope_restriction: classroom?.scope_restriction || true,
+        scope_restriction: classroom?.scope_restriction ?? true,
         description: classroom?.classroom_description || "",
         grade: classroom?.grade || "",
-        file_content: classroom?.classroomresources
-          ? classroom.classroomresources.map(
-            (resource) => resource.file_content
-          ) || []
-          : [],
-        student_message: inputText,
+        file_content: classroom?.classroomresources?.map(
+          (resource) => resource.file_content
+        ) || [],
+        student_message: classroomTopic,
         content_from: "classroom",
       };
 
-    if (selectedOutline) {
-      messageData = {
-        ...messageData,
-        outline_content: selectedOutline?.path || "",
-        outline_title: selectedOutline?.name || "",
-      };
-    }
+  if (selectedOutline) {
+    messageData = {
+      ...messageData,
+      outline_content: selectedOutline?.path || "",
+      outline_title: selectedOutline?.name || "",
+    };
+  }
 
-    let response: any;
+  try {
+    const response = selectedOutline
+      ? await sendClassroomOutlineMessage(messageData)
+      : selectedTool
+      ? await sendClassroomToolMessage(messageData)
+      : await sendClassroomMessage(messageData);
 
-    try {
-      if (selectedOutline) {
-        response = await sendClassroomOutlineMessage(messageData);
-      } else {
-        response = selectedTool
-          ? await sendClassroomToolMessage(messageData)
-          : await sendClassroomMessage(messageData);
-      }
+    setMessages((prev) => ({
+      ...prev,
+      [currentKey]: [
+        ...(prev[currentKey] || []).filter((msg) => !msg.isLoading),
+        { text: response.data, fromUser: false },
+      ],
+    }));
+  } catch (error) {
+    console.error("Error sending message:", error);
+    setMessages((prev) => ({
+      ...prev,
+      [currentKey]: [
+        ...(prev[currentKey] || []).filter((msg) => !msg.isLoading),
+        {
+          text: "An error occurred. Please try again later.",
+          fromUser: false,
+        },
+      ],
+    }));
+  }
+};
 
-      setMessages((prev) => ({
-        ...prev,
-        [currentKey]: [
-          ...(prev[currentKey] || []).filter((msg) => !msg.isLoading),
-          { text: response.data, fromUser: false },
-        ],
-      }));
-    } catch (error) {
-      console.error("Error sending message:", error);
-      setMessages((prev) => ({
-        ...prev,
-        [currentKey]: [
-          ...(prev[currentKey] || []).filter((msg) => !msg.isLoading),
-          {
-            text: "An error occurred. Please try again later.",
-            fromUser: false,
-          },
-        ],
-      }));
-    }
-  };
 
   const handleSubmitAssessment = async (liveAssessments: any[] | undefined) => {
     if (
@@ -2154,7 +2149,7 @@ const Classroom = () => {
                                   <p className="text-white font-semibold">{classroomTopic}</p>
 
                                   <button
-                                    onClick={() => { handleSendTopic("Photosynthesis"), setShowTopicPopup(false) }}
+                                    onClick={() => { handleSendTopic(), setShowTopicPopup(false) }}
                                     className="bg-white text-purple-600 text-sm font-medium px-4 py-2 rounded-lg hover:bg-yellow-100 transition-all mt-2"
                                   >
                                     Learn More
