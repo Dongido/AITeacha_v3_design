@@ -193,8 +193,8 @@ const Classroom = () => {
   const fetchingClassroom = useSelector(
     (state: RootState) => state.classrooms.fetchingClassroom
   );
-    
-  
+
+
   const tools = classroom?.tools || [];
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -228,11 +228,11 @@ const Classroom = () => {
   const [remainingCallTime, setRemainingCallTime] = useState(0);
   const [outlines, setOutlines] = useState<OutlineType[]>([]);
   const [userrole, setIsuserRole] = useState<any>()
-     const {classroomTopic } = useSelector(
-      (state: RootState) => state.classrooms
-    );
-     
-    
+  const { classroomTopic } = useSelector(
+    (state: RootState) => state.classrooms
+  );
+
+
 
   const MAX_CALL_DURATION_SECONDS = 30 * 60;
   const handleOverviewClick = () => {
@@ -249,7 +249,7 @@ const Classroom = () => {
       setShowTopicPopup(true);
       intervalId = setInterval(() => {
         setShowTopicPopup(true);
-      }, 4 * 60 * 1000);
+      }, 2 * 60 * 1000);
     }, 60 * 1000);
     return () => {
       clearTimeout(initialTimeout);
@@ -294,18 +294,18 @@ const Classroom = () => {
   }, []);
 
   useEffect(() => {
-  if (!classroom) return; 
-  dispatch(
-    createClassroomSuggestion({
-      description: classroom.classroom_description || "",
-      grade: classroom.grade || "",
-      classroom_id: classroom.classroom_id || "",
-      classroom_content: classroom.content || "",
-      outline_title: classroom.classroomoutlines || "",
-      outline_content: classroom.classroomoutlines || "",
-    })
-  );
-}, [classroom]); 
+    if (!classroom) return;
+    dispatch(
+      createClassroomSuggestion({
+        description: classroom.classroom_description || "",
+        grade: classroom.grade || "",
+        classroom_id: classroom.classroom_id || "",
+        classroom_content: classroom.content || "",
+        outline_title: classroom.classroomoutlines || "",
+        outline_content: classroom.classroomoutlines || "",
+      })
+    );
+  }, [classroom]);
 
 
   useEffect(() => {
@@ -1248,35 +1248,35 @@ const Classroom = () => {
   };
 
 
- const handleSendTopic = async () => {
-  if (!classroomTopic?.trim()) return;
+  const handleSendTopic = async () => {
+    if (!classroomTopic?.trim()) return;
 
-  setSelectedOutline(null);
-  const currentKey = selectedTool ? selectedTool : "main";
-  console.log(currentKey);
+    setSelectedOutline(null);
+    const currentKey = selectedTool ? selectedTool : "main";
+    console.log(currentKey);
 
-  setMessages((prev) => ({
-    ...prev,
-    [currentKey]: [
-      ...(prev[currentKey] || []),
-      { text: classroomTopic, fromUser: true, isLoading: false },
-    ],
-  }));
+    setMessages((prev) => ({
+      ...prev,
+      [currentKey]: [
+        ...(prev[currentKey] || []),
+        { text: classroomTopic, fromUser: true, isLoading: false },
+      ],
+    }));
 
-  setMessages((prev) => ({
-    ...prev,
-    [currentKey]: [
-      ...(prev[currentKey] || []),
-      {
-        text: `${classroom?.author} AI Assistant typing...`,
-        fromUser: false,
-        isLoading: true,
-      },
-    ],
-  }));
+    setMessages((prev) => ({
+      ...prev,
+      [currentKey]: [
+        ...(prev[currentKey] || []),
+        {
+          text: `${classroom?.author} AI Assistant typing...`,
+          fromUser: false,
+          isLoading: true,
+        },
+      ],
+    }));
 
-  let messageData: MessageData = selectedTool
-    ? {
+    let messageData: MessageData = selectedTool
+      ? {
         classroom_id: classroom?.classroom_id || 0,
         classname: classroom?.classroom_name || "",
         description: classroom?.classroom_description || "",
@@ -1295,7 +1295,7 @@ const Classroom = () => {
           tools.find((tool) => tool.tool_name === selectedTool)
             ?.tool_description || "",
       }
-    : {
+      : {
         classroom_id: classroom?.classroom_id || 0,
         classname: classroom?.classroom_name || "",
         scope_restriction: classroom?.scope_restriction ?? true,
@@ -1308,42 +1308,42 @@ const Classroom = () => {
         content_from: "classroom",
       };
 
-  if (selectedOutline) {
-    messageData = {
-      ...messageData,
-      outline_content: selectedOutline?.path || "",
-      outline_title: selectedOutline?.name || "",
-    };
-  }
+    if (selectedOutline) {
+      messageData = {
+        ...messageData,
+        outline_content: selectedOutline?.path || "",
+        outline_title: selectedOutline?.name || "",
+      };
+    }
 
-  try {
-    const response = selectedOutline
-      ? await sendClassroomOutlineMessage(messageData)
-      : selectedTool
-      ? await sendClassroomToolMessage(messageData)
-      : await sendClassroomMessage(messageData);
+    try {
+      const response = selectedOutline
+        ? await sendClassroomOutlineMessage(messageData)
+        : selectedTool
+          ? await sendClassroomToolMessage(messageData)
+          : await sendClassroomMessage(messageData);
 
-    setMessages((prev) => ({
-      ...prev,
-      [currentKey]: [
-        ...(prev[currentKey] || []).filter((msg) => !msg.isLoading),
-        { text: response.data, fromUser: false },
-      ],
-    }));
-  } catch (error) {
-    console.error("Error sending message:", error);
-    setMessages((prev) => ({
-      ...prev,
-      [currentKey]: [
-        ...(prev[currentKey] || []).filter((msg) => !msg.isLoading),
-        {
-          text: "An error occurred. Please try again later.",
-          fromUser: false,
-        },
-      ],
-    }));
-  }
-};
+      setMessages((prev) => ({
+        ...prev,
+        [currentKey]: [
+          ...(prev[currentKey] || []).filter((msg) => !msg.isLoading),
+          { text: response.data, fromUser: false },
+        ],
+      }));
+    } catch (error) {
+      console.error("Error sending message:", error);
+      setMessages((prev) => ({
+        ...prev,
+        [currentKey]: [
+          ...(prev[currentKey] || []).filter((msg) => !msg.isLoading),
+          {
+            text: "An error occurred. Please try again later.",
+            fromUser: false,
+          },
+        ],
+      }));
+    }
+  };
 
 
   const handleSubmitAssessment = async (liveAssessments: any[] | undefined) => {
@@ -1865,8 +1865,47 @@ const Classroom = () => {
                 <div className="relative flex flex-col lg:flex-row max-h-[550px]  overflow-y-auto pb-[1px] lg:pb-[70px]">
                   <div
                     ref={chatContainerRef}
-                    className="flex-grow overflow-y-auto bg-gray-50 border border-gray-3 rounded-lg shadow-inner space-y-2 m-4 p-4 max-h-[450px]"
+                    className="flex-grow overflow-y-auto bg-gray-50 border border-gray-3 rounded-lg 
+                    shadow-inner space-y-2 m-4 p-4 max-h-[450px]"
                   >
+
+                    {showTopicPopup && (
+                      <motion.div
+                        initial={{ opacity: 0, translateY: -10 }}
+                        animate={{ opacity: 1, translateY: 0 }}
+                        transition={{ duration: 0.4 }}
+                        className="fixed top-28 right-5 z-50"
+                      >
+                        <div className="relative bg-gradient-to-br from-purple-500 to-pink-500 text-white p-5 px-6 rounded-2xl shadow-2xl max-w-sm">
+
+                          <button
+                            onClick={() => setShowTopicPopup(false)}
+                            className="absolute top-2 right-2 text-white hover:text-gray-300 text-2xl font-bold  pr-4"
+                            aria-label="Close"
+                          >
+                            ×
+                          </button>
+                          <div className="absolute right-0 bottom-2 w-3 h-3 bg-pink-500 rotate-45 mr-[-6px] rounded-sm shadow-sm"></div>
+                          <div className="flex items-start gap-3">
+                            <div className="text-2xl mt-0.5">✨</div>
+                            <div>
+                              <p className="font-bold text-lg mb-1 text-yellow-300">Recommended Topic</p>
+                              <p className="text-sm leading-snug text-gray-200 mb-3">
+                                Here's a suggested topic for you:
+                              </p>
+                              <p className="text-white font-semibold">{classroomTopic}</p>
+
+                              <button
+                                onClick={() => { handleSendTopic(), setShowTopicPopup(false) }}
+                                className="bg-white text-purple-600 text-sm font-medium px-4 py-2 rounded-lg hover:bg-yellow-100 transition-all mt-2"
+                              >
+                                Learn More
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
                     {selectedOverview ? (
                       <MarkdownRenderer
                         content={welcomeMessage}
