@@ -80,7 +80,7 @@ import {
   languageOptions,
 } from "../tools/data";
 import VoiceIcon from "../../../assets/img/voiceIcon.svg";
-
+import SimulationDashboardPage from "../tools/SimulationPage";
 type OutlineType = {
   name: string;
   path: string;
@@ -147,7 +147,12 @@ const Classroom = () => {
   const [showCallPopup, setShowCallPopup] = useState(false);
 
   const [messages, setMessages] = useState<{
-    [key: string]: { text: string; fromUser: boolean; isLoading?: boolean }[];
+    [key: string]: {
+      text: string;
+      fromUser: boolean;
+      isLoading?: boolean;
+      isHistory?: boolean;
+    }[];
   }>({ main: [] });
 
   const [previousCurrentMessages, setPreviousCurrentMessages] = useState<{
@@ -217,7 +222,7 @@ const Classroom = () => {
   const MAX_CALL_DURATION_SECONDS = 30 * 60;
   const handleOverviewClick = () => {
     setSelectedOverview(true);
-    console.log("selectedOverview set to true in handler");
+
     console.log("selectedOverview", selectedOverview);
   };
   const playNextAudioChunk = useCallback(() => {
@@ -815,7 +820,6 @@ const Classroom = () => {
     let newMessage: string = classroom?.content || "";
     console.log("selectedOverview", selectedOverview);
     if (selectedOverview) {
-      console.log("niiice");
       if (!newMessage) {
         newMessage = `Hi👋 ${
           userDetails?.firstname || "there"
@@ -860,6 +864,7 @@ const Classroom = () => {
                 ...historyData.data.map((msg: any) => ({
                   text: msg.content,
                   fromUser: msg.label === "question",
+                  isHistory: true,
                 })),
                 ...(prevMessages.main || []),
               ],
@@ -914,6 +919,7 @@ const Classroom = () => {
                   ...historyData.data.map((msg: any) => ({
                     text: msg.content,
                     fromUser: msg.label === "question",
+                    isHistory: true,
                   })),
                   ...(prevMessages[selectedTool] || []),
                 ],
@@ -1086,8 +1092,14 @@ const Classroom = () => {
   const handleSend = async () => {
     if (!inputText.trim()) return;
     setSelectedOutline(null);
-    const currentKey = selectedTool ? selectedTool : "main";
+    setSelectedOverview(false);
+    let currentKey = selectedOverview
+      ? "main"
+      : selectedTool
+      ? selectedTool
+      : "main";
     console.log(currentKey);
+
     setMessages((prev) => ({
       ...prev,
       [currentKey]: [
@@ -1157,6 +1169,7 @@ const Classroom = () => {
 
     try {
       if (selectedOutline) {
+        currentKey = "main";
         response = await sendClassroomOutlineMessage(messageData);
       } else {
         response = selectedTool
@@ -1377,6 +1390,7 @@ const Classroom = () => {
               ...historyData.data.map((msg: any) => ({
                 text: msg.content,
                 fromUser: msg.label === "question",
+                isHistory: true,
               })),
               ...(prevMessages.main || []),
             ],
@@ -1411,6 +1425,7 @@ const Classroom = () => {
                 ...historyData.data.map((msg: any) => ({
                   text: msg.content,
                   fromUser: msg.label === "question",
+                  isHistory: true,
                 })),
                 ...(prevMessages[selectedTool] || []),
               ],
@@ -1478,6 +1493,15 @@ const Classroom = () => {
   const getOptionLetter = (index: number): string => {
     return String.fromCharCode(65 + index);
   };
+
+  const outlineTitlesString = classroom?.classroomoutlines
+    ?.map((outline) => outline.classroomoutline_title)
+    .filter(Boolean)
+    .join(", ");
+  const outlineContentString = classroom?.classroomoutlines
+    ?.map((outline) => outline.classroomoutline_content)
+    .filter(Boolean)
+    .join(", ");
 
   if (fetchingClassroom) {
     return (
@@ -1685,9 +1709,16 @@ const Classroom = () => {
                       className="rounded-full mt-4"
                       onClick={() => setViewState("liveclass")}
                     >
-                      Preview Live Class
+                      Live Class
                     </Button>
                   ))}
+                {/* <Button
+                  variant={"outline"}
+                  className="rounded-full mt-4 bg-black text-white"
+                  onClick={() => setViewState("simulation")}
+                >
+                  Start Simulation
+                </Button> */}
                 {classroom?.isLiveclassroom === 1 ||
                   (viewState !== "classroom" && (
                     <Button
@@ -1711,12 +1742,14 @@ const Classroom = () => {
                     {selectedOverview ? (
                       <MarkdownRenderer
                         content={welcomeMessage}
+                        shouldType={false}
                         className="text-sm lg:text-md text-gray-8"
                       />
                     ) : currentMessages.length === 0 ? (
                       <>
                         <MarkdownRenderer
                           content={welcomeMessage}
+                          shouldType={false}
                           className="text-sm lg:text-md text-gray-8"
                         />
 
@@ -1960,6 +1993,9 @@ const Classroom = () => {
                                   ? "bg-primary max-w-xs text-white rounded-tl-lg"
                                   : "bg-gray-2 max-w-xl text-black rounded-tr-lg"
                               }`}
+                              shouldType={
+                                !message.fromUser && !message.isHistory
+                              }
                               style={{
                                 wordWrap: "break-word",
                                 whiteSpace: "pre-wrap",
@@ -2028,6 +2064,15 @@ const Classroom = () => {
                   </Button>
                 </div>
               </>
+            ) : viewState === "simulation" ? (
+              <SimulationDashboardPage
+                description={classroom?.classroom_description || ""}
+                grade={classroom?.grade || ""}
+                classroom_id={classroom?.classroom_id || ""}
+                classroom_content={classroom?.content || ""}
+                outline_title={outlineTitlesString || ""}
+                outline_content={outlineContentString || ""}
+              />
             ) : viewState === "liveclass" ? (
               <div className="liveclass-div">
                 <div className="my-8 p-6 bg-gradient-to-r from-gray-50 to-purple-50 border border-purple-2 rounded-lg shadow-sm">
@@ -2605,4 +2650,4 @@ const Classroom = () => {
   );
 };
 
-export default Classroom; 
+export default Classroom;
