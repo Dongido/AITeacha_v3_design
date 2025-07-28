@@ -97,32 +97,41 @@ const Report = () => {
     classroomType === "my" ? classrooms : teamClassrooms;
 
   return (
-    <div className="mt-4">
+    <div className="lg:mt-20 mt-10">
       <div className="flex flex-col items-center justify-center space-y-6">
         <div className="flex flex-col md:flex-row items-center w-full gap-6">
           <div
-            className="p-8 rounded-lg shadow-lg w-full md:w-1/3 max-w-md cursor-pointer min-h-[250px] bg-gradient-to-r from-teal-100 via-blue-100 to-indigo-100 hover:scale-105 transition-transform duration-300 flex justify-center items-center"
+            className="p-8 rounded-lg shadow-lg flex f w-full md:w-1/3 max-w-md cursor-pointer 
+            min-h-[250px] bg-gradient-to-r from-teal-100 via-blue-100 to-indigo-100 hover:scale-105 
+            transition-transform duration-300 flex-col justify-center items-center"
             onClick={() => setOpenClassroomDialog(true)}
           >
             <h2 className="text-gray-800 text-2xl font-extrabold text-center">
               🏫 Classroom Report
             </h2>
+            <h3 className="text-gray-600 text-[14px] font-extrabold text-center">Track how students engage and perform
+               throughout the class with ease</h3>
           </div>
           <div
-            className="p-8 rounded-lg shadow-lg w-full md:w-1/3 max-w-md cursor-pointer min-h-[250px] bg-gradient-to-r from-green-100 via-yellow-100 to-orange-100 hover:scale-105 transition-transform duration-300 flex justify-center items-center"
+            className="p-8 rounded-lg shadow-lg w-full md:w-1/3 max-w-md cursor-pointer min-h-[250px]
+             bg-gradient-to-r from-green-100 via-yellow-100 to-orange-100 hover:scale-105
+              transition-transform duration-300 flex justify-center items-center flex-col"
             onClick={() => setOpenStudentDialog(true)}
           >
             <h2 className="text-gray-800 text-2xl font-extrabold text-center">
               👨‍🎓 Student Report
             </h2>
+            <h2 className="text-gray-600 text-[14px] font-extrabold text-center">Gain insights into student strengths, 
+              challenges, and overall performance</h2>
           </div>
           <div
-            className="p-8 rounded-lg shadow-lg w-full md:w-1/3 max-w-md cursor-pointer min-h-[250px] bg-gradient-to-r from-purple-100 via-pink-100 to-red-100 hover:scale-105 transition-transform duration-300 flex justify-center items-center"
+            className="p-8 rounded-lg shadow-lg flex-col w-full md:w-1/3 max-w-md cursor-pointer min-h-[250px] bg-gradient-to-r from-purple-100 via-pink-100 to-red-100 hover:scale-105 transition-transform duration-300 flex justify-center items-center"
             onClick={() => setOpenTestDialog(true)}
           >
             <h2 className="text-gray-800 text-2xl font-extrabold text-center">
               📝 Test Report
             </h2>
+            <h2 className="text-gray-600 text-[14px] font-extrabold text-center">Measure academic progress through test scores and response patterns.</h2>
           </div>
         </div>
 

@@ -34,7 +34,7 @@ import { useAppSelector } from "../../store/hooks";
 import { getCount } from "../../store/slices/staffchats";
 import { FaRocketchat } from "react-icons/fa";
 
-export function DashboardNavbar() {
+export function StudentNavbar() {
   const { controller, dispatch: uiDispatch } = useMaterialTailwindController();
   const { fixedNavbar, openSidenav } = controller as {
     fixedNavbar: boolean;
@@ -102,7 +102,7 @@ export function DashboardNavbar() {
         </div>
         </div>
         <div className="flex md:items-center gap-0 items-center ">
-          <Link to="/student/participant/chat">
+          <Link to="/student/participant/chats">
             <div className="relative flex items-center gap-2 bg-purple-50 rounded-full px-3 py-1 transition cursor-pointer">
               <FaRocketchat className=" font-medium text-purple-400 text-lg" />
               {/* <span className="text-sm font-medium text-purple-400">Chat</span> */}
@@ -167,6 +167,7 @@ export function DashboardNavbar() {
   );
 }
 
-DashboardNavbar.displayName = "/src/widgets/layout/DashboardNavbar.tsx";
 
-export default DashboardNavbar;
+StudentNavbar.displayName = "/src/widgets/layout/DashboardNavbar.tsx";
+
+export default StudentNavbar;

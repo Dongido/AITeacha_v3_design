@@ -175,9 +175,9 @@ useEffect(() => {
                 />
               )}
               <div
-                className={`max-w-[40%] px-3 py-2 rounded-2xl text-sm flex flex-col  h-auto ${
+                className={`max-w-[40%] px-3 py-2 rounded-2xl text-sm flex flex-col tex-black  h-auto ${
                   msg.isMe
-                    ? "bg-gray-600 text-white rounded-br-none ml-auto"
+                    ? "bg-purple-50 text-black rounded-br-none ml-auto"
                     : "bg-gray-100 text-gray-900 rounded-bl-none mr-auto"
                 }`}
               >

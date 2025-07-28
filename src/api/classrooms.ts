@@ -1,5 +1,5 @@
 import apiClient from "../lib/apiClient";
-import { Classroom, ClassroomData, Student } from "./interface";
+import { Classroom, ClassroomData, Student, Topicsuggestion } from "./interface";
 
 export const fetchClassroomsByUser = async (): Promise<Classroom[]> => {
   try {
@@ -511,5 +511,32 @@ export const toggleClassroomStatus = async (
     } else {
       throw new Error("Failed to change classroom status. Please try again.");
     }
+  }
+};
+
+
+
+export const getSuggestedTopic = async (
+  payload:any
+): Promise<string | undefined> => {
+  try {
+    const response = await apiClient.post<{
+      status: string;
+      message: string;
+      data:string;
+    }>("/assistant/suggest/recommended/topic", payload);
+  
+    //  console.log("payload classrom", response.data)
+
+    if (response.data.status !== "success") {
+      throw new Error(
+        response.data.message || "Failed to get suggested topic."
+      );
+    }
+
+    return response.data.data;
+  } catch (error) {
+    console.log("Failed to get suggested topic", error);
+    return undefined; 
   }
 };

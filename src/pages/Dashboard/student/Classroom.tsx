@@ -14,7 +14,7 @@ import { Button } from "../../../components/ui/Button";
 import { TextArea } from "../../../components/ui/TextArea";
 import { Undo2 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchClassroomByIdThunk } from "../../../store/slices/classroomSlice";
+import { createClassroomSuggestion, fetchClassroomByIdThunk } from "../../../store/slices/classroomSlice";
 import { RootState, AppDispatch } from "../../../store";
 import { motion } from "framer-motion";
 import {
@@ -81,14 +81,26 @@ import {
 } from "../tools/data";
 import VoiceIcon from "../../../assets/img/voiceIcon.svg";
 import SimulationDashboardPage from "../tools/SimulationPage";
+
+import StudentNavbar from "../../../components/layout/Student-Navbar";
+
 type OutlineType = {
   name: string;
   path: string;
   classroomoutline_id: string;
   assessmentStatus?: string;
   assessments?: any[];
-  mark_as_read?: boolean;
+  mark_as_read?: number;
 };
+
+const suggestedTopics = [
+  "What is climate change?",
+  "Explain the water cycle.",
+  "History of Nigeria's independence.",
+  "Basic algebra for beginners.",
+  "Photosynthesis in plants."
+];
+
 
 const Classroom = () => {
   const [inputText, setInputText] = useState("");
@@ -97,6 +109,8 @@ const Classroom = () => {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [toastOpen, setToastOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
+
+
   const [toastVariant, setToastVariant] = useState<"default" | "destructive">(
     "default"
   );
@@ -186,6 +200,8 @@ const Classroom = () => {
   const fetchingClassroom = useSelector(
     (state: RootState) => state.classrooms.fetchingClassroom
   );
+    
+  
   const tools = classroom?.tools || [];
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -214,17 +230,40 @@ const Classroom = () => {
   const [selectedVoiceType, setSelectedVoiceType] = useState("alloy");
   const [selectedLanguage, setSelectedLanguage] = useState("English");
   const [selectedGrade, setSelectedGrade] = useState("");
-
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const [remainingCallTime, setRemainingCallTime] = useState(0);
   const [outlines, setOutlines] = useState<OutlineType[]>([]);
+  const [userrole, setIsuserRole] = useState<any>()
+     const {classroomTopic } = useSelector(
+      (state: RootState) => state.classrooms
+    );
+     
+    
+
   const MAX_CALL_DURATION_SECONDS = 30 * 60;
   const handleOverviewClick = () => {
     setSelectedOverview(true);
 
     console.log("selectedOverview", selectedOverview);
   };
+
+  const [showTopicPopup, setShowTopicPopup] = useState(false);
+
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+    const initialTimeout = setTimeout(() => {
+      setShowTopicPopup(true);
+      intervalId = setInterval(() => {
+        setShowTopicPopup(true);
+      }, 4 * 60 * 1000);
+    }, 60 * 1000);
+    return () => {
+      clearTimeout(initialTimeout);
+      clearInterval(intervalId);
+    };
+  }, []);
+
   const playNextAudioChunk = useCallback(() => {
     if (
       !audioContextRef.current ||
@@ -260,6 +299,21 @@ const Classroom = () => {
 
     audioSourceRef.current.start();
   }, []);
+
+  useEffect(() => {
+  if (!classroom) return; 
+  dispatch(
+    createClassroomSuggestion({
+      description: classroom.classroom_description || "",
+      grade: classroom.grade || "",
+      classroom_id: classroom.classroom_id || "",
+      classroom_content: classroom.content || "",
+      outline_title: classroom.classroomoutlines || "",
+      outline_content: classroom.classroomoutlines || "",
+    })
+  );
+}, [classroom]); 
+
 
   useEffect(() => {
     if (classroom?.classroomoutlines) {
@@ -332,6 +386,19 @@ const Classroom = () => {
       analyserRef.current = null;
     };
   }, []);
+
+
+  useEffect(() => {
+    const userDetailsFromStorage = localStorage.getItem("ai-teacha-user");
+    if (userDetailsFromStorage) {
+      if (userDetailsFromStorage) {
+        const parsedDetails = JSON.parse(userDetailsFromStorage);
+        setUserDetails(parsedDetails);
+        setIsuserRole(parsedDetails.role_id || parsedDetails.role);
+      }
+    }
+
+  }, [])
 
   const drawVisualization = () => {
     const canvas = canvasRef.current;
@@ -619,11 +686,11 @@ const Classroom = () => {
       console.error("Error starting WebRTC session:", err);
       setSubmissionError(
         err.message ||
-          "Failed to start WebRTC session. Check microphone permissions."
+        "Failed to start WebRTC session. Check microphone permissions."
       );
       setToastMessage(
         err.message ||
-          "Failed to start WebRTC session. Check microphone permissions."
+        "Failed to start WebRTC session. Check microphone permissions."
       );
       setToastVariant("destructive");
       setToastOpen(true);
@@ -821,26 +888,21 @@ const Classroom = () => {
     console.log("selectedOverview", selectedOverview);
     if (selectedOverview) {
       if (!newMessage) {
-        newMessage = `Hi👋 ${
-          userDetails?.firstname || "there"
-        }, welcome to class "<strong>${
-          classroom?.classroom_name || "the classroom"
-        }</strong>." Start your conversation here!`;
+        newMessage = `Hi👋 ${userDetails?.firstname || "there"
+          }, welcome to class "<strong>${classroom?.classroom_name || "the classroom"
+          }</strong>." Start your conversation here!`;
       }
     } else if (newMessage && selectedTool) {
-      newMessage = `Hi👋 ${
-        userDetails?.firstname || "there"
-      }, welcome to <strong>${selectedTool}</strong>. Start your conversation here!`;
+      newMessage = `Hi👋 ${userDetails?.firstname || "there"
+        }, welcome to <strong>${selectedTool}</strong>. Start your conversation here!`;
     } else if (newMessage && selectedOutline) {
       newMessage = selectedOutline.path || "Welcome to the selected outline.";
     } else if (!newMessage && selectedOutline) {
       newMessage = selectedOutline.path || "Welcome to the selected outline.";
     } else if (!newMessage) {
-      newMessage = `Hi👋 ${
-        userDetails?.firstname || "there"
-      }, welcome to class "<strong>${
-        classroom?.classroom_name || "the classroom"
-      }</strong>." Start your conversation here!`;
+      newMessage = `Hi👋 ${userDetails?.firstname || "there"
+        }, welcome to class "<strong>${classroom?.classroom_name || "the classroom"
+        }</strong>." Start your conversation here!`;
     }
 
     setWelcomeMessage(newMessage);
@@ -1036,6 +1098,7 @@ const Classroom = () => {
     }
   }, []);
 
+
   interface MessageData {
     classroom_id: number;
     classname: string;
@@ -1061,19 +1124,19 @@ const Classroom = () => {
 
   const currentMessages =
     selectedOutline &&
-    (!messages["outline"] || messages["outline"].length === 0)
+      (!messages["outline"] || messages["outline"].length === 0)
       ? []
       : messages[getMessageKey()] || [];
 
   const previousMessages =
     selectedOutline &&
-    (!previousCurrentMessages["outline"] ||
-      previousCurrentMessages["outline"].length === 0)
+      (!previousCurrentMessages["outline"] ||
+        previousCurrentMessages["outline"].length === 0)
       ? []
       : previousCurrentMessages[getMessageKey()]?.slice(
-          0,
-          -currentMessages.length
-        ) || [];
+        0,
+        -currentMessages.length
+      ) || [];
 
   const handleMarkAsRead = async (outlineId: number) => {
     if (!classroom) return;
@@ -1124,38 +1187,38 @@ const Classroom = () => {
 
     let messageData: MessageData = selectedTool
       ? {
-          classroom_id: classroom?.classroom_id || 0,
-          classname: classroom?.classroom_name || "",
-          description: classroom?.classroom_description || "",
-          scope_restriction: classroom?.scope_restriction || true,
-          grade: classroom?.grade || "",
-          student_message: inputText,
-          content_from: "classroom_tools",
-          file_content:
-            classroom?.classroomresources?.map(
-              (resource) => resource.file_content
-            ) || [],
-          tool_name: selectedTool || "",
-          tool_id:
-            tools.find((tool) => tool.tool_name === selectedTool)?.tool_id || 0,
-          tool_description:
-            tools.find((tool) => tool.tool_name === selectedTool)
-              ?.tool_description || "",
-        }
+        classroom_id: classroom?.classroom_id || 0,
+        classname: classroom?.classroom_name || "",
+        description: classroom?.classroom_description || "",
+        scope_restriction: classroom?.scope_restriction || true,
+        grade: classroom?.grade || "",
+        student_message: inputText,
+        content_from: "classroom_tools",
+        file_content:
+          classroom?.classroomresources?.map(
+            (resource) => resource.file_content
+          ) || [],
+        tool_name: selectedTool || "",
+        tool_id:
+          tools.find((tool) => tool.tool_name === selectedTool)?.tool_id || 0,
+        tool_description:
+          tools.find((tool) => tool.tool_name === selectedTool)
+            ?.tool_description || "",
+      }
       : {
-          classroom_id: classroom?.classroom_id || 0,
-          classname: classroom?.classroom_name || "",
-          scope_restriction: classroom?.scope_restriction || true,
-          description: classroom?.classroom_description || "",
-          grade: classroom?.grade || "",
-          file_content: classroom?.classroomresources
-            ? classroom.classroomresources.map(
-                (resource) => resource.file_content
-              ) || []
-            : [],
-          student_message: inputText,
-          content_from: "classroom",
-        };
+        classroom_id: classroom?.classroom_id || 0,
+        classname: classroom?.classroom_name || "",
+        scope_restriction: classroom?.scope_restriction || true,
+        description: classroom?.classroom_description || "",
+        grade: classroom?.grade || "",
+        file_content: classroom?.classroomresources
+          ? classroom.classroomresources.map(
+            (resource) => resource.file_content
+          ) || []
+          : [],
+        student_message: inputText,
+        content_from: "classroom",
+      };
 
     if (selectedOutline) {
       messageData = {
@@ -1198,6 +1261,105 @@ const Classroom = () => {
       }));
     }
   };
+
+
+ const handleSendTopic = async () => {
+  if (!classroomTopic?.trim()) return;
+
+  setSelectedOutline(null);
+  const currentKey = selectedTool ? selectedTool : "main";
+  console.log(currentKey);
+
+  setMessages((prev) => ({
+    ...prev,
+    [currentKey]: [
+      ...(prev[currentKey] || []),
+      { text: classroomTopic, fromUser: true, isLoading: false },
+    ],
+  }));
+
+  setMessages((prev) => ({
+    ...prev,
+    [currentKey]: [
+      ...(prev[currentKey] || []),
+      {
+        text: `${classroom?.author} AI Assistant typing...`,
+        fromUser: false,
+        isLoading: true,
+      },
+    ],
+  }));
+
+  let messageData: MessageData = selectedTool
+    ? {
+        classroom_id: classroom?.classroom_id || 0,
+        classname: classroom?.classroom_name || "",
+        description: classroom?.classroom_description || "",
+        scope_restriction: classroom?.scope_restriction ?? true,
+        grade: classroom?.grade || "",
+        student_message: classroomTopic,
+        content_from: "classroom_tools",
+        file_content:
+          classroom?.classroomresources?.map(
+            (resource) => resource.file_content
+          ) || [],
+        tool_name: selectedTool,
+        tool_id:
+          tools.find((tool) => tool.tool_name === selectedTool)?.tool_id || 0,
+        tool_description:
+          tools.find((tool) => tool.tool_name === selectedTool)
+            ?.tool_description || "",
+      }
+    : {
+        classroom_id: classroom?.classroom_id || 0,
+        classname: classroom?.classroom_name || "",
+        scope_restriction: classroom?.scope_restriction ?? true,
+        description: classroom?.classroom_description || "",
+        grade: classroom?.grade || "",
+        file_content: classroom?.classroomresources?.map(
+          (resource) => resource.file_content
+        ) || [],
+        student_message: classroomTopic,
+        content_from: "classroom",
+      };
+
+  if (selectedOutline) {
+    messageData = {
+      ...messageData,
+      outline_content: selectedOutline?.path || "",
+      outline_title: selectedOutline?.name || "",
+    };
+  }
+
+  try {
+    const response = selectedOutline
+      ? await sendClassroomOutlineMessage(messageData)
+      : selectedTool
+      ? await sendClassroomToolMessage(messageData)
+      : await sendClassroomMessage(messageData);
+
+    setMessages((prev) => ({
+      ...prev,
+      [currentKey]: [
+        ...(prev[currentKey] || []).filter((msg) => !msg.isLoading),
+        { text: response.data, fromUser: false },
+      ],
+    }));
+  } catch (error) {
+    console.error("Error sending message:", error);
+    setMessages((prev) => ({
+      ...prev,
+      [currentKey]: [
+        ...(prev[currentKey] || []).filter((msg) => !msg.isLoading),
+        {
+          text: "An error occurred. Please try again later.",
+          fromUser: false,
+        },
+      ],
+    }));
+  }
+};
+
 
   const handleSubmitAssessment = async (liveAssessments: any[] | undefined) => {
     if (
@@ -1259,7 +1421,7 @@ const Classroom = () => {
       console.error("Error submitting live class assessment answers:", error);
       setSubmissionError(
         error.response?.data?.message ||
-          "Failed to submit live class assessment."
+        "Failed to submit live class assessment."
       );
     } finally {
       setSubmittingAssessment(false);
@@ -1443,7 +1605,7 @@ const Classroom = () => {
         );
         setErrorToolHistory(
           error.message ||
-            `Failed to load more chat history for ${selectedTool}.`
+          `Failed to load more chat history for ${selectedTool}.`
         );
       } finally {
         setLoadingToolHistory(false);
@@ -1558,11 +1720,12 @@ const Classroom = () => {
           onToggleView={handleToggleView}
         />
         <div
-          className={`flex-1 transition-all duration-3 px-2  ${
-            isCollapsed ? "xl:ml-28" : "xl:ml-72"
-          }`}
+          className={`flex-1 transition-all duration-3 px-2  ${isCollapsed ? "xl:ml-28" : "xl:ml-72"
+            }`}
         >
-          <DashboardNavbar />
+          {
+            userrole === 3 ? <><StudentNavbar /></> : <>  <DashboardNavbar /></>
+          }
           <div className="mt-4 md:mt-6 lg:mt-10">
             <div className="flex items-center  justify-between flex-col sm:flex-row">
               <div className="mt-4 ml-4 sm:mt-0 flex items-center justify-between w-full">
@@ -1589,11 +1752,10 @@ const Classroom = () => {
                     <Button
                       variant="outline"
                       size="icon"
-                      className={`rounded-full hover:bg-gray-400 mt-5 border-[#5c3cbb]  ${
-                        isVoiceRecording
-                          ? "bg-red-500 text-white"
-                          : "bg-gray-200 text-black"
-                      }`}
+                      className={`rounded-full hover:bg-gray-400 mt-5 border-[#5c3cbb]  ${isVoiceRecording
+                        ? "bg-red-500 text-white"
+                        : "bg-gray-200 text-black"
+                        }`}
                       disabled={isVoiceRecording}
                     >
                       {isVoiceRecording ? (
@@ -1695,10 +1857,9 @@ const Classroom = () => {
                   hover:border-purple-600 hover:bg-purple-50 rounded-full  text-sm text-[#5c3cbb] pt-1 font-medium shadow-sm transition-all"
                 >
                   Chat
-                  <span
-                    className="absolute -top-1.5 -right-1.5 bg-[#5c3cbb]
-                  text-white rounded-full p-1 flex items-center justify-center shadow-md"
-                  >
+
+                  <span className="absolute -top-1.5 -right-1.5 bg-[#5c3cbb]
+                  text-white rounded-full p-1 flex items-center justify-center shadow-md">
                     <FiMessageCircle size={14} />
                   </span>
                 </Button>
@@ -1753,34 +1914,76 @@ const Classroom = () => {
                           className="text-sm lg:text-md text-gray-8"
                         />
 
-                        <div>
-                          {selectedOutline &&
-                          selectedOutline.mark_as_read === 0 ? (
-                            <Button
-                              onClick={() =>
-                                handleMarkAsRead(
-                                  selectedOutline.classroomoutline_id
-                                )
-                              }
-                              variant={"gradient"}
-                              className="rounded-md"
-                              disabled={loading}
-                            >
-                              {loading ? "Marking..." : "Mark as Read"}
-                            </Button>
-                          ) : selectedOutline &&
-                            selectedOutline.mark_as_read === 1 ? (
-                            <Button
-                              variant={"gray"}
-                              className="rounded-md"
-                              disabled
-                            >
-                              Completed
-                            </Button>
-                          ) : null}
-                          <div></div>
-                        </div>
 
+                        <div className="flex justify-between items-center w-full p-4">
+                          <div className="flex-1 ">
+                            {selectedOutline &&
+                              selectedOutline.mark_as_read === 0 ? (
+                              <Button
+                                onClick={() =>
+                                  handleMarkAsRead(
+                                    selectedOutline.classroomoutline_id
+                                  )
+                                }
+                                variant={"gradient"}
+                                className="rounded-md"
+                                disabled={loading}
+                              >
+                                {loading ? "Marking..." : "Mark as Read"}
+                              </Button>
+                            ) : selectedOutline &&
+                              selectedOutline.mark_as_read === 1 ? (
+                              <Button
+                                variant={"gray"}
+                                className="rounded-md"
+                                disabled
+                              >
+                                Completed
+                              </Button>
+                            ) : null}
+                          </div>
+                          <div className="flex-1 flex justify-end gap-2">
+                            {(() => {
+                              const currentIndex = outlines.findIndex(o => o.name === selectedOutline?.name);
+                              const current = outlines[currentIndex];
+                              const next = outlines[currentIndex + 1];
+                              const prevIndex = [...outlines]
+                                .slice(0, currentIndex)
+                                .reverse()
+                                .findIndex(o => o.mark_as_read === 1);
+                              const actualPrevIndex = prevIndex !== -1 ? currentIndex - prevIndex - 1 : -1;
+                              return (
+                                <>
+
+                                  {actualPrevIndex !== -1 && (
+                                    <Button
+                                      variant="gradient"
+                                      className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md transition-all duration-200"
+                                      onClick={() => setSelectedOutline(outlines[actualPrevIndex])}
+                                    >
+                                      Previous
+                                    </Button>
+                                  )}
+
+
+                                  {next && (
+                                    <Button
+                                      variant="gradient"
+                                      className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md transition-all duration-200 ml-2"
+                                      onClick={() => setSelectedOutline(next)}
+                                    >
+                                      Next
+                                    </Button>
+                                  )}
+                                </>
+                              );
+                            })()}
+                          </div>
+
+                          <div>
+
+                          </div>
+                        </div>
                         {selectedOutline &&
                           selectedOutline.assessments &&
                           selectedOutline.assessments.length > 0 &&
@@ -1954,15 +2157,52 @@ const Classroom = () => {
                               )}
                           </div>
                         )}
+                        {showTopicPopup && (
+                          <motion.div
+                            initial={{ opacity: 0, translateY: -10 }}
+                            animate={{ opacity: 1, translateY: 0 }}
+                            transition={{ duration: 0.4 }}
+                            className="fixed top-28 right-5 z-50"
+                          >
+                            <div className="relative bg-gradient-to-br from-purple-500 to-pink-500 text-white p-5 px-6 rounded-2xl shadow-2xl max-w-sm">
+
+                              <button
+                                onClick={() => setShowTopicPopup(false)}
+                                className="absolute top-2 right-2 text-white hover:text-gray-300 text-2xl font-bold  pr-4"
+                                aria-label="Close"
+                              >
+                                ×
+                              </button>
+                              <div className="absolute right-0 bottom-2 w-3 h-3 bg-pink-500 rotate-45 mr-[-6px] rounded-sm shadow-sm"></div>
+                              <div className="flex items-start gap-3">
+                                <div className="text-2xl mt-0.5">✨</div>
+                                <div>
+                                  <p className="font-bold text-lg mb-1 text-yellow-300">Recommended Topic</p>
+                                  <p className="text-sm leading-snug text-gray-200 mb-3">
+                                    Here's a suggested topic for you:
+                                  </p>
+                                  <p className="text-white font-semibold">{classroomTopic}</p>
+
+                                  <button
+                                    onClick={() => { handleSendTopic(), setShowTopicPopup(false) }}
+                                    className="bg-white text-purple-600 text-sm font-medium px-4 py-2 rounded-lg hover:bg-yellow-100 transition-all mt-2"
+                                  >
+                                    Learn More
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </motion.div>
+                        )}
+
                         {currentMessages.map((message, index) => (
                           <motion.div
                             key={index}
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ duration: 0.3, delay: index * 0.1 }}
-                            className={`flex flex-col mb-2 ${
-                              message.fromUser ? "items-end" : "items-start"
-                            }`}
+                            className={`flex flex-col mb-2 ${message.fromUser ? "items-end" : "items-start"
+                              }`}
                           >
                             {!message.fromUser && (
                               <div className="flex justify-end space-x-4 mb-1">
@@ -1988,6 +2228,7 @@ const Classroom = () => {
                             )}
                             <MarkdownRenderer
                               content={message.text}
+
                               className={`p-3 text-sm ${
                                 message.fromUser
                                   ? "bg-primary max-w-xs text-white rounded-tl-lg"
@@ -1996,6 +2237,7 @@ const Classroom = () => {
                               shouldType={
                                 !message.fromUser && !message.isHistory
                               }
+
                               style={{
                                 wordWrap: "break-word",
                                 whiteSpace: "pre-wrap",
@@ -2036,11 +2278,10 @@ const Classroom = () => {
                       />
                       <button
                         onClick={toggleRecording}
-                        className={`absolute right-16 top-1/2 transform -translate-y-1/2 p-3 rounded-full ${
-                          isRecording
-                            ? "bg-red-500 text-white"
-                            : "bg-gray-200 text-black"
-                        }`}
+                        className={`absolute right-16 top-1/2 transform -translate-y-1/2 p-3 rounded-full ${isRecording
+                          ? "bg-red-500 text-white"
+                          : "bg-gray-200 text-black"
+                          }`}
                       >
                         <FiMic />
                       </button>
@@ -2077,7 +2318,7 @@ const Classroom = () => {
               <div className="liveclass-div">
                 <div className="my-8 p-6 bg-gradient-to-r from-gray-50 to-purple-50 border border-purple-2 rounded-lg shadow-sm">
                   {classroom?.liveclassroomassessments &&
-                  classroom.liveclassroomassessments.length > 0 ? (
+                    classroom.liveclassroomassessments.length > 0 ? (
                     <>
                       <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-8 mb-6 text-center">
                         Live Class Assessments
@@ -2094,17 +2335,17 @@ const Classroom = () => {
                           const isQuestionAnswered =
                             isAssessmentCompleted ||
                             question.liveclassroomassessment_student_answer !==
-                              null;
+                            null;
 
                           const isCorrect =
                             isQuestionAnswered &&
                             studentAnswerForThisQuestion ===
-                              question.liveclassroomassessment_correct_answer;
+                            question.liveclassroomassessment_correct_answer;
 
                           const didStudentFailToAnswer =
                             isAssessmentCompleted &&
                             question.liveclassroomassessment_student_answer ===
-                              null;
+                            null;
 
                           return (
                             <div
@@ -2154,29 +2395,25 @@ const Classroom = () => {
                                       <label
                                         key={optionKey}
                                         className={`flex items-center space-x-2 p-2 rounded-md transition-colors duration-2
-                        ${
-                          !isAssessmentCompleted
-                            ? "cursor-pointer hover:bg-gray-1"
-                            : "cursor-not-allowed"
-                        }
-                        ${
-                          isAssessmentCompleted &&
-                          isChecked &&
-                          isCorrect &&
-                          "bg-green-1 border border-green-3"
-                        }
-                        ${
-                          isAssessmentCompleted &&
-                          isChecked &&
-                          !isCorrect &&
-                          "bg-red-1 border border-red-3"
-                        }
-                        ${
-                          isAssessmentCompleted &&
-                          !isChecked &&
-                          isCorrectAnswerOption &&
-                          "bg-blue-50 border border-blue-2"
-                        }
+                        ${!isAssessmentCompleted
+                                            ? "cursor-pointer hover:bg-gray-1"
+                                            : "cursor-not-allowed"
+                                          }
+                        ${isAssessmentCompleted &&
+                                          isChecked &&
+                                          isCorrect &&
+                                          "bg-green-1 border border-green-3"
+                                          }
+                        ${isAssessmentCompleted &&
+                                          isChecked &&
+                                          !isCorrect &&
+                                          "bg-red-1 border border-red-3"
+                                          }
+                        ${isAssessmentCompleted &&
+                                          !isChecked &&
+                                          isCorrectAnswerOption &&
+                                          "bg-blue-50 border border-blue-2"
+                                          }
                       `}
                                       >
                                         <input
@@ -2190,11 +2427,10 @@ const Classroom = () => {
                                               optionKey
                                             )
                                           }
-                                          className={`form-radio h-4 w-4 ${
-                                            isAssessmentCompleted
-                                              ? "cursor-not-allowed"
-                                              : "text-purple-6 focus:ring-purple-5"
-                                          }`}
+                                          className={`form-radio h-4 w-4 ${isAssessmentCompleted
+                                            ? "cursor-not-allowed"
+                                            : "text-purple-6 focus:ring-purple-5"
+                                            }`}
                                           readOnly={isAssessmentCompleted}
                                           disabled={isAssessmentCompleted}
                                         />
@@ -2223,9 +2459,9 @@ const Classroom = () => {
                                       .{" "}
                                       {
                                         options[
-                                          question.liveclassroomassessment_correct_answer.charCodeAt(
-                                            0
-                                          ) - 65
+                                        question.liveclassroomassessment_correct_answer.charCodeAt(
+                                          0
+                                        ) - 65
                                         ]
                                       }
                                     </p>
@@ -2357,7 +2593,7 @@ const Classroom = () => {
                     Uploaded Files
                   </h3>
                   {classroom?.classroomresources &&
-                  classroom.classroomresources.length > 0 ? (
+                    classroom.classroomresources.length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                       {classroom.classroomresources.map((resource) => (
                         <div
@@ -2432,8 +2668,8 @@ const Classroom = () => {
                     External Links
                   </h3>
                   {classroom?.classroomresources_link &&
-                  Array.isArray(classroom.classroomresources_link) &&
-                  classroom.classroomresources_link.length > 0 ? (
+                    Array.isArray(classroom.classroomresources_link) &&
+                    classroom.classroomresources_link.length > 0 ? (
                     <ul className="space-y-2">
                       {classroom.classroomresources_link.map(
                         (link: string, index: number) => (
@@ -2477,13 +2713,13 @@ const Classroom = () => {
                 </h3>
 
                 {classroom?.classroomoutlines &&
-                classroom.classroomoutlines.every(
-                  (outline) => outline.mark_as_read === 1
-                ) &&
-                classroom.classroomoutlines.some(
-                  (outline) =>
-                    outline.assessments && outline.assessments.length > 0
-                ) ? (
+                  classroom.classroomoutlines.every(
+                    (outline) => outline.mark_as_read === 1
+                  ) &&
+                  classroom.classroomoutlines.some(
+                    (outline) =>
+                      outline.assessments && outline.assessments.length > 0
+                  ) ? (
                   <Button
                     className="mt-4  flex justify-center rounded-md"
                     onClick={handleViewGradesClick}
@@ -2505,10 +2741,10 @@ const Classroom = () => {
                   (outline) =>
                     outline.assessments && outline.assessments.length > 0
                 ) && (
-                  <p className="text-sm text-gray-5 mt-2 italic">
-                    No assessments available for this classroom.
-                  </p>
-                )}
+                    <p className="text-sm text-gray-5 mt-2 italic">
+                      No assessments available for this classroom.
+                    </p>
+                  )}
                 <Button
                   onClick={handleToggleView}
                   variant="outline"
@@ -2529,9 +2765,8 @@ const Classroom = () => {
                 <h3 className="text-xl font-semibold">Class Tools</h3>
                 <ul className="space-y-4 mt-4">
                   <li
-                    className={`cursor-pointer px-4 py-2 rounded-lg ${
-                      selectedTool === null ? "bg-primary text-white" : ""
-                    }`}
+                    className={`cursor-pointer px-4 py-2 rounded-lg ${selectedTool === null ? "bg-primary text-white" : ""
+                      }`}
                     onClick={() => setSelectedTool(null)}
                   >
                     Main Classroom
@@ -2539,11 +2774,10 @@ const Classroom = () => {
                   {tools.map((tool) => (
                     <li
                       key={tool.tool_id}
-                      className={`capitalize cursor-pointer px-4 py-2 rounded-lg ${
-                        selectedTool === tool.tool_name
-                          ? "bg-primary text-white"
-                          : ""
-                      }`}
+                      className={`capitalize cursor-pointer px-4 py-2 rounded-lg ${selectedTool === tool.tool_name
+                        ? "bg-primary text-white"
+                        : ""
+                        }`}
                       onClick={() => setSelectedTool(tool.tool_name)}
                     >
                       {tool.tool_name}
