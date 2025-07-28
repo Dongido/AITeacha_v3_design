@@ -84,7 +84,7 @@ export interface SimulationResponse {
 }
 
 export interface TopicsResponse {
-  status: string;
+  status: any;
   message: string;
   data?: string[];
 }
@@ -113,7 +113,7 @@ export const fetchTopics = async (
   classroom_content: string,
   outline_title: string,
   outline_content: string
-): Promise<TopicsResponse> => {
+): Promise<any> => {
   try {
     const response = await apiClient.post(
       "/assistant/suggest/labsimulation/topics",
@@ -125,7 +125,9 @@ export const fetchTopics = async (
         outline_content,
       }
     );
-    return response.data;
+    console.log(response.data);
+
+    return response;
   } catch (error: any) {
     const errorMessage =
       error.response?.data?.message ||
