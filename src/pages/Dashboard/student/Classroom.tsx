@@ -1875,13 +1875,15 @@ const Classroom = () => {
                       Live Class
                     </Button>
                   ))}
-                {/* <Button
-                  variant={"outline"}
-                  className="rounded-full mt-4 bg-black text-white"
-                  onClick={() => setViewState("simulation")}
-                >
-                  Start Simulation
-                </Button> */}
+                {viewState === "classroom" && (
+                  <Button
+                    variant="black"
+                    className="rounded-full mt-4"
+                    onClick={() => setViewState("simulation")}
+                  >
+                    Start Simulation
+                  </Button>
+                )}
                 {classroom?.isLiveclassroom === 1 ||
                   (viewState !== "classroom" && (
                     <Button
