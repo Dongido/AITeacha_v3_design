@@ -3,7 +3,7 @@ import parse, { Element } from "html-react-parser";
 
 interface TypingEffectRendererProps {
   content: string;
-  typingSpeed?: number;
+  typingSpeed?: number; // in milliseconds per character
   className?: string;
   style?: React.CSSProperties;
 }
@@ -19,13 +19,17 @@ const TypingEffectRenderer: React.FC<TypingEffectRendererProps> = ({
   useEffect(() => {
     setDisplayedContent("");
     let index = 0;
+    const maxDuration = 1000;
+    const maxCharacters = Math.floor(maxDuration / typingSpeed);
+
     const interval = setInterval(() => {
-      setDisplayedContent((prev) => {
-        const next = content.slice(0, index);
-        index++;
-        if (index > content.length) clearInterval(interval);
-        return next;
-      });
+      index++;
+      if (index >= maxCharacters || index > content.length) {
+        clearInterval(interval);
+        setDisplayedContent(content);
+      } else {
+        setDisplayedContent(content.slice(0, index));
+      }
     }, typingSpeed);
 
     return () => clearInterval(interval);

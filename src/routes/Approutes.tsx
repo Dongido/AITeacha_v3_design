@@ -116,7 +116,6 @@ import AdminResourcesPage from "../pages/Dashboard/admin/AdminResources";
 import TeamMemberClassroomsPage from "../pages/Dashboard/team/TeamMemberClassroomsPage";
 import ChatListPage from "../pages/Dashboard/chats/ChatListPage";
 import { FaRocketchat } from "react-icons/fa";
-import SimulationDashboardPage from "../pages/Dashboard/tools/SimulationPage";
 import MessageConfiguration from "../pages/Dashboard/forum/MessageConfiguration";
 
 const icon = {
@@ -341,15 +340,8 @@ export const Paramroutes = [
         path: "/upgrade/support",
         element: <UpgradeSupport />,
       },
+      
       {
-        icon: <AcademicCapIcon {...icon} />,
-
-        name: "upgrade",
-        path: "/simulation",
-        element: <SimulationDashboardPage />,
-      },
-      {
-        
         name: "chat",
         path: "/Studentforum/:id",
         element: <StudentClass />,
@@ -849,7 +841,7 @@ export const StudentParamroutes = [
         icon: <DocumentTextIcon {...icon} />,
         name: "Classparticipant",
         path: "/Classparticipant/:id",
-        element: <Participants/>
+        element: <Participants />,
       },
       {
         icon: <DocumentTextIcon {...icon} />,
