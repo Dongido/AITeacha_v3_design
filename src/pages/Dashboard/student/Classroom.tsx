@@ -313,6 +313,7 @@ const Classroom = () => {
       })
     );
   }, [classroom]);
+  
 
 
   useEffect(() => {
@@ -1159,8 +1160,8 @@ const Classroom = () => {
     let currentKey = selectedOverview
       ? "main"
       : selectedTool
-      ? selectedTool
-      : "main";
+        ? selectedTool
+        : "main";
     console.log(currentKey);
 
     setMessages((prev) => ({
@@ -1265,10 +1266,15 @@ const Classroom = () => {
 
   const handleSendTopic = async () => {
     if (!classroomTopic?.trim()) return;
+    setSelectedOutline(null);
+    setSelectedOverview(false);
+    const currentKey = selectedOverview
+      ? "main"
+      : selectedTool
+        ? selectedTool
+        : "main";
 
     setSelectedOutline(null);
-    const currentKey = selectedTool ? selectedTool : "main";
-    console.log(currentKey);
 
     setMessages((prev) => ({
       ...prev,
@@ -1898,8 +1904,7 @@ const Classroom = () => {
                 <div className="relative flex flex-col lg:flex-row max-h-[550px]  overflow-y-auto pb-[1px] lg:pb-[70px]">
                   <div
                     ref={chatContainerRef}
-                    className="flex-grow overflow-y-auto bg-gray-50 border border-gray-3 rounded-lg 
-                    shadow-inner space-y-2 m-4 p-4 max-h-[450px]"
+                    className="flex-grow overflow-y-auto bg-gray-50 border border-gray-3 rounded-lg shadow-inner space-y-2 m-4 p-4 max-h-[450px]"
                   >
 
                     {showTopicPopup && (
@@ -2268,11 +2273,10 @@ const Classroom = () => {
                             <MarkdownRenderer
                               content={message.text}
 
-                              className={`p-3 text-sm ${
-                                message.fromUser
+                              className={`p-3 text-sm ${message.fromUser
                                   ? "bg-primary max-w-xs text-white rounded-tl-lg"
                                   : "bg-gray-2 max-w-xl text-black rounded-tr-lg"
-                              }`}
+                                }`}
                               shouldType={
                                 !message.fromUser && !message.isHistory
                               }
@@ -2294,7 +2298,7 @@ const Classroom = () => {
                   className="fixed bottom-0 left-0 w-full bg-white 
                  border-t lg:flex lg:w-[calc(100%-5rem)] lg:ml-[5rem] flex-col lg:flex-row"
                 >
-                  <div className="flex justify-between items-center gap-24 w-full">
+                 <div className="flex justify-between items-center gap-24 w-full">
                     <div
                       className="w-64 h-20 bg-cover bg-center relative hidden lg:block"
                       style={{ backgroundImage: `url(${greyImg})` }}
