@@ -7,6 +7,7 @@ interface MarkdownRendererProps {
   className?: string;
   style?: React.CSSProperties;
   typingSpeed?: number;
+  shouldType?: boolean;
 }
 
 const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
@@ -14,6 +15,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
   className,
   style,
   typingSpeed = 30,
+  shouldType = true,
 }) => {
   const [fullHtml, setFullHtml] = useState<string>("");
   const [displayedHtml, setDisplayedHtml] = useState<string>("");
@@ -22,32 +24,40 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     const processContent = async () => {
       const resolvedContent =
         typeof content === "string" ? content : await content;
-
       const parsedHtml = marked(resolvedContent);
       const decodedHtml = decodeHtml(parsedHtml as string);
 
       setFullHtml(decodedHtml);
-      setDisplayedHtml("");
+
+      if (!shouldType) {
+        setDisplayedHtml(decodedHtml);
+      } else {
+        setDisplayedHtml("");
+      }
     };
 
     processContent();
-  }, [content]);
+  }, [content, shouldType]);
 
   useEffect(() => {
-    if (!fullHtml) return;
+    if (!fullHtml || !shouldType) return;
+
+    const maxDuration = 2000; // 4 seconds
+    const maxCharacters = Math.floor(maxDuration / typingSpeed);
 
     let index = 0;
     const interval = setInterval(() => {
-      setDisplayedHtml((prev) => {
-        const next = fullHtml.slice(0, index);
-        index++;
-        if (index > fullHtml.length) clearInterval(interval);
-        return next;
-      });
+      index++;
+      if (index >= maxCharacters || index > fullHtml.length) {
+        clearInterval(interval);
+        setDisplayedHtml(fullHtml); // Show rest of content instantly
+      } else {
+        setDisplayedHtml(fullHtml.slice(0, index));
+      }
     }, typingSpeed);
 
     return () => clearInterval(interval);
-  }, [fullHtml, typingSpeed]);
+  }, [fullHtml, typingSpeed, shouldType]);
 
   const decodeHtml = (html: string) => {
     const txt = document.createElement("textarea");

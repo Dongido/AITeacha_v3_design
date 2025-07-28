@@ -83,6 +83,12 @@ export interface SimulationResponse {
   data: any;
 }
 
+export interface TopicsResponse {
+  status: string;
+  message: string;
+  data?: string[];
+}
+
 export const getSimulation = async (
   grade: string,
   topics: string
@@ -98,5 +104,32 @@ export const getSimulation = async (
       error.response?.data?.message ||
       "Failed to fetch simulation. Please try again.";
     throw new Error(errorMessage);
+  }
+};
+
+export const fetchTopics = async (
+  grade: string,
+  classroom_id: string,
+  classroom_content: string,
+  outline_title: string,
+  outline_content: string
+): Promise<TopicsResponse> => {
+  try {
+    const response = await apiClient.post(
+      "/assistant/suggest/labsimulation/topics",
+      {
+        grade,
+        classroom_id,
+        classroom_content,
+        outline_title,
+        outline_content,
+      }
+    );
+    return response.data;
+  } catch (error: any) {
+    const errorMessage =
+      error.response?.data?.message ||
+      "Failed to fetch topics. Please try again.";
+    return { status: "error", message: errorMessage, data: [] };
   }
 };
