@@ -14,7 +14,10 @@ import { Button } from "../../../components/ui/Button";
 import { TextArea } from "../../../components/ui/TextArea";
 import { Undo2 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { createClassroomSuggestion, fetchClassroomByIdThunk } from "../../../store/slices/classroomSlice";
+import {
+  createClassroomSuggestion,
+  fetchClassroomByIdThunk,
+} from "../../../store/slices/classroomSlice";
 import { RootState, AppDispatch } from "../../../store";
 import { motion } from "framer-motion";
 import {
@@ -98,9 +101,8 @@ const suggestedTopics = [
   "Explain the water cycle.",
   "History of Nigeria's independence.",
   "Basic algebra for beginners.",
-  "Photosynthesis in plants."
+  "Photosynthesis in plants.",
 ];
-
 
 const Classroom = () => {
   const [inputText, setInputText] = useState("");
@@ -109,7 +111,6 @@ const Classroom = () => {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [toastOpen, setToastOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
-
 
   const [toastVariant, setToastVariant] = useState<"default" | "destructive">(
     "default"
@@ -201,7 +202,6 @@ const Classroom = () => {
     (state: RootState) => state.classrooms.fetchingClassroom
   );
 
-
   const tools = classroom?.tools || [];
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -234,12 +234,10 @@ const Classroom = () => {
   const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const [remainingCallTime, setRemainingCallTime] = useState(0);
   const [outlines, setOutlines] = useState<OutlineType[]>([]);
-  const [userrole, setIsuserRole] = useState<any>()
+  const [userrole, setIsuserRole] = useState<any>();
   const { classroomTopic } = useSelector(
     (state: RootState) => state.classrooms
   );
-
-
 
   const MAX_CALL_DURATION_SECONDS = 30 * 60;
   const handleOverviewClick = () => {
@@ -249,7 +247,19 @@ const Classroom = () => {
   };
 
   const [showTopicPopup, setShowTopicPopup] = useState(false);
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages, selectedTool]);
 
+  useEffect(() => {
+    const userDetailsFromStorage = localStorage.getItem("ai-teacha-user");
+    if (userDetailsFromStorage) {
+      const parsedDetails = JSON.parse(userDetailsFromStorage);
+      setUserDetails(parsedDetails);
+    }
+  }, []);
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
     const initialTimeout = setTimeout(() => {
@@ -313,8 +323,6 @@ const Classroom = () => {
       })
     );
   }, [classroom]);
-  
-
 
   useEffect(() => {
     if (classroom?.classroomoutlines) {
@@ -388,7 +396,6 @@ const Classroom = () => {
     };
   }, []);
 
-
   useEffect(() => {
     const userDetailsFromStorage = localStorage.getItem("ai-teacha-user");
     if (userDetailsFromStorage) {
@@ -398,8 +405,7 @@ const Classroom = () => {
         setIsuserRole(parsedDetails.role_id || parsedDetails.role);
       }
     }
-
-  }, [])
+  }, []);
 
   const drawVisualization = () => {
     const canvas = canvasRef.current;
@@ -557,8 +563,6 @@ const Classroom = () => {
 
       dc.onmessage = (e) => {
         const event = JSON.parse(e.data);
-        console.log("Received from OpenAI (DataChannel):", event);
-
         switch (event.type) {
           case "response.audio_transcript.delta": {
             setMessages((prev) => {
@@ -586,7 +590,6 @@ const Classroom = () => {
             break;
           }
           case "response.done": {
-            console.log("OpenAI response done.");
             setMessages((prev) => {
               const currentKey = selectedTool ? selectedTool : "main";
               return {
@@ -645,7 +648,6 @@ const Classroom = () => {
 
       dc.onopen = () => {
         setIsSessionActive(true);
-        console.log("Data Channel Opened.");
         setMessages((prev) => ({ ...prev, [getMessageKey()]: [] }));
 
         setRemainingCallTime(MAX_CALL_DURATION_SECONDS);
@@ -1085,21 +1087,6 @@ const Classroom = () => {
       });
   };
 
-  useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [messages, selectedTool]);
-
-  useEffect(() => {
-    const userDetailsFromStorage = localStorage.getItem("ai-teacha-user");
-    if (userDetailsFromStorage) {
-      const parsedDetails = JSON.parse(userDetailsFromStorage);
-      setUserDetails(parsedDetails);
-    }
-  }, []);
-
-
   interface MessageData {
     classroom_id: number;
     classname: string;
@@ -1263,11 +1250,8 @@ const Classroom = () => {
     }
   };
 
-
   const handleSendTopic = async () => {
     if (!classroomTopic?.trim()) return;
-    setSelectedOutline(null);
-    setSelectedOverview(false);
     const currentKey = selectedOverview
       ? "main"
       : selectedTool
@@ -1275,6 +1259,7 @@ const Classroom = () => {
         : "main";
 
     setSelectedOutline(null);
+    console.log(currentKey);
 
     setMessages((prev) => ({
       ...prev,
@@ -1322,9 +1307,10 @@ const Classroom = () => {
         scope_restriction: classroom?.scope_restriction ?? true,
         description: classroom?.classroom_description || "",
         grade: classroom?.grade || "",
-        file_content: classroom?.classroomresources?.map(
-          (resource) => resource.file_content
-        ) || [],
+        file_content:
+          classroom?.classroomresources?.map(
+            (resource) => resource.file_content
+          ) || [],
         student_message: classroomTopic,
         content_from: "classroom",
       };
@@ -1365,7 +1351,6 @@ const Classroom = () => {
       }));
     }
   };
-
 
   const handleSubmitAssessment = async (liveAssessments: any[] | undefined) => {
     if (
@@ -1729,9 +1714,16 @@ const Classroom = () => {
           className={`flex-1 transition-all duration-3 px-2  ${isCollapsed ? "xl:ml-28" : "xl:ml-72"
             }`}
         >
-          {
-            userrole === 3 ? <><StudentNavbar /></> : <>  <DashboardNavbar /></>
-          }
+          {userrole === 3 ? (
+            <>
+              <StudentNavbar />
+            </>
+          ) : (
+            <>
+              {" "}
+              <DashboardNavbar />
+            </>
+          )}
           <div className="mt-4 md:mt-6 lg:mt-10">
             <div className="flex items-center  justify-between flex-col sm:flex-row">
               <div className="mt-4 ml-4 sm:mt-0 flex items-center justify-between w-full">
@@ -1759,8 +1751,8 @@ const Classroom = () => {
                       variant="outline"
                       size="icon"
                       className={`rounded-full hover:bg-gray-400 mt-5 border-[#5c3cbb]  ${isVoiceRecording
-                        ? "bg-red-500 text-white"
-                        : "bg-gray-200 text-black"
+                          ? "bg-red-500 text-white"
+                          : "bg-gray-200 text-black"
                         }`}
                       disabled={isVoiceRecording}
                     >
@@ -1863,9 +1855,10 @@ const Classroom = () => {
                   hover:border-purple-600 hover:bg-purple-50 rounded-full  text-sm text-[#5c3cbb] pt-1 font-medium shadow-sm transition-all"
                 >
                   Chat
-
-                  <span className="absolute -top-1.5 -right-1.5 bg-[#5c3cbb]
-                  text-white rounded-full p-1 flex items-center justify-center shadow-md">
+                  <span
+                    className="absolute -top-1.5 -right-1.5 bg-[#5c3cbb]
+                  text-white rounded-full p-1 flex items-center justify-center shadow-md"
+                  >
                     <FiMessageCircle size={14} />
                   </span>
                 </Button>
@@ -1880,8 +1873,8 @@ const Classroom = () => {
                     </Button>
                   ))}
                 {/* <Button
-                  variant={"outline"}
-                  className="rounded-full mt-4 bg-black text-white"
+                  variant="black"
+                  className="rounded-full mt-4"
                   onClick={() => setViewState("simulation")}
                 >
                   Start Simulation
@@ -1915,7 +1908,6 @@ const Classroom = () => {
                         className="fixed top-28 right-5 z-50"
                       >
                         <div className="relative bg-gradient-to-br from-purple-500 to-pink-500 text-white p-5 px-6 rounded-2xl shadow-2xl max-w-sm">
-
                           <button
                             onClick={() => setShowTopicPopup(false)}
                             className="absolute top-2 right-2 text-white hover:text-gray-300 text-2xl font-bold  pr-4"
@@ -1927,14 +1919,21 @@ const Classroom = () => {
                           <div className="flex items-start gap-3">
                             <div className="text-2xl mt-0.5">✨</div>
                             <div>
-                              <p className="font-bold text-lg mb-1 text-yellow-300">Recommended Topic</p>
+                              <p className="font-bold text-lg mb-1 text-yellow-300">
+                                Recommended Topic
+                              </p>
                               <p className="text-sm leading-snug text-gray-200 mb-3">
                                 Here's a suggested topic for you:
                               </p>
-                              <p className="text-white font-semibold">{classroomTopic}</p>
+                              <p className="text-white font-semibold">
+                                {classroomTopic}
+                              </p>
 
                               <button
-                                onClick={() => { handleSendTopic(), setShowTopicPopup(false) }}
+                                onClick={() => {
+                                  handleSendTopic(),
+                                    setShowTopicPopup(false);
+                                }}
                                 className="bg-white text-purple-600 text-sm font-medium px-4 py-2 rounded-lg hover:bg-yellow-100 transition-all mt-2"
                               >
                                 Learn More
@@ -1944,6 +1943,7 @@ const Classroom = () => {
                         </div>
                       </motion.div>
                     )}
+
                     {selectedOverview ? (
                       <MarkdownRenderer
                         content={welcomeMessage}
@@ -1957,7 +1957,6 @@ const Classroom = () => {
                           shouldType={false}
                           className="text-sm lg:text-md text-gray-8"
                         />
-
 
                         <div className="flex justify-between items-center w-full p-4">
                           <div className="flex-1 ">
@@ -1988,27 +1987,34 @@ const Classroom = () => {
                           </div>
                           <div className="flex-1 flex justify-end gap-2">
                             {(() => {
-                              const currentIndex = outlines.findIndex(o => o.name === selectedOutline?.name);
+                              const currentIndex = outlines.findIndex(
+                                (o) => o.name === selectedOutline?.name
+                              );
                               const current = outlines[currentIndex];
                               const next = outlines[currentIndex + 1];
                               const prevIndex = [...outlines]
                                 .slice(0, currentIndex)
                                 .reverse()
-                                .findIndex(o => o.mark_as_read === 1);
-                              const actualPrevIndex = prevIndex !== -1 ? currentIndex - prevIndex - 1 : -1;
+                                .findIndex((o) => o.mark_as_read === 1);
+                              const actualPrevIndex =
+                                prevIndex !== -1
+                                  ? currentIndex - prevIndex - 1
+                                  : -1;
                               return (
                                 <>
-
                                   {actualPrevIndex !== -1 && (
                                     <Button
                                       variant="gradient"
                                       className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md transition-all duration-200"
-                                      onClick={() => setSelectedOutline(outlines[actualPrevIndex])}
+                                      onClick={() =>
+                                        setSelectedOutline(
+                                          outlines[actualPrevIndex]
+                                        )
+                                      }
                                     >
                                       Previous
                                     </Button>
                                   )}
-
 
                                   {next && (
                                     <Button
@@ -2024,9 +2030,7 @@ const Classroom = () => {
                             })()}
                           </div>
 
-                          <div>
-
-                          </div>
+                          <div></div>
                         </div>
                         {selectedOutline &&
                           selectedOutline.assessments &&
@@ -2209,7 +2213,6 @@ const Classroom = () => {
                             className="fixed top-28 right-5 z-50"
                           >
                             <div className="relative bg-gradient-to-br from-purple-500 to-pink-500 text-white p-5 px-6 rounded-2xl shadow-2xl max-w-sm">
-
                               <button
                                 onClick={() => setShowTopicPopup(false)}
                                 className="absolute top-2 right-2 text-white hover:text-gray-300 text-2xl font-bold  pr-4"
@@ -2221,14 +2224,21 @@ const Classroom = () => {
                               <div className="flex items-start gap-3">
                                 <div className="text-2xl mt-0.5">✨</div>
                                 <div>
-                                  <p className="font-bold text-lg mb-1 text-yellow-300">Recommended Topic</p>
+                                  <p className="font-bold text-lg mb-1 text-yellow-300">
+                                    Recommended Topic
+                                  </p>
                                   <p className="text-sm leading-snug text-gray-200 mb-3">
                                     Here's a suggested topic for you:
                                   </p>
-                                  <p className="text-white font-semibold">{classroomTopic}</p>
+                                  <p className="text-white font-semibold">
+                                    {classroomTopic}
+                                  </p>
 
                                   <button
-                                    onClick={() => { handleSendTopic(), setShowTopicPopup(false) }}
+                                    onClick={() => {
+                                      handleSendTopic(),
+                                        setShowTopicPopup(false);
+                                    }}
                                     className="bg-white text-purple-600 text-sm font-medium px-4 py-2 rounded-lg hover:bg-yellow-100 transition-all mt-2"
                                   >
                                     Learn More
@@ -2272,7 +2282,6 @@ const Classroom = () => {
                             )}
                             <MarkdownRenderer
                               content={message.text}
-
                               className={`p-3 text-sm ${message.fromUser
                                   ? "bg-primary max-w-xs text-white rounded-tl-lg"
                                   : "bg-gray-2 max-w-xl text-black rounded-tr-lg"
@@ -2280,7 +2289,6 @@ const Classroom = () => {
                               shouldType={
                                 !message.fromUser && !message.isHistory
                               }
-
                               style={{
                                 wordWrap: "break-word",
                                 whiteSpace: "pre-wrap",
@@ -2298,7 +2306,7 @@ const Classroom = () => {
                   className="fixed bottom-0 left-0 w-full bg-white 
                  border-t lg:flex lg:w-[calc(100%-5rem)] lg:ml-[5rem] flex-col lg:flex-row"
                 >
-                 <div className="flex justify-between items-center gap-24 w-full">
+                  <div className="flex justify-between items-center gap-24 w-full">
                     <div
                       className="w-64 h-20 bg-cover bg-center relative hidden lg:block"
                       style={{ backgroundImage: `url(${greyImg})` }}
@@ -2322,8 +2330,8 @@ const Classroom = () => {
                       <button
                         onClick={toggleRecording}
                         className={`absolute right-16 top-1/2 transform -translate-y-1/2 p-3 rounded-full ${isRecording
-                          ? "bg-red-500 text-white"
-                          : "bg-gray-200 text-black"
+                            ? "bg-red-500 text-white"
+                            : "bg-gray-200 text-black"
                           }`}
                       >
                         <FiMic />
@@ -2471,8 +2479,8 @@ const Classroom = () => {
                                             )
                                           }
                                           className={`form-radio h-4 w-4 ${isAssessmentCompleted
-                                            ? "cursor-not-allowed"
-                                            : "text-purple-6 focus:ring-purple-5"
+                                              ? "cursor-not-allowed"
+                                              : "text-purple-6 focus:ring-purple-5"
                                             }`}
                                           readOnly={isAssessmentCompleted}
                                           disabled={isAssessmentCompleted}
@@ -2818,8 +2826,8 @@ const Classroom = () => {
                     <li
                       key={tool.tool_id}
                       className={`capitalize cursor-pointer px-4 py-2 rounded-lg ${selectedTool === tool.tool_name
-                        ? "bg-primary text-white"
-                        : ""
+                          ? "bg-primary text-white"
+                          : ""
                         }`}
                       onClick={() => setSelectedTool(tool.tool_name)}
                     >

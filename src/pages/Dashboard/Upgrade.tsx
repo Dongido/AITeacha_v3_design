@@ -673,10 +673,9 @@ const Upgrade: React.FC = () => {
                   Unlimited student performance reports to track and enhance
                   learning outcomes
                 </li>
-                <li>
-                  Unlimited AI-generated images perfect for engaging lessons
-                </li>
-                <li>Exclusive early access to new features and tools</li>
+                <li>Virtual Classroom access for interactive teaching and student collaboration</li>
+                 <li>Conduct Computer-Based Tests (CBT) seamlessly to assess student understanding</li>
+                
               </ul>
               <Button
                 onClick={() => {
