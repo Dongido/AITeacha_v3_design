@@ -23,6 +23,7 @@ interface UserDetails {
   role: number;
   package: string;
   firstname: string;
+  package_status: string;
 }
 
 type PlanType = "free" | "basic" | "pro" | "premium" | "enterprise" | "admin";
@@ -427,6 +428,57 @@ const Upgrade: React.FC = () => {
   const role = 1;
   const isAdmin = aitachaDetails.role === 1 || aitachaDetails.role_id === 1;
 
+  type PlanKey = "basic" | "premium" | "pro" | "enterprise";
+  const renderPlanButton = (
+    planKey: PlanKey,
+    displayedPlanName: string,
+    expectedPackageName: string
+  ): JSX.Element => {
+    const isCurrentPlan: boolean =
+      userDetails?.package?.toLowerCase() === expectedPackageName.toLowerCase();
+    const isProcessing: boolean = loadingPlan === planKey;
+    const isCurrentPlanActive: boolean =
+      isCurrentPlan && userDetails?.package_status?.toLowerCase() === "active";
+    const isCurrentPlanExpired: boolean =
+      isCurrentPlan && userDetails?.package_status?.toLowerCase() === "expired";
+
+    let buttonText: string;
+    if (isCurrentPlanActive) {
+      buttonText = "Current Plan (Top Up)";
+    } else if (isCurrentPlanExpired) {
+      buttonText = "Expired Plan (Renew)";
+    } else if (isProcessing) {
+      buttonText = "Processing...";
+    } else {
+      buttonText = `Upgrade to ${displayedPlanName}`;
+    }
+
+    const buttonClassName: string = `
+      w-full py-2 rounded-md transition duration-200 mt-auto text-lg font-medium
+      ${
+        isCurrentPlanActive
+          ? "bg-gray-600  hover:bg-gray-300 text-white"
+          : isCurrentPlanExpired
+          ? "bg-red-600 text-white hover:bg-red-700"
+          : "bg-primary text-white hover:bg-[#4a2fa3]"
+      }
+      ${isProcessing ? "opacity-70 cursor-not-allowed" : ""}
+    `;
+
+    return (
+      <button
+        onClick={() => {
+          setSelectedPlan(planKey);
+          setIsDialogOpen(true);
+        }}
+        disabled={isProcessing}
+        className={buttonClassName}
+      >
+        {buttonText}
+      </button>
+    );
+  };
+
   return (
     <div className="mt-12">
       <div className="container mx-auto px-4 py-8">
@@ -605,27 +657,7 @@ const Upgrade: React.FC = () => {
                   </li>
                   <li> No Classroom Management</li>
                 </ul>
-                <Button
-                  onClick={() => {
-                    setSelectedPlan("basic");
-                    setIsDialogOpen(true);
-                  }}
-                  disabled={
-                    loadingPlan === "basic" ||
-                    userDetails?.package?.toLowerCase() === "aiteacha basic"
-                  }
-                  className={`bg-primary text-white w-full py-2 rounded-md transition duration-200 mt-auto text-lg font-medium ${
-                    userDetails?.package?.toLowerCase() === "aiteacha basic"
-                      ? "bg-gray-300 text-gray-700 cursor-not-allowed"
-                      : "hover:bg-[#4a2fa3]"
-                  }`}
-                >
-                  {userDetails?.package?.toLowerCase() === "aiteacha basic"
-                    ? "Current Plan"
-                    : loadingPlan === "basic"
-                    ? "Processing..."
-                    : "Upgrade to Basic"}
-                </Button>
+                {renderPlanButton("basic", "Basic", "Ai Teacha Basic")}
               </div>
             )}
 
@@ -673,31 +705,16 @@ const Upgrade: React.FC = () => {
                   Unlimited student performance reports to track and enhance
                   learning outcomes
                 </li>
-                <li>Virtual Classroom access for interactive teaching and student collaboration</li>
-                 <li>Conduct Computer-Based Tests (CBT) seamlessly to assess student understanding</li>
-                
+                <li>
+                  Virtual Classroom access for interactive teaching and student
+                  collaboration
+                </li>
+                <li>
+                  Conduct Computer-Based Tests (CBT) seamlessly to assess
+                  student understanding
+                </li>
               </ul>
-              <Button
-                onClick={() => {
-                  setSelectedPlan("pro");
-                  setIsDialogOpen(true);
-                }}
-                disabled={
-                  loadingPlan === "pro" ||
-                  userDetails?.package === "AI Teacha Pro"
-                }
-                className={`bg-primary text-white w-full py-2 rounded-md transition mt-auto text-center ${
-                  userDetails?.package === "AiTeacha Pro"
-                    ? "bg-gray-300 text-gray-700 cursor-not-allowed"
-                    : "hover:bg-[#4a2fa3]"
-                }`}
-              >
-                {userDetails?.package === "AI Teacha Pro"
-                  ? "Current Plan"
-                  : loadingPlan === "pro"
-                  ? "Processing..."
-                  : "Upgrade to Pro"}
-              </Button>
+              {renderPlanButton("pro", "Pro", "Ai Teacha Pro")}
             </div>
           </div>
         </div>
@@ -762,27 +779,7 @@ const Upgrade: React.FC = () => {
                 <li>Unlimited number of educators</li>
                 <li>Dedicated support for your school or institution</li>
               </ul>
-              <Button
-                onClick={() => {
-                  setSelectedPlan("premium");
-                  setIsDialogOpen(true);
-                }}
-                disabled={
-                  loadingPlan === "premium" ||
-                  userDetails?.package === "AI Teacha Premium"
-                }
-                className={`bg-primary text-white w-full py-2 rounded-md transition mt-auto text-center ${
-                  userDetails?.package === "premium"
-                    ? "bg-gray-300 text-gray-700 cursor-not-allowed"
-                    : "hover:bg-[#4a2fa3]"
-                }`}
-              >
-                {userDetails?.package === "AI Teacha Premium"
-                  ? "Current Plan"
-                  : loadingPlan === "premium"
-                  ? "Processing..."
-                  : "Upgrade to Premium"}
-              </Button>
+              {renderPlanButton("premium", "Premium", "Ai Teacha Premium")}
             </div>
 
             <div className="border rounded-lg p-6 bg-gray-50 shadow-md flex flex-col flex-1">
