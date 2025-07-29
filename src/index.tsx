@@ -22,7 +22,9 @@ root.render(
         <ThemeProvider>
           <MaterialTailwindControllerProvider>
             {/* <ErrorBoundary> */}
-            <App />
+         
+             <App />
+          
             {/* </ErrorBoundary> */}
           </MaterialTailwindControllerProvider>
         </ThemeProvider>

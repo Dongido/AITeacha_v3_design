@@ -81,8 +81,8 @@ export default function BaseTable({
 
   return (
     <>
-      <Table className="">
-        <TableHeader className="bg-white">
+      <Table className=" routes-scroll-area">
+        <TableHeader className="bg-white routes-scroll-area">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id} className="px-12">
               {headerGroup.headers.map((header) => {
@@ -90,7 +90,7 @@ export default function BaseTable({
                   <TableHead
                     key={header.id}
                     colSpan={header.colSpan}
-                    className="px-6 py-6 font-bold"
+                    className="px-6 py-6 font-bold routes-scroll-area"
                   >
                     {header.isPlaceholder
                       ? null

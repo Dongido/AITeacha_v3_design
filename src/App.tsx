@@ -63,6 +63,7 @@ function App() {
   }, [location.pathname]);
 
   return (
+    <div className="app-scroll-wrapper">
     <Routes >
       <Route path="/" element={<Home />} />
       <Route
@@ -136,6 +137,7 @@ function App() {
       />
       <Route path="*" element={<Navigate to="/dashboard/home" replace />} />
     </Routes>
+    </div>
   );
 }
 
