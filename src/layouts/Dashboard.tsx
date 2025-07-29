@@ -31,6 +31,7 @@ import StaffChat from "../pages/Dashboard/StaffChat";
 import GroupChatForm from "../pages/Dashboard/GroupChatForm";
 import AdminResourcesPage from "../pages/Dashboard/admin/AdminResources";
 import Forumpage from "../pages/Dashboard/Forumpage";
+import Notification from "../pages/Dashboard/admin/Nofification";
 
 export function Dashboard() {
   const navigate = useNavigate();
@@ -127,6 +128,7 @@ export function Dashboard() {
           <Route path="/admin/withdrawals" element={<AdminWithdrawalsPage />} />
           <Route path="/admin/user/:id" element={<AdminUserDetailsPage />} />
           <Route path="/admin/resources" element={<AdminResourcesPage />} />
+          <Route path="/admin/notification" element={<Notification />} />
         </Routes>
         {/* <div className="text-blue-gray-600">
           <Footer />
