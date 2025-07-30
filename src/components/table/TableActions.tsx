@@ -21,6 +21,7 @@ import { FaUsers } from "react-icons/fa";
 
 export default function Actions<T>({
   viewLink,
+
   editLink,
   attemptLink,
   isHidden,
@@ -31,14 +32,16 @@ export default function Actions<T>({
   deleteFunction,
   activateFunction,
   deactivateFunction,
-  editRoleFunction, 
+  editRoleFunction,
   viewParticipant,
+  viewPerformanceLink,
 }: {
   viewLink?: string;
+
   editLink?: string;
   attemptLink?: string;
   isHidden?: boolean;
-  viewParticipant?:string;
+  viewParticipant?: string;
   hideFunction?: () => Promise<void>;
   editButton?: ReactNode;
   viewFunction?: () => Promise<void>;
@@ -46,7 +49,8 @@ export default function Actions<T>({
   deleteFunction?: () => Promise<void>;
   activateFunction?: () => Promise<void>;
   deactivateFunction?: () => Promise<void>;
-  editRoleFunction?: () => Promise<void>; // Add type definition for new prop
+  editRoleFunction?: () => Promise<void>;
+  viewPerformanceLink?: string;
 }) {
   return (
     <DropdownMenu>
@@ -134,15 +138,28 @@ export default function Actions<T>({
             </Link>
           </DropdownMenuItem>
         )}
+        {viewPerformanceLink && (
+          <DropdownMenuItem
+            asChild
+            className="flex gap-2 p-1 hover:bg-gray-100"
+          >
+            <Link to={viewPerformanceLink}>
+              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-orange-600/20">
+                <FileText size={17} className="text-orange-600" />
+              </div>
+              <p>View Performance </p>
+            </Link>
+          </DropdownMenuItem>
+        )}
 
-         {viewParticipant && (
+        {viewParticipant && (
           <DropdownMenuItem
             asChild
             className="flex gap-2 p-1 hover:bg-gray-100"
           >
             <Link to={viewParticipant}>
-              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-600/20">  
-                <FaUsers size={16} className="text-blue-600"  />
+              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-600/20">
+                <FaUsers size={16} className="text-blue-600" />
               </div>
               <p className="pt-1">Participant </p>
             </Link>

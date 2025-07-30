@@ -117,7 +117,7 @@ import TeamMemberClassroomsPage from "../pages/Dashboard/team/TeamMemberClassroo
 import ChatListPage from "../pages/Dashboard/chats/ChatListPage";
 import { FaRocketchat } from "react-icons/fa";
 import MessageConfiguration from "../pages/Dashboard/forum/MessageConfiguration";
-
+import StudentPerformance from "../pages/Dashboard/student/StudentPerformance";
 const icon = {
   className: "w-5 h-5 text-inherit",
 };
@@ -340,7 +340,7 @@ export const Paramroutes = [
         path: "/upgrade/support",
         element: <UpgradeSupport />,
       },
-      
+
       {
         name: "chat",
         path: "/Studentforum/:id",
@@ -515,6 +515,12 @@ export const Paramroutes = [
         name: "report",
         path: "/report/:reportId/:studentId",
         element: <StudentReport />,
+      },
+      {
+        icon: <DocumentTextIcon {...icon} />,
+        name: "report",
+        path: "/classrooms/performance/:classroomId",
+        element: <StudentPerformance />,
       },
       {
         icon: <DocumentTextIcon {...icon} />,
@@ -764,10 +770,10 @@ export const StudentParamroutes = [
         element: <ExamSubmitted />,
       },
       {
-      icon: <FaRocketchat {...icon} />,
-      name: "messages",
-      path: "/participant/chats",
-      element: <ChatListPage />,
+        icon: <FaRocketchat {...icon} />,
+        name: "messages",
+        path: "/participant/chats",
+        element: <ChatListPage />,
       },
       {
         icon: <AcademicCapIcon {...icon} />,
@@ -818,6 +824,12 @@ export const StudentParamroutes = [
         name: "chat",
         path: "/Studentforum/:id",
         element: <StudentClass />,
+      },
+      {
+        icon: <DocumentTextIcon {...icon} />,
+        name: "report",
+        path: "/classroom/performance/:classroomId",
+        element: <StudentPerformance />,
       },
       {
         icon: <AcademicCapIcon {...icon} />,
