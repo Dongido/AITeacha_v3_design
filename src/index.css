@@ -584,3 +584,29 @@ legend + * {
   overflow-y: scroll; 
 }
 
+
+.marquee-container {
+  display: flex;
+  overflow: hidden;
+  white-space: nowrap;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.marquee-text {
+  display: inline-block;
+  animation: scroll-left 20s linear infinite;
+  padding-left: 100%; /* gives it space before moving */
+}
+
+@keyframes scroll-left {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+

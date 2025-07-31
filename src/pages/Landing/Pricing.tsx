@@ -334,10 +334,8 @@ const Pricing = () => {
                     Unlimited student performance reports to track and enhance
                     learning outcomes
                   </li>
-                  <li>
-                    Unlimited AI-generated images perfect for engaging lessons
-                  </li>
-                  <li>Exclusive early access to new features and tools</li>
+                  <li>Virtual Classroom access </li>
+                  <li>Full Access to Computer-Based Tests (CBT)</li>
                 </ul>
                 <Button
                   onClick={() => navigate("/auth/onboarding")}

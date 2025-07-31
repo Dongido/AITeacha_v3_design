@@ -22,6 +22,7 @@ import {
   ShieldCheckIcon,
   BanknotesIcon,
 } from "@heroicons/react/24/solid";
+import { IoMdNotificationsOutline } from "react-icons/io";
 import Dashboard from "../pages/Dashboard/Home";
 import Team from "../pages/Dashboard/Team";
 import Tools from "../pages/Dashboard/Tools";
@@ -117,7 +118,9 @@ import TeamMemberClassroomsPage from "../pages/Dashboard/team/TeamMemberClassroo
 import ChatListPage from "../pages/Dashboard/chats/ChatListPage";
 import { FaRocketchat } from "react-icons/fa";
 import MessageConfiguration from "../pages/Dashboard/forum/MessageConfiguration";
+import Notification from "../pages/Dashboard/admin/Nofification";
 import StudentPerformance from "../pages/Dashboard/student/StudentPerformance";
+
 const icon = {
   className: "w-5 h-5 text-inherit",
 };
@@ -309,6 +312,12 @@ export const routes = [
             name: "Resources",
             path: "/admin/resources",
             element: <AdminResourcesPage />,
+          },
+          {
+            icon: <IoMdNotificationsOutline {...icon} />,
+            name: "Notification",
+            path: "/admin/notification",
+            element: <Notification />,
           },
         ],
       },
