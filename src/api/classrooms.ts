@@ -1,5 +1,10 @@
 import apiClient from "../lib/apiClient";
-import { Classroom, ClassroomData, Student, Topicsuggestion } from "./interface";
+import {
+  Classroom,
+  ClassroomData,
+  Student,
+  Topicsuggestion,
+} from "./interface";
 
 export const fetchClassroomsByUser = async (): Promise<Classroom[]> => {
   try {
@@ -182,6 +187,28 @@ export const fetchStudentReport = async (
       message: string;
       data: any;
     }>(`/report/${reportId}/${studentId}`);
+
+    if (response.status !== 200) {
+      throw new Error("Failed to fetch the student report.");
+    }
+
+    return response.data.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data ||
+        "Failed to fetch the student report. Please try again."
+    );
+  }
+};
+export const fetchStudentPerformance = async (
+  reportId: string
+): Promise<any> => {
+  try {
+    const response = await apiClient.get<{
+      status: string;
+      message: string;
+      data: any;
+    }>(`/report/student/performance/${reportId}`);
 
     if (response.status !== 200) {
       throw new Error("Failed to fetch the student report.");
@@ -514,18 +541,16 @@ export const toggleClassroomStatus = async (
   }
 };
 
-
-
 export const getSuggestedTopic = async (
-  payload:any
+  payload: any
 ): Promise<string | undefined> => {
   try {
     const response = await apiClient.post<{
       status: string;
       message: string;
-      data:string;
+      data: string;
     }>("/assistant/suggest/recommended/topic", payload);
-  
+
     //  console.log("payload classrom", response.data)
 
     if (response.data.status !== "success") {
@@ -537,6 +562,6 @@ export const getSuggestedTopic = async (
     return response.data.data;
   } catch (error) {
     console.log("Failed to get suggested topic", error);
-    return undefined; 
+    return undefined;
   }
 };

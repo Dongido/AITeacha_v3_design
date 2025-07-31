@@ -86,11 +86,21 @@ export const classroomColumns = [
         }
         return `/class/classrooms/class-details/${classroomId}`;
       };
+
+      const getPerformanceRedirectPath = () => {
+        if (userDetails.role === 2) {
+          return `/dashbord/classrooms/performance/${classroomId}`;
+        } else if (userDetails.role === 3 || userDetails.role_id === 3) {
+          return `/student/classroom/performance/${classroomId}`;
+        }
+        return `/dashbord/classrooms/performance/${classroomId}`;
+      };
       return (
         <div className="flex items-center gap-2">
-          <Actions 
-          viewLink={getRedirectPath()} 
-          viewParticipant={`/student/Classparticipant/${classroomId}`}
+          <Actions
+            viewLink={getRedirectPath()}
+            // viewPerformanceLink={getPerformanceRedirectPath()}
+            viewParticipant={`/student/Classparticipant/${classroomId}`}
           />
         </div>
       );
