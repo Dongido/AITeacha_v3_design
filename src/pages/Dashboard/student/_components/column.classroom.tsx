@@ -99,7 +99,7 @@ export const classroomColumns = [
         <div className="flex items-center gap-2">
           <Actions
             viewLink={getRedirectPath()}
-            // viewPerformanceLink={getPerformanceRedirectPath()}
+            viewPerformanceLink={getPerformanceRedirectPath()}
             viewParticipant={`/student/Classparticipant/${classroomId}`}
           />
         </div>
