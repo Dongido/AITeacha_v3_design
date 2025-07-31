@@ -33,6 +33,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.css";
 import SwiperCore from "swiper";
 import { Navigation, Pagination, Autoplay, A11y } from "swiper/modules";
+import { getNotification } from "../../store/slices/notificationsSlice";
 
 SwiperCore.use([Navigation, Pagination, Autoplay, A11y]);
 
@@ -44,9 +45,24 @@ const Home = () => {
     (state: RootState) => state.tools
   );
 
+  const { notificationList } = useSelector(
+    (state: RootState) => state.notifications
+  );
+
+  console.log("notificationlist", notificationList)
+
   const [userDetails, setUserDetails] = useState<any>(null);
   const [isEmailVerified, setIsEmailVerified] = useState<number>(0);
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [latestNotification, setLatestNotification] = useState<any>(null);
+  const [isNotificationDismissed, setIsNotificationDismissed] = useState(() => {
+    const dismissedDate = localStorage.getItem("dismissedDate");
+    const today = new Date().toDateString();
+    return dismissedDate === today;
+  });
+
+
+  console.log("latestnotification", latestNotification)
 
   useEffect(() => {
     if (tools.length === 0) {
@@ -66,6 +82,27 @@ const Home = () => {
       setIsEmailVerified(parsedDetails.is_email_verified);
     }
   }, []);
+
+  useEffect(() => {
+    if (Array.isArray(notificationList) && notificationList.length > 0) {
+      const now = new Date();
+      const activeNotifications = notificationList
+        .filter((notification) => {
+          const expiry = new Date(notification.expiry_date);
+          return notification.status === "active" && expiry > now;
+        })
+        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+      if (activeNotifications.length > 0) {
+        setLatestNotification(activeNotifications[0]);
+      }
+    }
+  }, [notificationList]);
+
+
+  useEffect(() => {
+    dispatch(getNotification())
+  })
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -113,6 +150,32 @@ const Home = () => {
 
   return (
     <div className="mt-4 ">
+      {latestNotification && !isNotificationDismissed && (
+        <div
+          className="text-black border px-4 py-3 rounded mb-4 overflow-hidden w-[80%] mx-auto"
+          style={{
+            background: "linear-gradient(135deg, #fffde4, #f9d423)",
+            position: "relative",
+          }}
+        >
+          <div
+            onClick={() => {
+              setIsNotificationDismissed(true);
+              localStorage.setItem("dismissedDate", new Date().toDateString());
+            }}
+            className="absolute -top-3 right-2 p-3 cursor-pointer z-10"
+          >
+            <span className="text-black text-4xl font-bold">×</span>
+          </div>
+
+          <div className="marquee-container">
+            <div className="marquee-text text-2xl">
+              📢 <strong className="font-bold">Update:</strong> {latestNotification.title}
+            </div>
+          </div>
+        </div>
+      )}
+
       {userDetails && isEmailVerified === 1 && (
         <div
           className="bg-[#e5dbff] mt-3 mb-4 text-black p-4 rounded-md flex justify-center items-center"

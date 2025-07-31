@@ -22,13 +22,14 @@ import {
   ToastTitle,
   ToastViewport,
 } from "../../../../components/ui/Toast";
+import { createNotification } from "../../../../store/slices/notificationsSlice";
 
 interface AddAdminResourceDialogProps {
   onSuccess?: () => void;
 }
 
-const viewersList = ["All", "Teachers", "Students"];
-const statusOptions = ["ACTIVE", "INACTIVE", "CLOSED"];
+const viewersList = ["all", "teachers", "student"];
+const statusOptions = ["active", "deactivated"];
 
 const AddAdminNotificationDialog = forwardRef(
   ({ onSuccess = () => {} }: AddAdminResourceDialogProps, ref) => {
@@ -40,7 +41,7 @@ const AddAdminNotificationDialog = forwardRef(
     const [toastVariant, setToastVariant] = useState<"default" | "destructive">(
       "default"
     );
-
+   
     const [title, setTitle] = useState("");
     const [expiryDate, setExpiryDate] = useState("");
     const [whoViews, setWhoViews] = useState("");
@@ -65,17 +66,18 @@ const AddAdminNotificationDialog = forwardRef(
         setToastOpen(true);
         return;
       }
+       
 
       setLoading(true);
       try {
-        // await dispatch(
-        //   addAdminResource({
-        //     title,
-        //     expiry_date: expiryDate,
-        //     who_views: whoViews,
-        //     status,
-        //   })
-        // ).unwrap();
+        await dispatch(
+          createNotification({
+            title,
+            expiry_date: expiryDate,
+            who_views: whoViews,
+            status,
+          })
+        ).unwrap();
 
         setToastMessage("Notification added successfully!");
         setToastVariant("default");

@@ -1,59 +1,126 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button } from "../../../components/ui/Button";
 import BaseTable from "../../../components/table/BaseTable";
 import { notificationColumns } from "./components/column.admin.notification";
 import AddAdminNotificationDialog from "./components/AddNotificationDialog";
-
-const dummyResources = [
-  {
-    id: "1",
-    title: "Admin Guide",
-    description: "This is a dummy admin guide.",
-    createdAt: "2025-07-29",
-    expiry_date: "2025-08-10",
-    who_views: "teacher",
-    status: "active",
-  },
-  {
-    id: "2",
-    title: "Policy Document",
-    description: "Dummy policy details here.",
-    createdAt: "2025-07-28",
-    expiry_date: "2025-08-05",
-    who_views: "student",
-    status: "inactive",
-  },
-  {
-    id: "3",
-    title: "Team Contacts",
-    description: "List of team members and roles.",
-    createdAt: "2025-07-27",
-    expiry_date: "2025-08-12",
-    who_views: "all",
-    status: "active",
-  },
-];
+import { useDispatch } from "react-redux";
+import { AppDispatch, RootState } from "../../../store";
+import { getNotification } from "../../../store/slices/notificationsSlice";
+import { useAppSelector } from "../../../store/hooks";
+import AddNotificationEditDialog from "./components/AddNotificationEditModal";
+import GeneralRestrictedPage from "../_components/GeneralRestrictedPage";
+import { Skeleton } from "../../../components/ui/Skeleton";
 
 
-const LoadingSkeleton: React.FC = () => {
-  return (
-    <div className="space-y-4 animate-pulse">
-      <div className="h-10 bg-gray-200 rounded"></div>
-      <div className="h-10 bg-gray-200 rounded w-5/6"></div>
-      <div className="h-10 bg-gray-200 rounded w-4/6"></div>
-      <div className="h-10 bg-gray-200 rounded w-3/6"></div>
-      <div className="h-10 bg-gray-200 rounded w-5/6"></div>
-      <div className="h-10 bg-gray-200 rounded w-4/6"></div>
-    </div>
-  );
-};
 
 const Notification: React.FC = () => {
   const addResourceDialogRef = useRef<{ openDialog: () => void }>(null);
+  const dispatch = useDispatch<AppDispatch>()
+  const [editModal, seteditModal] = useState(false)
+  const { notificationList, error, isloading, notification } = useAppSelector(
+    (state: RootState) => state.notifications
+  );
+  const [userDetails, setUserDetails] = useState<any>(null);
+  const [isEmailVerified, setIsEmailVerified] = useState<number>(0);
 
+  // console.log("isloading", isloading)
+
+  //  console.log(notificationList , "notification response")
   const handleAddResourceClick = () => {
     addResourceDialogRef.current?.openDialog();
   };
+
+  useEffect(() => {
+    dispatch(getNotification())
+  }, [])
+
+  useEffect(() => {
+  const userDetailsFromStorage = localStorage.getItem("ai-teacha-user");
+  if (userDetailsFromStorage) {
+  const parsedDetails = JSON.parse(userDetailsFromStorage);
+  setUserDetails(parsedDetails);
+  setIsEmailVerified(parsedDetails.is_email_verified);
+  }
+  
+  }, [dispatch]);
+
+
+  if (isloading) {
+    return (
+      <div className="overflow-x-auto">
+        <table className="min-w-full border-collapse">
+          <thead>
+            <tr>
+              {[...Array(5)].map((_, index) => (
+                <th key={index} className="p-4 border-b">
+                  <Skeleton className="h-4 w-16 rounded" />
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {[...Array(6)].map((_, rowIndex) => (
+              <tr key={rowIndex} className="border-b">
+                {[...Array(5)].map((_, colIndex) => (
+                  <td key={colIndex} className="p-4">
+                    <Skeleton className="h-4 w-full rounded" />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  }
+
+
+  if (
+    error === "Permission restricted: upgrade to premium account to gain access"
+  ) {
+    return (
+      <div>
+    {userDetails && isEmailVerified === 1 && (
+      <div
+        className="bg-[#e5dbff] mt-3 mb-4 text-black p-4 rounded-md flex justify-center items-center"
+        style={{
+          background:
+            "linear-gradient(143.6deg, rgba(192, 132, 252, 0) 20.79%, rgba(232, 121, 249, 0.26) 40.92%, rgba(204, 171, 238, 0) 70.35%)",
+        }}
+      >
+        <span className="text-center text-xl font-bold">
+          Teachers Are Heroes🎉
+        </span>
+      </div>
+    )}
+        <GeneralRestrictedPage error={error} />
+      </div>
+    );
+  }
+
+   if (
+    error === "Failed to fetch premium users"
+  ) {
+    return (
+      <div>
+    {userDetails && isEmailVerified === 1 && (
+      <div
+        className="bg-[#e5dbff] mt-3 mb-4 text-black p-4 rounded-md flex justify-center items-center"
+        style={{
+          background:
+            "linear-gradient(143.6deg, rgba(192, 132, 252, 0) 20.79%, rgba(232, 121, 249, 0.26) 40.92%, rgba(204, 171, 238, 0) 70.35%)",
+        }}
+      >
+        <span className="text-center text-xl font-bold">
+          Teachers Are Heroes🎉
+        </span>
+      </div>
+    )}
+        <GeneralRestrictedPage error={error} />
+      </div>
+    );
+  }
+
 
   return (
     <div className="mt-12">
@@ -68,18 +135,33 @@ const Notification: React.FC = () => {
         </Button>
       </div>
 
-      {dummyResources.length > 0 ? (
-        <BaseTable columns={notificationColumns} data={dummyResources} />
-      ) : (
-        <p className="text-gray-600 text-lg text-center mt-8">
-          No admin resources found. Click "Add New Resource" to add one.
-        </p>
-      )}
+      {!isloading ? (
+        notificationList.length > 0 ? (
+          <BaseTable columns={notificationColumns} data={notificationList} />
+        ) : (
+          <div className="text-center mt-8">
+            <p className="text-gray-600 text-lg mb-4">
+              No notification is available. Proceed to create notification.
+            </p>
+            <button
+              onClick={handleAddResourceClick}
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+            >
+              Create Notification
+            </button>
+          </div>
+        )
+      ) : null}
+
 
       <AddAdminNotificationDialog
         ref={addResourceDialogRef}
-        onSuccess={() => {}}
+        onSuccess={() => {
+          dispatch(getNotification());
+        }}
       />
+
+
     </div>
   );
 };

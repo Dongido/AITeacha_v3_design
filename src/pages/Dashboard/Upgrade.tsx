@@ -193,9 +193,8 @@ const Upgrade: React.FC = () => {
       },
       customizations: {
         title: `${plan.charAt(0).toUpperCase() + plan.slice(1)} Plan`,
-        description: `Upgrade to ${
-          plan.charAt(0).toUpperCase() + plan.slice(1)
-        } Plan`,
+        description: `Upgrade to ${plan.charAt(0).toUpperCase() + plan.slice(1)
+          } Plan`,
         logo: Logo,
       },
     };
@@ -266,8 +265,8 @@ const Upgrade: React.FC = () => {
                 console.error(
                   "Transaction verification failed:",
                   verificationResponse.message ||
-                    verificationResponse.data.message ||
-                    "Unknown verification error."
+                  verificationResponse.data.message ||
+                  "Unknown verification error."
                 );
                 navigate("/dashboard/success?status=failed");
               }
@@ -332,8 +331,8 @@ const Upgrade: React.FC = () => {
               noOfSeats: (plan === "pro"
                 ? "1"
                 : plan === "premium"
-                ? "15"
-                : noOfSeats
+                  ? "15"
+                  : noOfSeats
               ).toString(),
               duration: duration,
             },
@@ -541,11 +540,10 @@ const Upgrade: React.FC = () => {
                 <li>AI Image generation for educators and students</li>
               </ul>
               <button
-                className={`w-full py-2 rounded-md mt-auto ${
-                  userDetails?.package === "AiTeacha Free"
+                className={`w-full py-2 rounded-md mt-auto ${userDetails?.package === "AiTeacha Free"
                     ? "bg-gray-300 text-gray-700 cursor-not-allowed"
                     : "bg-primary text-white hover:bg-[#4a2fa3] transition"
-                }`}
+                  }`}
                 disabled={userDetails?.package === "AiTeacha Free"}
               >
                 {userDetails?.package === "AiTeacha Free"
@@ -614,17 +612,16 @@ const Upgrade: React.FC = () => {
                     loadingPlan === "basic" ||
                     userDetails?.package?.toLowerCase() === "aiteacha basic"
                   }
-                  className={`bg-primary text-white w-full py-2 rounded-md transition duration-200 mt-auto text-lg font-medium ${
-                    userDetails?.package?.toLowerCase() === "aiteacha basic"
+                  className={`bg-primary text-white w-full py-2 rounded-md transition duration-200 mt-auto text-lg font-medium ${userDetails?.package?.toLowerCase() === "aiteacha basic"
                       ? "bg-gray-300 text-gray-700 cursor-not-allowed"
                       : "hover:bg-[#4a2fa3]"
-                  }`}
+                    }`}
                 >
                   {userDetails?.package?.toLowerCase() === "aiteacha basic"
                     ? "Current Plan"
                     : loadingPlan === "basic"
-                    ? "Processing..."
-                    : "Upgrade to Basic"}
+                      ? "Processing..."
+                      : "Upgrade to Basic"}
                 </Button>
               </div>
             )}
@@ -652,7 +649,7 @@ const Upgrade: React.FC = () => {
                 {billingCycle === "year" && currency === "NGN" && (
                   <span className="font-medium text-sm text-gray-700">
                     {" "}
-                    ₦4,585 monthly
+                    ₦4,585 monthly]
                   </span>
                 )}
               </p>
@@ -673,9 +670,9 @@ const Upgrade: React.FC = () => {
                   Unlimited student performance reports to track and enhance
                   learning outcomes
                 </li>
-                <li>Virtual Classroom access for interactive teaching and student collaboration</li>
-                 <li>Conduct Computer-Based Tests (CBT) seamlessly to assess student understanding</li>
-                
+                <li>Virtual Classroom access </li>
+                <li>Full Access to Computer-Based Tests (CBT)</li>
+
               </ul>
               <Button
                 onClick={() => {
@@ -686,17 +683,16 @@ const Upgrade: React.FC = () => {
                   loadingPlan === "pro" ||
                   userDetails?.package === "AI Teacha Pro"
                 }
-                className={`bg-primary text-white w-full py-2 rounded-md transition mt-auto text-center ${
-                  userDetails?.package === "AiTeacha Pro"
+                className={`bg-primary text-white w-full py-2 rounded-md transition mt-auto text-center ${userDetails?.package === "AiTeacha Pro"
                     ? "bg-gray-300 text-gray-700 cursor-not-allowed"
                     : "hover:bg-[#4a2fa3]"
-                }`}
+                  }`}
               >
                 {userDetails?.package === "AI Teacha Pro"
                   ? "Current Plan"
                   : loadingPlan === "pro"
-                  ? "Processing..."
-                  : "Upgrade to Pro"}
+                    ? "Processing..."
+                    : "Upgrade to Pro"}
               </Button>
             </div>
           </div>
@@ -771,17 +767,16 @@ const Upgrade: React.FC = () => {
                   loadingPlan === "premium" ||
                   userDetails?.package === "AI Teacha Premium"
                 }
-                className={`bg-primary text-white w-full py-2 rounded-md transition mt-auto text-center ${
-                  userDetails?.package === "premium"
+                className={`bg-primary text-white w-full py-2 rounded-md transition mt-auto text-center ${userDetails?.package === "premium"
                     ? "bg-gray-300 text-gray-700 cursor-not-allowed"
                     : "hover:bg-[#4a2fa3]"
-                }`}
+                  }`}
               >
                 {userDetails?.package === "AI Teacha Premium"
                   ? "Current Plan"
                   : loadingPlan === "premium"
-                  ? "Processing..."
-                  : "Upgrade to Premium"}
+                    ? "Processing..."
+                    : "Upgrade to Premium"}
               </Button>
             </div>
 
@@ -822,17 +817,16 @@ const Upgrade: React.FC = () => {
                   loadingPlan === "enterprise" ||
                   userDetails?.package === "AI Teacha Enterprise"
                 }
-                className={`bg-primary text-white w-full py-2 rounded-md transition mt-auto text-center ${
-                  userDetails?.package === "AI Teacha Enterprise"
+                className={`bg-primary text-white w-full py-2 rounded-md transition mt-auto text-center ${userDetails?.package === "AI Teacha Enterprise"
                     ? "bg-gray-300 text-gray-700 cursor-not-allowed"
                     : "hover:bg-[#4a2fa3]"
-                }`}
+                  }`}
               >
                 {userDetails?.package === "AI Teacha Enterprise"
                   ? "Current Plan"
                   : loadingPlan === "enterprise"
-                  ? "Processing..."
-                  : "Contact Sales"}{" "}
+                    ? "Processing..."
+                    : "Contact Sales"}{" "}
               </Button>
             </div>
           </div>
