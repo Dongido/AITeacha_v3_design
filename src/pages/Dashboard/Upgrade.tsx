@@ -711,15 +711,6 @@ const Upgrade: React.FC = () => {
 
               </ul>
 
-                <li>
-                  Virtual Classroom access for interactive teaching and student
-                  collaboration
-                </li>
-                <li>
-                  Conduct Computer-Based Tests (CBT) seamlessly to assess
-                  student understanding
-                </li>
-              </ul>
               {renderPlanButton("pro", "Pro", "Ai Teacha Pro")}
 
             </div>
