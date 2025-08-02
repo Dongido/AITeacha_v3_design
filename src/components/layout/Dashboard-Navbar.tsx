@@ -52,6 +52,7 @@ export function DashboardNavbar() {
   const [isChatPopoverOpen, setIsChatPopoverOpen] = useState(false);
   const [isProfilePopoverOpen, setIsProfilePopoverOpen] = useState(false);
   const [isSettingsPopoverOpen, setIsSettingsPopoverOpen] = useState(false);
+  const [isLogoutPopoverOpen, setIsLogoutPopoverOpen] = useState(false);
 
   useEffect(() => {
     if (!imageUrl) {
@@ -147,9 +148,9 @@ export function DashboardNavbar() {
                 {(isChatPopoverOpen || open) && (
                   <Popover.Panel
                     static
-                    className="absolute z-10 mt-2 w-auto p-2 bg-white border  border-gray-200 rounded-xl  shadow-xl  text-sm whitespace-nowrap"
+                    className="absolute z-10 mt-2 w-auto p-2 bg-white border  border-gray-200 rounded-xl  shadow-xl  text-sm whitespace-nowrap"
                   >
-                    <p className="bg-white text-gray-800  px-3 py-1 text-lg font-bold rounded-md  whitespace-nowrap">
+                    <p className="bg-white text-gray-800  px-3 py-1 text-sm font-bold rounded-md  whitespace-nowrap">
                       Chat Messages
                     </p>
                   </Popover.Panel>
@@ -176,26 +177,37 @@ export function DashboardNavbar() {
                   onMouseLeave={() => setIsProfilePopoverOpen(false)}
                   className="relative inline-block"
                 >
-                  <Popover.Button as={Link} to="/dashboard/profile">
-                    <Button
-                      variant="text"
-                      color="blue-gray"
-                      className="grid mb-2"
-                    >
-                      <img
-                        src={imageURL}
-                        alt="Profile"
-                        className="h-8 w-8 rounded-full object-cover border border-gray-300"
-                      />
-                    </Button>
+                  <Popover.Button as={"div"}>
+                    <Link to="/dashboard/profile" className="hidden lg:flex">
+                      <div className="relative items-center gap-2   px-3 py-1 transition cursor-pointer flex ">
+                        <img
+                          src={imageURL}
+                          alt="Profile"
+                          className="h-8 w-8 rounded-full object-cover border border-gray-300"
+                        />
+                      </div>
+                    </Link>
+
+                    <Link to="/dashboard/profile" className="flex lg:hidden">
+                      <div
+                        className="relative items-center gap-2 
+                      px-3 py-1 transition cursor-pointer flex "
+                      >
+                        <img
+                          src={imageURL}
+                          alt="Profile"
+                          className="h-8 w-8 rounded-full object-cover border border-gray-300"
+                        />
+                      </div>
+                    </Link>
                   </Popover.Button>
 
                   {(isProfilePopoverOpen || open) && (
                     <Popover.Panel
                       static
-                      className="absolute z-10 mt-2 w-auto p-2 bg-white border border-gray-200 rounded-xl  shadow-xl  text-sm whitespace-nowrap"
+                      className="absolute z-10 mt-2 w-auto p-2 bg-white border border-gray-200 rounded-xl  shadow-xl  text-sm whitespace-nowrap"
                     >
-                      <p className="bg-white text-gray-800 text-lg font-bold px-3 py-1 rounded-md  whitespace-nowrap">
+                      <p className="bg-white text-gray-800 text-sm font-bold px-3 py-1 rounded-md  whitespace-nowrap">
                         View Profile
                       </p>
                     </Popover.Panel>
@@ -204,31 +216,55 @@ export function DashboardNavbar() {
               )}
             </Popover>
 
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button variant="text" color="blue-gray" aria-label="Logout">
-                  <ArrowRightEndOnRectangleIcon className="h-5 w-5 text-blue-gray-500" />
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Confirm Logout</DialogTitle>
-                </DialogHeader>
-                <p>Are you sure you want to logout?</p>
-                <DialogFooter>
-                  <Button
-                    variant="destructive"
-                    className="rounded-md"
-                    onClick={handleLogout}
-                  >
-                    Yes, Logout
-                  </Button>
-                  <DialogClose asChild>
-                    <Button variant="text">Cancel</Button>
-                  </DialogClose>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+            <Popover>
+              {({ open }) => (
+                <div
+                  onMouseEnter={() => setIsLogoutPopoverOpen(true)}
+                  onMouseLeave={() => setIsLogoutPopoverOpen(false)}
+                  className="relative inline-block"
+                >
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="text"
+                        color="blue-gray"
+                        aria-label="Logout"
+                      >
+                        <ArrowRightEndOnRectangleIcon className="h-5 w-5 text-blue-gray-500" />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Confirm Logout</DialogTitle>
+                      </DialogHeader>
+                      <p>Are you sure you want to logout?</p>
+                      <DialogFooter>
+                        <Button
+                          variant="destructive"
+                          className="rounded-md"
+                          onClick={handleLogout}
+                        >
+                          Yes, Logout
+                        </Button>
+                        <DialogClose asChild>
+                          <Button variant="text">Cancel</Button>
+                        </DialogClose>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                  {(isLogoutPopoverOpen || open) && (
+                    <Popover.Panel
+                      static
+                      className="absolute z-10 mt-2 w-auto p-2 bg-white border border-gray-200 rounded-xl  shadow-xl  text-sm whitespace-nowrap"
+                    >
+                      <p className="bg-white text-gray-800  px-3 py-1 text-sm font-bold rounded-md  whitespace-nowrap">
+                        Logout
+                      </p>
+                    </Popover.Panel>
+                  )}
+                </div>
+              )}
+            </Popover>
 
             <Popover>
               {({ open }) => (
@@ -250,9 +286,9 @@ export function DashboardNavbar() {
                   {(isSettingsPopoverOpen || open) && (
                     <Popover.Panel
                       static
-                      className="absolute z-10 mt-2 w-auto p-2 bg-white border border-gray-200 rounded-xl  shadow-xl  text-sm whitespace-nowrap"
+                      className="absolute z-10 mt-2 w-auto p-2 bg-white border border-gray-200 rounded-xl  shadow-xl  text-sm whitespace-nowrap"
                     >
-                      <p className="bg-white text-gray-800  px-3 py-1 text-lg font-bold rounded-md  whitespace-nowrap">
+                      <p className="bg-white text-gray-800  px-3 py-1 text-sm font-bold rounded-md  whitespace-nowrap">
                         {" "}
                         Settings
                       </p>

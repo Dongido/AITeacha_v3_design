@@ -1,6 +1,7 @@
 import React from "react";
 import brandImg from "../../../logo.png";
 import { Link } from "react-router-dom";
+
 const Footer: React.FC = () => {
   const footerLinks = [
     { name: "About", href: "/about" },
@@ -33,9 +34,11 @@ const Footer: React.FC = () => {
           Simplify lesson planning, resource creation, and student engagement by
           80%
         </p>
-        <button className="text-primary font-bold mb-8 bg-white rounded-full p-2 px-4 ">
-          Try AiTeacha 100% Free
-        </button>
+        <Link to={"/auth/onboarding"}>
+          <button className="text-primary font-bold mb-8 bg-white rounded-full p-2 px-4 ">
+            Try AiTeacha 100% Free
+          </button>
+        </Link>
         <ul className="flex flex-wrap justify-center items-center mb-6 text-gray-300 list-none">
           {footerLinks.map((link, index) => (
             <li key={index}>
