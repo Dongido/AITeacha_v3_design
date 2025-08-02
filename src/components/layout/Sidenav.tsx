@@ -325,7 +325,7 @@ export function Sidenav({
              before:content-[''] before:absolute before:top-1/2 before:-left-2 before:-translate-y-1/2
              before:border-y-8 before:border-y-transparent before:border-r-8 before:border-r-gray-200"
                                     >
-                                      <div className="bg-white text-gray-800 font-bold text-lg px-3 py-1 rounded-md whitespace-nowrap">
+                                      <div className="bg-white text-gray-800 font-bold text-sm px-3 py-1 rounded-md whitespace-nowrap">
                                         {name}
                                       </div>
                                     </Popover.Panel>
@@ -451,21 +451,16 @@ export function Sidenav({
 
         {!isCollapsed && (
           <div className="absolute bottom-4 bg-white left-4 right-4">
-            <Button
-              variant="ghost"
-              color={sidenavColor}
-              className="w-full rounded-full flex items-center justify-center gap-2"
-            >
-              <LifebuoyIcon className="h-5 w-5" />
-              <span>Support</span>
-            </Button>
-            <Button
-              variant="outlined"
-              color="blue-gray"
-              className="w-full mb-2 bg-gray-200 rounded-full hover:bg-gray-400"
-            >
-              Current Plan: {userDetails.package}
-            </Button>
+            <Link to="/contact">
+              <Button
+                variant="outlined"
+                color="blue-gray"
+                className="w-full mb-2 bg-gray-200 rounded-full hover:bg-gray-400"
+              >
+                Current Plan: {userDetails.package}
+              </Button>
+            </Link>
+
             <Button
               variant="outlined"
               onClick={handleRefreshProfile}

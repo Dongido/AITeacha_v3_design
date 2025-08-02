@@ -7,6 +7,7 @@ import {
   Bars3Icon,
   ArrowRightEndOnRectangleIcon,
 } from "@heroicons/react/24/solid";
+import { Popover } from "@headlessui/react";
 import {
   useMaterialTailwindController,
   setOpenConfigurator,
@@ -43,17 +44,21 @@ export function StudentNavbar() {
 
   const dispatch = useDispatch<AppDispatch>();
   const { imageUrl, loading } = useSelector((state: any) => state.profile);
-  //  const [unreadCount, setUnreadCount] = useState<number>(4);
   const { messageCount } = useAppSelector(
     (state: RootState) => state.staffChats
   );
+
+  // Local state for popover visibility
+  const [isChatPopoverOpen, setIsChatPopoverOpen] = useState(false);
+  const [isProfilePopoverOpen, setIsProfilePopoverOpen] = useState(false);
+  const [isLogoutPopoverOpen, setIsLogoutPopoverOpen] = useState(false);
+  const [isSettingsPopoverOpen, setIsSettingsPopoverOpen] = useState(false);
 
   useEffect(() => {
     if (!imageUrl) {
       dispatch(loadProfileImage());
     }
     dispatch(getCount());
-    // console.log(imageUrl);
   }, [dispatch, imageUrl]);
 
   const { pathname } = useLocation();
@@ -86,7 +91,7 @@ export function StudentNavbar() {
     >
       <div className="flex items-center justify-between lg:justify-between md:gap-6 lg:md:flex-row md:items-center ">
         <div className="flex gap-2 items-center">
-           <Button
+          <Button
             variant="text"
             color="blue-gray"
             className="grid xl:hidden"
@@ -95,78 +100,176 @@ export function StudentNavbar() {
           >
             <Bars3Icon strokeWidth={3} className="h-6 w-6 text-blue-gray-500" />
           </Button>
-        <div className="capitalize px-4 hidden sm:block">
-          <Text variant="large" color="blue-gray">
-            {page}
-          </Text>
-        </div>
+          <div className="capitalize px-4 hidden sm:block">
+            <Text variant="large" color="blue-gray">
+              {page}
+            </Text>
+          </div>
         </div>
         <div className="flex md:items-center gap-0 items-center ">
-          <Link to="/student/participant/chats">
-            <div className="relative flex items-center gap-2 bg-purple-50 rounded-full px-3 py-1 transition cursor-pointer">
-              <FaRocketchat className=" font-medium text-purple-400 text-lg" />
-              {/* <span className="text-sm font-medium text-purple-400">Chat</span> */}
-              {messageCount.length > 0 && (
-                <span
-                  className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px]
-                  font-semibold rounded-full h-5 w-5 flex items-center justify-center shadow-md"
-                >
-                  {messageCount.length > 9 ? "9+" : messageCount.length}
-                </span>
-              )}
-            </div>
-          </Link>
-         
-          <Link to="/student/profile">
-            <Button variant="text" color="blue-gray" className="grid mb-2">
-              <img
-                src={imageURL}
-                alt="Profile"
-                className="h-8 w-8 rounded-full object-cover border border-gray-300"
-              />
-            </Button>
-          </Link>
+          {/* Chat Popover */}
+          <Popover>
+            {({ open }) => (
+              <div
+                onMouseEnter={() => setIsChatPopoverOpen(true)}
+                onMouseLeave={() => setIsChatPopoverOpen(false)}
+                className="relative inline-block"
+              >
+                <Popover.Button as={"div"}>
+                  <Link to="/student/participant/chats">
+                    <div className="relative flex items-center gap-2 bg-purple-50 rounded-full px-3 py-1 transition cursor-pointer">
+                      <FaRocketchat className=" font-medium text-purple-400 text-lg" />
+                      {messageCount.length > 0 && (
+                        <span
+                          className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px]
+                            font-semibold rounded-full h-5 w-5 flex items-center justify-center shadow-md"
+                        >
+                          {messageCount.length > 9 ? "9+" : messageCount.length}
+                        </span>
+                      )}
+                    </div>
+                  </Link>
+                </Popover.Button>
 
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="text" color="blue-gray" aria-label="Logout">
-                <ArrowRightEndOnRectangleIcon className="h-5 w-5 text-blue-gray-500" />
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Confirm Logout</DialogTitle>
-              </DialogHeader>
-              <p>Are you sure you want to logout?</p>
-              <DialogFooter>
-                <Button
-                  variant="destructive"
-                  className="rounded-md"
-                  onClick={handleLogout}
-                >
-                  Yes, Logout
-                </Button>
-                <DialogClose asChild>
-                  <Button variant="text">Cancel</Button>
-                </DialogClose>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+                {(isChatPopoverOpen || open) && (
+                  <Popover.Panel
+                    static
+                    className="absolute z-10 mt-2 w-auto p-2 bg-white border border-gray-200 rounded-xl shadow-xl text-sm whitespace-nowrap right-0"
+                  >
+                    <p className="bg-white text-gray-800 px-3 py-1 text-sm font-bold rounded-md whitespace-nowrap">
+                      Chat Messages
+                    </p>
+                  </Popover.Panel>
+                )}
+              </div>
+            )}
+          </Popover>
 
-          <Button
-            variant="text"
-            color="blue-gray"
-            onClick={() => setOpenConfigurator(uiDispatch, true)}
-            aria-label="Open configurator"
-          >
-            <Cog6ToothIcon className="h-5 w-5 text-blue-gray-500" />
-          </Button>
+          {/* Profile Popover */}
+          <Popover>
+            {({ open }) => (
+              <div
+                onMouseEnter={() => setIsProfilePopoverOpen(true)}
+                onMouseLeave={() => setIsProfilePopoverOpen(false)}
+                className="relative inline-block"
+              >
+                <Popover.Button as={"div"}>
+                  <Link to="/student/profile">
+                    <Button
+                      variant="text"
+                      color="blue-gray"
+                      className="grid mb-2"
+                    >
+                      <img
+                        src={imageURL}
+                        alt="Profile"
+                        className="h-8 w-8 rounded-full object-cover border border-gray-300"
+                      />
+                    </Button>
+                  </Link>
+                </Popover.Button>
+
+                {(isProfilePopoverOpen || open) && (
+                  <Popover.Panel
+                    static
+                    className="absolute z-10 mt-2 w-auto p-2 bg-white border border-gray-200 rounded-xl shadow-xl text-sm whitespace-nowrap right-0"
+                  >
+                    <p className="bg-white text-gray-800 text-sm font-bold px-3 py-1 rounded-md whitespace-nowrap">
+                      View Profile
+                    </p>
+                  </Popover.Panel>
+                )}
+              </div>
+            )}
+          </Popover>
+
+          {/* Logout Popover */}
+          <Popover>
+            {({ open }) => (
+              <div
+                onMouseEnter={() => setIsLogoutPopoverOpen(true)}
+                onMouseLeave={() => setIsLogoutPopoverOpen(false)}
+                className="relative inline-block"
+              >
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button
+                      variant="text"
+                      color="blue-gray"
+                      aria-label="Logout"
+                    >
+                      <ArrowRightEndOnRectangleIcon className="h-5 w-5 text-blue-gray-500" />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Confirm Logout</DialogTitle>
+                    </DialogHeader>
+                    <p>Are you sure you want to logout?</p>
+                    <DialogFooter>
+                      <Button
+                        variant="destructive"
+                        className="rounded-md"
+                        onClick={handleLogout}
+                      >
+                        Yes, Logout
+                      </Button>
+                      <DialogClose asChild>
+                        <Button variant="text">Cancel</Button>
+                      </DialogClose>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+                {(isLogoutPopoverOpen || open) && (
+                  <Popover.Panel
+                    static
+                    className="absolute z-10 mt-2 w-auto p-2 bg-white border border-gray-200 rounded-xl shadow-xl text-sm whitespace-nowrap right-0"
+                  >
+                    <p className="bg-white text-gray-800 px-3 py-1 text-sm font-bold rounded-md whitespace-nowrap">
+                      Logout
+                    </p>
+                  </Popover.Panel>
+                )}
+              </div>
+            )}
+          </Popover>
+
+          {/* Settings Popover */}
+          <Popover>
+            {({ open }) => (
+              <div
+                onMouseEnter={() => setIsSettingsPopoverOpen(true)}
+                onMouseLeave={() => setIsSettingsPopoverOpen(false)}
+                className="relative inline-block"
+              >
+                <Popover.Button
+                  as={Button}
+                  variant="text"
+                  color="blue-gray"
+                  onClick={() => setOpenConfigurator(uiDispatch, true)}
+                  aria-label="Open configurator"
+                >
+                  <Cog6ToothIcon className="h-5 w-5 text-blue-gray-500" />
+                </Popover.Button>
+
+                {(isSettingsPopoverOpen || open) && (
+                  <Popover.Panel
+                    static
+                    className="absolute z-10 mt-2 w-auto p-2 bg-white border border-gray-200 rounded-xl shadow-xl text-sm whitespace-nowrap right-0"
+                  >
+                    <p className="bg-white text-gray-800 px-3 py-1 text-sm font-bold rounded-md whitespace-nowrap">
+                      Settings
+                    </p>
+                  </Popover.Panel>
+                )}
+              </div>
+            )}
+          </Popover>
         </div>
       </div>
     </div>
   );
 }
-
 
 StudentNavbar.displayName = "/src/widgets/layout/DashboardNavbar.tsx";
 
