@@ -240,9 +240,9 @@ export function Sidenav({
                                   leaveTo="opacity-0 translate-x-1"
                                 >
                                   <div
-                                    className="relative bg-white border border-gray-200 rounded-xl shadow-xl text-sm p-2
+                                    className="relative capital bg-white border border-gray-200 rounded-xl shadow-xl text-sm p-2
                                     before:content-[''] before:absolute before:top-1/2 before:-left-2 before:-translate-y-1/2
-                                    before:border-y-8 before:border-y-transparent before:border-r-8 before:border-r-gray-200"
+                                    before:border-y-8 before:border-y-transparent before:border-r-8 before:border-r-gray-200 capitalize"
                                   >
                                     <div className="bg-white text-gray-800 font-bold text-sm px-3 py-1 rounded-md whitespace-nowrap">
                                       {name}

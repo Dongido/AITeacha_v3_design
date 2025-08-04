@@ -134,7 +134,7 @@ export function StudentNavbar() {
                 {(isChatPopoverOpen || open) && (
                   <Popover.Panel
                     static
-                    className="absolute z-10 mt-2 w-auto p-2 bg-white border border-gray-200 rounded-xl shadow-xl text-sm whitespace-nowrap right-0"
+                    className="absolute z-10 mt-2 w-auto p-2 bg-white border border-gray-200 rounded-xl shadow-xl text-sm whitespace-nowrap right-0 capitalize"
                   >
                     <p className="bg-white text-gray-800 px-3 py-1 text-sm font-bold rounded-md whitespace-nowrap">
                       Chat Messages
@@ -172,7 +172,7 @@ export function StudentNavbar() {
                 {(isProfilePopoverOpen || open) && (
                   <Popover.Panel
                     static
-                    className="absolute z-10 mt-2 w-auto p-2 bg-white border border-gray-200 rounded-xl shadow-xl text-sm whitespace-nowrap right-0"
+                    className="absolute z-10 mt-2 w-auto p-2 bg-white border border-gray-200 rounded-xl shadow-xl text-sm whitespace-nowrap right-0 capitalize"
                   >
                     <p className="bg-white text-gray-800 text-sm font-bold px-3 py-1 rounded-md whitespace-nowrap">
                       View Profile
@@ -223,7 +223,7 @@ export function StudentNavbar() {
                 {(isLogoutPopoverOpen || open) && (
                   <Popover.Panel
                     static
-                    className="absolute z-10 mt-2 w-auto p-2 bg-white border border-gray-200 rounded-xl shadow-xl text-sm whitespace-nowrap right-0"
+                    className="absolute z-10 mt-2 w-auto p-2 bg-white border border-gray-200 rounded-xl shadow-xl text-sm whitespace-nowrap right-0 capitalize"
                   >
                     <p className="bg-white text-gray-800 px-3 py-1 text-sm font-bold rounded-md whitespace-nowrap">
                       Logout

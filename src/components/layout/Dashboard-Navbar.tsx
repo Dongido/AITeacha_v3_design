@@ -148,7 +148,7 @@ export function DashboardNavbar() {
                 {(isChatPopoverOpen || open) && (
                   <Popover.Panel
                     static
-                    className="absolute z-10 mt-2 w-auto p-2 bg-white border  border-gray-200 rounded-xl  shadow-xl  text-sm whitespace-nowrap"
+                    className="absolute z-10 mt-2 w-auto p-2 bg-white border  border-gray-200 rounded-xl  shadow-xl  text-sm whitespace-nowrap capitalize"
                   >
                     <p className="bg-white text-gray-800  px-3 py-1 text-sm font-bold rounded-md  whitespace-nowrap">
                       Chat Messages
@@ -205,7 +205,7 @@ export function DashboardNavbar() {
                   {(isProfilePopoverOpen || open) && (
                     <Popover.Panel
                       static
-                      className="absolute z-10 mt-2 w-auto p-2 bg-white border border-gray-200 rounded-xl  shadow-xl  text-sm whitespace-nowrap"
+                      className="absolute z-10 mt-2 w-auto p-2 bg-white border border-gray-200 rounded-xl  shadow-xl  text-sm whitespace-nowrap capitalize"
                     >
                       <p className="bg-white text-gray-800 text-sm font-bold px-3 py-1 rounded-md  whitespace-nowrap">
                         View Profile
@@ -255,7 +255,7 @@ export function DashboardNavbar() {
                   {(isLogoutPopoverOpen || open) && (
                     <Popover.Panel
                       static
-                      className="absolute z-10 mt-2 w-auto p-2 bg-white border border-gray-200 rounded-xl  shadow-xl  text-sm whitespace-nowrap"
+                      className="absolute z-10 mt-2 w-auto p-2 bg-white border border-gray-200 rounded-xl  shadow-xl  text-sm whitespace-nowrap capitalize"
                     >
                       <p className="bg-white text-gray-800  px-3 py-1 text-sm font-bold rounded-md  whitespace-nowrap">
                         Logout
