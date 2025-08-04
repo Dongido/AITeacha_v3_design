@@ -10,6 +10,7 @@ import {
   editClassroom,
   editClassroomTools,
   getSuggestedTopic,
+  chatHistory,
 } from "../../api/classrooms";
 import { Student, Classroom } from "../../api/interface";
 
@@ -26,6 +27,7 @@ interface ClassroomsState {
   fetchingStudents: boolean;
   error: string | null;
   classroomTopic: string | null
+  chatHistory:any[] | undefined
 }
 
 const initialState: ClassroomsState = {
@@ -40,7 +42,8 @@ const initialState: ClassroomsState = {
   deleting: false,
   fetchingStudents: false,
   error: null,
-  classroomTopic:null
+  classroomTopic: null,
+  chatHistory:[]
 };
 
 export const loadClassrooms = createAsyncThunk(
@@ -245,7 +248,7 @@ export const createClassroomThunk = createAsyncThunk(
 
 
 export const createClassroomSuggestion = createAsyncThunk(
-  "classrooms/createClassroomTopic", 
+  "classrooms/createClassroomTopic",
   async (payload: any, { rejectWithValue }) => {
     try {
       console.log("🔍 Sending payload to getSuggestedTopic:", payload);
@@ -266,6 +269,15 @@ export const createClassroomSuggestion = createAsyncThunk(
     }
   }
 );
+export const getChatHistory = createAsyncThunk("classrooms/chathistory", async (payload: any, { rejectWithValue }) => {
+  try {
+    const response = await chatHistory(payload)
+  } catch (error) {
+    console.log("failed to get student staff history")
+    return rejectWithValue("Failed to fetch classroom topic");
+  }
+
+})
 
 
 const classroomsSlice = createSlice({
@@ -409,8 +421,8 @@ const classroomsSlice = createSlice({
         state.error = action.payload as string;
       })
       .addCase(createClassroomSuggestion.pending, (state) => {
-      state.loading = true;
-      state.error = null;
+        state.loading = true;
+        state.error = null;
       })
       .addCase(createClassroomSuggestion.fulfilled, (state, action) => {
         state.loading = false;
@@ -430,8 +442,22 @@ const classroomsSlice = createSlice({
       .addCase(createClassroomThunk.rejected, (state, action) => {
         state.creating = false;
         state.error = action.payload as string;
-      });
-      
+      })
+      .addCase(getChatHistory.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(getChatHistory.fulfilled, (state,action) => {
+        state.loading = false
+        state.chatHistory = action.payload
+      })
+      .addCase(getChatHistory.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload as string
+      })
+      ;
+
+
   },
 });
 

@@ -435,7 +435,7 @@ export const fetchClassroomTools = async (
     if (response.status !== 200) {
       throw new Error("Failed to fetch classroom tools.");
     }
-
+      // console.log(" classroom tools  response", response)
     return response.data.data;
   } catch (error: any) {
     throw new Error(
@@ -457,6 +457,7 @@ export const fetchStudentAnalytics = async (
       tools,
     });
     return response.data;
+    // console.log("student response", response)
   } catch (error: any) {
     throw new Error(
       error.response?.data?.message || "Failed to fetch student analytics."
@@ -565,3 +566,28 @@ export const getSuggestedTopic = async (
     return undefined;
   }
 };
+
+
+
+export const chatHistory = async(payload:any):Promise<any[] | undefined>  => {
+  try {
+    const { studentId,classroomId} = payload
+    const response = await apiClient.get<{
+    status:string;
+    message:string;
+    data:any[]
+   }>(`/api/assistant/student/classroom/chat/history/${studentId}/${classroomId}/${10}/${1}`) 
+   console.log("response", response)
+   
+    if (response.data.status !== "success") {
+      throw new Error(
+        response.data.message || "Failed to get chat history"
+      );
+    }
+
+    return response.data.data;
+  } catch (error) {
+     console.log("Failed to get chat History", error);
+  }
+
+}

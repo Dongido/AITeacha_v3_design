@@ -19,6 +19,8 @@ const Analytics = () => {
   const [analyticsData, setAnalyticsData] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
+  console.log(analyticsData, "data")
+
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -43,14 +45,20 @@ const Analytics = () => {
   return (
     <div className="mt-12">
       <div className="flex items-center mb-4 justify-between flex-col sm:flex-row">
-        <Button
-          className="flex items-center bg-white rounded-md text-black w-fit h-full gap-3 py-2"
-          onClick={() => navigate(-1)}
-        >
-          <Undo2 size={"1.1rem"} color="black" />
-          Back
-        </Button>
-
+        <div className="flex gap-2">
+          <Button
+            className="flex items-center bg-white rounded-md text-black w-fit h-full gap-3 py-2"
+            onClick={() => navigate(-1)}
+          >
+            <Undo2 size={"1.1rem"} color="black" />
+            Back
+          </Button>
+          {/* <Link
+          to={`/dashboard/classrooms/History/${classroomId}/${studentId}`}
+           className="bg-purple-100 text-purple-800 font-medium px-4 py-2 rounded-md shadow-sm cursor-pointer">
+            Chat History
+          </Link> */}
+        </div>
         <div className="mx-auto text-center mt-4 sm:mt-0">
           <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">
             Student Analytics

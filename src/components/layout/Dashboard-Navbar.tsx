@@ -99,7 +99,9 @@ export function DashboardNavbar() {
 
         <div className="flex items-center gap-0">
           {/* Consolidated Chat Popover */}
-          <Popover>
+          <Popover
+          className="hidden lg:block cursor-pointer"
+          >
             {({ open }) => (
               <div
                 onMouseEnter={() => setIsChatPopoverOpen(true)}
@@ -126,7 +128,7 @@ export function DashboardNavbar() {
 
                   <Link
                     to="/dashboard/participant/chat"
-                    className="flex lg:hidden"
+                    className="flex lg:hidden cursor-pointer"
                   >
                     <div
                       className="relative items-center gap-2 bg-purple-50 rounded-full
@@ -170,12 +172,52 @@ export function DashboardNavbar() {
           </Button>
 
           <div className="flex items-center gap-4 ml-auto">
+            <Popover
+            className=" block lg:hidden "
+            >
+            {({ open }) => (
+              <div
+                onMouseEnter={() => setIsChatPopoverOpen(true)}
+                onMouseLeave={() => setIsChatPopoverOpen(false)}
+                className="relative inline-block"
+              >
+                <Popover.Button as={"div"}>
+                  <Link to="/student/participant/chats">
+                    <div className="relative flex items-center gap-2 bg-purple-50 rounded-full px-3 py-1 transition cursor-pointer">
+                      <FaRocketchat className=" font-medium text-purple-400 text-lg" />
+                      {messageCount.length > 0 && (
+                        <span
+                          className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px]
+                            font-semibold rounded-full h-5 w-5 flex items-center justify-center shadow-md"
+                        >
+                          {messageCount.length > 9 ? "9+" : messageCount.length}
+                        </span>
+                      )}
+                    </div>
+                  </Link>
+                </Popover.Button>
+
+                {(isChatPopoverOpen || open) && (
+                  <Popover.Panel
+                    static
+                    className="absolute z-10 mt-2 w-auto p-2 bg-white border border-gray-200 rounded-xl shadow-xl text-sm whitespace-nowrap right-0 capitalize"
+                  >
+                    <p className="bg-white text-gray-800 px-3 py-1 text-sm font-bold rounded-md whitespace-nowrap">
+                      Chat Messages
+                    </p>
+                  </Popover.Panel>
+                )}
+              </div>
+            )}
+          </Popover>
+
+
             <Popover>
               {({ open }) => (
                 <div
                   onMouseEnter={() => setIsProfilePopoverOpen(true)}
                   onMouseLeave={() => setIsProfilePopoverOpen(false)}
-                  className="relative inline-block"
+                  className="relative inline-block cursor-pointer"
                 >
                   <Popover.Button as={"div"}>
                     <Link to="/dashboard/profile" className="hidden lg:flex">
@@ -205,7 +247,7 @@ export function DashboardNavbar() {
                   {(isProfilePopoverOpen || open) && (
                     <Popover.Panel
                       static
-                      className="absolute z-10 mt-2 w-auto p-2 bg-white border border-gray-200 rounded-xl  shadow-xl  text-sm whitespace-nowrap capitalize"
+                      className="absolute z-10 mt-2 w-auto p-2 bg-white border cursor-pointer border-gray-200 rounded-xl  shadow-xl  text-sm whitespace-nowrap capitalize"
                     >
                       <p className="bg-white text-gray-800 text-sm font-bold px-3 py-1 rounded-md  whitespace-nowrap">
                         View Profile

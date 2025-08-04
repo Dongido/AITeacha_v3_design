@@ -162,7 +162,7 @@ export function Configurator() {
         )}
 
           {userDetails?.role_id !== 3 && (
-          <Link to={"/dashboard/Messageconfiguration"}>
+          <Link to={"/dashboard/Configuration"}>
             <Button className="w-full hover:bg-gray-100 transition duration-300">
               Messages Configuration
             </Button>

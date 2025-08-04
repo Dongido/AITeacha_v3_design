@@ -120,6 +120,7 @@ import { FaRocketchat } from "react-icons/fa";
 import MessageConfiguration from "../pages/Dashboard/forum/MessageConfiguration";
 import Notification from "../pages/Dashboard/admin/Nofification";
 import StudentPerformance from "../pages/Dashboard/student/StudentPerformance";
+import ChatHistory from "../pages/Dashboard/classrooms/chatHistory";
 
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -563,6 +564,12 @@ export const Paramroutes = [
       },
       {
         icon: <AcademicCapIcon {...icon} />,
+        name: "History",
+        path: "/classrooms/History/:classroomId/:studentId",
+        element: <ChatHistory />,
+      },
+      {
+        icon: <AcademicCapIcon {...icon} />,
         name: "classrooms",
         path: "/assignments/report/:id/students/:studentId",
         element: <StudentAnalytics />,
@@ -706,7 +713,7 @@ export const Paramroutes = [
       {
         icon: <DocumentTextIcon {...icon} />,
         name: "profile",
-        path: "/Messageconfiguration",
+        path: "/Configuration",
         element: <MessageConfiguration />,
       },
       {
