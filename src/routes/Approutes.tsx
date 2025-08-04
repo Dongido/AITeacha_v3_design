@@ -119,6 +119,8 @@ import ChatListPage from "../pages/Dashboard/chats/ChatListPage";
 import { FaRocketchat } from "react-icons/fa";
 import MessageConfiguration from "../pages/Dashboard/forum/MessageConfiguration";
 import Notification from "../pages/Dashboard/admin/Nofification";
+import StudentPerformance from "../pages/Dashboard/student/StudentPerformance";
+import ChatHistory from "../pages/Dashboard/classrooms/chatHistory";
 
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -348,7 +350,7 @@ export const Paramroutes = [
         path: "/upgrade/support",
         element: <UpgradeSupport />,
       },
-      
+
       {
         name: "chat",
         path: "/Studentforum/:id",
@@ -527,6 +529,12 @@ export const Paramroutes = [
       {
         icon: <DocumentTextIcon {...icon} />,
         name: "report",
+        path: "/classrooms/performance/:classroomId",
+        element: <StudentPerformance />,
+      },
+      {
+        icon: <DocumentTextIcon {...icon} />,
+        name: "report",
         path: "/test/:testId/students/:studentId",
         element: <StudentTestReport />,
       },
@@ -553,6 +561,12 @@ export const Paramroutes = [
         name: "classrooms",
         path: "/classrooms/:id/students/:studentId",
         element: <Analytics />,
+      },
+      {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "History",
+        path: "/classrooms/History/:classroomId/:studentId",
+        element: <ChatHistory />,
       },
       {
         icon: <AcademicCapIcon {...icon} />,
@@ -772,10 +786,10 @@ export const StudentParamroutes = [
         element: <ExamSubmitted />,
       },
       {
-      icon: <FaRocketchat {...icon} />,
-      name: "messages",
-      path: "/participant/chats",
-      element: <ChatListPage />,
+        icon: <FaRocketchat {...icon} />,
+        name: "messages",
+        path: "/participant/chats",
+        element: <ChatListPage />,
       },
       {
         icon: <AcademicCapIcon {...icon} />,
@@ -826,6 +840,12 @@ export const StudentParamroutes = [
         name: "chat",
         path: "/Studentforum/:id",
         element: <StudentClass />,
+      },
+      {
+        icon: <DocumentTextIcon {...icon} />,
+        name: "report",
+        path: "/classroom/performance/:classroomId",
+        element: <StudentPerformance />,
       },
       {
         icon: <AcademicCapIcon {...icon} />,

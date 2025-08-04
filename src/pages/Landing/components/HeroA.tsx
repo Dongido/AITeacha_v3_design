@@ -371,23 +371,23 @@ export default () => {
             />
           </div>
 
-          <div className="flex flex-col items-center lg:items-start text-white text-center lg:text-left flex-grow lg:pl-4">
+          <div className="flex flex-col items-center text-white text-center flex-grow">
             <p className="text-2xl font-semibold sm:text-3xl mb-2">
               "AiTeacha saved me 15 hours a week!"
             </p>
             <h3 className="font-semibold text-lg mb-8">
               Teacher in Lagos, Nigeria
             </h3>
-            <div className="flex flex-col md:flex-row space-y-8 md:space-y-0 md:space-x-16 mt-8 text-white justify-center lg:justify-start lg:mt-0">
-              <div className="text-center lg:text-left">
+            <div className="flex flex-col md:flex-row space-y-8 md:space-y-0 md:space-x-16 mt-8 text-white justify-center">
+              <div className="text-center">
                 <h2 className="text-4xl font-bold text-white">19,000+</h2>
                 <p className="text-lg">Teachers Onboard</p>
               </div>
-              <div className="text-center lg:text-left">
+              <div className="text-center">
                 <h2 className="text-4xl font-bold text-white">3,000+</h2>
                 <p className="text-lg">Schools Partnered</p>
               </div>
-              <div className="text-center lg:text-left">
+              <div className="text-center">
                 <h2 className="text-4xl font-bold text-white">200,000+</h2>
                 <p className="text-lg">Students Impacted</p>
               </div>

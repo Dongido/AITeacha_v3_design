@@ -922,6 +922,8 @@ const Classroom = () => {
     };
   }, []);
 
+  // console.log("selectedtools",selectedTool)
+
   useEffect(() => {
     let newMessage: string = classroom?.content || "";
     console.log("selectedOverview", selectedOverview);
@@ -1724,6 +1726,7 @@ const Classroom = () => {
       </div>
     );
   }
+   console.log("tools", tools)
   return (
     <ToastProvider>
       <div className="min-h-screen bg-[#F1F1F1]">
@@ -1912,13 +1915,17 @@ const Classroom = () => {
                       Live Class
                     </Button>
                   ))}
-                {/* <Button
-                  variant="black"
-                  className="rounded-full mt-4"
-                  onClick={() => setViewState("simulation")}
-                >
-                  Start Simulation
-                </Button> */}
+
+                {viewState === "classroom" && (
+                  <Button
+                    variant="black"
+                    className="rounded-full mt-4"
+                    onClick={() => setViewState("simulation")}
+                  >
+                    Start Simulation
+                  </Button>
+                )}
+
                 {classroom?.isLiveclassroom === 1 ||
                   (viewState !== "classroom" && (
                     <Button

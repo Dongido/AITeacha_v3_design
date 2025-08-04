@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react"; // Import useRef
 import { Link, NavLink, useLocation } from "react-router-dom";
 import {
   XMarkIcon,
@@ -7,6 +7,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
 } from "@heroicons/react/24/outline";
+import { Popover, Transition } from "@headlessui/react";
 import {
   useMaterialTailwindController,
   setOpenSidenav,
@@ -24,6 +25,16 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { loadUserProfile, selectUser } from "../../store/slices/profileSlice";
 import { AppDispatch } from "../../store";
+
+// Import createPortal and useFloating
+import { createPortal } from "react-dom";
+import {
+  useFloating,
+  offset,
+  flip,
+  shift,
+  autoUpdate,
+} from "@floating-ui/react";
 
 interface RoutePage {
   icon: React.ReactNode;
@@ -72,25 +83,23 @@ export function Sidenav({
     localStorage.getItem("ai-teacha-user") || "{}"
   );
 
-
   useEffect(() => {
-  function handleClickOutside(event: MouseEvent) {
-    if (
-      openSidenav &&
-      sidenavRef.current &&
-      !sidenavRef.current.contains(event.target as Node)
-    ) {
-      setOpenSidenav(dispatch, false);
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        openSidenav &&
+        sidenavRef.current &&
+        !sidenavRef.current.contains(event.target as Node)
+      ) {
+        setOpenSidenav(dispatch, false);
+      }
     }
-  }
-  if (openSidenav && window.innerWidth < 1280) {
-    document.addEventListener("mousedown", handleClickOutside);
-  }
-  return () => {
-    document.removeEventListener("mousedown", handleClickOutside);
-  };
-}, [openSidenav, dispatch]);
-
+    if (openSidenav && window.innerWidth < 1280) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [openSidenav, dispatch]);
 
   useEffect(() => {
     if (!user) {
@@ -133,231 +142,357 @@ export function Sidenav({
       setToastVisible(true);
     }
   };
+
   return (
-   <>
-    <aside
-      ref={sidenavRef}
-      className={` routes-scroll-area ${sidenavTypes[sidenavType]} ${
-        openSidenav ? "translate-x-0" : "-translate-x-80"
-      } fixed inset-0 z-50 h-[calc(100vh)] ${
-        isCollapsed ? "w-28 " : "w-72"
-      } transition-transform duration-300 xl:translate-x-0`}
-    >
-      <div className="relative flex items-center justify-between p-4">
-        <Link to={"/dashboard/home"}>
-          <div className="flex items-center">
-            {brandImg && !isCollapsed && (
-              <img src={brandImg} alt="Brand Logo" className="h-8 w-8 mr-2" />
-            )}
-            {!isCollapsed && (
-              <Text variant="large" className="text-center text-black">
-                {brandName}
-              </Text>
-            )}
-          </div>
-        </Link>
-        <Button
-          variant={"default"}
-          className="p-2 rounded-full xl:inline-block hidden"
-          onClick={handleToggle}
-        >
-          {isCollapsed ? (
-            <ChevronRightIcon className="h-5 w-5 text-gray-700" />
-          ) : (
-            <ChevronLeftIcon className="h-5 w-5 text-gray-700" />
-          )}
-        </Button>
-
-        <Button
-          variant={"default"}
-          className="absolute right-0 top-0 p-2 rounded-br-none rounded-tl-none xl:hidden"
-          onClick={() => setOpenSidenav(dispatch, false)}
-        >
-          <XMarkIcon strokeWidth={2.5} className="h-5 w-5 text-gray-700" />
-        </Button>
-      </div>
-
-      {/* Routes Section */}
-      <div
-        className={`my-4 overflow-y-auto ${
-          isCollapsed
-            ? "max-h-[calc(100vh-140px)] "
-            : "max-h-[calc(100vh-220px)]"
-        }`}
+    <>
+      <aside
+        ref={sidenavRef}
+        className={` routes-scroll-area ${sidenavTypes[sidenavType]} ${
+          openSidenav ? "translate-x-0" : "-translate-x-80"
+        } fixed inset-0 z-50 h-[calc(100vh)] ${
+          isCollapsed ? "w-28 " : "w-72"
+        } transition-transform duration-300 xl:translate-x-0`}
       >
-        {routes.map(({ layout, title, pages }, key) => (
-          <ul key={key} className="mb-4 flex flex-col gap-1">
-            {title && !isCollapsed && (
-              <li className="mx-3.5 mt-4 mb-2 list-none">
-                <Text
-                  variant="small"
-                  color={sidenavType === "dark" ? "white" : "blue-gray"}
-                  className="font-black uppercase opacity-75"
-                >
-                  {title}
+        <div className="relative flex items-center justify-between p-4">
+          <Link to={"/dashboard/home"}>
+            <div className="flex items-center">
+              {brandImg && !isCollapsed && (
+                <img src={brandImg} alt="Brand Logo" className="h-8 w-8 mr-2" />
+              )}
+              {!isCollapsed && (
+                <Text variant="large" className="text-center text-black">
+                  {brandName}
                 </Text>
-              </li>
-            )}
-            {pages.map(({ icon, name, path, adminOnly, submenu }) => {
-              if (adminOnly && !isAdmin) return null;
-
-              const fullPath = `/${layout}${path}`;
-              const [isExpanded, setIsExpanded] = React.useState(false);
-              const location = useLocation();
-
-              React.useEffect(() => {
-                if (
-                  submenu?.some(
-                    (sub) => location.pathname === `/${layout}${sub.path}`
-                  )
-                ) {
-                  setIsExpanded(true);
-                }
-              }, [location.pathname, submenu]);
-              const keywords = ["premium", "resource"];
-              const isPremium = keywords.some((keyword) =>
-                name.toLowerCase().includes(keyword)
-              );
-
-              return (
-                <li key={name} className="menu-item list-none">
-                  <NavLink
-                    to={!submenu ? fullPath : "#"}
-                    onClick={() => {
-                      if (submenu) {
-                        setIsExpanded(!isExpanded);
-                      } else if (window.innerWidth < 1280) {
-                        setOpenSidenav(dispatch, false);
-                      }
-                    }}
-                  >
-                    {({ isActive }) => (
-                      <Button
-                        variant={
-                          isPremium ? "ghost" : isActive ? "gradient" : "ghost"
-                        }
-                        color={
-                          isActive
-                            ? sidenavColor
-                            : sidenavType === "dark"
-                            ? "white"
-                            : "blue-gray"
-                        }
-                        className={`w-full px-4 capitalize rounded-full ${
-                          isCollapsed ? "justify-center" : "flex items-center"
-                        } hover:bg-[#d2a9f3] hover:text-white`}
-                      >
-                        <div className="flex items-center gap-2 w-full">
-                          <span className="w-6 flex items-center justify-center">
-                            {icon}
-                          </span>
-                          {!isCollapsed && (
-                            <Text
-                              color="inherit"
-                              className="font-medium capitalize text-left flex-1"
-                            >
-                              {name}
-                            </Text>
-                          )}
-                          {submenu && (
-                            <span
-                              className={`ml-auto transition-transform ${
-                                isExpanded ? "rotate-90" : ""
-                              }`}
-                            >
-                              ▶
-                            </span>
-                          )}
-                        </div>
-                      </Button>
-                    )}
-                  </NavLink>
-
-                  {/* Render submenu */}
-                  {submenu && isExpanded && (
-                    <ul className="submenu ml-0 mt-2">
-                      {submenu.map(
-                        ({ icon: subIcon, name: subName, path: subPath }) => (
-                          <li key={subName} className="submenu-item list-none">
-                            <NavLink
-                              to={`/${layout}${subPath}`} // Full submenu path
-                              onClick={() => {
-                                if (window.innerWidth < 1280) {
-                                  setOpenSidenav(dispatch, false);
-                                }
-                              }}
-                            >
-                              {({ isActive }) => (
-                                <Button
-                                  variant={isActive ? "gradient" : "ghost"}
-                                  color={isActive ? sidenavColor : "blue-gray"}
-                                  className={`w-full px-4 capitalize rounded-full ${
-                                    isCollapsed
-                                      ? "justify-center"
-                                      : "flex items-center"
-                                  } hover:bg-[#d2a9f3] hover:text-white`}
-                                >
-                                  <div className="flex items-center gap-2">
-                                    <span className="w-6 flex items-center justify-center">
-                                      {subIcon}
-                                    </span>
-                                    {!isCollapsed && (
-                                      <Text
-                                        color="inherit"
-                                        className="font-medium capitalize text-left"
-                                      >
-                                        {subName}
-                                      </Text>
-                                    )}
-                                  </div>
-                                </Button>
-                              )}
-                            </NavLink>
-                          </li>
-                        )
-                      )}
-                    </ul>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
-        ))}
-      </div>
-
-      {!isCollapsed && (
-        <div className="absolute bottom-4 bg-white left-4 right-4">
+              )}
+            </div>
+          </Link>
           <Button
-            variant="ghost"
-            color={sidenavColor}
-            className="w-full rounded-full flex items-center justify-center gap-2"
+            variant={"default"}
+            className="p-2 rounded-full xl:inline-block hidden"
+            onClick={handleToggle}
           >
-            <LifebuoyIcon className="h-5 w-5" />
-            <span>Support</span>
-          </Button>
-          <Button
-            variant="outlined"
-            color="blue-gray"
-            className="w-full mb-2 bg-gray-200 rounded-full hover:bg-gray-400"
-          >
-            Current Plan: {userDetails.package}
-          </Button>
-          <Button
-            variant="outlined"
-            onClick={handleRefreshProfile}
-            aria-label="Open configurator"
-            className="bg-purple-100 font-bold justify-center gap-2 w-full rounded-full"
-          >
-            {loading ? (
-              <span>Refreshing...</span>
+            {isCollapsed ? (
+              <ChevronRightIcon className="h-5 w-5 text-gray-700" />
             ) : (
-              <span>Refresh Profile</span>
+              <ChevronLeftIcon className="h-5 w-5 text-gray-700" />
             )}
+          </Button>
+
+          <Button
+            variant={"default"}
+            className="absolute right-0 top-0 p-2 rounded-br-none rounded-tl-none xl:hidden"
+            onClick={() => setOpenSidenav(dispatch, false)}
+          >
+            <XMarkIcon strokeWidth={2.5} className="h-5 w-5 text-gray-700" />
           </Button>
         </div>
-      )}
-    </aside>
-   </>
+
+        {/* Routes Section */}
+        <div
+          className={`my-4 overflow-y-auto ${
+            isCollapsed
+              ? "max-h-[calc(100vh-140px)] "
+              : "max-h-[calc(100vh-220px)]"
+          }`}
+        >
+          {routes.map(({ layout, title, pages }, key) => (
+            <ul key={key} className="mb-4 flex flex-col gap-1">
+              {title && !isCollapsed && (
+                <li className="mx-3.5 mt-4 mb-2 list-none">
+                  <Text
+                    variant="small"
+                    color={sidenavType === "dark" ? "white" : "blue-gray"}
+                    className="font-black uppercase opacity-75"
+                  >
+                    {title}
+                  </Text>
+                </li>
+              )}
+              {pages.map(({ icon, name, path, adminOnly, submenu }) => {
+                if (adminOnly && !isAdmin) return null;
+
+                const fullPath = `/${layout}${path}`;
+                const [isExpanded, setIsExpanded] = React.useState(false);
+                const location = useLocation();
+
+                React.useEffect(() => {
+                  if (
+                    submenu?.some(
+                      (sub) => location.pathname === `/${layout}${sub.path}`
+                    )
+                  ) {
+                    setIsExpanded(true);
+                  }
+                }, [location.pathname, submenu, layout]);
+                const keywords = ["premium", "resource"];
+                const isPremium = keywords.some((keyword) =>
+                  name.toLowerCase().includes(keyword)
+                );
+
+                // --- Floating UI Hook for positioning ---
+                const { refs, floatingStyles, update } = useFloating({
+                  placement: "right-start", // Show popover to the right of the button
+                  middleware: [
+                    offset(10), // Offset from the button
+                    flip(), // Flip to other side if space is limited
+                    shift(), // Shift to keep in view
+                  ],
+                  // This is crucial for keeping the popover positioned correctly
+                  // when the reference element moves (e.g., due to scrolling, sidebar collapse)
+                  whileElementsMounted: autoUpdate,
+                });
+
+                return (
+                  <li key={name} className="menu-item list-none">
+                    {isCollapsed ? (
+                      <Popover
+                        as="div"
+                        className="relative flex justify-center"
+                      >
+                        {({ open: headlessOpen }) => {
+                          const [isOpen, setIsOpen] = useState(false);
+
+                          // Use an effect to update Floating UI's position when Popover open state changes
+                          useEffect(() => {
+                            if (isOpen || headlessOpen) {
+                              update();
+                            }
+                          }, [isOpen, headlessOpen, update]);
+
+                          return (
+                            <div
+                              // Only handle mouse events if there's no submenu,
+                              // otherwise clicking the button should toggle submenu.
+                              onMouseEnter={() => !submenu && setIsOpen(true)}
+                              onMouseLeave={() => !submenu && setIsOpen(false)}
+                              className="w-full"
+                            >
+                              <NavLink
+                                to={!submenu ? fullPath : "#"}
+                                onClick={(e) => {
+                                  if (submenu) {
+                                    e.preventDefault();
+                                    setIsExpanded(!isExpanded);
+                                  } else if (window.innerWidth < 1280) {
+                                    setOpenSidenav(dispatch, false);
+                                  }
+                                  setIsOpen(false); // Close popover on click
+                                }}
+                                className="focus:outline-none w-full"
+                              >
+                                {({ isActive: navLinkIsActive }) => (
+                                  <Popover.Button
+                                    as="div"
+                                    ref={refs.setReference} // Assign reference element for Floating UI
+                                    className="focus:outline-none w-full"
+                                  >
+                                    <Button
+                                      variant={
+                                        isPremium
+                                          ? "ghost"
+                                          : navLinkIsActive
+                                          ? "gradient"
+                                          : "ghost"
+                                      }
+                                      color={
+                                        navLinkIsActive
+                                          ? sidenavColor
+                                          : sidenavType === "dark"
+                                          ? "white"
+                                          : "blue-gray"
+                                      }
+                                      className={`px-4 capitalize rounded-full justify-center
+                                        hover:bg-[#d2a9f3] hover:text-white`}
+                                    >
+                                      <span className="w-6 flex items-center justify-center">
+                                        {icon}
+                                      </span>
+                                    </Button>
+                                  </Popover.Button>
+                                )}
+                              </NavLink>
+
+                              {(isOpen || headlessOpen) &&
+                                createPortal(
+                                  <div
+                                    ref={refs.setFloating}
+                                    style={floatingStyles}
+                                    className="z-[1000] min-w-max"
+                                  >
+                                    <Popover.Panel
+                                      static
+                                      className="relative bg-white border border-gray-200 rounded-xl shadow-xl text-sm p-2
+             before:content-[''] before:absolute before:top-1/2 before:-left-2 before:-translate-y-1/2
+             before:border-y-8 before:border-y-transparent before:border-r-8 before:border-r-gray-200 capitalize"
+                                    >
+                                      <div className="bg-white text-gray-800 font-bold text-sm px-3 py-1 rounded-md whitespace-nowrap">
+                                        {name}
+                                      </div>
+                                    </Popover.Panel>
+                                  </div>,
+                                  document.body
+                                )}
+                            </div>
+                          );
+                        }}
+                      </Popover>
+                    ) : (
+                      // Original NavLink for expanded sidebar
+                      <NavLink
+                        to={!submenu ? fullPath : "#"}
+                        onClick={() => {
+                          if (submenu) {
+                            setIsExpanded(!isExpanded);
+                          } else if (window.innerWidth < 1280) {
+                            setOpenSidenav(dispatch, false);
+                          }
+                        }}
+                      >
+                        {({ isActive }) => (
+                          <Button
+                            variant={
+                              isPremium
+                                ? "ghost"
+                                : isActive
+                                ? "gradient"
+                                : "ghost"
+                            }
+                            color={
+                              isActive
+                                ? sidenavColor
+                                : sidenavType === "dark"
+                                ? "white"
+                                : "blue-gray"
+                            }
+                            className={`w-full px-4 capitalize rounded-full flex items-center
+                              hover:bg-[#d2a9f3] hover:text-white`}
+                          >
+                            <div className="flex items-center gap-2 w-full">
+                              <span className="w-6 flex items-center justify-center">
+                                {icon}
+                              </span>
+                              <Text
+                                color="inherit"
+                                className="font-medium capitalize text-left flex-1"
+                              >
+                                {name}
+                              </Text>
+                              {submenu && (
+                                <span
+                                  className={`ml-auto transition-transform ${
+                                    isExpanded ? "rotate-90" : ""
+                                  }`}
+                                >
+                                  ▶
+                                </span>
+                              )}
+                            </div>
+                          </Button>
+                        )}
+                      </NavLink>
+                    )}
+
+                    {/* Render submenu */}
+                    {submenu && isExpanded && (
+                      <ul className="submenu ml-0 mt-2">
+                        {submenu.map(
+                          ({ icon: subIcon, name: subName, path: subPath }) => (
+                            <li
+                              key={subName}
+                              className="submenu-item list-none"
+                            >
+                              <NavLink
+                                to={`/${layout}${subPath}`}
+                                onClick={() => {
+                                  if (window.innerWidth < 1280) {
+                                    setOpenSidenav(dispatch, false);
+                                  }
+                                }}
+                              >
+                                {({ isActive }) => (
+                                  <Button
+                                    variant={isActive ? "gradient" : "ghost"}
+                                    color={
+                                      isActive ? sidenavColor : "blue-gray"
+                                    }
+                                    className={`w-full px-4 capitalize rounded-full ${
+                                      isCollapsed
+                                        ? "justify-center"
+                                        : "flex items-center"
+                                    } hover:bg-[#d2a9f3] hover:text-white`}
+                                  >
+                                    <div className="flex items-center gap-2">
+                                      <span className="w-6 flex items-center justify-center">
+                                        {subIcon}
+                                      </span>
+                                      {!isCollapsed && (
+                                        <Text
+                                          color="inherit"
+                                          className="font-medium capitalize text-left"
+                                        >
+                                          {subName}
+                                        </Text>
+                                      )}
+                                    </div>
+                                  </Button>
+                                )}
+                              </NavLink>
+                            </li>
+                          )
+                        )}
+                      </ul>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          ))}
+        </div>
+
+        {!isCollapsed && (
+          <div className="absolute bottom-4 bg-white left-4 right-4">
+            <Link to="/contact">
+              <Button
+                variant="outlined"
+                color="blue-gray"
+                className="w-full mb-2 bg-gray-200 rounded-full hover:bg-gray-400"
+              >
+                Current Plan: {userDetails.package}
+              </Button>
+            </Link>
+
+            <Button
+              variant="outlined"
+              onClick={handleRefreshProfile}
+              aria-label="Open configurator"
+              className="bg-purple-100 font-bold justify-center gap-2 w-full rounded-full"
+            >
+              {loading ? (
+                <span>Refreshing...</span>
+              ) : (
+                <span>Refresh Profile</span>
+              )}
+            </Button>
+          </div>
+        )}
+      </aside>
+      <ToastProvider swipeDirection="right">
+        {toastVisible && (
+          <Toast
+            open={toastVisible}
+            onOpenChange={setToastVisible}
+            duration={3000}
+            className="data-[state=open]:animate-slideIn data-[state=closed]:animate-hide data-[swipe=end]:animate-swipeOut translate-x-full"
+          >
+            <ToastTitle className="text-lg font-bold">Status</ToastTitle>
+            <ToastDescription className="text-sm">
+              {toastMessage}
+            </ToastDescription>
+          </Toast>
+        )}
+        <ToastViewport className="[--viewport-padding:_25px] fixed bottom-0 right-0 flex flex-col p-[--viewport-padding] gap-[10px] w-[390px] max-w-[100vw] m-0 list-none z-[2147483647] outline-none" />
+      </ToastProvider>
+    </>
   );
 }
 

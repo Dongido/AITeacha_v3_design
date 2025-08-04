@@ -3,9 +3,9 @@ import { PieChart, Pie, Cell, Legend, ResponsiveContainer } from "recharts";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const COLORS: Record<"Excellent" | "Good" | "Fail", string> = {
-  Excellent: "#c6b6f5", // soft green
-  Good: "#FFE5B4", // soft dim yellow
-  Fail: "#FFB6B6", // soft red
+  Excellent: "#c6b6f5", 
+  Good: "#FFE5B4", 
+  Fail: "#FFB6B6", 
 };
 
 const StudentPerformanceDashboardOne = () => {

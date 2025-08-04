@@ -8,6 +8,8 @@
   "dependencies": {
     "@babel/standalone": "^7.28.1",
     "@codesandbox/sandpack-react": "^2.20.0",
+    "@floating-ui/dom": "^1.7.3",
+    "@floating-ui/react": "^0.27.15",
     "@headlessui/react": "^1.7.17",
     "@heroicons/react": "^2.1.5",
     "@hookform/resolvers": "^3.9.1",
@@ -24,6 +26,7 @@
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-switch": "^1.1.1",
     "@radix-ui/react-toast": "^1.2.2",
+    "@radix-ui/react-tooltip": "^1.2.7",
     "@react-pdf/renderer": "^4.1.5",
     "@reduxjs/toolkit": "^2.3.0",
     "@tanstack/react-table": "^8.20.5",
