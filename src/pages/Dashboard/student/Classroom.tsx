@@ -235,6 +235,15 @@ const Classroom = () => {
   const [remainingCallTime, setRemainingCallTime] = useState(0);
   const [outlines, setOutlines] = useState<OutlineType[]>([]);
   const [userrole, setIsuserRole] = useState<any>();
+  const [selectedOutlines, setSelectedOutlines] = useState<any>(null);
+  const outline = (classroom?.classroomoutlines || []).map((outline) => ({
+    name: outline.classroomoutline_title,
+    path: outline.classroomoutline_content || "#",
+    classroomoutline_id: outline.classroomoutline_id,
+    assessmentStatus: outline.assessment_status,
+    assessments: outline.assessments,
+    mark_as_read: outline.mark_as_read,
+  }));
   const { classroomTopic } = useSelector(
     (state: RootState) => state.classrooms
   );
@@ -260,6 +269,13 @@ const Classroom = () => {
       setUserDetails(parsedDetails);
     }
   }, []);
+
+  useEffect(() => {
+    if (outline.length > 0 && !selectedOutlines) {
+      setSelectedOutlines(outlines[0]);
+    }
+  }, [outlines]);
+
 
 
   const playNextAudioChunk = useCallback(() => {
@@ -2020,41 +2036,33 @@ const Classroom = () => {
                                 .slice(0, currentIndex)
                                 .reverse()
                                 .findIndex((o) => o.mark_as_read === 1);
+
                               const actualPrevIndex =
-                                prevIndex !== -1
-                                  ? currentIndex - prevIndex - 1
-                                  : -1;
+                                prevIndex !== -1 ? currentIndex - prevIndex - 1 : -1;
+
                               return (
                                 <>
                                   {actualPrevIndex !== -1 && (
-                                    <Button
-                                      variant="gradient"
+                                    <button
                                       className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md transition-all duration-200"
-                                      onClick={() =>
-                                        setSelectedOutline(
-                                          outlines[actualPrevIndex]
-                                        )
-                                      }
+                                      onClick={() => setSelectedOutline(outline[actualPrevIndex])}
                                     >
                                       Previous
-                                    </Button>
+                                    </button>
                                   )}
 
                                   {next && (
-                                    <Button
-                                      variant="gradient"
+                                    <button
                                       className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md transition-all duration-200 ml-2"
-                                      onClick={() => setSelectedOutline(next)}
+                                      onClick={() => setSelectedOutlines(next)}
                                     >
                                       Next
-                                    </Button>
+                                    </button>
                                   )}
                                 </>
                               );
                             })()}
                           </div>
-
-                          <div></div>
                         </div>
                         {selectedOutline &&
                           selectedOutline.assessments &&

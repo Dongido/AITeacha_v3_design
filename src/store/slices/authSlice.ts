@@ -1,4 +1,5 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { contactUs } from "../../api/auth";
 
 interface User {
   id: number;
@@ -9,12 +10,27 @@ interface User {
 interface AuthState {
   token: string | null;
   user: User | null;
+  contact: null;
+  error: string | null;
+  loading: boolean
 }
 
 const initialState: AuthState = {
   token: null,
   user: null,
+  contact: null,
+  error: null,
+  loading: false
 };
+
+export const contactSlice = createAsyncThunk("staffTopic/participant", async (payload: any, { rejectWithValue }) => {
+  try {
+    const response = await contactUs(payload)
+    return response
+  } catch (error: any) {
+    return rejectWithValue(error.message || "failed send contactmessage");
+  }
+})
 
 const authSlice = createSlice({
   name: "auth",
@@ -32,6 +48,21 @@ const authSlice = createSlice({
       state.user = null;
     },
   },
+  extraReducers: (builder) => {
+    builder
+      .addCase(contactSlice.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(contactSlice.fulfilled, (state, action) => {
+        state.loading = false;
+        state.contact = action.payload;
+      })
+      .addCase(contactSlice.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+  }
 });
 
 export const { setAuthData, clearAuthData } = authSlice.actions;

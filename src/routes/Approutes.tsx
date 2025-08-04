@@ -699,7 +699,7 @@ export const Paramroutes = [
       {
         icon: <DocumentTextIcon {...icon} />,
         name: "profile",
-        path: "/Messageconfiguration",
+        path: "/Configuration",
         element: <MessageConfiguration />,
       },
       {
