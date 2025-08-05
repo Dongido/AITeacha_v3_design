@@ -53,17 +53,17 @@ const Analytics = () => {
             <Undo2 size={"1.1rem"} color="black" />
             Back
           </Button>
-          {/* <Link
+          <Link
           to={`/dashboard/classrooms/History/${classroomId}/${studentId}`}
            className="bg-purple-100 text-purple-800 font-medium px-4 py-2 rounded-md shadow-sm cursor-pointer">
             Chat History
-          </Link> */}
+          </Link>
         </div>
-        <div className="mx-auto text-center mt-4 sm:mt-0">
+        {/* <div className="mx-auto text-center mt-4 sm:mt-0">
           <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">
             Student Analytics
           </h2>
-        </div>
+        </div> */}
       </div>
       {loading ? (
         <div className="space-y-4">
