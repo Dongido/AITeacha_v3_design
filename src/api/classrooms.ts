@@ -569,25 +569,30 @@ export const getSuggestedTopic = async (
 
 
 
-export const chatHistory = async(payload:any):Promise<any[] | undefined>  => {
+export const chatHistory = async(payload:any):Promise<any[]>  => {
   try {
-    const { studentId,classroomId} = payload
+    // console.log(payload,"payload")
+    const { studentId,classroomId, page} = payload
+    // console.log("id", cla)
     const response = await apiClient.get<{
     status:string;
     message:string;
     data:any[]
-   }>(`/api/assistant/student/classroom/chat/history/${studentId}/${classroomId}/${10}/${1}`) 
-   console.log("response", response)
+   }>(`/assistant/student/classroom/chat/history/${studentId}/${classroomId}/${10}/${page}`) 
+
+  //  console.log("response", response)
    
     if (response.data.status !== "success") {
       throw new Error(
         response.data.message || "Failed to get chat history"
       );
     }
+      const hasMore = response.data.data.length === 10;
 
     return response.data.data;
   } catch (error) {
      console.log("Failed to get chat History", error);
+     return[]
   }
 
 }

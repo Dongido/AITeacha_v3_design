@@ -49,11 +49,6 @@ export function DashboardNavbar() {
     (state: RootState) => state.staffChats
   );
 
-  const [isChatPopoverOpen, setIsChatPopoverOpen] = useState(false);
-  const [isProfilePopoverOpen, setIsProfilePopoverOpen] = useState(false);
-  const [isSettingsPopoverOpen, setIsSettingsPopoverOpen] = useState(false);
-  const [isLogoutPopoverOpen, setIsLogoutPopoverOpen] = useState(false);
-
   useEffect(() => {
     if (!imageUrl) {
       dispatch(loadProfileImage());
@@ -97,69 +92,22 @@ export function DashboardNavbar() {
           </Text>
         </div>
 
-        <div className="flex items-center gap-0">
-          {/* Consolidated Chat Popover */}
-          <Popover
-          className="hidden lg:block cursor-pointer"
+        <div className="flex items-center gap-2">
+          {/* Consolidated Chat Link */}
+          <Link
+            to="/dashboard/participant/chat"
+            className="hidden lg:flex relative items-center gap-2 rounded-full px-3 py-1 transition cursor-pointer"
           >
-            {({ open }) => (
-              <div
-                onMouseEnter={() => setIsChatPopoverOpen(true)}
-                onMouseLeave={() => setIsChatPopoverOpen(false)}
-                className="relative inline-block"
+            <FaRocketchat className="font-medium text-purple-400 text-lg" />
+            {messageCount.length > 0 && (
+              <span
+                className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px]
+                   font-semibold rounded-full h-5 w-5 flex items-center justify-center shadow-md"
               >
-                <Popover.Button as="div">
-                  <Link
-                    to="/dashboard/participant/chat"
-                    className="hidden lg:flex"
-                  >
-                    <div className="relative items-center gap-2 bg-purple-50 rounded-full px-3 py-1 transition cursor-pointer flex ">
-                      <FaRocketchat className=" font-medium text-purple-400 text-lg" />
-                      {messageCount.length > 0 && (
-                        <span
-                          className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px]
-                          font-semibold rounded-full h-5 w-5 flex items-center justify-center shadow-md"
-                        >
-                          {messageCount.length > 9 ? "9+" : messageCount.length}
-                        </span>
-                      )}
-                    </div>
-                  </Link>
-
-                  <Link
-                    to="/dashboard/participant/chat"
-                    className="flex lg:hidden cursor-pointer"
-                  >
-                    <div
-                      className="relative items-center gap-2 bg-purple-50 rounded-full
-                      px-3 py-1 transition cursor-pointer flex "
-                    >
-                      <FaRocketchat className=" font-medium text-purple-400 text-lg" />
-                      {messageCount.length > 0 && (
-                        <span
-                          className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px]
-                          font-semibold rounded-full h-5 w-5 flex items-center justify-center shadow-md"
-                        >
-                          {messageCount.length > 9 ? "9+" : messageCount.length}
-                        </span>
-                      )}
-                    </div>
-                  </Link>
-                </Popover.Button>
-
-                {(isChatPopoverOpen || open) && (
-                  <Popover.Panel
-                    static
-                    className="absolute z-10 mt-2 w-auto p-2 bg-white border  border-gray-200 rounded-xl  shadow-xl  text-sm whitespace-nowrap capitalize"
-                  >
-                    <p className="bg-white text-gray-800  px-3 py-1 text-sm font-bold rounded-md  whitespace-nowrap">
-                      Chat Messages
-                    </p>
-                  </Popover.Panel>
-                )}
-              </div>
+                {messageCount.length > 9 ? "9+" : messageCount.length}
+              </span>
             )}
-          </Popover>
+          </Link>
 
           <Button
             variant="text"
@@ -171,174 +119,61 @@ export function DashboardNavbar() {
             <Bars3Icon strokeWidth={3} className="h-6 w-6 text-blue-gray-500" />
           </Button>
 
-          <div className="flex items-center gap-4 ml-auto">
-            <Popover
-            className=" block lg:hidden "
+          <div className="flex items-center gap-x-6  ml-auto lg:mr-3">
+            <Link
+              to="/student/participant/chats"
+              className="flex lg:hidden cursor-pointer relative items-center gap-2 rounded-full px-3 py-1 transition"
             >
-            {({ open }) => (
-              <div
-                onMouseEnter={() => setIsChatPopoverOpen(true)}
-                onMouseLeave={() => setIsChatPopoverOpen(false)}
-                className="relative inline-block"
-              >
-                <Popover.Button as={"div"}>
-                  <Link to="/student/participant/chats">
-                    <div className="relative flex items-center gap-2 bg-purple-50 rounded-full px-3 py-1 transition cursor-pointer">
-                      <FaRocketchat className=" font-medium text-purple-400 text-lg" />
-                      {messageCount.length > 0 && (
-                        <span
-                          className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px]
-                            font-semibold rounded-full h-5 w-5 flex items-center justify-center shadow-md"
-                        >
-                          {messageCount.length > 9 ? "9+" : messageCount.length}
-                        </span>
-                      )}
-                    </div>
-                  </Link>
-                </Popover.Button>
+              <FaRocketchat className="font-medium  text-lg" />
+              {messageCount.length > 0 && (
+                <span
+                  className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px]
+                   font-semibold rounded-full h-5 w-5 flex items-center justify-center shadow-md"
+                >
+                  {messageCount.length > 9 ? "9+" : messageCount.length}
+                </span>
+              )}
+            </Link>
 
-                {(isChatPopoverOpen || open) && (
-                  <Popover.Panel
-                    static
-                    className="absolute z-10 mt-2 w-auto p-2 bg-white border border-gray-200 rounded-xl shadow-xl text-sm whitespace-nowrap right-0 capitalize"
+            <Link
+              to="/dashboard/profile"
+              className="flex relative items-center gap-[1px] px-1 py-1 transition cursor-pointer"
+            >
+              <img
+                src={imageURL}
+                alt="Profile"
+                className="h-8 w-8 rounded-full object-cover border border-gray-300"
+              />
+            </Link>
+
+            <Dialog>
+              <DialogTrigger asChild>
+                
+                  <ArrowRightEndOnRectangleIcon className="h-5 w-5 text-blue-gray-500 cursor-pointer " />
+                
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Confirm Logout</DialogTitle>
+                </DialogHeader>
+                <p>Are you sure you want to logout?</p>
+                <DialogFooter>
+                  <Button
+                    variant="destructive"
+                    className="rounded-md"
+                    onClick={handleLogout}
                   >
-                    <p className="bg-white text-gray-800 px-3 py-1 text-sm font-bold rounded-md whitespace-nowrap">
-                      Chat Messages
-                    </p>
-                  </Popover.Panel>
-                )}
-              </div>
-            )}
-          </Popover>
+                    Yes, Logout
+                  </Button>
+                  <DialogClose asChild>
+                    <Button variant="text">Cancel</Button>
+                  </DialogClose>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
 
-
-            <Popover>
-              {({ open }) => (
-                <div
-                  onMouseEnter={() => setIsProfilePopoverOpen(true)}
-                  onMouseLeave={() => setIsProfilePopoverOpen(false)}
-                  className="relative inline-block cursor-pointer"
-                >
-                  <Popover.Button as={"div"}>
-                    <Link to="/dashboard/profile" className="hidden lg:flex">
-                      <div className="relative items-center gap-2   px-3 py-1 transition cursor-pointer flex ">
-                        <img
-                          src={imageURL}
-                          alt="Profile"
-                          className="h-8 w-8 rounded-full object-cover border border-gray-300"
-                        />
-                      </div>
-                    </Link>
-
-                    <Link to="/dashboard/profile" className="flex lg:hidden">
-                      <div
-                        className="relative items-center gap-2 
-                      px-3 py-1 transition cursor-pointer flex "
-                      >
-                        <img
-                          src={imageURL}
-                          alt="Profile"
-                          className="h-8 w-8 rounded-full object-cover border border-gray-300"
-                        />
-                      </div>
-                    </Link>
-                  </Popover.Button>
-
-                  {(isProfilePopoverOpen || open) && (
-                    <Popover.Panel
-                      static
-                      className="absolute z-10 mt-2 w-auto p-2 bg-white border cursor-pointer border-gray-200 rounded-xl  shadow-xl  text-sm whitespace-nowrap capitalize"
-                    >
-                      <p className="bg-white text-gray-800 text-sm font-bold px-3 py-1 rounded-md  whitespace-nowrap">
-                        View Profile
-                      </p>
-                    </Popover.Panel>
-                  )}
-                </div>
-              )}
-            </Popover>
-
-            <Popover>
-              {({ open }) => (
-                <div
-                  onMouseEnter={() => setIsLogoutPopoverOpen(true)}
-                  onMouseLeave={() => setIsLogoutPopoverOpen(false)}
-                  className="relative inline-block"
-                >
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button
-                        variant="text"
-                        color="blue-gray"
-                        aria-label="Logout"
-                      >
-                        <ArrowRightEndOnRectangleIcon className="h-5 w-5 text-blue-gray-500" />
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Confirm Logout</DialogTitle>
-                      </DialogHeader>
-                      <p>Are you sure you want to logout?</p>
-                      <DialogFooter>
-                        <Button
-                          variant="destructive"
-                          className="rounded-md"
-                          onClick={handleLogout}
-                        >
-                          Yes, Logout
-                        </Button>
-                        <DialogClose asChild>
-                          <Button variant="text">Cancel</Button>
-                        </DialogClose>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
-                  {(isLogoutPopoverOpen || open) && (
-                    <Popover.Panel
-                      static
-                      className="absolute z-10 mt-2 w-auto p-2 bg-white border border-gray-200 rounded-xl  shadow-xl  text-sm whitespace-nowrap capitalize"
-                    >
-                      <p className="bg-white text-gray-800  px-3 py-1 text-sm font-bold rounded-md  whitespace-nowrap">
-                        Logout
-                      </p>
-                    </Popover.Panel>
-                  )}
-                </div>
-              )}
-            </Popover>
-
-            <Popover>
-              {({ open }) => (
-                <div
-                  onMouseEnter={() => setIsSettingsPopoverOpen(true)}
-                  onMouseLeave={() => setIsSettingsPopoverOpen(false)}
-                  className="relative inline-block"
-                >
-                  <Popover.Button
-                    as={Button}
-                    variant="text"
-                    color="blue-gray"
-                    onClick={() => setOpenConfigurator(uiDispatch, true)}
-                    aria-label="Open configurator"
-                  >
-                    <Cog6ToothIcon className="h-5 w-5 text-blue-gray-500" />
-                  </Popover.Button>
-
-                  {(isSettingsPopoverOpen || open) && (
-                    <Popover.Panel
-                      static
-                      className="absolute z-10 mt-2 w-auto p-2 bg-white border border-gray-200 rounded-xl  shadow-xl  text-sm whitespace-nowrap"
-                    >
-                      <p className="bg-white text-gray-800  px-3 py-1 text-sm font-bold rounded-md  whitespace-nowrap">
-                        {" "}
-                        Settings
-                      </p>
-                    </Popover.Panel>
-                  )}
-                </div>
-              )}
-            </Popover>
+              <Cog6ToothIcon    aria-label="Open configurator"  onClick={() => setOpenConfigurator(uiDispatch, true)} className="h-5 w-5 text-blue-gray-500 cursor-pointer" />
+       
           </div>
         </div>
       </div>
