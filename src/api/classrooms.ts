@@ -435,7 +435,7 @@ export const fetchClassroomTools = async (
     if (response.status !== 200) {
       throw new Error("Failed to fetch classroom tools.");
     }
-      // console.log(" classroom tools  response", response)
+
     return response.data.data;
   } catch (error: any) {
     throw new Error(
@@ -567,32 +567,57 @@ export const getSuggestedTopic = async (
   }
 };
 
-
-
-export const chatHistory = async(payload:any):Promise<any[]>  => {
+export const chatHistory = async (payload: any): Promise<any[]> => {
   try {
     // console.log(payload,"payload")
-    const { studentId,classroomId, page} = payload
+    const { studentId, classroomId, page } = payload;
     // console.log("id", cla)
     const response = await apiClient.get<{
-    status:string;
-    message:string;
-    data:any[]
-   }>(`/assistant/student/classroom/chat/history/${studentId}/${classroomId}/${10}/${page}`) 
+      status: string;
+      message: string;
+      data: any[];
+    }>(
+      `/assistant/student/classroom/chat/history/${studentId}/${classroomId}/${10}/${page}`
+    );
 
-  //  console.log("response", response)
-   
+    //  console.log("response", response)
+
     if (response.data.status !== "success") {
-      throw new Error(
-        response.data.message || "Failed to get chat history"
-      );
+      throw new Error(response.data.message || "Failed to get chat history");
     }
-      const hasMore = response.data.data.length === 10;
+    const hasMore = response.data.data.length === 10;
 
     return response.data.data;
   } catch (error) {
-     console.log("Failed to get chat History", error);
-     return[]
+    console.log("Failed to get chat History", error);
+    return [];
   }
+};
 
+// interfaces.ts or top of classrooms.ts
+
+export interface ToolHistoryParams {
+  classroomId: any;
+  toolId: any;
+  userId: any;
+  page?: number;
+  limit?: number;
 }
+export const fetchToolsChatHistory = async ({
+  classroomId,
+  toolId,
+  userId,
+  page = 1,
+  limit = 20,
+}: ToolHistoryParams) => {
+  try {
+    const response = await apiClient.get(
+      `/assistant/student/classroomtools/chat/history/${userId}/${classroomId}/${toolId}/${limit}/${page}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching tool chat history:", error);
+    throw error;
+  }
+};
+

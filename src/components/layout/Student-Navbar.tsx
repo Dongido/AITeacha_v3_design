@@ -119,6 +119,7 @@ export function StudentNavbar() {
 
           {/* Profile Link */}
           <Link to="/student/profile">
+
               <img
                 src={imageURL}
                 alt="Profile"
@@ -130,8 +131,10 @@ export function StudentNavbar() {
           {/* Logout Dialog Trigger */}
           <Dialog>
             <DialogTrigger asChild>
+
             <ArrowRightEndOnRectangleIcon  className="h-5 w-5 text-blue-gray-500 cursor-pointer" />
           
+
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
@@ -152,11 +155,13 @@ export function StudentNavbar() {
               </DialogFooter>
             </DialogContent>
           </Dialog>
+
             <Cog6ToothIcon 
               onClick={() => setOpenConfigurator(uiDispatch, true)}
             aria-label="Open configurator"
             className="h-5 w-5 text-blue-gray-500 cursor-pointer" />
        
+
         </div>
       </div>
     </div>
