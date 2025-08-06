@@ -172,7 +172,6 @@ export function Sidenav({
             <XMarkIcon strokeWidth={2.5} className="h-5 w-5 text-gray-700" />
           </Button>
         </div>
-        {/* Routes Section */}
         <div
           className={`my-4 overflow-y-auto ${
             isCollapsed
@@ -255,7 +254,6 @@ export function Sidenav({
                         )}
                       </NavLink>
                     ) : (
-                      // Original NavLink for expanded sidebar
                       <NavLink
                         to={!submenu ? fullPath : "#"}
                         onClick={() => {
