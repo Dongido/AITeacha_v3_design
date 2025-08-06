@@ -435,7 +435,7 @@ export const fetchClassroomTools = async (
     if (response.status !== 200) {
       throw new Error("Failed to fetch classroom tools.");
     }
-    // console.log(" classroom tools  response", response)
+
     return response.data.data;
   } catch (error: any) {
     throw new Error(
@@ -620,3 +620,4 @@ export const fetchToolsChatHistory = async ({
     throw error;
   }
 };
+
