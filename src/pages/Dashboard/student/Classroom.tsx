@@ -235,6 +235,15 @@ const Classroom = () => {
   const [remainingCallTime, setRemainingCallTime] = useState(0);
   const [outlines, setOutlines] = useState<OutlineType[]>([]);
   const [userrole, setIsuserRole] = useState<any>();
+  const [selectedOutlines, setSelectedOutlines] = useState<any>(null);
+  const outline = (classroom?.classroomoutlines || []).map((outline) => ({
+    name: outline.classroomoutline_title,
+    path: outline.classroomoutline_content || "#",
+    classroomoutline_id: outline.classroomoutline_id,
+    assessmentStatus: outline.assessment_status,
+    assessments: outline.assessments,
+    mark_as_read: outline.mark_as_read,
+  }));
   const { classroomTopic } = useSelector(
     (state: RootState) => state.classrooms
   );
@@ -260,19 +269,14 @@ const Classroom = () => {
       setUserDetails(parsedDetails);
     }
   }, []);
+
   useEffect(() => {
-    let intervalId: NodeJS.Timeout;
-    const initialTimeout = setTimeout(() => {
-      setShowTopicPopup(true);
-      intervalId = setInterval(() => {
-        setShowTopicPopup(true);
-      }, 2 * 60 * 1000);
-    }, 60 * 1000);
-    return () => {
-      clearTimeout(initialTimeout);
-      clearInterval(intervalId);
-    };
-  }, []);
+    if (outline.length > 0 && !selectedOutlines) {
+      setSelectedOutlines(outlines[0]);
+    }
+  }, [outlines]);
+
+
 
   const playNextAudioChunk = useCallback(() => {
     if (
@@ -325,19 +329,51 @@ const Classroom = () => {
   }, [classroom]);
 
   useEffect(() => {
-    if (classroom?.classroomoutlines) {
-      const mappedOutlines = classroom.classroomoutlines.map((outline) => ({
-        name: outline.classroomoutline_title,
-        path: outline.classroomoutline_content || "#",
-        classroomoutline_id: outline.classroomoutline_id,
-        assessmentStatus: outline.assessment_status,
-        assessments: outline.assessments,
-        mark_as_read: outline.mark_as_read,
-      }));
-      setOutlines(mappedOutlines);
-      setSelectedOutline(mappedOutlines[0]);
-    }
-  }, [classroom]);
+    if (!classroom) return;
+
+    let intervalId: NodeJS.Timeout;
+
+    const initialTimeout = setTimeout(() => {
+      // First dispatch after 1 minute
+      dispatch(
+        createClassroomSuggestion({
+          description: classroom.classroom_description || "",
+          grade: classroom.grade || "",
+          classroom_id: classroom.classroom_id || "",
+          classroom_content: classroom.content || "",
+          outline_title: classroom.classroomoutlines || "",
+          outline_content: classroom.classroomoutlines || "",
+        })
+      );
+
+      
+      setShowTopicPopup(true);
+
+     
+      intervalId = setInterval(() => {
+        dispatch(
+          createClassroomSuggestion({
+            description: classroom.classroom_description || "",
+            grade: classroom.grade || "",
+            classroom_id: classroom.classroom_id || "",
+            classroom_content: classroom.content || "",
+            outline_title: classroom.classroomoutlines || "",
+            outline_content: classroom.classroomoutlines || "",
+          })
+        );
+
+
+        setShowTopicPopup(true);
+      }, 2 * 60 * 1000);
+    }, 60 * 1000);
+
+    return () => {
+      clearTimeout(initialTimeout);
+      clearInterval(intervalId);
+    };
+  }, [classroom, dispatch]);
+
+
 
   useEffect(() => {
     if (!audioContextRef.current) {
@@ -886,6 +922,8 @@ const Classroom = () => {
     };
   }, []);
 
+  // console.log("selectedtools",selectedTool)
+
   useEffect(() => {
     let newMessage: string = classroom?.content || "";
     console.log("selectedOverview", selectedOverview);
@@ -1252,6 +1290,10 @@ const Classroom = () => {
 
   const handleSendTopic = async () => {
     if (!classroomTopic?.trim()) return;
+
+    setSelectedOutline(null);
+    setSelectedOverview(false);
+
     const currentKey = selectedOverview
       ? "main"
       : selectedTool
@@ -1684,6 +1726,7 @@ const Classroom = () => {
       </div>
     );
   }
+   console.log("tools", tools)
   return (
     <ToastProvider>
       <div className="min-h-screen bg-[#F1F1F1]">
@@ -1751,8 +1794,8 @@ const Classroom = () => {
                       variant="outline"
                       size="icon"
                       className={`rounded-full hover:bg-gray-400 mt-5 border-[#5c3cbb]  ${isVoiceRecording
-                          ? "bg-red-500 text-white"
-                          : "bg-gray-200 text-black"
+                        ? "bg-red-500 text-white"
+                        : "bg-gray-200 text-black"
                         }`}
                       disabled={isVoiceRecording}
                     >
@@ -1898,7 +1941,7 @@ const Classroom = () => {
 
             {viewState === "classroom" ? (
               <>
-                <div className="relative flex flex-col lg:flex-row max-h-[550px]  overflow-y-auto pb-[1px] lg:pb-[70px]">
+                <div className="relative flex flex-col lg:flex-row max-h-[550px]  overflow-y-auto pb-[1px] lg:pb-[70px] routes-scroll-area">
                   <div
                     ref={chatContainerRef}
                     className="flex-grow overflow-y-auto bg-gray-50 border border-gray-3 rounded-lg shadow-inner space-y-2 m-4 p-4 max-h-[450px]"
@@ -2000,41 +2043,33 @@ const Classroom = () => {
                                 .slice(0, currentIndex)
                                 .reverse()
                                 .findIndex((o) => o.mark_as_read === 1);
+
                               const actualPrevIndex =
-                                prevIndex !== -1
-                                  ? currentIndex - prevIndex - 1
-                                  : -1;
+                                prevIndex !== -1 ? currentIndex - prevIndex - 1 : -1;
+
                               return (
                                 <>
                                   {actualPrevIndex !== -1 && (
-                                    <Button
-                                      variant="gradient"
+                                    <button
                                       className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md transition-all duration-200"
-                                      onClick={() =>
-                                        setSelectedOutline(
-                                          outlines[actualPrevIndex]
-                                        )
-                                      }
+                                      onClick={() => setSelectedOutline(outline[actualPrevIndex])}
                                     >
                                       Previous
-                                    </Button>
+                                    </button>
                                   )}
 
                                   {next && (
-                                    <Button
-                                      variant="gradient"
+                                    <button
                                       className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md transition-all duration-200 ml-2"
-                                      onClick={() => setSelectedOutline(next)}
+                                      onClick={() => setSelectedOutlines(next)}
                                     >
                                       Next
-                                    </Button>
+                                    </button>
                                   )}
                                 </>
                               );
                             })()}
                           </div>
-
-                          <div></div>
                         </div>
                         {selectedOutline &&
                           selectedOutline.assessments &&
@@ -2287,8 +2322,8 @@ const Classroom = () => {
                             <MarkdownRenderer
                               content={message.text}
                               className={`p-3 text-sm ${message.fromUser
-                                  ? "bg-primary max-w-xs text-white rounded-tl-lg"
-                                  : "bg-gray-2 max-w-xl text-black rounded-tr-lg"
+                                ? "bg-primary max-w-xs text-white rounded-tl-lg"
+                                : "bg-gray-2 max-w-xl text-black rounded-tr-lg"
                                 }`}
                               shouldType={
                                 !message.fromUser && !message.isHistory
@@ -2334,8 +2369,8 @@ const Classroom = () => {
                       <button
                         onClick={toggleRecording}
                         className={`absolute right-16 top-1/2 transform -translate-y-1/2 p-3 rounded-full ${isRecording
-                            ? "bg-red-500 text-white"
-                            : "bg-gray-200 text-black"
+                          ? "bg-red-500 text-white"
+                          : "bg-gray-200 text-black"
                           }`}
                       >
                         <FiMic />
@@ -2483,8 +2518,8 @@ const Classroom = () => {
                                             )
                                           }
                                           className={`form-radio h-4 w-4 ${isAssessmentCompleted
-                                              ? "cursor-not-allowed"
-                                              : "text-purple-6 focus:ring-purple-5"
+                                            ? "cursor-not-allowed"
+                                            : "text-purple-6 focus:ring-purple-5"
                                             }`}
                                           readOnly={isAssessmentCompleted}
                                           disabled={isAssessmentCompleted}
@@ -2830,8 +2865,8 @@ const Classroom = () => {
                     <li
                       key={tool.tool_id}
                       className={`capitalize cursor-pointer px-4 py-2 rounded-lg ${selectedTool === tool.tool_name
-                          ? "bg-primary text-white"
-                          : ""
+                        ? "bg-primary text-white"
+                        : ""
                         }`}
                       onClick={() => setSelectedTool(tool.tool_name)}
                     >

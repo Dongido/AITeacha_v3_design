@@ -3,7 +3,16 @@ import Footer from "./components/Footer";
 import { Input } from "../../components/ui/Input";
 import { TextArea } from "../../components/ui/TextArea";
 import { Button } from "../../components/ui/Button";
+import { useState } from "react";
+import { contactUs } from "../../api/auth";
+import { contactSlice } from "../../store/slices/authSlice";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { RootState } from "../../store";
 const Contact = () => {
+  const dispatch = useAppDispatch();
+  const { loading, error } = useAppSelector(
+    (state: RootState) => state.auth
+  );
   const contactMethods = [
     {
       icon: (
@@ -77,6 +86,54 @@ const Contact = () => {
     },
   ];
 
+
+  const [formData, setFormData] = useState({
+    firstname: "",
+    lastname: "",
+    email: "",
+    phone: "",
+    message_content: "",
+  });
+  const [successMessage, setSuccessMessage] = useState("");
+
+
+  const handleChange = (e: any) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const payload = {
+      firstname: formData.firstname,
+      lastname: formData.lastname,
+      email: formData.email,
+      phone: formData.phone,
+      message_content: formData.message_content,
+    };
+
+    try {
+      await dispatch(contactSlice(payload));
+      setFormData({
+        firstname: "",
+        lastname: "",
+        email: "",
+        phone: "",
+        message_content: "",
+      });
+      setSuccessMessage("Your message has been sent. We'll get back to you shortly.");
+      setTimeout(() => {
+        setSuccessMessage("");
+      }, 200000);
+    } catch (error) {
+      console.error("Error submitting contact form:", error);
+    }
+  };
+
+
   return (
     <div className="flex flex-col min-h-screen bg-white">
       <section>
@@ -141,35 +198,63 @@ const Contact = () => {
                 soon as possible.
               </p>
 
-              <form className="space-y-6">
+              <form className="space-y-6" onSubmit={handleSubmit}>
                 <div className="flex space-x-4">
                   <div className="flex-1">
-                    <Input type="text" placeholder="First Name" required />
+                    <Input
+                      name="firstname"
+                      type="text"
+                      value={formData.firstname}
+                      onChange={handleChange}
+                      placeholder="First Name" required />
                   </div>
                   <div className="flex-1">
-                    <Input type="text" placeholder="Last Name" required />
+                    <Input
+                      name="lastname"
+                      value={formData.lastname}
+                      onChange={handleChange}
+                      type="text"
+                      placeholder="Last Name" required />
                   </div>
                 </div>
                 <div className="flex space-x-4">
                   <div className="flex-1">
-                    <Input type="email" placeholder="Email Address" required />
+                    <Input
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      type="email"
+                      placeholder="Email Address" required />
                   </div>
                   <div className="flex-1">
-                    <Input type="tel" placeholder="Phone Number" required />
+                    <Input
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      type="tel"
+                      placeholder="Phone Number" required />
                   </div>
                 </div>
 
                 <div>
-                  <TextArea placeholder="Your Message" required />
+                  <TextArea
+                    name="message_content"
+                    value={formData.message_content}
+                    onChange={handleChange}
+                    placeholder="Your Message" required />
                 </div>
                 <div className="text-center">
                   <Button
                     type="submit"
+                    disabled={loading}
                     variant={"gradient"}
                     className="inline-flex items-center text-white  focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center w-full dark:focus:ring-primary-900"
                   >
                     Send Message
                   </Button>
+                  {successMessage && (
+                    <p className="text-green-600 text-sm mt-2">{successMessage}</p>
+                  )}
                 </div>
               </form>
             </div>

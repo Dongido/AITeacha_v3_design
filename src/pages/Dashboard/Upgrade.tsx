@@ -194,9 +194,8 @@ const Upgrade: React.FC = () => {
       },
       customizations: {
         title: `${plan.charAt(0).toUpperCase() + plan.slice(1)} Plan`,
-        description: `Upgrade to ${
-          plan.charAt(0).toUpperCase() + plan.slice(1)
-        } Plan`,
+        description: `Upgrade to ${plan.charAt(0).toUpperCase() + plan.slice(1)
+          } Plan`,
         logo: Logo,
       },
     };
@@ -267,8 +266,8 @@ const Upgrade: React.FC = () => {
                 console.error(
                   "Transaction verification failed:",
                   verificationResponse.message ||
-                    verificationResponse.data.message ||
-                    "Unknown verification error."
+                  verificationResponse.data.message ||
+                  "Unknown verification error."
                 );
                 navigate("/dashboard/success?status=failed");
               }
@@ -333,8 +332,8 @@ const Upgrade: React.FC = () => {
               noOfSeats: (plan === "pro"
                 ? "1"
                 : plan === "premium"
-                ? "15"
-                : noOfSeats
+                  ? "15"
+                  : noOfSeats
               ).toString(),
               duration: duration,
             },
@@ -593,11 +592,10 @@ const Upgrade: React.FC = () => {
                 <li>AI Image generation for educators and students</li>
               </ul>
               <button
-                className={`w-full py-2 rounded-md mt-auto ${
-                  userDetails?.package === "AiTeacha Free"
+                className={`w-full py-2 rounded-md mt-auto ${userDetails?.package === "AiTeacha Free"
                     ? "bg-gray-300 text-gray-700 cursor-not-allowed"
                     : "bg-primary text-white hover:bg-[#4a2fa3] transition"
-                }`}
+                  }`}
                 disabled={userDetails?.package === "AiTeacha Free"}
               >
                 {userDetails?.package === "AiTeacha Free"
@@ -657,7 +655,9 @@ const Upgrade: React.FC = () => {
                   </li>
                   <li> No Classroom Management</li>
                 </ul>
+
                 {renderPlanButton("basic", "Basic", "Ai Teacha Basic")}
+
               </div>
             )}
 
@@ -684,7 +684,7 @@ const Upgrade: React.FC = () => {
                 {billingCycle === "year" && currency === "NGN" && (
                   <span className="font-medium text-sm text-gray-700">
                     {" "}
-                    ₦4,585 monthly
+                    ₦4,585 monthly]
                   </span>
                 )}
               </p>
@@ -705,16 +705,14 @@ const Upgrade: React.FC = () => {
                   Unlimited student performance reports to track and enhance
                   learning outcomes
                 </li>
-                <li>
-                  Virtual Classroom access for interactive teaching and student
-                  collaboration
-                </li>
-                <li>
-                  Conduct Computer-Based Tests (CBT) seamlessly to assess
-                  student understanding
-                </li>
+
+                <li>Virtual Classroom access </li>
+                <li>Full Access to Computer-Based Tests (CBT)</li>
+
               </ul>
+
               {renderPlanButton("pro", "Pro", "Ai Teacha Pro")}
+
             </div>
           </div>
         </div>
@@ -779,6 +777,7 @@ const Upgrade: React.FC = () => {
                 <li>Unlimited number of educators</li>
                 <li>Dedicated support for your school or institution</li>
               </ul>
+
               {renderPlanButton("premium", "Premium", "Ai Teacha Premium")}
             </div>
 
@@ -819,17 +818,16 @@ const Upgrade: React.FC = () => {
                   loadingPlan === "enterprise" ||
                   userDetails?.package === "AI Teacha Enterprise"
                 }
-                className={`bg-primary text-white w-full py-2 rounded-md transition mt-auto text-center ${
-                  userDetails?.package === "AI Teacha Enterprise"
+                className={`bg-primary text-white w-full py-2 rounded-md transition mt-auto text-center ${userDetails?.package === "AI Teacha Enterprise"
                     ? "bg-gray-300 text-gray-700 cursor-not-allowed"
                     : "hover:bg-[#4a2fa3]"
-                }`}
+                  }`}
               >
                 {userDetails?.package === "AI Teacha Enterprise"
                   ? "Current Plan"
                   : loadingPlan === "enterprise"
-                  ? "Processing..."
-                  : "Contact Sales"}{" "}
+                    ? "Processing..."
+                    : "Contact Sales"}{" "}
               </Button>
             </div>
           </div>

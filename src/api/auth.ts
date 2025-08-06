@@ -155,3 +155,20 @@ export const resetPassword = async (
     );
   }
 };
+
+
+
+export const contactUs = async (payload:any): Promise<any> => {
+  try {
+    const response = await apiClient.post("/auth/contactus",payload);
+      if (response.status !== 201 && response.status !== 200) {
+      throw new Error("Failed to send contact message");
+    }
+  console.log("response contact message" , response)
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data?.message ||
+        "Failed to send contact message."
+    );
+  }
+};

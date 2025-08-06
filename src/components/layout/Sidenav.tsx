@@ -1,13 +1,10 @@
-import React, { useEffect, useState, useRef } from "react"; // Import useRef
+import React, { useEffect, useState, useRef } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import {
   XMarkIcon,
-  LifebuoyIcon,
-  Cog6ToothIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
 } from "@heroicons/react/24/outline";
-import { Popover, Transition } from "@headlessui/react";
 import {
   useMaterialTailwindController,
   setOpenSidenav,
@@ -25,16 +22,6 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { loadUserProfile, selectUser } from "../../store/slices/profileSlice";
 import { AppDispatch } from "../../store";
-
-// Import createPortal and useFloating
-import { createPortal } from "react-dom";
-import {
-  useFloating,
-  offset,
-  flip,
-  shift,
-  autoUpdate,
-} from "@floating-ui/react";
 
 interface RoutePage {
   icon: React.ReactNode;
@@ -147,7 +134,7 @@ export function Sidenav({
     <>
       <aside
         ref={sidenavRef}
-        className={` routes-scroll-area ${sidenavTypes[sidenavType]} ${
+        className={`routes-scroll-area ${sidenavTypes[sidenavType]} ${
           openSidenav ? "translate-x-0" : "-translate-x-80"
         } fixed inset-0 z-50 h-[calc(100vh)] ${
           isCollapsed ? "w-28 " : "w-72"
@@ -177,7 +164,6 @@ export function Sidenav({
               <ChevronLeftIcon className="h-5 w-5 text-gray-700" />
             )}
           </Button>
-
           <Button
             variant={"default"}
             className="absolute right-0 top-0 p-2 rounded-br-none rounded-tl-none xl:hidden"
@@ -186,7 +172,6 @@ export function Sidenav({
             <XMarkIcon strokeWidth={2.5} className="h-5 w-5 text-gray-700" />
           </Button>
         </div>
-
         {/* Routes Section */}
         <div
           className={`my-4 overflow-y-auto ${
@@ -229,113 +214,46 @@ export function Sidenav({
                   name.toLowerCase().includes(keyword)
                 );
 
-                // --- Floating UI Hook for positioning ---
-                const { refs, floatingStyles, update } = useFloating({
-                  placement: "right-start", // Show popover to the right of the button
-                  middleware: [
-                    offset(10), // Offset from the button
-                    flip(), // Flip to other side if space is limited
-                    shift(), // Shift to keep in view
-                  ],
-                  // This is crucial for keeping the popover positioned correctly
-                  // when the reference element moves (e.g., due to scrolling, sidebar collapse)
-                  whileElementsMounted: autoUpdate,
-                });
-
                 return (
                   <li key={name} className="menu-item list-none">
                     {isCollapsed ? (
-                      <Popover
-                        as="div"
-                        className="relative flex justify-center"
-                      >
-                        {({ open: headlessOpen }) => {
-                          const [isOpen, setIsOpen] = useState(false);
-
-                          // Use an effect to update Floating UI's position when Popover open state changes
-                          useEffect(() => {
-                            if (isOpen || headlessOpen) {
-                              update();
-                            }
-                          }, [isOpen, headlessOpen, update]);
-
-                          return (
-                            <div
-                              // Only handle mouse events if there's no submenu,
-                              // otherwise clicking the button should toggle submenu.
-                              onMouseEnter={() => !submenu && setIsOpen(true)}
-                              onMouseLeave={() => !submenu && setIsOpen(false)}
-                              className="w-full"
-                            >
-                              <NavLink
-                                to={!submenu ? fullPath : "#"}
-                                onClick={(e) => {
-                                  if (submenu) {
-                                    e.preventDefault();
-                                    setIsExpanded(!isExpanded);
-                                  } else if (window.innerWidth < 1280) {
-                                    setOpenSidenav(dispatch, false);
-                                  }
-                                  setIsOpen(false); // Close popover on click
-                                }}
-                                className="focus:outline-none w-full"
-                              >
-                                {({ isActive: navLinkIsActive }) => (
-                                  <Popover.Button
-                                    as="div"
-                                    ref={refs.setReference} // Assign reference element for Floating UI
-                                    className="focus:outline-none w-full"
-                                  >
-                                    <Button
-                                      variant={
-                                        isPremium
-                                          ? "ghost"
-                                          : navLinkIsActive
-                                          ? "gradient"
-                                          : "ghost"
-                                      }
-                                      color={
-                                        navLinkIsActive
-                                          ? sidenavColor
-                                          : sidenavType === "dark"
-                                          ? "white"
-                                          : "blue-gray"
-                                      }
-                                      className={`px-4 capitalize rounded-full justify-center
-                                        hover:bg-[#d2a9f3] hover:text-white`}
-                                    >
-                                      <span className="w-6 flex items-center justify-center">
-                                        {icon}
-                                      </span>
-                                    </Button>
-                                  </Popover.Button>
-                                )}
-                              </NavLink>
-
-                              {(isOpen || headlessOpen) &&
-                                createPortal(
-                                  <div
-                                    ref={refs.setFloating}
-                                    style={floatingStyles}
-                                    className="z-[1000] min-w-max"
-                                  >
-                                    <Popover.Panel
-                                      static
-                                      className="relative bg-white border border-gray-200 rounded-xl shadow-xl text-sm p-2
-             before:content-[''] before:absolute before:top-1/2 before:-left-2 before:-translate-y-1/2
-             before:border-y-8 before:border-y-transparent before:border-r-8 before:border-r-gray-200 capitalize"
-                                    >
-                                      <div className="bg-white text-gray-800 font-bold text-sm px-3 py-1 rounded-md whitespace-nowrap">
-                                        {name}
-                                      </div>
-                                    </Popover.Panel>
-                                  </div>,
-                                  document.body
-                                )}
-                            </div>
-                          );
+                      <NavLink
+                        to={!submenu ? fullPath : "#"}
+                        onClick={(e) => {
+                          if (submenu) {
+                            e.preventDefault();
+                            setIsExpanded(!isExpanded);
+                          } else if (window.innerWidth < 1280) {
+                            setOpenSidenav(dispatch, false);
+                          }
                         }}
-                      </Popover>
+                        className="focus:outline-none w-full"
+                        title={name}
+                      >
+                        {({ isActive: navLinkIsActive }) => (
+                          <Button
+                            variant={
+                              isPremium
+                                ? "ghost"
+                                : navLinkIsActive
+                                ? "gradient"
+                                : "ghost"
+                            }
+                            color={
+                              navLinkIsActive
+                                ? sidenavColor
+                                : sidenavType === "dark"
+                                ? "white"
+                                : "blue-gray"
+                            }
+                            className={`px-4 capitalize rounded-full justify-center hover:bg-[#d2a9f3] hover:text-white`}
+                          >
+                            <span className="w-6 flex items-center justify-center">
+                              {icon}
+                            </span>
+                          </Button>
+                        )}
+                      </NavLink>
                     ) : (
                       // Original NavLink for expanded sidebar
                       <NavLink
@@ -364,8 +282,7 @@ export function Sidenav({
                                 ? "white"
                                 : "blue-gray"
                             }
-                            className={`w-full px-4 capitalize rounded-full flex items-center
-                              hover:bg-[#d2a9f3] hover:text-white`}
+                            className={`w-full px-4 capitalize rounded-full flex items-center hover:bg-[#d2a9f3] hover:text-white`}
                           >
                             <div className="flex items-center gap-2 w-full">
                               <span className="w-6 flex items-center justify-center">
@@ -391,8 +308,6 @@ export function Sidenav({
                         )}
                       </NavLink>
                     )}
-
-                    {/* Render submenu */}
                     {submenu && isExpanded && (
                       <ul className="submenu ml-0 mt-2">
                         {submenu.map(
@@ -448,7 +363,6 @@ export function Sidenav({
             </ul>
           ))}
         </div>
-
         {!isCollapsed && (
           <div className="absolute bottom-4 bg-white left-4 right-4">
             <Link to="/contact">
@@ -460,7 +374,6 @@ export function Sidenav({
                 Current Plan: {userDetails.package}
               </Button>
             </Link>
-
             <Button
               variant="outlined"
               onClick={handleRefreshProfile}
