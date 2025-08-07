@@ -23,6 +23,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { loadUserProfile, selectUser } from "../../store/slices/profileSlice";
 import { AppDispatch } from "../../store";
 
+// Import your Radix UI Tooltip components here
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/Tooltip";
+
 interface RoutePage {
   icon: React.ReactNode;
   name: string;
@@ -131,7 +139,7 @@ export function Sidenav({
   };
 
   return (
-    <>
+    <TooltipProvider>
       <aside
         ref={sidenavRef}
         className={`routes-scroll-area ${sidenavTypes[sidenavType]} ${
@@ -216,43 +224,51 @@ export function Sidenav({
                 return (
                   <li key={name} className="menu-item list-none">
                     {isCollapsed ? (
-                      <NavLink
-                        to={!submenu ? fullPath : "#"}
-                        onClick={(e) => {
-                          if (submenu) {
-                            e.preventDefault();
-                            setIsExpanded(!isExpanded);
-                          } else if (window.innerWidth < 1280) {
-                            setOpenSidenav(dispatch, false);
-                          }
-                        }}
-                        className="focus:outline-none w-full"
-                        title={name}
-                      >
-                        {({ isActive: navLinkIsActive }) => (
-                          <Button
-                            variant={
-                              isPremium
-                                ? "ghost"
-                                : navLinkIsActive
-                                ? "gradient"
-                                : "ghost"
-                            }
-                            color={
-                              navLinkIsActive
-                                ? sidenavColor
-                                : sidenavType === "dark"
-                                ? "white"
-                                : "blue-gray"
-                            }
-                            className={`px-4 capitalize rounded-full justify-center hover:bg-[#d2a9f3] hover:text-white`}
+                      <Tooltip delayDuration={300}>
+                        <TooltipTrigger asChild>
+                          <NavLink
+                            to={!submenu ? fullPath : "#"}
+                            onClick={(e) => {
+                              if (submenu) {
+                                e.preventDefault();
+                                setIsExpanded(!isExpanded);
+                              } else if (window.innerWidth < 1280) {
+                                setOpenSidenav(dispatch, false);
+                              }
+                            }}
+                            className="focus:outline-none w-full"
                           >
-                            <span className="w-6 flex items-center justify-center">
-                              {icon}
-                            </span>
-                          </Button>
-                        )}
-                      </NavLink>
+                            {({ isActive: navLinkIsActive }) => (
+                              <Button
+                                variant={
+                                  isPremium
+                                    ? "ghost"
+                                    : navLinkIsActive
+                                    ? "gradient"
+                                    : "ghost"
+                                }
+                                color={
+                                  navLinkIsActive
+                                    ? sidenavColor
+                                    : sidenavType === "dark"
+                                    ? "white"
+                                    : "blue-gray"
+                                }
+                                className={`px-4 capitalize rounded-full justify-center hover:bg-[#d2a9f3] hover:text-white`}
+                              >
+                                <span className="w-6 flex items-center justify-center">
+                                  {icon}
+                                </span>
+                              </Button>
+                            )}
+                          </NavLink>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="font-extrabold text-md capitalize">
+                            {name}
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
                     ) : (
                       <NavLink
                         to={!submenu ? fullPath : "#"}
@@ -314,42 +330,77 @@ export function Sidenav({
                               key={subName}
                               className="submenu-item list-none"
                             >
-                              <NavLink
-                                to={`/${layout}${subPath}`}
-                                onClick={() => {
-                                  if (window.innerWidth < 1280) {
-                                    setOpenSidenav(dispatch, false);
-                                  }
-                                }}
-                              >
-                                {({ isActive }) => (
-                                  <Button
-                                    variant={isActive ? "gradient" : "ghost"}
-                                    color={
-                                      isActive ? sidenavColor : "blue-gray"
-                                    }
-                                    className={`w-full px-4 capitalize rounded-full ${
-                                      isCollapsed
-                                        ? "justify-center"
-                                        : "flex items-center"
-                                    } hover:bg-[#d2a9f3] hover:text-white`}
-                                  >
-                                    <div className="flex items-center gap-2">
-                                      <span className="w-6 flex items-center justify-center">
-                                        {subIcon}
-                                      </span>
-                                      {!isCollapsed && (
-                                        <Text
-                                          color="inherit"
-                                          className="font-medium capitalize text-left"
+                              {isCollapsed ? (
+                                <Tooltip delayDuration={300}>
+                                  <TooltipTrigger asChild>
+                                    <NavLink
+                                      to={`/${layout}${subPath}`}
+                                      onClick={() => {
+                                        if (window.innerWidth < 1280) {
+                                          setOpenSidenav(dispatch, false);
+                                        }
+                                      }}
+                                      className="focus:outline-none w-full"
+                                    >
+                                      {({ isActive }) => (
+                                        <Button
+                                          variant={
+                                            isActive ? "gradient" : "ghost"
+                                          }
+                                          color={
+                                            isActive
+                                              ? sidenavColor
+                                              : "blue-gray"
+                                          }
+                                          className={`w-full px-4 capitalize rounded-full justify-center hover:bg-[#d2a9f3] hover:text-white`}
                                         >
-                                          {subName}
-                                        </Text>
+                                          <span className="w-6 flex items-center justify-center">
+                                            {subIcon}
+                                          </span>
+                                        </Button>
                                       )}
-                                    </div>
-                                  </Button>
-                                )}
-                              </NavLink>
+                                    </NavLink>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p className="font-extrabold text-md capitalize">
+                                      {subName}
+                                    </p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              ) : (
+                                <NavLink
+                                  to={`/${layout}${subPath}`}
+                                  onClick={() => {
+                                    if (window.innerWidth < 1280) {
+                                      setOpenSidenav(dispatch, false);
+                                    }
+                                  }}
+                                >
+                                  {({ isActive }) => (
+                                    <Button
+                                      variant={isActive ? "gradient" : "ghost"}
+                                      color={
+                                        isActive ? sidenavColor : "blue-gray"
+                                      }
+                                      className={`w-full px-4 capitalize rounded-full flex items-center hover:bg-[#d2a9f3] hover:text-white`}
+                                    >
+                                      <div className="flex items-center gap-2">
+                                        <span className="w-6 flex items-center justify-center">
+                                          {subIcon}
+                                        </span>
+                                        {!isCollapsed && (
+                                          <Text
+                                            color="inherit"
+                                            className="font-medium capitalize text-left"
+                                          >
+                                            {subName}
+                                          </Text>
+                                        )}
+                                      </div>
+                                    </Button>
+                                  )}
+                                </NavLink>
+                              )}
                             </li>
                           )
                         )}
@@ -403,7 +454,7 @@ export function Sidenav({
         )}
         <ToastViewport className="[--viewport-padding:_25px] fixed bottom-0 right-0 flex flex-col p-[--viewport-padding] gap-[10px] w-[390px] max-w-[100vw] m-0 list-none z-[2147483647] outline-none" />
       </ToastProvider>
-    </>
+    </TooltipProvider>
   );
 }
 
