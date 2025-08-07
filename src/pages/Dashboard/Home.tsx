@@ -49,7 +49,7 @@ const Home = () => {
     (state: RootState) => state.notifications
   );
 
-  console.log("notificationlist", notificationList)
+  console.log("notificationlist", notificationList);
 
   const [userDetails, setUserDetails] = useState<any>(null);
   const [isEmailVerified, setIsEmailVerified] = useState<number>(0);
@@ -61,8 +61,7 @@ const Home = () => {
     return dismissedDate === today;
   });
 
-
-  console.log("latestnotification", latestNotification)
+  console.log("latestnotification", latestNotification);
 
   useEffect(() => {
     if (tools.length === 0) {
@@ -91,7 +90,10 @@ const Home = () => {
           const expiry = new Date(notification.expiry_date);
           return notification.status === "active" && expiry > now;
         })
-        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        .sort(
+          (a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
 
       if (activeNotifications.length > 0) {
         setLatestNotification(activeNotifications[0]);
@@ -99,11 +101,9 @@ const Home = () => {
     }
   }, [notificationList]);
 
-
   useEffect(() => {
-    dispatch(getNotification())
-  })
-
+    dispatch(getNotification());
+  }, []);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleCategoryChange = (value: string) => {
@@ -170,7 +170,8 @@ const Home = () => {
 
           <div className="marquee-container">
             <div className="marquee-text text-2xl">
-              📢 <strong className="font-bold">Update:</strong> {latestNotification.title}
+              📢 <strong className="font-bold">Update:</strong>{" "}
+              {latestNotification.title}
             </div>
           </div>
         </div>
