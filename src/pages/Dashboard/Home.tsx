@@ -259,7 +259,8 @@ const Home = () => {
                 </button>
               </Link>
               <Link to={"/dashboard/classrooms"}>
-                <button className="flex items-center gap-2 bg-yellow-200 text-yellow-800 rounded-full py-2 px-4 whitespace-nowrap">
+                <button className="flex items-center gap-2 bg-green-200 text-green-800 rounded-full py-2 px-4 whitespace-nowrap">
+                  {" "}
                   <BiImageAdd className="h-5 w-5" />
                   Classrooms
                 </button>
