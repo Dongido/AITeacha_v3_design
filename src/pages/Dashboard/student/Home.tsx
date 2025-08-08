@@ -71,12 +71,14 @@ const Home = () => {
           ) : (
             <h2 className="text-2xl font-bold mt-2">Hi, there 👋</h2>
           )}
-          <p className="text-lg mt-1">You have some assignments!</p>
+          <p className="text-lg mt-1">You may have some assignments!</p>
           <Link to={"#"}>
-            <button className="mt-4 flex hover:bg-gray-200 items-center bg-white text-[#5C3CBB] font-semibold py-2 px-4 rounded-full text-sm">
-              See All
-              <ArrowRightIcon className="h-5 w-5 ml-2" />
-            </button>
+            <Link to={"/student/assignments"}>
+              <button className="mt-4 flex hover:bg-gray-200 items-center bg-white text-[#5C3CBB] font-semibold py-2 px-4 rounded-full text-sm">
+                See All
+                <ArrowRightIcon className="h-5 w-5 ml-2" />
+              </button>
+            </Link>
           </Link>
         </div>
 
