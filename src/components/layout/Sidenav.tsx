@@ -3,6 +3,7 @@ import { Link, NavLink, useLocation } from "react-router-dom";
 import {
   XMarkIcon,
   ChevronLeftIcon,
+  LifebuoyIcon,
   ChevronRightIcon,
 } from "@heroicons/react/24/outline";
 import {
@@ -23,7 +24,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { loadUserProfile, selectUser } from "../../store/slices/profileSlice";
 import { AppDispatch } from "../../store";
 
-// Import your Radix UI Tooltip components here
 import {
   Tooltip,
   TooltipContent,
@@ -416,13 +416,22 @@ export function Sidenav({
           <div className="absolute bottom-4 bg-white left-4 right-4">
             <Link to="/contact">
               <Button
-                variant="outlined"
-                color="blue-gray"
-                className="w-full mb-2 bg-gray-200 rounded-full hover:bg-gray-400"
+                variant="ghost"
+                color={sidenavColor}
+                className="w-full rounded-full flex items-center justify-center gap-2"
               >
-                Current Plan: {userDetails.package}
+                <LifebuoyIcon className="h-5 w-5" />
+                <span>Support</span>
               </Button>
             </Link>
+            <Button
+              variant="outlined"
+              color="blue-gray"
+              className="w-full mb-2 bg-gray-200 rounded-full hover:bg-gray-400"
+            >
+              Current Plan: {userDetails.package}
+            </Button>
+
             <Button
               variant="outlined"
               onClick={handleRefreshProfile}

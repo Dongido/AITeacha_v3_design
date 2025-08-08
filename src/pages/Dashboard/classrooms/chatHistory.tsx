@@ -294,7 +294,7 @@ const ChatHistory = () => {
             <button
               key={tool.tools_id}
               onClick={() => handleToolClick(tool.tools_id)}
-              className={`px-4 py-2 text-sm font-medium rounded-full transition-colors
+              className={`px-4 py-2 text-sm font-medium rounded-full transition-colors capitalize
         ${
           selectedToolId === tool.tools_id
             ? "bg-[#5c3cbb] text-white"
