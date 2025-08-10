@@ -10,9 +10,7 @@ import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { RootState } from "../../store";
 const Contact = () => {
   const dispatch = useAppDispatch();
-  const { loading, error } = useAppSelector(
-    (state: RootState) => state.auth
-  );
+  const { loading, error } = useAppSelector((state: RootState) => state.auth);
   const contactMethods = [
     {
       icon: (
@@ -60,8 +58,7 @@ const Contact = () => {
       ),
       contact: "+234 708-9115-000",
       title: "Phone",
-      label:
-        "Drop us an email and you will receive a reply within a short time.",
+      label: "Give us a call. Our Experts are ready to talk to you.",
     },
     {
       icon: (
@@ -82,10 +79,10 @@ const Contact = () => {
       ),
       contact: "info@aiteacha.com",
       title: "Email",
-      label: "Give us a call. Our Experts are ready to talk to you.",
+      label:
+        "Drop us an email and you will receive a reply within a short time.",
     },
   ];
-
 
   const [formData, setFormData] = useState({
     firstname: "",
@@ -95,7 +92,6 @@ const Contact = () => {
     message_content: "",
   });
   const [successMessage, setSuccessMessage] = useState("");
-
 
   const handleChange = (e: any) => {
     setFormData((prev) => ({
@@ -124,7 +120,9 @@ const Contact = () => {
         phone: "",
         message_content: "",
       });
-      setSuccessMessage("Your message has been sent. We'll get back to you shortly.");
+      setSuccessMessage(
+        "Your message has been sent. We'll get back to you shortly."
+      );
       setTimeout(() => {
         setSuccessMessage("");
       }, 200000);
@@ -132,7 +130,6 @@ const Contact = () => {
       console.error("Error submitting contact form:", error);
     }
   };
-
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
@@ -206,7 +203,9 @@ const Contact = () => {
                       type="text"
                       value={formData.firstname}
                       onChange={handleChange}
-                      placeholder="First Name" required />
+                      placeholder="First Name"
+                      required
+                    />
                   </div>
                   <div className="flex-1">
                     <Input
@@ -214,7 +213,9 @@ const Contact = () => {
                       value={formData.lastname}
                       onChange={handleChange}
                       type="text"
-                      placeholder="Last Name" required />
+                      placeholder="Last Name"
+                      required
+                    />
                   </div>
                 </div>
                 <div className="flex space-x-4">
@@ -224,7 +225,9 @@ const Contact = () => {
                       value={formData.email}
                       onChange={handleChange}
                       type="email"
-                      placeholder="Email Address" required />
+                      placeholder="Email Address"
+                      required
+                    />
                   </div>
                   <div className="flex-1">
                     <Input
@@ -232,7 +235,9 @@ const Contact = () => {
                       value={formData.phone}
                       onChange={handleChange}
                       type="tel"
-                      placeholder="Phone Number" required />
+                      placeholder="Phone Number"
+                      required
+                    />
                   </div>
                 </div>
 
@@ -241,7 +246,9 @@ const Contact = () => {
                     name="message_content"
                     value={formData.message_content}
                     onChange={handleChange}
-                    placeholder="Your Message" required />
+                    placeholder="Your Message"
+                    required
+                  />
                 </div>
                 <div className="text-center">
                   <Button
@@ -253,7 +260,9 @@ const Contact = () => {
                     Send Message
                   </Button>
                   {successMessage && (
-                    <p className="text-green-600 text-sm mt-2">{successMessage}</p>
+                    <p className="text-green-600 text-sm mt-2">
+                      {successMessage}
+                    </p>
                   )}
                 </div>
               </form>
