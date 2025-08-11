@@ -24,8 +24,8 @@ import {
   ToastTitle,
   ToastViewport,
 } from "../../../../components/ui/Toast";
-import { registerUser } from "../../../../api/auth"; // Assuming registerUser is imported correctly
-import { uploadStudents } from "../../../../api/school"; // This import seems unused in this component
+import { registerUser } from "../../../../api/auth";
+import { uploadStudents } from "../../../../api/school";
 import {
   Form,
   FormControl,
@@ -43,7 +43,7 @@ import {
   SelectItem,
   SelectValue,
 } from "../../../../components/ui/Select";
-import { LuLoader2 } from "react-icons/lu";
+import { Loader2 } from "lucide-react";
 import { Country, State, City } from "country-state-city";
 
 interface AddSingleStudentDialogProps {
@@ -674,7 +674,7 @@ const AddSingleStudentDialog = forwardRef(
                     disabled={loading}
                   >
                     {loading && (
-                      <LuLoader2 className="mr-2 h-4 w-4 animate-spin" />
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     )}{" "}
                     {loading ? "Adding Student..." : "Add Student"}
                   </Button>
