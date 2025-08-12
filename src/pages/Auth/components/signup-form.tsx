@@ -166,25 +166,27 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
   });
 
   const hasDisability = form.watch("hasDisability");
+  let role_id: number = 4;
 
+  const storedRole = localStorage.getItem("selectedRole");
   useEffect(() => {
+    const storedRole = localStorage.getItem("selectedRole");
     const storedReferralCode = localStorage.getItem("referralCode");
     if (storedReferralCode) {
       form.setValue("referred_by", storedReferralCode);
     }
-  }, [form]);
 
-  async function onSubmit(data: z.infer<typeof formSchema>) {
-    setIsLoading(true);
-
-    const storedRole = localStorage.getItem("selectedRole");
-
-    let role_id: number = 4;
     if (storedRole === "student") {
       role_id = 3;
     } else if (storedRole === "teacher" || storedRole === "lecturer") {
       role_id = 2;
     }
+    console.log("Stored role from localStorage:", storedRole);
+    console.log("Determined role_id:", role_id);
+  }, [form]);
+
+  async function onSubmit(data: z.infer<typeof formSchema>) {
+    setIsLoading(true);
 
     try {
       const res: SignupResponse = await registerUser(
@@ -598,7 +600,12 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
             onClick={(event) => {
               event.preventDefault();
               try {
-                const googleAuthUrl = `https://vd.aiteacha.com/api/auth/google`;
+                const googleAuthUrl = `https://api.aiteacha.com/api/auth/google/${storedRole}?redirect_uri=${encodeURIComponent(
+                  window.location.origin +
+                    `/api/auth/google/${storedRole}/callback`
+                )}`;
+                console.log("Constructed Google Auth URL:", googleAuthUrl);
+
                 window.location.href = googleAuthUrl;
               } catch (error: any) {
                 console.log(error);

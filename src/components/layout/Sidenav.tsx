@@ -414,7 +414,7 @@ export function Sidenav({
         </div>
         {!isCollapsed && (
           <div className="absolute bottom-4 bg-white left-4 right-4">
-            <Link to="/contact">
+            <Link to="/dashboard/support">
               <Button
                 variant="ghost"
                 color={sidenavColor}
