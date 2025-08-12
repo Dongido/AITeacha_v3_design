@@ -160,8 +160,6 @@ export function TeacherSignupForm({ className, ...props }: SignupFormProps) {
     }
   }, [form]);
 
-  let role_id: number = 4;
-
   const storedRole = localStorage.getItem("selectedRole");
   useEffect(() => {
     if (selectedCountry) {
