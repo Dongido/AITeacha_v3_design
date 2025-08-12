@@ -46,7 +46,11 @@ const DashboardHandler = () => {
           })
         );
 
-        navigate("/dashboard/home", { replace: true });
+        if (decodedToken.role === 3) {
+          navigate("/student/home");
+        } else if (decodedToken.role === 2) {
+          navigate("/dashboard/home");
+        }
       } catch (error) {
         console.error("Error decoding token:", error);
         navigate("/dashboard/home", { replace: true });

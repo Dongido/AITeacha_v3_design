@@ -121,7 +121,8 @@ import MessageConfiguration from "../pages/Dashboard/forum/MessageConfiguration"
 import Notification from "../pages/Dashboard/admin/Nofification";
 import StudentPerformance from "../pages/Dashboard/student/StudentPerformance";
 import ChatHistory from "../pages/Dashboard/classrooms/chatHistory";
-
+import BranchPage from "../pages/Dashboard/school/Branch";
+import Support from "../pages/Dashboard/Support";
 const icon = {
   className: "w-5 h-5 text-inherit",
 };
@@ -212,6 +213,13 @@ export const routes = [
             path: "/premium/teams",
             element: <Team />,
           },
+          {
+            icon: <UserGroupIcon {...icon} />,
+            name: "Branch",
+            path: "/premium/branch",
+            element: <BranchPage />,
+          },
+
           {
             icon: <FaUsersLine {...icon} />,
             name: "Staff Chat",
@@ -721,6 +729,12 @@ export const Paramroutes = [
         name: "TeamClass",
         path: "/premium/classrooms/user/:userId",
         element: <TeamMemberClassroomsPage />,
+      },
+      {
+        icon: <DocumentTextIcon {...icon} />,
+        name: "Support",
+        path: "/support",
+        element: <Support />,
       },
     ],
   },

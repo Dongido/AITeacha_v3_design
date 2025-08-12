@@ -32,7 +32,7 @@ import GroupChatForm from "../pages/Dashboard/GroupChatForm";
 import AdminResourcesPage from "../pages/Dashboard/admin/AdminResources";
 import Forumpage from "../pages/Dashboard/Forumpage";
 import Notification from "../pages/Dashboard/admin/Nofification";
-
+import BranchPage from "../pages/Dashboard/school/Branch";
 export function Dashboard() {
   const navigate = useNavigate();
   const { controller, dispatch } = useMaterialTailwindController();
@@ -116,6 +116,8 @@ export function Dashboard() {
           <Route path="/premium/forum" element={<Forumpage />} />
           <Route path="/premium/archive" element={<ArchivedAssistants />} />
           <Route path="/premium/resources/:id" element={<ResourceSingle />} />
+          <Route path="/premium/branch" element={<BranchPage />} />
+
           <Route path="/resource/training" element={<Training />} />
           <Route path="/resource/training/form" element={<TrainingForm />} />
           <Route path="/resource/community" element={<Community />} />

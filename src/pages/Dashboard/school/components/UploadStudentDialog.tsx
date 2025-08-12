@@ -21,8 +21,7 @@ import {
 } from "../../../../components/ui/Toast";
 import { uploadStudents } from "../../../../api/school";
 
-import { LuLoader2 } from "react-icons/lu";
-
+import { Loader2 } from "lucide-react";
 interface UploadStudentsCSVDialogProps {
   onSuccess?: () => void;
 }
@@ -239,9 +238,7 @@ const UploadStudentsCSVDialog = forwardRef(
                   variant={"gradient"}
                   className="mt-4 w-full px-6 py-3 bg-primary text-white rounded-full hover:shadow-lg transition-all duration-300"
                 >
-                  {loading && (
-                    <LuLoader2 className="mr-2 h-4 w-4 animate-spin" />
-                  )}{" "}
+                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}{" "}
                   {loading ? `Uploading...` : "Upload Students"}
                 </Button>
               </DialogFooter>

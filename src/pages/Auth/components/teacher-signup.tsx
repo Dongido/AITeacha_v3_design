@@ -160,6 +160,9 @@ export function TeacherSignupForm({ className, ...props }: SignupFormProps) {
     }
   }, [form]);
 
+  let role_id: number = 4;
+
+  const storedRole = localStorage.getItem("selectedRole");
   useEffect(() => {
     if (selectedCountry) {
       const states = State.getStatesOfCountry(selectedCountry).map((state) => ({
@@ -171,6 +174,8 @@ export function TeacherSignupForm({ className, ...props }: SignupFormProps) {
     } else {
       setStatesOfSelectedCountry([]);
     }
+
+    console.log("Stored role from localStorage:", storedRole);
   }, [selectedCountry, form]);
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
@@ -654,8 +659,9 @@ export function TeacherSignupForm({ className, ...props }: SignupFormProps) {
             onClick={(event) => {
               event.preventDefault();
               try {
-                const googleAuthUrl = `https://vd.aiteacha.com/api/auth/google?redirect_uri=${encodeURIComponent(
-                  window.location.origin + "/auth/callback"
+                const googleAuthUrl = `https://api.aiteacha.com/api/auth/google/${storedRole}?redirect_uri=${encodeURIComponent(
+                  window.location.origin +
+                    `/api/auth/google/${storedRole}/callback`
                 )}`;
                 window.location.href = googleAuthUrl;
               } catch (error) {

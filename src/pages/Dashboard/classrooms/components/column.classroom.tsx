@@ -8,7 +8,9 @@ import Status from "../../_components/Status";
 import { useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import ActivateDeactivateDialog from "./ActivateDeactivateDialog";
+
 const classroomColumnHelper = createColumnHelper<Classroom>();
+
 const getRedirectPath = (role: number, classroomId: number) => {
   if (role === 2) {
     return `/dashboard/classrooms/details/${classroomId}`;
@@ -44,13 +46,38 @@ export const classroomColumns = [
     header: ({ column }) => <Header title="Classroom Name" column={column} />,
     sortingFn: "text",
     cell: (info) => {
-      const classroomId = info.row.original.classroom_id;
+      const classroom = info.row.original;
+      const classroomId = classroom.classroom_id;
+      const status = classroom.status;
 
       const userDetails = JSON.parse(
         localStorage.getItem("ai-teacha-user") || "{}"
       );
       const role = userDetails.role;
       const redirectPath = getRedirectPath(role, classroomId);
+
+      const activateDeactivateDialogRef = useRef<{ openDialog: () => void }>(
+        null
+      );
+
+      if (status === "inactive") {
+        return (
+          <>
+            <div
+              className="capitalize text-primary whitespace-nowrap cursor-pointer"
+              onClick={() => activateDeactivateDialogRef.current?.openDialog()}
+            >
+              {info.getValue()}
+            </div>
+            <ActivateDeactivateDialog
+              ref={activateDeactivateDialogRef}
+              classroomId={classroomId}
+              status={status}
+              onSuccess={() => {}}
+            />
+          </>
+        );
+      }
 
       return (
         <Link
@@ -119,7 +146,6 @@ export const classroomColumns = [
       const classroomId = info.row.original.classroom_id;
       const status = classroom.status;
 
-      // Set up a ref to the delete dialog for this row
       const deleteDialogRef = useRef<{ openDialog: () => void }>(null);
       const activateDeactivateDialogRef = useRef<{ openDialog: () => void }>(
         null
