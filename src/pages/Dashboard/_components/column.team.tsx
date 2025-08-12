@@ -74,10 +74,7 @@ export const teamColumns = [
               );
               return Promise.resolve();
             }}
-            // deleteFunction={() => {
-            //   deleteDialogRef.current?.openDialog();
-            //   return Promise.resolve();
-            // }}
+          
           />
           <DeleteTeamMemberDialog
             ref={deleteDialogRef}
