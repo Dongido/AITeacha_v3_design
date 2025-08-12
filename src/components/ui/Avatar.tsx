@@ -27,6 +27,9 @@ const Avatar: React.FC<CustomAvatarProps> = ({
     placeholder=""
     onPointerEnterCapture={() => {}}
     onPointerLeaveCapture={() => {}}
+    // FIX: Add the missing required props with empty function handlers
+    onResize={() => {}}
+    onResizeCapture={() => {}}
   />
 );
 

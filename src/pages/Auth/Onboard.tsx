@@ -117,13 +117,11 @@ const Onboard = () => {
         localStorage.setItem("referralCode", referralCode);
       }
       try {
-        //   await updateUserRole(roleId);
         if (selectedRole === "student") {
           navigate("/auth/student");
         } else {
           navigate("/auth/sign-up");
         }
-        // navigate("/auth/sign-up");
       } catch (error) {
         console.error("Error updating user role:", error);
       } finally {
