@@ -112,7 +112,7 @@ export function Sidenav({
       } transition-transform duration-300 xl:translate-x-0`}
     >
       <div className="relative flex items-center justify-between p-4">
-        <Link to={"/student"}>
+        <Link to={"/student/home"}>
           <div className="flex items-center">
             {brandImg && !isCollapsed && (
               <img src={brandImg} alt="Brand Logo" className="h-8 w-8 mr-2" />
