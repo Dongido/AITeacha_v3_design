@@ -334,7 +334,7 @@ const Classroom = () => {
     let intervalId: NodeJS.Timeout;
 
     const initialTimeout = setTimeout(() => {
-      // First dispatch after 1 minute
+
       dispatch(
         createClassroomSuggestion({
           description: classroom.classroom_description || "",
@@ -346,10 +346,10 @@ const Classroom = () => {
         })
       );
 
-      
+
       setShowTopicPopup(true);
 
-     
+
       intervalId = setInterval(() => {
         dispatch(
           createClassroomSuggestion({
@@ -364,7 +364,7 @@ const Classroom = () => {
 
 
         setShowTopicPopup(true);
-      }, 2 * 60 * 1000);
+      }, 10 * 60 * 1000);
     }, 60 * 1000);
 
     return () => {
@@ -1082,6 +1082,8 @@ const Classroom = () => {
     previouslySelectedTool,
   ]);
 
+
+
   useEffect(() => {
     setPreviousCurrentMessages(messages);
   }, [messages]);
@@ -1726,7 +1728,7 @@ const Classroom = () => {
       </div>
     );
   }
-   console.log("tools", tools)
+  console.log("tools", tools)
   return (
     <ToastProvider>
       <div className="min-h-screen bg-[#F1F1F1]">
@@ -2032,44 +2034,54 @@ const Classroom = () => {
                               </Button>
                             ) : null}
                           </div>
-                          <div className="flex-1 flex justify-end gap-2">
-                            {(() => {
-                              const currentIndex = outlines.findIndex(
-                                (o) => o.name === selectedOutline?.name
-                              );
-                              const current = outlines[currentIndex];
-                              const next = outlines[currentIndex + 1];
-                              const prevIndex = [...outlines]
-                                .slice(0, currentIndex)
-                                .reverse()
-                                .findIndex((o) => o.mark_as_read === 1);
 
-                              const actualPrevIndex =
-                                prevIndex !== -1 ? currentIndex - prevIndex - 1 : -1;
+                          {
+                            selectedOutline && (
+                              <div className="flex-1 flex justify-end gap-2">
+                                {(() => {
+                                  const Nexoutlines = (classroom?.classroomoutlines || []).map((outline) => ({
+                                    name: outline.classroomoutline_title,
+                                    path: outline.classroomoutline_content || "#",
+                                    classroomoutline_id: outline.classroomoutline_id,
+                                    assessmentStatus: outline.assessment_status,
+                                    assessments: outline.assessments,
+                                  }));
 
-                              return (
-                                <>
-                                  {actualPrevIndex !== -1 && (
-                                    <button
-                                      className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md transition-all duration-200"
-                                      onClick={() => setSelectedOutline(outline[actualPrevIndex])}
-                                    >
-                                      Previous
-                                    </button>
-                                  )}
+                                  const currentIndex = Nexoutlines.findIndex(
+                                    (o) => o.name === selectedOutline?.name
+                                  );
 
-                                  {next && (
-                                    <button
-                                      className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md transition-all duration-200 ml-2"
-                                      onClick={() => setSelectedOutlines(next)}
-                                    >
-                                      Next
-                                    </button>
-                                  )}
-                                </>
-                              );
-                            })()}
-                          </div>
+                                  const prev = currentIndex > 0 ? Nexoutlines[currentIndex - 1] : null;
+                                  const next = currentIndex < Nexoutlines.length - 1 ? Nexoutlines[currentIndex + 1] : null;
+
+                                  return (
+                                    <>
+                                      {prev && (
+                                        <button
+                                          className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md transition-all duration-200"
+                                          onClick={() => setSelectedOutline(prev)}
+                                        >
+                                          Previous
+                                        </button>
+                                      )}
+
+                                      {next && (
+                                        <button
+                                          className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md transition-all duration-200"
+                                          onClick={() => setSelectedOutline(next)}
+                                        >
+                                          Next
+                                        </button>
+                                      )}
+                                    </>
+                                  );
+                                })()}
+                              </div>
+
+                            )
+                          }
+
+
                         </div>
                         {selectedOutline &&
                           selectedOutline.assessments &&

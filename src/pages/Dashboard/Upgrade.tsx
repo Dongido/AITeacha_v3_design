@@ -312,7 +312,7 @@ const Upgrade: React.FC = () => {
 
       try {
         const response = await axios.post(
-          "https://vd.aiteacha.com/api/payment/stripe/initiate",
+          "https://api.aiteacha.com/api/payment/stripe/initiate",
           {
             user_id: parseInt(userDetails?.id || "0", 10),
             package_id: packageMap[plan],

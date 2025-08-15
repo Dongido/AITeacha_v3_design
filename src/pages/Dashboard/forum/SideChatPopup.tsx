@@ -24,16 +24,16 @@ interface ChatMessage {
   time: string;
 }
 
-const SideChatPopup: React.FC<SideChatPopupProps> = ({ isOpen, onClose, id:receiverId }) => {
+const SideChatPopup: React.FC<SideChatPopupProps> = ({ isOpen, onClose, id: receiverId }) => {
   const dispatch = useAppDispatch();
-  const { message, loading , messageCount } = useAppSelector((state: RootState) => state.staffChats);
+  const { message, loading, messageCount } = useAppSelector((state: RootState) => state.staffChats);
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [senderId, setSenderId] = useState<number | null>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
- 
+
   useEffect(() => {
     const userDetailsFromStorage = localStorage.getItem("ai-teacha-user");
     if (userDetailsFromStorage) {
@@ -42,20 +42,20 @@ const SideChatPopup: React.FC<SideChatPopupProps> = ({ isOpen, onClose, id:recei
     }
   }, []);
 
-  useEffect(() => {  
+  useEffect(() => {
     if (senderId !== null) {
       dispatch(getMessages({ senderId, receiverId: parseInt(receiverId, 10) }));
     }
-  
+
   }, [dispatch, senderId, receiverId]);
 
- 
-useEffect(() => {
-  const payload = { senderId: receiverId };
-  if (payload.senderId) {
-    dispatch(unreadMessageCounts(payload));
-  }
-}, [isOpen, dispatch, receiverId]);
+
+  useEffect(() => {
+    const payload = { senderId: receiverId };
+    if (payload.senderId) {
+      dispatch(unreadMessageCounts(payload));
+    }
+  }, [isOpen, dispatch, receiverId]);
 
 
   useEffect(() => {
@@ -143,8 +143,7 @@ useEffect(() => {
 
   return (
     <div
-      className={`fixed top-0 right-0 h-full w-full sm:w-[370px] bg-white shadow-2xl transition-transform duration-300 z-[1000] ${
-        isOpen ? "translate-x-0" : "translate-x-full"
+      className={`fixed top-0 right-0 h-full w-full sm:w-[370px] bg-white shadow-2xl transition-transform duration-300 z-[1000] ${isOpen ? "translate-x-0" : "translate-x-full"
       }`}
     >
       {/* Header */}
@@ -175,14 +174,13 @@ useEffect(() => {
                 />
               )}
               <div
-                className={`max-w-[40%] px-3 py-2 rounded-2xl text-sm flex flex-col tex-black  h-auto ${
-                  msg.isMe
-                    ? "bg-purple-50 text-black rounded-br-none ml-auto"
-                    : "bg-gray-100 text-gray-900 rounded-bl-none mr-auto"
-                }`}
+                className={`max-w-[40%] px-3 py-2 rounded-2xl text-sm flex flex-col tex-black  h-auto ${msg.isMe
+                  ? "bg-purple-50 text-black rounded-br-none ml-auto"
+                  : "bg-gray-100 text-gray-900 rounded-bl-none mr-auto"
+                  }`}
               >
                 <span className=" text-sm mt-1">{msg.text}</span>
-               <span className="text-[10px] text-right opacity-70 mt-0">{msg.time}</span>
+                <span className="text-[10px] text-right opacity-70 mt-0">{msg.time}</span>
 
               </div>
               {msg.isMe && (
@@ -213,12 +211,12 @@ useEffect(() => {
         >
           <Smile />
         </button>
-        <input
+        <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSend()}
           placeholder="Type a message..."
-          className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-400"
+          rows={2}
+          className="flex-1 border border-gray-300 rounded-lg px-3 py-2 resize-none focus:outline-none focus:ring-2 focus:ring-gray-400"
         />
         <button
           onClick={handleSend}

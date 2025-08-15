@@ -288,7 +288,7 @@ export const getMessage = async(paylod:getZaraChats):Promise<Message[]> => {
     // console.log("response", response);
     return response.data.data;
   } catch (error: any) {
-    console.error("❌ Error fetching messages:", error?.response?.data || error.message);
+    console.error("Error fetching messages:", error?.response?.data || error.message);
     throw new Error(error?.response?.data?.message || "Failed to fetch messages");
   }
 };
@@ -353,6 +353,7 @@ export const getmessageCount = async():Promise<any[]> => {
     throw new Error(error?.response?.data?.message || "Failed to fetch user chat count");
   }
 }
+
 export const unreadMessage = async(payload:unreadChat):Promise<any[]> => {
   try {
     const response = await apiClient.put<{

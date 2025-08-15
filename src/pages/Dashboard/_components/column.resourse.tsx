@@ -13,21 +13,40 @@ export const resourceColumns = [
     cell: (info) => <span>{info.getValue()}</span>,
   }),
 
-  resourceColumnHelper.accessor("category", {
-    header: ({ column }) => <Header title="Category" column={column} />,
-    sortingFn: "text",
-    cell: (info) => (
-      <span className="capitalize whitespace-nowrap">{info.getValue()}</span>
-    ),
-  }),
+ resourceColumnHelper.accessor("category", {
+  header: ({ column }) => <Header title="Category" column={column} />,
+  sortingFn: "text",
+  cell: (info) => {
+    const value = info.getValue() as string;
+    const maxLength = 30;
+    return (
+      <span
+        className="capitalize whitespace-nowrap"
+        title={value} 
+      >
+        {value.length > maxLength ? value.slice(0, maxLength) + "..." : value}
+      </span>
+    );
+  },
+}),
 
   resourceColumnHelper.accessor("prompt", {
     header: ({ column }) => <Header title="Title" column={column} />,
     sortingFn: "text",
-    cell: (info) => (
-      <span className="capitalize whitespace-nowrap">{info.getValue()}</span>
-    ),
+    cell: (info) => {
+      const value = info.getValue() as string;
+      const maxLength = 30; 
+      return (
+        <span
+          className="capitalize whitespace-nowrap"
+          title={value} 
+        >
+          {value.length > maxLength ? value.slice(0, maxLength) + "..." : value}
+        </span>
+      );
+    },
   }),
+
 
   //   resourceColumnHelper.accessor("created_at", {
   //     header: ({ column }) => <Header title="Created At" column={column} />,
