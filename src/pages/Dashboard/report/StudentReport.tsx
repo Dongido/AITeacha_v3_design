@@ -220,7 +220,7 @@ const StudentReport = () => {
       <div className="">
         <h1 className="text-2xl font-bold">Report Summary</h1>
         <p className="bg-white p-4 rounded-md">
-          {student.performance.recommended_actions}
+          {student.performance.performance_summary}
         </p>
       </div>
       <div className="">
