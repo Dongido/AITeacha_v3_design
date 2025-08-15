@@ -236,6 +236,7 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
                 setToastMessage(
                   error.message || "Google login failed. Please try again."
                 );
+
                 setToastVariant("destructive");
                 setToastOpen(true);
               }

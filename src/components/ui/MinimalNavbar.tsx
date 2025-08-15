@@ -20,6 +20,8 @@ const MinimalNavbar: React.FC<MinimalNavbarProps> = ({
       placeholder=""
       onPointerEnterCapture={() => {}}
       onPointerLeaveCapture={() => {}}
+      onResize={() => {}}
+      onResizeCapture={() => {}}
       {...props}
     >
       {children}

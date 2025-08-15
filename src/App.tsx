@@ -44,6 +44,7 @@ import Community from "./pages/Dashboard/Community";
 import AuthCallback from "./pages/Dashboard/live-class/AuthCallback";
 import CreateLiveClass from "./pages/Dashboard/live-class/CreateLiveClass";
 import ExamPage from "./pages/Dashboard/test/TestPage";
+
 function App() {
   const location = useLocation();
 
@@ -64,79 +65,80 @@ function App() {
 
   return (
     <div className="app-scroll-wrapper">
-    <Routes >
-      <Route path="/" element={<Home />} />
-      <Route
-        path="/communities/pioneer-program"
-        element={<PioneersProgram />}
-      />
-      <Route
-        path="/ai-in-education-trainer-program"
-        element={<AITeachaOnboarding />}
-      />
-      <Route path="/lagos-conference" element={<Ads />} />
-      <Route path="/communities/pioneers" element={<Pioneers />} />
-      <Route path="/educator-tools" element={<EducatorTools />} />
-      <Route path="/student-tools" element={<StudentTools />} />
-      <Route path="/blogs" element={<Blog />} />
-      <Route path="/faqs" element={<Faqs />} />
-      <Route path="/heroes-wall" element={<HeroesWall />} />
-      <Route path="/contact" element={<Contact />} />
-      <Route path="/pricing" element={<Pricing />} />
-      <Route path="/about" element={<About />} />
-      <Route path="/legal-terms" element={<TermsPolicy />} />
-      <Route path="/terms-of-service" element={<Terms />} />
-      <Route path="/mission" element={<AITeachaMission />} />
-      <Route path="/privacy-policy" element={<Privacy />} />
-      <Route path="/ai-policy" element={<AIPolicy />} />
-      <Route path="/data-privacy" element={<DataPrivacy />} />
-      <Route path="/student-policy" element={<StudentDataPolicy />} />
-      <Route
-        path="/blogs/level-up-your-teaching-introducing-the-ai-teacher-certification-course"
-        element={<LevelUp />}
-      />
-      <Route
-        path="/blogs/the-role-of-ai-natural-language-processors"
-        element={<AiRole />}
-      />
-      <Route
-        path="/blogs/artificial-intelligence-transforming-education"
-        element={<AITransformation />}
-      />
-      <Route
-        path="/blogs/is-it-really-safe-to-use-ai-in-education"
-        element={<AIEducation />}
-      />
-      <Route path="/upgrade/support" element={<UpgradeSupport />} />
-      <Route path="/dashboard" element={<DashboardHandler />} />
-      <Route element={<ProtectedRoute />}>
-        <Route path="/dashboard/*" element={<Dashboard />} />
-        <Route path="/auth/oauth2callback" element={<AuthCallback />} />
-
-        {/* <Route path="/dashboard/resource/training" element={<Training />} />
-            <Route path="/dashboard/resource/community" element={<Community />} />  */}
-        <Route path="/payment" element={<Payment />} />
-        <Route path="/classroom/s/*" element={<RoleBasedRedirect />} />
-        <Route path="/classroom/cbt/*" element={<RoleBasedRedirect />} />
-        <Route path="/examination/attempt/:id" element={<ExamPage />} />
-
+      <Routes>
+        <Route path="/" element={<Home />} />
         <Route
-          path="/student"
-          element={<Navigate to="/student/home" replace />}
+          path="/communities/pioneer-program"
+          element={<PioneersProgram />}
         />
-        <Route path="/student/*" element={<StudentDashboard />} />
-        <Route path="/class/*" element={<PaidLayout />} />
-      </Route>
+        <Route
+          path="/ai-in-education-trainer-program"
+          element={<AITeachaOnboarding />}
+        />
+        <Route path="/lagos-conference" element={<Ads />} />
+        <Route path="/communities/pioneers" element={<Pioneers />} />
+        <Route path="/educator-tools" element={<EducatorTools />} />
+        <Route path="/student-tools" element={<StudentTools />} />
+        <Route path="/blogs" element={<Blog />} />
+        <Route path="/faqs" element={<Faqs />} />
+        <Route path="/heroes-wall" element={<HeroesWall />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/pricing" element={<Pricing />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/legal-terms" element={<TermsPolicy />} />
+        <Route path="/terms-of-service" element={<Terms />} />
+        <Route path="/mission" element={<AITeachaMission />} />
+        <Route path="/privacy-policy" element={<Privacy />} />
+        <Route path="/ai-policy" element={<AIPolicy />} />
+        <Route path="/data-privacy" element={<DataPrivacy />} />
+        <Route path="/student-policy" element={<StudentDataPolicy />} />
+        <Route
+          path="/blogs/level-up-your-teaching-introducing-the-ai-teacher-certification-course"
+          element={<LevelUp />}
+        />
+        <Route
+          path="/blogs/the-role-of-ai-natural-language-processors"
+          element={<AiRole />}
+        />
+        <Route
+          path="/blogs/artificial-intelligence-transforming-education"
+          element={<AITransformation />}
+        />
+        <Route
+          path="/blogs/is-it-really-safe-to-use-ai-in-education"
+          element={<AIEducation />}
+        />
+        <Route path="/upgrade/support" element={<UpgradeSupport />} />
+        <Route path="/dashboard" element={<DashboardHandler />} />
+        <Route path="/student" element={<DashboardHandler />} />
+        <Route element={<ProtectedRoute />}>
+          <Route path="/dashboard/*" element={<Dashboard />} />
+          <Route path="/auth/oauth2callback" element={<AuthCallback />} />
 
-      <Route element={<PublicRoute />}>
-        <Route path="/auth/*" element={<Auth />} />
-      </Route>
-      <Route
-        path="/dashboard"
-        element={<Navigate to="/dashboard/home" replace />}
-      />
-      <Route path="*" element={<Navigate to="/dashboard/home" replace />} />
-    </Routes>
+          {/* <Route path="/dashboard/resource/training" element={<Training />} />
+            <Route path="/dashboard/resource/community" element={<Community />} />  */}
+          <Route path="/payment" element={<Payment />} />
+          <Route path="/classroom/s/*" element={<RoleBasedRedirect />} />
+          <Route path="/classroom/cbt/*" element={<RoleBasedRedirect />} />
+          <Route path="/examination/attempt/:id" element={<ExamPage />} />
+
+          <Route
+            path="/student"
+            element={<Navigate to="/student/home" replace />}
+          />
+          <Route path="/student/*" element={<StudentDashboard />} />
+          <Route path="/class/*" element={<PaidLayout />} />
+        </Route>
+
+        <Route element={<PublicRoute />}>
+          <Route path="/auth/*" element={<Auth />} />
+        </Route>
+        <Route
+          path="/dashboard"
+          element={<Navigate to="/dashboard/home" replace />}
+        />
+        <Route path="*" element={<Navigate to="/dashboard/home" replace />} />
+      </Routes>
     </div>
   );
 }

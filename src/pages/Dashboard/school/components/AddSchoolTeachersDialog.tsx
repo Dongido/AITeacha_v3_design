@@ -16,7 +16,7 @@ import {
   ToastTitle,
   ToastViewport,
 } from "../../../../components/ui/Toast";
-import { LuLoader2 } from "react-icons/lu";
+import { Loader2 } from "lucide-react";
 import { uploadTeachers } from "../../../../api/school";
 interface AddSchoolTeachersDialogProps {
   onSuccess?: () => void;
@@ -228,9 +228,7 @@ const AddSchoolTeachersDialog = forwardRef(
                   className="rounded-md"
                   variant={"gradient"}
                 >
-                  {loading && (
-                    <LuLoader2 className="mr-2 h-4 w-4 animate-spin" />
-                  )}{" "}
+                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}{" "}
                   {loading ? `Uploading` : "Upload Teachers"}
                 </Button>
                 <Button

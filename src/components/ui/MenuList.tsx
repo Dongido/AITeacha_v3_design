@@ -20,6 +20,9 @@ const MenuList: React.FC<CustomMenuListProps> = ({
     placeholder=""
     onPointerEnterCapture={() => {}}
     onPointerLeaveCapture={() => {}}
+    // FIX: Add the missing required props with empty function handlers
+    onResize={() => {}}
+    onResizeCapture={() => {}}
   >
     {children}
   </MTMenuList>

@@ -20,6 +20,8 @@ const Breadcrumbs: React.FC<CustomBreadcrumbsProps> = ({
     placeholder=""
     onPointerEnterCapture={() => {}}
     onPointerLeaveCapture={() => {}}
+    onResize={() => {}}
+    onResizeCapture={() => {}}
   >
     {children}
   </MTBreadCrumbs>

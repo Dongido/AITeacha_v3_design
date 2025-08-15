@@ -208,8 +208,8 @@ const TestReport: React.FC = () => {
                   ).toFixed(2)}
                 </p>
               </div>
-              <div className="bg-yellow-100 p-4 rounded-md shadow-sm">
-                <p className="text-yellow-600 font-semibold">
+              <div className="bg-purple-100 p-4 rounded-md shadow-sm">
+                <p className="text-purple-600 font-semibold">
                   Number of Failed Students:
                 </p>
                 <p className="text-lg">

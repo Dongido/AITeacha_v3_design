@@ -93,7 +93,6 @@ export function DashboardNavbar() {
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Consolidated Chat Link */}
           <Link
             to="/dashboard/participant/chat"
             className="hidden lg:flex relative items-center gap-2 rounded-full px-3 py-1 transition cursor-pointer"

@@ -21,6 +21,9 @@ const MenuItem: React.FC<CustomMenuItemProps> = ({
     onPointerEnterCapture={() => {}}
     onPointerLeaveCapture={() => {}}
     placeholder=""
+    // FIX: Add the missing required props with empty function handlers
+    onResize={() => {}}
+    onResizeCapture={() => {}}
   >
     {children}
   </MTMenuItem>
