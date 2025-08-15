@@ -166,6 +166,7 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
   });
 
   const hasDisability = form.watch("hasDisability");
+  let role_id: number = 4;
 
   const storedRole = localStorage.getItem("selectedRole");
   useEffect(() => {

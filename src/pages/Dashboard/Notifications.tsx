@@ -10,13 +10,13 @@ const Notifications = () => {
     (state: RootState) => state.notifications
   );
 
+  const [userDetails, setUserDetails] = useState<any>(null);
+  const [isEmailVerified, setIsEmailVerified] = useState<number>(0);
+  const [filter, setFilter] = useState<string>("all");
+
   useEffect(() => {
     dispatch(loadUserNotifications());
   }, [dispatch]);
-
-  const [userDetails, setUserDetails] = useState<any>(null);
-  const [isEmailVerified, setIsEmailVerified] = useState<number>(0);
-  const [filter, setFilter] = useState<string>("all"); 
 
   useEffect(() => {
     const userDetailsFromStorage = localStorage.getItem("ai-teacha-user");
@@ -50,27 +50,24 @@ const Notifications = () => {
         </div>
       )}
 
-      <h2 className="text-xl font-medium text-gray-900">Notifications 🔔</h2>
-
-      {/* Filter Buttons */}
-      <div className="flex gap-2 mt-4 mb-4">
-        {["all", "cbt", "classroom","assignment"].map((type) => (
-          <button
-            key={type}
-            onClick={() => setFilter(type)}
-            className={`px-4 py-2 rounded ${
-              filter === type
-                ? "bg-purple-600 text-white"
-                : "bg-gray-400 text-black"
-            }`}
-          >
-            {type.charAt(0).toUpperCase() + type.slice(1)}
-          </button>
-        ))}
+      {/* Title + Dropdown Filter */}
+      <div className="flex justify-between items-center">
+        <h2 className="text-xl font-medium text-gray-900">Notifications 🔔</h2>
+        <select
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          className="px-3 py-2 border border-purple-900 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+        >
+          <option value="all">All</option>
+          <option value="cbt">CBT</option>
+          <option value="classroom">Classroom</option>
+          <option value="assignment">Assignment</option>
+        </select>
       </div>
 
+      {/* Content */}
       {loading ? (
-        <div className="w-full  mt-6">
+        <div className="w-full mt-6">
           {[...Array(3)].map((_, index) => (
             <div key={index} className="mb-4">
               <Skeleton className="h-24 w-full mb-2" />
@@ -85,7 +82,7 @@ const Notifications = () => {
           Oops! No notifications found.
         </p>
       ) : (
-        <ul className="w-full  mt-6 list-none">
+        <ul className="w-full mt-6 list-none">
           {filteredNotifications.map((notification: any) => (
             <li
               key={notification.id}

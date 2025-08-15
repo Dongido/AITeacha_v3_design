@@ -1728,7 +1728,7 @@ const Classroom = () => {
       </div>
     );
   }
-   console.log("tools", tools)
+  console.log("tools", tools)
   return (
     <ToastProvider>
       <div className="min-h-screen bg-[#F1F1F1]">
@@ -2045,32 +2045,21 @@ const Classroom = () => {
                                     classroomoutline_id: outline.classroomoutline_id,
                                     assessmentStatus: outline.assessment_status,
                                     assessments: outline.assessments,
-                                    mark_as_read: outline.mark_as_read,
                                   }));
-
-                                  // console.log("Nexoutlines", Nexoutlines);
 
                                   const currentIndex = Nexoutlines.findIndex(
                                     (o) => o.name === selectedOutline?.name
                                   );
 
-                                  const current = Nexoutlines[currentIndex];
-                                  const next = Nexoutlines[currentIndex + 1];
-
-                                  const prevIndex = [...Nexoutlines]
-                                    .slice(0, currentIndex)
-                                    .reverse()
-                                    .findIndex((o) => o.mark_as_read === 1);
-
-                                  const actualPrevIndex =
-                                    prevIndex !== -1 ? currentIndex - prevIndex - 1 : -1;
+                                  const prev = currentIndex > 0 ? Nexoutlines[currentIndex - 1] : null;
+                                  const next = currentIndex < Nexoutlines.length - 1 ? Nexoutlines[currentIndex + 1] : null;
 
                                   return (
                                     <>
-                                      {actualPrevIndex !== -1 && (
+                                      {prev && (
                                         <button
                                           className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md transition-all duration-200"
-                                          onClick={() => setSelectedOutline(Nexoutlines[actualPrevIndex])}
+                                          onClick={() => setSelectedOutline(prev)}
                                         >
                                           Previous
                                         </button>
@@ -2078,7 +2067,7 @@ const Classroom = () => {
 
                                       {next && (
                                         <button
-                                          className="bg-purple-600 hover:bg-purple-600 text-white px-4 py-2 rounded-md transition-all duration-200 ml-2"
+                                          className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md transition-all duration-200"
                                           onClick={() => setSelectedOutline(next)}
                                         >
                                           Next
@@ -2088,6 +2077,7 @@ const Classroom = () => {
                                   );
                                 })()}
                               </div>
+
                             )
                           }
 
