@@ -229,7 +229,7 @@ const StudentPerformance = () => {
           Summary of Your Report
         </h3>
         <p className="text-gray-700 leading-relaxed">
-          {student.performance.recommended_actions ||
+          {student.performance.performance_summary ||
             "No specific summary available at this time."}
         </p>
       </div>
