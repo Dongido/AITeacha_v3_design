@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "../../components/ui/Button";
 import { useFlutterwave, closePaymentModal } from "flutterwave-react-v3";
-import { changeUserPlan } from "../../api/subscription";
+import { changeUserPlan, } from "../../api/subscription";
 import { FLUTTERWAVE_PUBLIC } from "../../lib/utils";
 import Logo from "../../assets/img/logo.png";
 import { useNavigate } from "react-router-dom";
@@ -14,9 +14,11 @@ import { Link } from "react-router-dom";
 import { Switch } from "../../components/ui/Switch";
 import { verifyCouponCode } from "../../api/subscription";
 import { selectUser, loadUserProfile } from "../../store/slices/profileSlice";
-import { AppDispatch } from "../../store";
+import { AppDispatch, RootState } from "../../store";
 import { useDispatch, useSelector } from "react-redux";
 import { verifyTransaction } from "../../api/subscription";
+import { useAppSelector } from "../../store/hooks";
+import { getPaymentplan } from "../../store/slices/notificationsSlice";
 interface UserDetails {
   id: string;
   email: string;
@@ -82,6 +84,16 @@ const Upgrade: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [discountPercentage, setDiscountPercentage] = useState(0);
   const [couponApplied, setCouponApplied] = useState(false);
+  const [payment_planId, setFlwId] = useState<number | null>(null);
+  const [loader, setLoader] = useState<boolean>(false);
+  const { payment,  error, } = useAppSelector(
+      (state: RootState) => state.notifications
+    );
+    
+  //   const isArray =  payment?.data[0]?.id ||  payment?.data?.id
+  //    console.log("isArray" , isArray)
+   console.log("payment", payment, payment?.data[0]?.id)
+  //  console.log("array", payment?.data?.id)
 
   const user = useSelector(selectUser);
 
@@ -170,7 +182,9 @@ const Upgrade: React.FC = () => {
     billingCycle: "month" | "threeMonths" | "year",
     currency: CurrencyType,
     prices: typeof initialPrices,
-    noOfSeats: string
+    noOfSeats: string,
+    payment_plan: string,
+   
   ) => {
     const unit = billingCycle === "threeMonths" ? "month" : billingCycle;
     const duration = billingCycle === "threeMonths" ? 3 : 1;
@@ -181,6 +195,7 @@ const Upgrade: React.FC = () => {
       amount: prices[plan][currency][billingCycle],
       currency: currency,
       payment_options: "card, banktransfer, ussd",
+      payment_plan,
       customer: {
         email: userDetails?.email || "default@email.com",
         phone_number: "08012345678",
@@ -210,6 +225,7 @@ const Upgrade: React.FC = () => {
     const amount = prices[plan][currency][billingCycle];
     const duration = billingCycle === "threeMonths" ? 3 : 1;
     const unit = billingCycle === "threeMonths" ? "month" : billingCycle;
+    const payment_plan = payment?.data[0]?.id;
 
     if (method === "flutterwave") {
       const currentConfig = getFlutterwaveConfig(
@@ -218,9 +234,10 @@ const Upgrade: React.FC = () => {
         unit,
         currency,
         prices,
-        noOfSeats
+        noOfSeats,
+        payment_plan,
       );
-
+     console.log("flutterwave payload", currentConfig)
       const handleFlutterwavePayment = useFlutterwave(currentConfig);
       handleFlutterwavePayment({
         ...currentConfig,
@@ -420,6 +437,34 @@ const Upgrade: React.FC = () => {
     }
   };
 
+const handlefetchPayloadId = async (
+  plan: "basic" | "pro" | "premium" | "enterprise" | "admin"
+) => {
+  try {
+    setLoader(true);
+
+    const amount = prices[plan][currency][billingCycle];
+    const unit = billingCycle === "threeMonths" ? "month" : billingCycle;
+    const payload = {
+      amount,
+      package_id: packageMap[plan],
+      interval: unit,
+      currency,
+    };
+     const response = await dispatch(getPaymentplan(payload)).unwrap(); 
+     if(response){
+      setIsDialogOpen(true)
+     }
+  } catch (err: any) {
+    console.error("Error fetching payloadId:", err);
+  } finally {
+    setLoader(false);
+  }
+};
+
+
+
+
   const aitachaDetails = JSON.parse(
     localStorage.getItem("ai-teacha-user") || "{}"
   );
@@ -454,10 +499,9 @@ const Upgrade: React.FC = () => {
 
     const buttonClassName: string = `
       w-full py-2 rounded-md transition duration-200 mt-auto text-lg font-medium
-      ${
-        isCurrentPlanActive
-          ? "bg-gray-600  hover:bg-gray-300 text-white"
-          : isCurrentPlanExpired
+      ${isCurrentPlanActive
+        ? "bg-gray-600  hover:bg-gray-300 text-white"
+        : isCurrentPlanExpired
           ? "bg-red-600 text-white hover:bg-red-700"
           : "bg-primary text-white hover:bg-[#4a2fa3]"
       }
@@ -467,8 +511,9 @@ const Upgrade: React.FC = () => {
     return (
       <button
         onClick={() => {
+          handlefetchPayloadId(planKey)
           setSelectedPlan(planKey);
-          setIsDialogOpen(true);
+
         }}
         disabled={isProcessing}
         className={buttonClassName}
@@ -593,8 +638,8 @@ const Upgrade: React.FC = () => {
               </ul>
               <button
                 className={`w-full py-2 rounded-md mt-auto ${userDetails?.package === "AiTeacha Free"
-                    ? "bg-gray-300 text-gray-700 cursor-not-allowed"
-                    : "bg-primary text-white hover:bg-[#4a2fa3] transition"
+                  ? "bg-gray-300 text-gray-700 cursor-not-allowed"
+                  : "bg-primary text-white hover:bg-[#4a2fa3] transition"
                   }`}
                 disabled={userDetails?.package === "AiTeacha Free"}
               >
@@ -819,8 +864,8 @@ const Upgrade: React.FC = () => {
                   userDetails?.package === "AI Teacha Enterprise"
                 }
                 className={`bg-primary text-white w-full py-2 rounded-md transition mt-auto text-center ${userDetails?.package === "AI Teacha Enterprise"
-                    ? "bg-gray-300 text-gray-700 cursor-not-allowed"
-                    : "hover:bg-[#4a2fa3]"
+                  ? "bg-gray-300 text-gray-700 cursor-not-allowed"
+                  : "hover:bg-[#4a2fa3]"
                   }`}
               >
                 {userDetails?.package === "AI Teacha Enterprise"

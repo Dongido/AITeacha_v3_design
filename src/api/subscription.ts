@@ -77,3 +77,22 @@ export const verifyCouponCode = async (couponCode: string): Promise<any> => {
     );
   }
 };
+
+ export const getPaymentId = async(payload:any):Promise<any> => {
+  try {
+     const { amount, package_id, interval, currency } = payload;
+    const response = await apiClient.post("/payment/create/flw/plan", {
+      amount,
+      package_id,
+      interval,
+      currency
+    });
+     console.log("response", response)
+    return response.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data || "Failed to fetch payload ID. Please try again."
+    );
+    
+  }
+ }

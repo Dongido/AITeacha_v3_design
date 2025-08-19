@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { createNotifications, delectNotifications, fetchUserNotifications, getNotificationById, getNotifications, 
   NotificationPayload, statuspayload, updateadminNotification, updatestatus, updatewhoviews, viewspayload } from "../../api/notification";
 import { create } from "node:domain";
+import { getPaymentId} from "../../api/subscription";
 
 interface Notification {
   id: number;
@@ -19,6 +20,7 @@ interface NotificationsState {
   notificationList: any[],
   notificationloading:boolean 
   isloading:boolean 
+  payment:any 
 }
 
 const initialState: NotificationsState = {
@@ -28,20 +30,22 @@ const initialState: NotificationsState = {
   notification: null,
   notificationList: [] ,
   notificationloading:false,
-  isloading:false
+  isloading:false,
+  payment:null
 };
 
 export const loadUserNotifications = createAsyncThunk(
   "notifications/loadUserNotifications",
-  async () => {
+  async (_, { rejectWithValue }) => {
     try {
       const notifications = await fetchUserNotifications();
-      return notifications;
+      return Array.isArray(notifications) ? notifications : notifications.data ?? [];
     } catch (error: any) {
-      return error.message || "Failed to fetch notifications.";
+      return rejectWithValue(error.message || "Failed to fetch notifications.");
     }
   }
 );
+
 
 export const createNotification = createAsyncThunk(
   "notifications/create", async (payload: NotificationPayload) => {
@@ -128,6 +132,19 @@ export const createNotification = createAsyncThunk(
        return error.message || "Failed to get notification"
     }
   })
+
+  export const getPaymentplan = createAsyncThunk(
+  "payment/paymentplan",
+  async (payload: any, { rejectWithValue }) => {
+    try {
+      const response = await getPaymentId(payload);
+      return  response
+    } catch (error: any) {
+      return rejectWithValue(error.message || "Failed to fetch notifications.");
+    }
+  }
+);
+
 
 const notificationsSlice = createSlice({
   name: "notifications",
@@ -240,7 +257,19 @@ const notificationsSlice = createSlice({
       .addCase(updateNofication.rejected, (state , action) => {
         state.loading = false
         state.error = action.payload as string
-      });
+      })
+      .addCase(getPaymentplan .pending, (state) => {
+        state.loading = true
+        state.error =  null
+      })
+      .addCase(getPaymentplan .fulfilled, (state, action) => {
+        state.loading = false
+        state.payment = action.payload
+      })
+      .addCase(getPaymentplan.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload as string
+      })
   },
 });
 
