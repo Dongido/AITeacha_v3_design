@@ -116,13 +116,14 @@ import Participants from "../pages/Dashboard/student/Particpant";
 import AdminResourcesPage from "../pages/Dashboard/admin/AdminResources";
 import TeamMemberClassroomsPage from "../pages/Dashboard/team/TeamMemberClassroomsPage";
 import ChatListPage from "../pages/Dashboard/chats/ChatListPage";
-import { FaRocketchat } from "react-icons/fa";
+import { FaRegIdCard, FaRocketchat } from "react-icons/fa";
 import MessageConfiguration from "../pages/Dashboard/forum/MessageConfiguration";
 import Notification from "../pages/Dashboard/admin/Nofification";
 import StudentPerformance from "../pages/Dashboard/student/StudentPerformance";
 import ChatHistory from "../pages/Dashboard/classrooms/chatHistory";
 import BranchPage from "../pages/Dashboard/school/Branch";
 import Support from "../pages/Dashboard/Support";
+import CardDetails from "../pages/Dashboard/CardDetails";
 const icon = {
   className: "w-5 h-5 text-inherit",
 };
@@ -259,6 +260,12 @@ export const routes = [
         path: "/upgrade",
         element: <Upgrade />,
       },
+      // {
+      //   icon: <FaRegIdCard  {...icon} />,
+      //   name: "Card-Details",
+      //   path: "/Card-Details",
+      //   element:<CardDetails/>,
+      // },
       {
         icon: <BookOpenIcon {...icon} />,
         name: "Resources",
