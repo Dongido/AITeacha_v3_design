@@ -627,7 +627,7 @@ const ToolDetail = () => {
                   &times;
                 </button>
                 <span className="block lg:text-left text-start font-medium leading-snug px-2 text-lg md:text-2xl  text-[#4b2aad] ">
-                  Click <span className="font-semibold"> "Auto Fill Form" </span> button to see  a sample
+                  Click <span className="font-semibold"> "Auto Fill Form" </span> button to see  a sample 
                 </span>
 
                 <div className="mt-4 flex justify-between gap-2">
