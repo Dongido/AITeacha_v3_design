@@ -214,12 +214,12 @@ export const routes = [
             path: "/premium/teams",
             element: <Team />,
           },
-          {
-            icon: <UserGroupIcon {...icon} />,
-            name: "Branch",
-            path: "/premium/branch",
-            element: <BranchPage />,
-          },
+          // {
+          //   icon: <UserGroupIcon {...icon} />,
+          //   name: "Branch",
+          //   path: "/premium/branch",
+          //   element: <BranchPage />,
+          // },
 
           {
             icon: <FaUsersLine {...icon} />,

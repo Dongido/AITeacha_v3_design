@@ -93,7 +93,7 @@ const Upgrade: React.FC = () => {
   //   const isArray =  payment?.data[0]?.id ||  payment?.data?.id
   //    console.log("isArray" , isArray)
    console.log("payment", payment, payment?.data[0]?.id)
-  //  console.log("array", payment?.data?.id)
+  
 
   const user = useSelector(selectUser);
 
