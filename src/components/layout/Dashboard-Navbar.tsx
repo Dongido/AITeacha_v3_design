@@ -120,7 +120,7 @@ export function DashboardNavbar() {
 
           <div className="flex items-center gap-x-6  ml-auto lg:mr-3">
             <Link
-              to="/student/participant/chats"
+              to="/dashboard/participant/chat"
               className="flex lg:hidden cursor-pointer relative items-center gap-2 rounded-full px-3 py-1 transition"
             >
               <FaRocketchat className="font-medium  text-lg" />
@@ -147,9 +147,7 @@ export function DashboardNavbar() {
 
             <Dialog>
               <DialogTrigger asChild>
-                
-                  <ArrowRightEndOnRectangleIcon className="h-5 w-5 text-blue-gray-500 cursor-pointer " />
-                
+                <ArrowRightEndOnRectangleIcon className="h-5 w-5 text-blue-gray-500 cursor-pointer " />
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
@@ -171,8 +169,11 @@ export function DashboardNavbar() {
               </DialogContent>
             </Dialog>
 
-              <Cog6ToothIcon    aria-label="Open configurator"  onClick={() => setOpenConfigurator(uiDispatch, true)} className="h-5 w-5 text-blue-gray-500 cursor-pointer" />
-       
+            <Cog6ToothIcon
+              aria-label="Open configurator"
+              onClick={() => setOpenConfigurator(uiDispatch, true)}
+              className="h-5 w-5 text-blue-gray-500 cursor-pointer"
+            />
           </div>
         </div>
       </div>

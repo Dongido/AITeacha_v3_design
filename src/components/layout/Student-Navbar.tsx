@@ -103,7 +103,7 @@ export function StudentNavbar() {
         <div className="flex items-center gap-x-6  ml-auto lg:mr-3 ">
           {/* Chat Link */}
           <Link
-            to="/student/participant/chats"
+            to="/student/participant/chat"
             className="relative flex items-center gap-2 bg-purple-50 rounded-full px-3 py-1 transition cursor-pointer"
           >
             <FaRocketchat className="font-medium text-purple-400 text-lg" />
@@ -119,22 +119,17 @@ export function StudentNavbar() {
 
           {/* Profile Link */}
           <Link to="/student/profile">
-
-              <img
-                src={imageURL}
-                alt="Profile"
-                className="h-8 w-8 rounded-full object-cover border border-gray-300"
-              />
-          
+            <img
+              src={imageURL}
+              alt="Profile"
+              className="h-8 w-8 rounded-full object-cover border border-gray-300"
+            />
           </Link>
 
           {/* Logout Dialog Trigger */}
           <Dialog>
             <DialogTrigger asChild>
-
-            <ArrowRightEndOnRectangleIcon  className="h-5 w-5 text-blue-gray-500 cursor-pointer" />
-          
-
+              <ArrowRightEndOnRectangleIcon className="h-5 w-5 text-blue-gray-500 cursor-pointer" />
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
@@ -156,12 +151,11 @@ export function StudentNavbar() {
             </DialogContent>
           </Dialog>
 
-            <Cog6ToothIcon 
-              onClick={() => setOpenConfigurator(uiDispatch, true)}
+          <Cog6ToothIcon
+            onClick={() => setOpenConfigurator(uiDispatch, true)}
             aria-label="Open configurator"
-            className="h-5 w-5 text-blue-gray-500 cursor-pointer" />
-       
-
+            className="h-5 w-5 text-blue-gray-500 cursor-pointer"
+          />
         </div>
       </div>
     </div>
