@@ -27,7 +27,7 @@ interface UserDetails {
   firstname: string;
   package_status: string;
 }
-
+type PeriodMapKeys = "month" | "three_months" | "year";
 type PlanType = "free" | "basic" | "pro" | "premium" | "enterprise" | "admin";
 type CurrencyType = "NGN" | "USD" | "GBP";
 type BillingCycleType = "month" | "threeMonths" | "year";
@@ -424,27 +424,57 @@ const Upgrade: React.FC = () => {
       const response = await verifyCouponCode(couponCode);
       console.log(response);
 
-      if (response.status === "success") {
-        const discount = extractDiscountPercentage(couponCode);
-        const couponPeriod = response.data.data.subscription_period;
+      if (
+        response.status === "success" &&
+        response.data &&
+        response.data.length > 0
+      ) {
+        const couponData = response.data[0];
+        const discount = extractDiscountPercentage(couponData.coupon_code);
+        const couponPeriod: string = couponData.subscription_period;
 
         localStorage.setItem("couponApplied", "true");
         setDiscountPercentage(discount);
         setCouponApplied(true);
-        setBillingCycle("month");
-        const periodMap: { [key: string]: BillingCycleType[] } = {
+
+        // Define the period map with explicit types
+        const periodMap: Record<string, BillingCycleType[]> = {
           month: ["month"],
           three_months: ["month", "threeMonths"],
           year: ["month", "threeMonths", "year"],
         };
 
-        if (periodMap[couponPeriod]) {
-          setAllowedBillingCycles(periodMap[couponPeriod]);
-          if (!periodMap[couponPeriod].includes(billingCycle)) {
-            setBillingCycle(periodMap[couponPeriod][0]);
-          }
-        } else {
-          setAllowedBillingCycles(["month", "threeMonths", "year"]);
+        // Normalize the period from the API response
+        let normalizedPeriod: PeriodMapKeys;
+        switch (couponPeriod) {
+          case "month":
+            normalizedPeriod = "month";
+            break;
+          case "three_months":
+            normalizedPeriod = "three_months";
+            break;
+          case "year":
+            normalizedPeriod = "year";
+            break;
+          default:
+            normalizedPeriod = "year";
+        }
+
+        // Explicitly cast the fallback array to the correct type
+        const defaultCycles: BillingCycleType[] = [
+          "month",
+          "threeMonths",
+          "year",
+        ];
+        const allowedCycles: BillingCycleType[] =
+          periodMap[normalizedPeriod] || defaultCycles;
+
+        // This line is now type-safe
+        setAllowedBillingCycles(allowedCycles);
+
+        // This line is also now type-safe
+        if (!allowedCycles.includes(billingCycle)) {
+          setBillingCycle(allowedCycles[0]);
         }
 
         setVerificationMessage("Coupon code applied successfully!");
@@ -459,7 +489,6 @@ const Upgrade: React.FC = () => {
       setLoading(false);
     }
   };
-
   const handlefetchPayloadId = async (
     plan: "basic" | "pro" | "premium" | "enterprise" | "admin"
   ) => {
@@ -617,6 +646,7 @@ const Upgrade: React.FC = () => {
                 e.target.value as "month" | "threeMonths" | "year"
               )
             }
+            disabled={couponApplied}
             className={`w-full p-2 border border-gray-300 rounded-md text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500`}
           >
             {allowedBillingCycles.includes("month") && (
