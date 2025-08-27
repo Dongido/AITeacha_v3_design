@@ -78,21 +78,21 @@ export const verifyCouponCode = async (couponCode: string): Promise<any> => {
   }
 };
 
- export const getPaymentId = async(payload:any):Promise<any> => {
+export const getPaymentId = async (payload: any): Promise<any> => {
   try {
-     const { amount, package_id, interval, currency } = payload;
+    const { amount, original_price, package_id, interval, currency } = payload;
     const response = await apiClient.post("/payment/create/flw/plan", {
       amount,
+      original_price,
       package_id,
       interval,
-      currency
+      currency,
     });
-     console.log("response", response)
+    console.log("response", response);
     return response.data;
   } catch (error: any) {
     throw new Error(
       error.response?.data || "Failed to fetch payload ID. Please try again."
     );
-    
   }
- }
+};
