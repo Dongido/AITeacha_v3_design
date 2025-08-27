@@ -176,11 +176,11 @@ const isAdmin = useMemo(() => {
 
   useEffect(() => {
     socket.on("connect", () => {
-      console.log("✅ Connected:", socket.id);
+      console.log("Connected:", socket.id);
     });
 
     socket.on("disconnect", () => {
-      console.warn("❌ Disconnected from socket server");
+      console.warn(" Disconnected from socket server");
     });
 
   socket.on("receiveMessage", (savedMessage: SavedMessage) => { 
@@ -202,7 +202,7 @@ const isAdmin = useMemo(() => {
   savedMessage.firstname !== 'Zyra',
   };
 
-  // ✅ Prevent duplication
+  // Prevent duplication
   setMessages((prev) => {
     const exists = prev.some((msg) => msg.id === newMsg.id);
     if (exists) return prev;
@@ -346,7 +346,6 @@ const isAdmin = useMemo(() => {
   return (
     <div className="max-w-5xl mx-auto px-4 py-10 min-h-screen
       bg-white overflow-y-hidden">
-
         
       <div className="bg-white shadow-xl border border-purple-200 rounded-2xl p-6 mb-10">
         {thumbnailSrc && (

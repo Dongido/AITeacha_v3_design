@@ -46,7 +46,7 @@ const formSchema = z.object({
     .min(7, { message: "Password must be at least 7 characters long" }),
 });
 
-export function LoginForm({ className, ...props }: LoginFormProps) {
+export function LoginFormSchool({ className, ...props }: LoginFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [toastOpen, setToastOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
@@ -229,7 +229,7 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
             onClick={(event) => {
               event.preventDefault();
               try {
-                const googleAuthUrl = `https://vd.aiteacha.com/api/auth/google/teacher`;
+                const googleAuthUrl = `https://vd.aiteacha.com/api/auth/google/school`;
                 window.location.href = googleAuthUrl;
               } catch (error: any) {
                 console.log(error);
