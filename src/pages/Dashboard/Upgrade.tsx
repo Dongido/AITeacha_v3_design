@@ -422,6 +422,7 @@ const Upgrade: React.FC = () => {
 
     try {
       const response = await verifyCouponCode(couponCode);
+      console.log(response);
 
       if (
         response.status === "success" &&
@@ -436,40 +437,29 @@ const Upgrade: React.FC = () => {
         setDiscountPercentage(discount);
         setCouponApplied(true);
 
-        const periodMap: Record<PeriodMapKeys, BillingCycleType[]> = {
-          month: ["month"],
-          year: ["month", "threeMonths", "year"],
-          infinity: ["year"],
-        };
+        let newBillingCycle: BillingCycleType;
+        let newAllowedCycles: BillingCycleType[];
 
-        let normalizedPeriod: PeriodMapKeys;
         switch (couponPeriod) {
           case "month":
-            normalizedPeriod = "month";
+            newBillingCycle = "month";
+            newAllowedCycles = ["month"];
             break;
           case "year":
-            normalizedPeriod = "year";
+            newBillingCycle = "year";
+            newAllowedCycles = ["month", "threeMonths", "year"];
             break;
           case "infinity":
-            normalizedPeriod = "infinity";
+            newBillingCycle = "year";
+            newAllowedCycles = ["year"];
             break;
           default:
-            normalizedPeriod = "year";
+            newBillingCycle = "month";
+            newAllowedCycles = ["month", "threeMonths", "year"];
         }
 
-        const defaultCycles: BillingCycleType[] = [
-          "month",
-          "threeMonths",
-          "year",
-        ];
-        const allowedCycles: BillingCycleType[] =
-          periodMap[normalizedPeriod] || defaultCycles;
-
-        setAllowedBillingCycles(allowedCycles);
-
-        if (!allowedCycles.includes(billingCycle)) {
-          setBillingCycle(allowedCycles[0]);
-        }
+        setBillingCycle(newBillingCycle);
+        setAllowedBillingCycles(newAllowedCycles);
 
         setVerificationMessage("Coupon code applied successfully!");
       } else {
@@ -629,7 +619,7 @@ const Upgrade: React.FC = () => {
           </label>
           {couponApplied && (
             <p className="text-sm text-green-600 mb-2 text-center">
-              Coupon applied! Your options are limited by the coupon period.
+              Coupon applied! Your billing cycle is set to match the coupon.
             </p>
           )}
           <select
@@ -641,7 +631,9 @@ const Upgrade: React.FC = () => {
               )
             }
             disabled={couponApplied}
-            className={`w-full p-2 border border-gray-300 rounded-md text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500`}
+            className={`w-full p-2 border border-gray-300 rounded-md text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              couponApplied ? "opacity-50 cursor-not-allowed bg-gray-100" : ""
+            }`}
           >
             {allowedBillingCycles.includes("month") && (
               <option value="month">Monthly</option>
