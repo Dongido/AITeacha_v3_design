@@ -27,7 +27,7 @@ interface UserDetails {
   firstname: string;
   package_status: string;
 }
-type PeriodMapKeys = "month" | "three_months" | "year";
+type PeriodMapKeys = "month" | "year" | "infinity";
 type PlanType = "free" | "basic" | "pro" | "premium" | "enterprise" | "admin";
 type CurrencyType = "NGN" | "USD" | "GBP";
 type BillingCycleType = "month" | "threeMonths" | "year";
@@ -422,7 +422,6 @@ const Upgrade: React.FC = () => {
 
     try {
       const response = await verifyCouponCode(couponCode);
-      console.log(response);
 
       if (
         response.status === "success" &&
@@ -437,30 +436,27 @@ const Upgrade: React.FC = () => {
         setDiscountPercentage(discount);
         setCouponApplied(true);
 
-        // Define the period map with explicit types
-        const periodMap: Record<string, BillingCycleType[]> = {
+        const periodMap: Record<PeriodMapKeys, BillingCycleType[]> = {
           month: ["month"],
-          three_months: ["month", "threeMonths"],
           year: ["month", "threeMonths", "year"],
+          infinity: ["year"],
         };
 
-        // Normalize the period from the API response
         let normalizedPeriod: PeriodMapKeys;
         switch (couponPeriod) {
           case "month":
             normalizedPeriod = "month";
             break;
-          case "three_months":
-            normalizedPeriod = "three_months";
-            break;
           case "year":
             normalizedPeriod = "year";
+            break;
+          case "infinity":
+            normalizedPeriod = "infinity";
             break;
           default:
             normalizedPeriod = "year";
         }
 
-        // Explicitly cast the fallback array to the correct type
         const defaultCycles: BillingCycleType[] = [
           "month",
           "threeMonths",
@@ -469,10 +465,8 @@ const Upgrade: React.FC = () => {
         const allowedCycles: BillingCycleType[] =
           periodMap[normalizedPeriod] || defaultCycles;
 
-        // This line is now type-safe
         setAllowedBillingCycles(allowedCycles);
 
-        // This line is also now type-safe
         if (!allowedCycles.includes(billingCycle)) {
           setBillingCycle(allowedCycles[0]);
         }
