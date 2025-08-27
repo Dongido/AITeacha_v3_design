@@ -600,7 +600,7 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
             onClick={(event) => {
               event.preventDefault();
               try {
-                const googleAuthUrl = `https://api.aiteacha.com/api/auth/google/${storedRole}?redirect_uri=${encodeURIComponent(
+                const googleAuthUrl = `https://vd.aiteacha.com/api/auth/google/${storedRole}?redirect_uri=${encodeURIComponent(
                   window.location.origin +
                     `/api/auth/google/${storedRole}/callback`
                 )}`;

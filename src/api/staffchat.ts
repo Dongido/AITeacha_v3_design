@@ -174,7 +174,7 @@ export const getAllStudentTopic = async (id:string): Promise<Topics[]> => {
 };
 
 
-// ✅ R a single topic
+//  single topic
 export const getforumConversationById = async (id: string): Promise<Topics> => {
   try {
     const response = await apiClient.get<{
