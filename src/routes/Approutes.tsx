@@ -348,7 +348,7 @@ export const routes = [
       {
         icon: <FaRocketchat {...icon} />,
         name: "Messages",
-        path: "/dashboard/participant/chat",
+        path: "/participant/chat",
         element: <ChatListPage />,
       },
     ],
