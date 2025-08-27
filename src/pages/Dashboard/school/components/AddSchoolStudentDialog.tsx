@@ -1,9 +1,6 @@
-import React, {
-  useImperativeHandle,
-  useState,
-  forwardRef,
-  useEffect,
-} from "react";
+"use client";
+
+import { useImperativeHandle, useState, forwardRef, useEffect } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -11,13 +8,11 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "../../../../components/ui/Dialogue";
 import { Button } from "../../../../components/ui/Button";
 import { Input } from "../../../../components/ui/Input";
-import { Label } from "../../../../components/ui/Label";
 import {
   ToastProvider,
   Toast,
@@ -25,7 +20,6 @@ import {
   ToastViewport,
 } from "../../../../components/ui/Toast";
 import { registerUser } from "../../../../api/auth";
-import { uploadStudents } from "../../../../api/school";
 import {
   Form,
   FormControl,
@@ -88,11 +82,12 @@ const singleStudentFormSchema = z
       }),
     country: z.string().min(1, { message: "Please select a country" }),
     state: z.string().min(1, { message: "Please select a state" }),
-    city: z.string().min(1, { message: "Please enter your city" }),
+    city: z.string().min(1, { message: "Please select a city" }),
     gender: z.enum(["Male", "Female"], {
       errorMap: () => ({ message: "Please select a gender" }),
     }),
     ageRange: z.string().min(1, { message: "Please select an age range" }),
+    grade: z.string().min(1, { message: "Please select a grade" }),
     password: z
       .string()
       .min(8, { message: "Password must be at least 8 characters long" }),
@@ -162,6 +157,7 @@ const AddSingleStudentDialog = forwardRef(
         city: "",
         gender: undefined,
         ageRange: "",
+        grade: "",
         password: "",
         confirmPassword: "",
         referred_by: "",
@@ -187,6 +183,18 @@ const AddSingleStudentDialog = forwardRef(
       { value: "71-100", label: "71-100" },
     ];
 
+    const gradeOptions = [
+      "Pre School",
+      "Early Years",
+      "Nursery 1",
+      "Nursery 2",
+      ...Array.from({ length: 12 }, (_, i) => `Grade ${i + 1}`),
+      ...Array.from(
+        { length: 5 },
+        (_, i) => `Higher Institution Year ${i + 1}`
+      ),
+    ].map((grade) => ({ value: grade, label: grade }));
+
     useImperativeHandle(ref, () => ({
       openDialog: () => {
         setOpen(true);
@@ -194,7 +202,6 @@ const AddSingleStudentDialog = forwardRef(
       },
     }));
 
-    // Effect to update states when country changes
     useEffect(() => {
       if (selectedCountry) {
         const states = State.getStatesOfCountry(selectedCountry).map(
@@ -204,15 +211,16 @@ const AddSingleStudentDialog = forwardRef(
           })
         );
         setStatesOfSelectedCountry(states);
-        singleStudentForm.setValue("state", ""); // Reset state when country changes
-        singleStudentForm.setValue("city", ""); // Reset city when country changes
+        singleStudentForm.setValue("state", "");
+        singleStudentForm.setValue("city", "");
       } else {
         setStatesOfSelectedCountry([]);
-        setCitiesOfSelectedState([]); // Clear cities if no country
+        setCitiesOfSelectedState([]);
+        singleStudentForm.setValue("state", "");
+        singleStudentForm.setValue("city", "");
       }
     }, [selectedCountry, singleStudentForm]);
 
-    // Effect to update cities when state changes
     useEffect(() => {
       if (selectedState && selectedCountry) {
         const cities = City.getCitiesOfState(
@@ -223,9 +231,10 @@ const AddSingleStudentDialog = forwardRef(
           label: city.name,
         }));
         setCitiesOfSelectedState(cities);
-        singleStudentForm.setValue("city", ""); // Reset city when state changes
+        singleStudentForm.setValue("city", "");
       } else {
         setCitiesOfSelectedState([]);
+        singleStudentForm.setValue("city", "");
       }
     }, [selectedState, selectedCountry, singleStudentForm]);
 
@@ -285,7 +294,6 @@ const AddSingleStudentDialog = forwardRef(
                   Fill in the details below to add a single student.
                 </DialogDescription>
               </DialogHeader>
-
               <Form {...singleStudentForm}>
                 <form
                   onSubmit={singleStudentForm.handleSubmit(
@@ -397,7 +405,6 @@ const AddSingleStudentDialog = forwardRef(
                         </FormItem>
                       )}
                     />
-
                     <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
                       <FormField
                         control={singleStudentForm.control}
@@ -432,7 +439,6 @@ const AddSingleStudentDialog = forwardRef(
                           </FormItem>
                         )}
                       />
-
                       <FormField
                         control={singleStudentForm.control}
                         name="state"
@@ -454,8 +460,45 @@ const AddSingleStudentDialog = forwardRef(
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                {statesOfSelectedCountry.length > 0 ? (
-                                  statesOfSelectedCountry.map((option) => (
+                                {statesOfSelectedCountry.length > 0
+                                  ? statesOfSelectedCountry.map((option) => (
+                                      <SelectItem
+                                        key={option.value}
+                                        value={option.value}
+                                      >
+                                        {option.label}
+                                      </SelectItem>
+                                    ))
+                                  : null}
+                              </SelectContent>
+                            </Select>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <FormField
+                      control={singleStudentForm.control}
+                      name="city"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-col w-full space-y-2">
+                          <FormLabel className="font-semibold mt-2">
+                            City
+                          </FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            value={field.value}
+                            disabled={
+                              loading || citiesOfSelectedState.length === 0
+                            }
+                          >
+                            <FormControl>
+                              <SelectTrigger className="h-10 rounded-full">
+                                <SelectValue placeholder="Select a City" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {citiesOfSelectedState.length > 0
+                                ? citiesOfSelectedState.map((option) => (
                                     <SelectItem
                                       key={option.value}
                                       value={option.value}
@@ -463,38 +506,13 @@ const AddSingleStudentDialog = forwardRef(
                                       {option.label}
                                     </SelectItem>
                                   ))
-                                ) : (
-                                  <SelectItem value="" disabled>
-                                    No states available
-                                  </SelectItem>
-                                )}
-                              </SelectContent>
-                            </Select>
-                            <FormMessage className="text-red-700" />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    <FormField
-                      control={singleStudentForm.control}
-                      name="city"
-                      render={({ field }) => (
-                        <FormItem className="space-y-1 w-full">
-                          <FormLabel className="font-semibold">City</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Enter City"
-                              className="rounded-full"
-                              {...field}
-                              disabled={loading}
-                            />
-                          </FormControl>
+                                : null}
+                            </SelectContent>
+                          </Select>
                           <FormMessage className="text-red-700" />
                         </FormItem>
                       )}
                     />
-
                     <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
                       <FormField
                         control={singleStudentForm.control}
@@ -552,12 +570,43 @@ const AddSingleStudentDialog = forwardRef(
                                 ))}
                               </SelectContent>
                             </Select>
-                            <FormMessage className="text-red-700" />
                           </FormItem>
                         )}
                       />
                     </div>
-
+                    <FormField
+                      control={singleStudentForm.control}
+                      name="grade"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-col w-full space-y-2">
+                          <FormLabel className="font-semibold mt-2">
+                            Grade
+                          </FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            value={field.value}
+                            disabled={loading}
+                          >
+                            <FormControl>
+                              <SelectTrigger className="h-10 rounded-full">
+                                <SelectValue placeholder="Select a Grade" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {gradeOptions.map((grade) => (
+                                <SelectItem
+                                  key={grade.value}
+                                  value={grade.value}
+                                >
+                                  {grade.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage className="text-red-700" />
+                        </FormItem>
+                      )}
+                    />
                     <div className="grid gap-2">
                       <FormField
                         control={singleStudentForm.control}
@@ -604,7 +653,6 @@ const AddSingleStudentDialog = forwardRef(
                         />
                       )}
                     </div>
-
                     <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
                       <FormField
                         control={singleStudentForm.control}
@@ -675,14 +723,13 @@ const AddSingleStudentDialog = forwardRef(
                   >
                     {loading && (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    )}{" "}
+                    )}
                     {loading ? "Adding Student..." : "Add Student"}
                   </Button>
                 </form>
               </Form>
             </DialogContent>
           </Dialog>
-
           <Toast
             open={toastOpen}
             onOpenChange={setToastOpen}

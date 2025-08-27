@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "../../components/ui/Button";
 import { useFlutterwave, closePaymentModal } from "flutterwave-react-v3";
-import { changeUserPlan, } from "../../api/subscription";
+import { changeUserPlan } from "../../api/subscription";
 import { FLUTTERWAVE_PUBLIC } from "../../lib/utils";
 import Logo from "../../assets/img/logo.png";
 import { useNavigate } from "react-router-dom";
@@ -30,7 +30,7 @@ interface UserDetails {
 
 type PlanType = "free" | "basic" | "pro" | "premium" | "enterprise" | "admin";
 type CurrencyType = "NGN" | "USD" | "GBP";
-
+type BillingCycleType = "month" | "threeMonths" | "year";
 const initialPrices = {
   free: {
     NGN: { month: 0, threeMonths: 0, year: 0 },
@@ -80,20 +80,22 @@ const Upgrade: React.FC = () => {
   const [loadingPlan, setLoadingPlan] = useState<null | string>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [couponCode, setCouponCode] = useState("");
+
+  const [allowedBillingCycles, setAllowedBillingCycles] = useState<
+    BillingCycleType[]
+  >(["month", "threeMonths", "year"]);
+
   const [verificationMessage, setVerificationMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [discountPercentage, setDiscountPercentage] = useState(0);
   const [couponApplied, setCouponApplied] = useState(false);
   const [payment_planId, setFlwId] = useState<number | null>(null);
   const [loader, setLoader] = useState<boolean>(false);
-  const { payment,  error, } = useAppSelector(
-      (state: RootState) => state.notifications
-    );
-    
-  //   const isArray =  payment?.data[0]?.id ||  payment?.data?.id
-  //    console.log("isArray" , isArray)
-   console.log("payment", payment, payment?.data[0]?.id)
-  
+  const { payment, error } = useAppSelector(
+    (state: RootState) => state.notifications
+  );
+
+  console.log("payment", payment, payment?.data[0]?.id);
 
   const user = useSelector(selectUser);
 
@@ -183,8 +185,7 @@ const Upgrade: React.FC = () => {
     currency: CurrencyType,
     prices: typeof initialPrices,
     noOfSeats: string,
-    payment_plan: string,
-   
+    payment_plan: string
   ) => {
     const unit = billingCycle === "threeMonths" ? "month" : billingCycle;
     const duration = billingCycle === "threeMonths" ? 3 : 1;
@@ -209,8 +210,9 @@ const Upgrade: React.FC = () => {
       },
       customizations: {
         title: `${plan.charAt(0).toUpperCase() + plan.slice(1)} Plan`,
-        description: `Upgrade to ${plan.charAt(0).toUpperCase() + plan.slice(1)
-          } Plan`,
+        description: `Upgrade to ${
+          plan.charAt(0).toUpperCase() + plan.slice(1)
+        } Plan`,
         logo: Logo,
       },
     };
@@ -235,9 +237,9 @@ const Upgrade: React.FC = () => {
         currency,
         prices,
         noOfSeats,
-        payment_plan,
+        payment_plan
       );
-     console.log("flutterwave payload", currentConfig)
+      console.log("flutterwave payload", currentConfig);
       const handleFlutterwavePayment = useFlutterwave(currentConfig);
       handleFlutterwavePayment({
         ...currentConfig,
@@ -283,8 +285,8 @@ const Upgrade: React.FC = () => {
                 console.error(
                   "Transaction verification failed:",
                   verificationResponse.message ||
-                  verificationResponse.data.message ||
-                  "Unknown verification error."
+                    verificationResponse.data.message ||
+                    "Unknown verification error."
                 );
                 navigate("/dashboard/success?status=failed");
               }
@@ -349,8 +351,8 @@ const Upgrade: React.FC = () => {
               noOfSeats: (plan === "pro"
                 ? "1"
                 : plan === "premium"
-                  ? "15"
-                  : noOfSeats
+                ? "15"
+                : noOfSeats
               ).toString(),
               duration: duration,
             },
@@ -421,49 +423,68 @@ const Upgrade: React.FC = () => {
     try {
       const response = await verifyCouponCode(couponCode);
       console.log(response);
+
       if (response.status === "success") {
         const discount = extractDiscountPercentage(couponCode);
+        const couponPeriod = response.data.data.subscription_period;
+
         localStorage.setItem("couponApplied", "true");
         setDiscountPercentage(discount);
         setCouponApplied(true);
-        //  applyDiscountToPrices(discount);
-      }
+        setBillingCycle("month");
+        const periodMap: { [key: string]: BillingCycleType[] } = {
+          month: ["month"],
+          three_months: ["month", "threeMonths"],
+          year: ["month", "threeMonths", "year"],
+        };
 
-      setVerificationMessage("Coupon code applied successfully!");
+        if (periodMap[couponPeriod]) {
+          setAllowedBillingCycles(periodMap[couponPeriod]);
+          if (!periodMap[couponPeriod].includes(billingCycle)) {
+            setBillingCycle(periodMap[couponPeriod][0]);
+          }
+        } else {
+          setAllowedBillingCycles(["month", "threeMonths", "year"]);
+        }
+
+        setVerificationMessage("Coupon code applied successfully!");
+      } else {
+        setVerificationMessage("Invalid coupon code");
+      }
     } catch (error: any) {
-      setVerificationMessage("Invalid coupon code");
+      setVerificationMessage(
+        error.message || "Invalid coupon code or server error."
+      );
     } finally {
       setLoading(false);
     }
   };
 
-const handlefetchPayloadId = async (
-  plan: "basic" | "pro" | "premium" | "enterprise" | "admin"
-) => {
-  try {
-    setLoader(true);
-
-    const amount = prices[plan][currency][billingCycle];
-    const unit = billingCycle === "threeMonths" ? "month" : billingCycle;
-    const payload = {
-      amount,
-      package_id: packageMap[plan],
-      interval: unit,
-      currency,
-    };
-     const response = await dispatch(getPaymentplan(payload)).unwrap(); 
-     if(response){
-      setIsDialogOpen(true)
-     }
-  } catch (err: any) {
-    console.error("Error fetching payloadId:", err);
-  } finally {
-    setLoader(false);
-  }
-};
-
-
-
+  const handlefetchPayloadId = async (
+    plan: "basic" | "pro" | "premium" | "enterprise" | "admin"
+  ) => {
+    try {
+      setLoader(true);
+      const original_price = initialPrices[plan][currency][billingCycle];
+      const amount = prices[plan][currency][billingCycle];
+      const unit = billingCycle === "threeMonths" ? "month" : billingCycle;
+      const payload = {
+        amount,
+        original_price,
+        package_id: packageMap[plan],
+        interval: unit,
+        currency,
+      };
+      const response = await dispatch(getPaymentplan(payload)).unwrap();
+      if (response) {
+        setIsDialogOpen(true);
+      }
+    } catch (err: any) {
+      console.error("Error fetching payloadId:", err);
+    } finally {
+      setLoader(false);
+    }
+  };
 
   const aitachaDetails = JSON.parse(
     localStorage.getItem("ai-teacha-user") || "{}"
@@ -499,9 +520,10 @@ const handlefetchPayloadId = async (
 
     const buttonClassName: string = `
       w-full py-2 rounded-md transition duration-200 mt-auto text-lg font-medium
-      ${isCurrentPlanActive
-        ? "bg-gray-600  hover:bg-gray-300 text-white"
-        : isCurrentPlanExpired
+      ${
+        isCurrentPlanActive
+          ? "bg-gray-600  hover:bg-gray-300 text-white"
+          : isCurrentPlanExpired
           ? "bg-red-600 text-white hover:bg-red-700"
           : "bg-primary text-white hover:bg-[#4a2fa3]"
       }
@@ -511,9 +533,8 @@ const handlefetchPayloadId = async (
     return (
       <button
         onClick={() => {
-          handlefetchPayloadId(planKey)
+          handlefetchPayloadId(planKey);
           setSelectedPlan(planKey);
-
         }}
         disabled={isProcessing}
         className={buttonClassName}
@@ -583,6 +604,11 @@ const handlefetchPayloadId = async (
           <label htmlFor="billing-cycle-select" className="sr-only">
             Select Billing Cycle
           </label>
+          {couponApplied && (
+            <p className="text-sm text-green-600 mb-2 text-center">
+              Coupon applied! Your options are limited by the coupon period.
+            </p>
+          )}
           <select
             id="billing-cycle-select"
             value={billingCycle}
@@ -591,11 +617,17 @@ const handlefetchPayloadId = async (
                 e.target.value as "month" | "threeMonths" | "year"
               )
             }
-            className="w-full p-2 border border-gray-300 rounded-md text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className={`w-full p-2 border border-gray-300 rounded-md text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500`}
           >
-            <option value="month">Monthly</option>
-            <option value="threeMonths">3 Months</option>
-            <option value="year">Yearly</option>
+            {allowedBillingCycles.includes("month") && (
+              <option value="month">Monthly</option>
+            )}
+            {allowedBillingCycles.includes("threeMonths") && (
+              <option value="threeMonths">3 Months</option>
+            )}
+            {allowedBillingCycles.includes("year") && (
+              <option value="year">Yearly</option>
+            )}
           </select>
         </div>
       </div>
@@ -637,10 +669,11 @@ const handlefetchPayloadId = async (
                 <li>AI Image generation for educators and students</li>
               </ul>
               <button
-                className={`w-full py-2 rounded-md mt-auto ${userDetails?.package === "AiTeacha Free"
-                  ? "bg-gray-300 text-gray-700 cursor-not-allowed"
-                  : "bg-primary text-white hover:bg-[#4a2fa3] transition"
-                  }`}
+                className={`w-full py-2 rounded-md mt-auto ${
+                  userDetails?.package === "AiTeacha Free"
+                    ? "bg-gray-300 text-gray-700 cursor-not-allowed"
+                    : "bg-primary text-white hover:bg-[#4a2fa3] transition"
+                }`}
                 disabled={userDetails?.package === "AiTeacha Free"}
               >
                 {userDetails?.package === "AiTeacha Free"
@@ -702,7 +735,6 @@ const handlefetchPayloadId = async (
                 </ul>
 
                 {renderPlanButton("basic", "Basic", "Ai Teacha Basic")}
-
               </div>
             )}
 
@@ -753,11 +785,9 @@ const handlefetchPayloadId = async (
 
                 <li>Virtual Classroom access </li>
                 <li>Full Access to Computer-Based Tests (CBT)</li>
-
               </ul>
 
               {renderPlanButton("pro", "Pro", "Ai Teacha Pro")}
-
             </div>
           </div>
         </div>
@@ -863,16 +893,17 @@ const handlefetchPayloadId = async (
                   loadingPlan === "enterprise" ||
                   userDetails?.package === "AI Teacha Enterprise"
                 }
-                className={`bg-primary text-white w-full py-2 rounded-md transition mt-auto text-center ${userDetails?.package === "AI Teacha Enterprise"
-                  ? "bg-gray-300 text-gray-700 cursor-not-allowed"
-                  : "hover:bg-[#4a2fa3]"
-                  }`}
+                className={`bg-primary text-white w-full py-2 rounded-md transition mt-auto text-center ${
+                  userDetails?.package === "AI Teacha Enterprise"
+                    ? "bg-gray-300 text-gray-700 cursor-not-allowed"
+                    : "hover:bg-[#4a2fa3]"
+                }`}
               >
                 {userDetails?.package === "AI Teacha Enterprise"
                   ? "Current Plan"
                   : loadingPlan === "enterprise"
-                    ? "Processing..."
-                    : "Contact Sales"}{" "}
+                  ? "Processing..."
+                  : "Contact Sales"}{" "}
               </Button>
             </div>
           </div>
