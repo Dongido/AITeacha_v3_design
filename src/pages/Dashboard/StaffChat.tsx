@@ -59,34 +59,6 @@ const StaffChat = () => {
       setUserDetails(parsedDetails);
       setIsEmailVerified(parsedDetails.is_email_verified);
     }
-
-     const dummyTopics = [
-      {
-        id: "1",
-        title: "How to Make Learning Fun for Kids",
-        createdAt: "2024-06-01",
-        createdBy: "Julieth",
-      },
-      {
-        id: "2",
-        title: "The Role of AI in Modern Education",
-        createdAt: "2024-06-05",
-        createdBy: "John Doe",
-      },
-      {
-        id: "3",
-        title: "Effective Ways to Manage a Classroom",
-        createdAt: "2024-06-09",
-        createdBy: "Julieth",
-      },
-    ];
-
-
-
-
-    setTimeout(() => {
-      setUserTopics(dummyTopics);
-    }, 1000);
   }, []);
 
   const handleVerifyEmail = () => {
