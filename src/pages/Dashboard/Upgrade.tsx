@@ -467,7 +467,7 @@ const Upgrade: React.FC = () => {
       }
     } catch (error: any) {
       setVerificationMessage(
-        error.message || "Invalid coupon code or server error."
+         "Invalid or Expired coupon code."
       );
     } finally {
       setLoading(false);
