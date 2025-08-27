@@ -447,11 +447,11 @@ const Upgrade: React.FC = () => {
             break;
           case "year":
             newBillingCycle = "year";
-            newAllowedCycles = ["month", "threeMonths", "year"];
+            newAllowedCycles = ["year"];
             break;
           case "infinity":
-            newBillingCycle = "year";
-            newAllowedCycles = ["year"];
+            newBillingCycle = "month";
+            newAllowedCycles = ["month", "threeMonths", "year"];
             break;
           default:
             newBillingCycle = "month";
@@ -630,7 +630,7 @@ const Upgrade: React.FC = () => {
                 e.target.value as "month" | "threeMonths" | "year"
               )
             }
-            disabled={couponApplied}
+            
             className={`w-full p-2 border border-gray-300 rounded-md text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 ${
               couponApplied ? "opacity-50 cursor-not-allowed bg-gray-100" : ""
             }`}
