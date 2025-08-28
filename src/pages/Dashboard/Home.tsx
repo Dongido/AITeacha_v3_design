@@ -148,6 +148,37 @@ const Home = () => {
   const popularTools = filteredTools.filter((tool) => tool.tag === "popular");
   const otherTools = filteredTools.filter((tool) => tool.tag !== "popular");
 
+  const handleExternalNavigation = async (tool: any) => {
+    try {
+      const eligibility = await checkEligibility(tool.id);
+      if (eligibility) {
+        switch (tool.service_id) {
+          case "career guidance and counseling":
+            window.location.href = "/dashboard/career-guidance";
+            break;
+          case "school staff workload management":
+            window.location.href = "/dashboard/staff-work-management";
+            break;
+          case "student support screening assistant":
+            window.location.href =
+              "/dashboard/student-support-screening-assistant";
+            break;
+          case "virtual lab simulator":
+            window.location.href = "/dashboard/virtual-lab-simulator";
+            break;
+          case "school Document and report generator":
+            window.location.href = "/dashboard/report-generator";
+            break;
+          default:
+            handleToolClick(tool.id, tool.slug);
+        }
+      } else {
+        setIsDialogOpen(true);
+      }
+    } catch (error) {
+      setIsDialogOpen(true);
+    }
+  };
   return (
     <div className="mt-4 ">
       {latestNotification && !isNotificationDismissed && (
@@ -302,11 +333,11 @@ const Home = () => {
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 text-center mx-auto">
                   {popularTools.map((tool) => (
                     <div
-                      onClick={() => handleToolClick(tool.id, tool.slug)}
+                      onClick={() => handleExternalNavigation(tool)}
                       key={tool.id}
                       className="flex items-center border border-gray-300 px-4 py-3 rounded-3xl bg-white hover:bg-gray-50 cursor-pointer transition duration-500 ease-in-out transform hover:scale-105"
                       style={{
-                        background: "rgba(232, 121, 249, 0.15)", // Reduced opacity
+                        background: "rgba(232, 121, 249, 0.15)",
                         transition: "background 0.3s ease",
                       }}
                     >
@@ -368,7 +399,7 @@ const Home = () => {
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 text-center mx-auto">
                 {otherTools.slice(0, 15).map((tool) => (
                   <div
-                    onClick={() => handleToolClick(tool.id, tool.slug)}
+                    onClick={() => handleExternalNavigation(tool)}
                     key={tool.id}
                     className="flex items-center border border-gray-300 px-4 py-3 rounded-3xl bg-white hover:bg-gray-50 cursor-pointer transition duration-500 ease-in-out transform hover:scale-105"
                   >
