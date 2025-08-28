@@ -27,7 +27,7 @@ interface UserDetails {
   firstname: string;
   package_status: string;
 }
-type PeriodMapKeys = "month" | "three_months" | "year";
+type PeriodMapKeys = "month" | "year" | "infinity";
 type PlanType = "free" | "basic" | "pro" | "premium" | "enterprise" | "admin";
 type CurrencyType = "NGN" | "USD" | "GBP";
 type BillingCycleType = "month" | "threeMonths" | "year";
@@ -437,45 +437,29 @@ const Upgrade: React.FC = () => {
         setDiscountPercentage(discount);
         setCouponApplied(true);
 
-        // Define the period map with explicit types
-        const periodMap: Record<string, BillingCycleType[]> = {
-          month: ["month"],
-          three_months: ["month", "threeMonths"],
-          year: ["month", "threeMonths", "year"],
-        };
+        let newBillingCycle: BillingCycleType;
+        let newAllowedCycles: BillingCycleType[];
 
-        // Normalize the period from the API response
-        let normalizedPeriod: PeriodMapKeys;
         switch (couponPeriod) {
           case "month":
-            normalizedPeriod = "month";
-            break;
-          case "three_months":
-            normalizedPeriod = "three_months";
+            newBillingCycle = "month";
+            newAllowedCycles = ["month"];
             break;
           case "year":
-            normalizedPeriod = "year";
+            newBillingCycle = "year";
+            newAllowedCycles = ["month", "threeMonths", "year"];
+            break;
+          case "infinity":
+            newBillingCycle = "year";
+            newAllowedCycles = ["year"];
             break;
           default:
-            normalizedPeriod = "year";
+            newBillingCycle = "month";
+            newAllowedCycles = ["month", "threeMonths", "year"];
         }
 
-        // Explicitly cast the fallback array to the correct type
-        const defaultCycles: BillingCycleType[] = [
-          "month",
-          "threeMonths",
-          "year",
-        ];
-        const allowedCycles: BillingCycleType[] =
-          periodMap[normalizedPeriod] || defaultCycles;
-
-        // This line is now type-safe
-        setAllowedBillingCycles(allowedCycles);
-
-        // This line is also now type-safe
-        if (!allowedCycles.includes(billingCycle)) {
-          setBillingCycle(allowedCycles[0]);
-        }
+        setBillingCycle(newBillingCycle);
+        setAllowedBillingCycles(newAllowedCycles);
 
         setVerificationMessage("Coupon code applied successfully!");
       } else {
@@ -635,7 +619,7 @@ const Upgrade: React.FC = () => {
           </label>
           {couponApplied && (
             <p className="text-sm text-green-600 mb-2 text-center">
-              Coupon applied! Your options are limited by the coupon period.
+              Coupon applied! Your billing cycle is set to match the coupon.
             </p>
           )}
           <select
@@ -647,7 +631,9 @@ const Upgrade: React.FC = () => {
               )
             }
             disabled={couponApplied}
-            className={`w-full p-2 border border-gray-300 rounded-md text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500`}
+            className={`w-full p-2 border border-gray-300 rounded-md text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              couponApplied ? "opacity-50 cursor-not-allowed bg-gray-100" : ""
+            }`}
           >
             {allowedBillingCycles.includes("month") && (
               <option value="month">Monthly</option>

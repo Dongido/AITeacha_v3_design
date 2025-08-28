@@ -2,7 +2,6 @@ import React, { forwardRef, useImperativeHandle, useState } from "react";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "../../../../components/ui/Dialogue";
@@ -28,7 +27,10 @@ interface AddStudentDialogRef {
 const AddStudentDialog = forwardRef<AddStudentDialogRef, AddStudentDialogProps>(
   ({ onSuccess, initialClassroomId }, ref) => {
     const [open, setOpen] = useState(false);
-    const [email, setEmail] = useState("");
+
+    // multiple emails state
+    const [emails, setEmails] = useState<string[]>([""]);
+
     const [classroomId, setClassroomId] = useState(initialClassroomId || "");
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -57,22 +59,23 @@ const AddStudentDialog = forwardRef<AddStudentDialogRef, AddStudentDialogProps>(
       setIsLoading(true);
 
       try {
+        const email = emails;
+        console.log("email", email);
+
         if (!email || !classroomId) {
           setErrorMessage("Email and Classroom ID are required.");
           return;
         }
-
         const response = await manuallyAddStudentToClassroom({
           email,
           classroom_id: classroomId,
         });
-
         setSuccessMessage(response.message || "Student added successfully!");
-        setToastMessage("Classroom deleted successfully!");
+        setToastMessage("Classroom added successfully!");
         setToastVariant("default");
         setToastOpen(true);
         setOpen(false);
-        setEmail("");
+        setEmails([""]);
         if (onSuccess) {
           onSuccess();
           setOpen(false);
@@ -93,7 +96,7 @@ const AddStudentDialog = forwardRef<AddStudentDialogRef, AddStudentDialogProps>(
 
     const handleClose = () => {
       setOpen(false);
-      setEmail("");
+      setEmails([""]);
       if (!initialClassroomId) {
         setClassroomId("");
       }
@@ -104,29 +107,46 @@ const AddStudentDialog = forwardRef<AddStudentDialogRef, AddStudentDialogProps>(
     return (
       <ToastProvider swipeDirection="right">
         <Dialog open={open} onOpenChange={handleClose}>
-          <DialogContent className="sm:max-w-[425px] p-6 rounded-lg shadow-xl bg-white">
+          <DialogContent className="sm:max-w-[425px] max-h-[80vh] overflow-y-auto p-6 rounded-lg shadow-xl bg-white">
             <DialogHeader>
               <DialogTitle className="text-2xl font-bold text-gray-800">
                 Add Student to Classroom
               </DialogTitle>
             </DialogHeader>
             <div className="grid gap-4 py-4">
-              <div className="flex flex-col gap-2">
-                <label
-                  htmlFor="email"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  Student Email     
-                </label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="p-2 rounded-md"
-                  placeholder="student@example.com"
-                />
-              </div>
+              {emails.map((email, index) => (
+                <div key={index} className="flex flex-col gap-2">
+                  <label
+                    htmlFor={`email-${index}`}
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    Student Email {index + 1}
+                  </label>
+                  <Input
+                    id={`email-${index}`}
+                    type="email"
+                    value={email}
+                    onChange={(e) => {
+                      const newEmails = [...emails];
+                      newEmails[index] = e.target.value;
+                      setEmails(newEmails);
+                    }}
+                    className="p-2 rounded-md"
+                    placeholder="student@example.com"
+                  />
+                </div>
+              ))}
+
+              {/* Plus button to add more inputs */}
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setEmails([...emails, ""])}
+                className="mt-2 flex items-center justify-center gap-2 border border-dashed border-gray-400 text-purple-600 hover:bg-gray-100 rounded-md"
+              >
+                + Add
+              </Button>
+
               {errorMessage && (
                 <p className="text-red-600 text-sm mt-2">{errorMessage}</p>
               )}
@@ -134,11 +154,11 @@ const AddStudentDialog = forwardRef<AddStudentDialogRef, AddStudentDialogProps>(
             <div className="flex justify-end gap-3 mt-4">
               <Button
                 onClick={handleAddStudent}
-                disabled={isLoading || !email || !classroomId}
+                disabled={isLoading || !emails[0] || !classroomId}
                 variant="gradient"
-                className="px-4 py-2 rounded-md  disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isLoading ? "Adding..." : "Add Student"}
+                {isLoading ? "Adding..." : "Submit"}
               </Button>
               <Button
                 variant="outline"
