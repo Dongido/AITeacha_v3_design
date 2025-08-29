@@ -19,7 +19,8 @@ const SchoolStudents = () => {
   const { students, loadingStudents, error } = useSelector(
     (state: RootState) => state.schoolStudent
   );
-
+ 
+  console.log("student", students)
   useEffect(() => {
     dispatch(getSchoolStudents());
   }, [dispatch]);
