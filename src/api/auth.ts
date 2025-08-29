@@ -40,6 +40,7 @@ export const loginWithGoogle = async (): Promise<LoginResponse> => {
     );
   }
 };
+
 export const registerUser = async (
   email: string,
   firstname: string,

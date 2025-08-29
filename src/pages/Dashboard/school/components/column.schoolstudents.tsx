@@ -59,7 +59,7 @@ export const schoolStudentColumns = () => [
       return <div className=" w-1/2 text-black">{info.getValue()}</div>;
     },
   }),
-  studentColumnHelper.accessor("student_number", {
+  studentColumnHelper.accessor("assigned_number", {
     header: ({ column }) => <Header title="Student Number" column={column} />,
     sortingFn: "datetime",
     cell: (info) => {

@@ -65,7 +65,7 @@ export interface messageResponse {
 }
 
 interface AddStudentToClassroomData {
-  email: string;
+  email: string[];
   classroom_id: string;
 }
 
@@ -74,6 +74,7 @@ export const manuallyAddStudentToClassroom = async (
 ): Promise<any> => {
   try {
     const response = await apiClient.post<any>("/classroom/add/student", data);
+    console.log("response", response)
     return response.data;
   } catch (error: any) {
     const errorMessage =

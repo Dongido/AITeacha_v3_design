@@ -39,6 +39,7 @@ import {
 } from "../../../../components/ui/Select";
 import { Loader2 } from "lucide-react";
 import { Country, State, City } from "country-state-city";
+import { uploadSingleStudents } from "../../../../api/school";
 
 interface AddSingleStudentDialogProps {
   onSuccess?: () => void;
@@ -129,7 +130,7 @@ type Option = {
 };
 
 const AddSingleStudentDialog = forwardRef(
-  ({ onSuccess = () => {} }: AddSingleStudentDialogProps, ref) => {
+  ({ onSuccess = () => { } }: AddSingleStudentDialogProps, ref) => {
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const [toastOpen, setToastOpen] = useState(false);
@@ -242,25 +243,49 @@ const AddSingleStudentDialog = forwardRef(
       setLoading(true);
       try {
         const role_id = 3;
-        await registerUser(
-          data.email,
-          data.firstName,
-          data.lastName,
-          data.password,
-          role_id,
-          true,
-          false,
-          data.phone,
-          undefined,
-          data.country,
-          data.city,
-          data.gender,
-          data.ageRange,
-          data.hasDisability ? data.disabilityDetails : undefined,
-          data.referred_by,
-          data.student_number,
-          data.state
-        );
+        await uploadSingleStudents([
+          {
+            email: data.email,
+            firstname: data.firstName,
+            lastname: data.lastName,
+            password: data.password,
+            role_id: 3,
+            confirm_policy: true,
+            confirm_newsletter: false,
+            phone: data.phone,
+            organization: undefined,
+            country: data.country,
+            city: data.city,
+            gender: data.gender,
+            age_range: data.ageRange,
+            disability_details: data.hasDisability ? data.disabilityDetails : undefined,
+            assigned_number: data.student_number,
+            state: data.state,
+            grade:data.grade,
+
+          },
+        ]);
+
+
+        // await registerUser(
+        //   data.email,
+        //   data.firstName,
+        //   data.lastName,
+        //   data.password,
+        //   role_id,
+        //   true,
+        //   false,
+        //   data.phone,
+        //   undefined,
+        //   data.country,
+        //   data.city,
+        //   data.gender,
+        //   data.ageRange,
+        //   data.hasDisability ? data.disabilityDetails : undefined,
+        //   data.referred_by,
+        //   data.student_number,
+        //   data.state
+        // );
         setToastMessage("Student account created successfully!");
         setToastVariant("default");
         setToastOpen(true);
@@ -462,13 +487,13 @@ const AddSingleStudentDialog = forwardRef(
                               <SelectContent>
                                 {statesOfSelectedCountry.length > 0
                                   ? statesOfSelectedCountry.map((option) => (
-                                      <SelectItem
-                                        key={option.value}
-                                        value={option.value}
-                                      >
-                                        {option.label}
-                                      </SelectItem>
-                                    ))
+                                    <SelectItem
+                                      key={option.value}
+                                      value={option.value}
+                                    >
+                                      {option.label}
+                                    </SelectItem>
+                                  ))
                                   : null}
                               </SelectContent>
                             </Select>
@@ -499,13 +524,13 @@ const AddSingleStudentDialog = forwardRef(
                             <SelectContent>
                               {citiesOfSelectedState.length > 0
                                 ? citiesOfSelectedState.map((option) => (
-                                    <SelectItem
-                                      key={option.value}
-                                      value={option.value}
-                                    >
-                                      {option.label}
-                                    </SelectItem>
-                                  ))
+                                  <SelectItem
+                                    key={option.value}
+                                    value={option.value}
+                                  >
+                                    {option.label}
+                                  </SelectItem>
+                                ))
                                 : null}
                             </SelectContent>
                           </Select>
@@ -695,26 +720,7 @@ const AddSingleStudentDialog = forwardRef(
                         )}
                       />
                     </div>
-                    <FormField
-                      control={singleStudentForm.control}
-                      name="referred_by"
-                      render={({ field }) => (
-                        <FormItem className="space-y-1">
-                          <FormLabel className="font-semibold">
-                            Referred By (Optional)
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Enter referral code or name"
-                              className="rounded-full"
-                              {...field}
-                              disabled={loading}
-                            />
-                          </FormControl>
-                          <FormMessage className="text-red-700" />
-                        </FormItem>
-                      )}
-                    />
+                 
                   </div>
                   <Button
                     type="submit"
