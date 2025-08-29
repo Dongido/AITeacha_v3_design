@@ -103,57 +103,57 @@ export function Sidenav({
   }, [openSidenav, dispatch]);
 
   return (
-    <aside
-      ref={sidenavRef}
-      className={`routes-scroll-area ${sidenavTypes[sidenavType]} ${
-        openSidenav ? "translate-x-0" : "-translate-x-80"
-      } fixed inset-0 z-50 h-[calc(100vh)] ${
-        isCollapsed ? "w-28" : "w-72"
-      } transition-transform duration-300 xl:translate-x-0`}
-    >
-      <div className="relative flex items-center justify-between p-4">
-        <Link to={"/student/home"}>
-          <div className="flex items-center">
-            {brandImg && !isCollapsed && (
-              <img src={brandImg} alt="Brand Logo" className="h-8 w-8 mr-2" />
-            )}
-            {!isCollapsed && (
-              <Text variant="large" className="text-center text-black">
-                {brandName}
-              </Text>
-            )}
-          </div>
-        </Link>
-        <Button
-          variant={"default"}
-          className="p-2 rounded-full xl:inline-block hidden"
-          onClick={handleToggle}
-        >
-          {isCollapsed ? (
-            <ChevronRightIcon className="h-5 w-5 text-gray-700" />
-          ) : (
-            <ChevronLeftIcon className="h-5 w-5 text-gray-700" />
-          )}
-        </Button>
-
-        <Button
-          variant={"default"}
-          className="absolute right-0 top-0 p-2 rounded-br-none rounded-tl-none xl:hidden"
-          onClick={() => setOpenSidenav(dispatch, false)}
-        >
-          <XMarkIcon strokeWidth={2.5} className="h-5 w-5 text-gray-700" />
-        </Button>
-      </div>
-
-      {/* Routes Section */}
-      <div
-        className={`my-4 overflow-y-auto ${
-          isCollapsed
-            ? "max-h-[calc(100vh-140px)]"
-            : "max-h-[calc(100vh-220px)]"
-        }`}
+    <TooltipProvider>
+      <aside
+        ref={sidenavRef}
+        className={`routes-scroll-area ${sidenavTypes[sidenavType]} ${
+          openSidenav ? "translate-x-0" : "-translate-x-80"
+        } fixed inset-0 z-50 h-[calc(100vh)] ${
+          isCollapsed ? "w-28" : "w-72"
+        } transition-transform duration-300 xl:translate-x-0`}
       >
-        <TooltipProvider>
+        <div className="relative flex items-center justify-between p-4">
+          <Link to={"/student/home"}>
+            <div className="flex items-center">
+              {brandImg && !isCollapsed && (
+                <img src={brandImg} alt="Brand Logo" className="h-8 w-8 mr-2" />
+              )}
+              {!isCollapsed && (
+                <Text variant="large" className="text-center text-black">
+                  {brandName}
+                </Text>
+              )}
+            </div>
+          </Link>
+          <Button
+            variant={"default"}
+            className="p-2 rounded-full xl:inline-block hidden"
+            onClick={handleToggle}
+          >
+            {isCollapsed ? (
+              <ChevronRightIcon className="h-5 w-5 text-gray-700" />
+            ) : (
+              <ChevronLeftIcon className="h-5 w-5 text-gray-700" />
+            )}
+          </Button>
+
+          <Button
+            variant={"default"}
+            className="absolute right-0 top-0 p-2 rounded-br-none rounded-tl-none xl:hidden"
+            onClick={() => setOpenSidenav(dispatch, false)}
+          >
+            <XMarkIcon strokeWidth={2.5} className="h-5 w-5 text-gray-700" />
+          </Button>
+        </div>
+
+        {/* Routes Section */}
+        <div
+          className={`my-4 overflow-y-auto ${
+            isCollapsed
+              ? "max-h-[calc(100vh-140px)]"
+              : "max-h-[calc(100vh-220px)]"
+          }`}
+        >
           {routes.map(({ layout, title, pages }, key) => (
             <ul key={key} className="mb-4 flex flex-col gap-1">
               {title && !isCollapsed && (
@@ -174,7 +174,7 @@ export function Sidenav({
                 return (
                   <li key={name} className="list-none">
                     {isCollapsed ? (
-                      <Tooltip>
+                      <Tooltip delayDuration={300}>
                         <TooltipTrigger asChild>
                           <NavLink
                             to={fullPath}
@@ -199,8 +199,10 @@ export function Sidenav({
                             )}
                           </NavLink>
                         </TooltipTrigger>
-                        <TooltipContent side="right">
-                          <p>{name}</p>
+                        <TooltipContent>
+                          <p className="font-extrabold text-md capitalize">
+                            {name}
+                          </p>
                         </TooltipContent>
                       </Tooltip>
                     ) : (
@@ -244,9 +246,9 @@ export function Sidenav({
               })}
             </ul>
           ))}
-        </TooltipProvider>
-      </div>
-    </aside>
+        </div>
+      </aside>
+    </TooltipProvider>
   );
 }
 

@@ -34,6 +34,12 @@ import {
 import { useAppSelector } from "../../store/hooks";
 import { getCount } from "../../store/slices/staffchats";
 import { FaRocketchat } from "react-icons/fa";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/Tooltip";
 
 export function StudentNavbar() {
   const { controller, dispatch: uiDispatch } = useMaterialTailwindController();
@@ -75,90 +81,128 @@ export function StudentNavbar() {
   };
 
   return (
-    <div
-      color={fixedNavbar ? "white" : "transparent"}
-      className={`rounded-xl transition-all bg-white py-3 ${
-        fixedNavbar
-          ? "sticky top-4 z-40 py-3 shadow-md shadow-blue-gray-500/5"
-          : "px-0 py-1"
-      }`}
-    >
-      <div className="flex items-center justify-between lg:justify-between md:gap-6 lg:md:flex-row md:items-center ">
-        <div className="flex gap-2 items-center">
-          <Button
-            variant="text"
-            color="blue-gray"
-            className="grid xl:hidden"
-            onClick={() => setOpenSidenav(uiDispatch, !openSidenav)}
-            aria-label="Toggle sidenav"
-          >
-            <Bars3Icon strokeWidth={3} className="h-6 w-6 text-blue-gray-500" />
-          </Button>
-          <div className="capitalize px-4 hidden sm:block">
-            <Text variant="large" color="blue-gray">
-              {page}
-            </Text>
+    <TooltipProvider>
+      <div
+        className={`rounded-xl transition-all bg-white py-3 ${
+          fixedNavbar
+            ? "sticky top-4 z-40 py-3 shadow-md shadow-blue-gray-500/5"
+            : "px-0 py-1"
+        }`}
+      >
+        <div className="flex items-center justify-between lg:justify-between md:gap-6 lg:md:flex-row md:items-center ">
+          <div className="flex gap-2 items-center">
+            <Button
+              variant="text"
+              color="blue-gray"
+              className="grid xl:hidden"
+              onClick={() => setOpenSidenav(uiDispatch, !openSidenav)}
+              aria-label="Toggle sidenav"
+            >
+              <Bars3Icon
+                strokeWidth={3}
+                className="h-6 w-6 text-blue-gray-500"
+              />
+            </Button>
+            <div className="capitalize px-4 hidden sm:block">
+              <Text variant="large" color="blue-gray">
+                {page}
+              </Text>
+            </div>
+          </div>
+          <div className="flex items-center gap-x-6  ml-auto lg:mr-3 ">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  to="/student/participant/chat"
+                  className="relative flex items-center gap-2 bg-purple-50 rounded-full px-3 py-1 transition cursor-pointer"
+                >
+                  <FaRocketchat className="font-medium text-purple-400 text-lg" />
+                  {messageCount.length > 0 && (
+                    <span
+                      className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px]
+                      font-semibold rounded-full h-5 w-5 flex items-center justify-center shadow-md"
+                    >
+                      {messageCount.length > 9 ? "9+" : messageCount.length}
+                    </span>
+                  )}
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="font-extrabold text-md capitalize">
+                  Chat with staff
+                </p>
+              </TooltipContent>
+            </Tooltip>
+
+            {/* Profile Link with Tooltip */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link to="/student/profile">
+                  <img
+                    src={imageURL}
+                    alt="Profile"
+                    className="h-8 w-8 rounded-full object-cover border border-gray-300"
+                  />
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="font-extrabold text-md capitalize">
+                  View profile
+                </p>
+              </TooltipContent>
+            </Tooltip>
+
+            {/* Logout Dialog Trigger with Tooltip */}
+            <Dialog>
+              <DialogTrigger asChild>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <ArrowRightEndOnRectangleIcon className="h-5 w-5 text-blue-gray-500 cursor-pointer" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="font-extrabold text-md capitalize">Logout</p>
+                  </TooltipContent>
+                </Tooltip>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Confirm Logout</DialogTitle>
+                </DialogHeader>
+                <p>Are you sure you want to logout?</p>
+                <DialogFooter>
+                  <Button
+                    variant="destructive"
+                    className="rounded-md"
+                    onClick={handleLogout}
+                  >
+                    Yes, Logout
+                  </Button>
+                  <DialogClose asChild>
+                    <Button variant="text">Cancel</Button>
+                  </DialogClose>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
+            {/* Settings Icon with Tooltip */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Cog6ToothIcon
+                  onClick={() => setOpenConfigurator(uiDispatch, true)}
+                  aria-label="Open configurator"
+                  className="h-5 w-5 text-blue-gray-500 cursor-pointer"
+                />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="font-extrabold text-md capitalize">
+                  Open settings
+                </p>
+              </TooltipContent>
+            </Tooltip>
           </div>
         </div>
-        <div className="flex items-center gap-x-6  ml-auto lg:mr-3 ">
-          {/* Chat Link */}
-          <Link
-            to="/student/participant/chat"
-            className="relative flex items-center gap-2 bg-purple-50 rounded-full px-3 py-1 transition cursor-pointer"
-          >
-            <FaRocketchat className="font-medium text-purple-400 text-lg" />
-            {messageCount.length > 0 && (
-              <span
-                className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px]
-                  font-semibold rounded-full h-5 w-5 flex items-center justify-center shadow-md"
-              >
-                {messageCount.length > 9 ? "9+" : messageCount.length}
-              </span>
-            )}
-          </Link>
-
-          {/* Profile Link */}
-          <Link to="/student/profile">
-            <img
-              src={imageURL}
-              alt="Profile"
-              className="h-8 w-8 rounded-full object-cover border border-gray-300"
-            />
-          </Link>
-
-          {/* Logout Dialog Trigger */}
-          <Dialog>
-            <DialogTrigger asChild>
-              <ArrowRightEndOnRectangleIcon className="h-5 w-5 text-blue-gray-500 cursor-pointer" />
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Confirm Logout</DialogTitle>
-              </DialogHeader>
-              <p>Are you sure you want to logout?</p>
-              <DialogFooter>
-                <Button
-                  variant="destructive"
-                  className="rounded-md"
-                  onClick={handleLogout}
-                >
-                  Yes, Logout
-                </Button>
-                <DialogClose asChild>
-                  <Button variant="text">Cancel</Button>
-                </DialogClose>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-
-          <Cog6ToothIcon
-            onClick={() => setOpenConfigurator(uiDispatch, true)}
-            aria-label="Open configurator"
-            className="h-5 w-5 text-blue-gray-500 cursor-pointer"
-          />
-        </div>
       </div>
-    </div>
+    </TooltipProvider>
   );
 }
 

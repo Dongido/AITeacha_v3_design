@@ -41,7 +41,7 @@ export function StudentDashboard() {
       />
       <div
         className={`p-4 transition-all duration-300 ${
-          isCollapsed ? "xl:ml-20" : "xl:ml-72"
+          isCollapsed ? "xl:ml-32" : "xl:ml-72"
         }`}
       >
         <DashboardNavbar />
