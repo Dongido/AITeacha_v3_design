@@ -184,16 +184,9 @@ export function DashboardNavbar() {
 
               <Dialog>
                 <DialogTrigger asChild>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <ArrowRightEndOnRectangleIcon className="h-5 w-5 text-blue-gray-500 cursor-pointer" />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="font-extrabold text-md capitalize">
-                        Logout
-                      </p>
-                    </TooltipContent>
-                  </Tooltip>
+                  <span className="flex items-center">
+                    <ArrowRightEndOnRectangleIcon className="h-5 w-5 text-blue-gray-500 cursor-pointer" />
+                  </span>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
