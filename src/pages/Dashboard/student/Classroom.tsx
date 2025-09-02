@@ -1728,7 +1728,7 @@ const Classroom = () => {
       </div>
     );
   }
-  console.log("tools", tools)
+  // console.log("tools", tools)
   return (
     <ToastProvider>
       <div className="min-h-screen bg-[#F1F1F1]">
