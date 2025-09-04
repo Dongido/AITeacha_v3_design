@@ -95,7 +95,17 @@ const Upgrade: React.FC = () => {
     (state: RootState) => state.notifications
   );
 
-  console.log("payment", payment, payment?.data[0]?.id);
+  //  useEffect(() => {
+  //   if (selectedPlan) {
+  //     const originalAmount = initialPrices[selectedPlan][currency][billingCycle];
+  //     const discountedAmount = prices[selectedPlan][currency][billingCycle];
+
+  //     console.log("Original Price (no coupon):", originalAmount);
+  //     console.log("Displayed Price (after coupon):", discountedAmount);
+  //   }
+  // }, [selectedPlan, currency, billingCycle, prices]);
+
+
 
   const user = useSelector(selectUser);
 
@@ -189,6 +199,7 @@ const Upgrade: React.FC = () => {
   ) => {
     const unit = billingCycle === "threeMonths" ? "month" : billingCycle;
     const duration = billingCycle === "threeMonths" ? 3 : 1;
+    const originalAmount = initialPrices[plan][currency][billingCycle];
 
     return {
       public_key: FLUTTERWAVE_PUBLIC,
@@ -207,12 +218,13 @@ const Upgrade: React.FC = () => {
         unit: unit,
         duration: duration,
         no_of_seat: noOfSeats,
+        original_price: originalAmount,
+        coupon_code: couponCode,
       },
       customizations: {
         title: `${plan.charAt(0).toUpperCase() + plan.slice(1)} Plan`,
-        description: `Upgrade to ${
-          plan.charAt(0).toUpperCase() + plan.slice(1)
-        } Plan`,
+        description: `Upgrade to ${plan.charAt(0).toUpperCase() + plan.slice(1)
+          } Plan`,
         logo: Logo,
       },
     };
@@ -228,6 +240,8 @@ const Upgrade: React.FC = () => {
     const duration = billingCycle === "threeMonths" ? 3 : 1;
     const unit = billingCycle === "threeMonths" ? "month" : billingCycle;
     const payment_plan = payment?.data[0]?.id;
+    const originalAmount = initialPrices[plan][currency][billingCycle];
+
 
     if (method === "flutterwave") {
       const currentConfig = getFlutterwaveConfig(
@@ -285,8 +299,8 @@ const Upgrade: React.FC = () => {
                 console.error(
                   "Transaction verification failed:",
                   verificationResponse.message ||
-                    verificationResponse.data.message ||
-                    "Unknown verification error."
+                  verificationResponse.data.message ||
+                  "Unknown verification error."
                 );
                 navigate("/dashboard/success?status=failed");
               }
@@ -351,11 +365,13 @@ const Upgrade: React.FC = () => {
               noOfSeats: (plan === "pro"
                 ? "1"
                 : plan === "premium"
-                ? "15"
-                : noOfSeats
+                  ? "15"
+                  : noOfSeats
               ).toString(),
               duration: duration,
             },
+            original_price: originalAmount,
+            coupon_code: couponCode,
           },
           {
             headers: {
@@ -447,7 +463,7 @@ const Upgrade: React.FC = () => {
             break;
           case "year":
             newBillingCycle = "year";
-            newAllowedCycles = [ "year"];
+            newAllowedCycles = ["year"];
 
             break;
           case "infinity":
@@ -468,7 +484,7 @@ const Upgrade: React.FC = () => {
       }
     } catch (error: any) {
       setVerificationMessage(
-         "Invalid or Expired coupon code."
+        "Invalid or Expired coupon code."
       );
     } finally {
       setLoading(false);
@@ -534,10 +550,9 @@ const Upgrade: React.FC = () => {
 
     const buttonClassName: string = `
       w-full py-2 rounded-md transition duration-200 mt-auto text-lg font-medium
-      ${
-        isCurrentPlanActive
-          ? "bg-gray-600  hover:bg-gray-300 text-white"
-          : isCurrentPlanExpired
+      ${isCurrentPlanActive
+        ? "bg-gray-600  hover:bg-gray-300 text-white"
+        : isCurrentPlanExpired
           ? "bg-red-600 text-white hover:bg-red-700"
           : "bg-primary text-white hover:bg-[#4a2fa3]"
       }
@@ -631,9 +646,8 @@ const Upgrade: React.FC = () => {
                 e.target.value as "month" | "threeMonths" | "year"
               )
             }
-            className={`w-full p-2 border border-gray-300 rounded-md text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              couponApplied ? "opacity-50 cursor-not-allowed bg-gray-100" : ""
-            }`}
+            className={`w-full p-2 border border-gray-300 rounded-md text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 ${couponApplied ? "opacity-50 cursor-not-allowed bg-gray-100" : ""
+              }`}
           >
             {allowedBillingCycles.includes("month") && (
               <option value="month">Monthly</option>
@@ -685,11 +699,10 @@ const Upgrade: React.FC = () => {
                 <li>AI Image generation for educators and students</li>
               </ul>
               <button
-                className={`w-full py-2 rounded-md mt-auto ${
-                  userDetails?.package === "AiTeacha Free"
+                className={`w-full py-2 rounded-md mt-auto ${userDetails?.package === "AiTeacha Free"
                     ? "bg-gray-300 text-gray-700 cursor-not-allowed"
                     : "bg-primary text-white hover:bg-[#4a2fa3] transition"
-                }`}
+                  }`}
                 disabled={userDetails?.package === "AiTeacha Free"}
               >
                 {userDetails?.package === "AiTeacha Free"
@@ -909,17 +922,16 @@ const Upgrade: React.FC = () => {
                   loadingPlan === "enterprise" ||
                   userDetails?.package === "AI Teacha Enterprise"
                 }
-                className={`bg-primary text-white w-full py-2 rounded-md transition mt-auto text-center ${
-                  userDetails?.package === "AI Teacha Enterprise"
+                className={`bg-primary text-white w-full py-2 rounded-md transition mt-auto text-center ${userDetails?.package === "AI Teacha Enterprise"
                     ? "bg-gray-300 text-gray-700 cursor-not-allowed"
                     : "hover:bg-[#4a2fa3]"
-                }`}
+                  }`}
               >
                 {userDetails?.package === "AI Teacha Enterprise"
                   ? "Current Plan"
                   : loadingPlan === "enterprise"
-                  ? "Processing..."
-                  : "Contact Sales"}{" "}
+                    ? "Processing..."
+                    : "Contact Sales"}{" "}
               </Button>
             </div>
           </div>

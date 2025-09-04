@@ -10,7 +10,7 @@ const voiceTypelist = [
 ];
 const ClassroomVoiceTypelist = [
   { label: "Male Voice", value: "alloy" },
-  { label: "Female Voice", value: "ash" },
+  { label: "Female Voice", value: "coral" },
 ];
 
 const ageGroupList = [

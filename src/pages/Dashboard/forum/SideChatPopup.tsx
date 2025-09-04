@@ -6,7 +6,7 @@ import { RootState } from "../../../store";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getCount, getMessages, unreadMessageCounts } from "../../../store/slices/staffchats";
 
-const socket = io("https://api.aiteacha.com");
+const socket = io("https://vd.aiteacha.com");
 
 interface SideChatPopupProps {
   isOpen: boolean;

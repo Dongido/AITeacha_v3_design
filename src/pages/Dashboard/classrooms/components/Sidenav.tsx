@@ -112,25 +112,33 @@ export function Sidenav({
     }
   };
 
+  // const handleSelectOutlineInternal = (outline: any) => {
+  //   setSelectedOverview?.(false);
+  //   const selectedIndex = outlines.findIndex((o) => o === outline);
+
+  //   const isPreviousUnread =
+  //     selectedIndex > 0 && outlines[selectedIndex - 1]?.mark_as_read === 0;
+
+  //   if (selectedOutline && selectedOutline.mark_as_read === 0) {
+  //     if (isPreviousUnread) {
+  //       setShowDialog(true);
+  //     } else {
+  //       onSelectOutline?.(outline);
+  //       onSelectTool?.(null);
+  //     }
+  //   } else {
+  //     onSelectOutline?.(outline);
+  //     onSelectTool?.(null);
+  //   }
+  // };
+
+
   const handleSelectOutlineInternal = (outline: any) => {
     setSelectedOverview?.(false);
-    const selectedIndex = outlines.findIndex((o) => o === outline);
-
-    const isPreviousUnread =
-      selectedIndex > 0 && outlines[selectedIndex - 1]?.mark_as_read === 0;
-
-    if (selectedOutline && selectedOutline.mark_as_read === 0) {
-      if (isPreviousUnread) {
-        setShowDialog(true);
-      } else {
-        onSelectOutline?.(outline);
-        onSelectTool?.(null);
-      }
-    } else {
-      onSelectOutline?.(outline);
-      onSelectTool?.(null);
-    }
+    onSelectOutline?.(outline);
+    onSelectTool?.(null);
   };
+
   const handleSelectToolInternal = (tool: any) => {
     setSelectedOverview?.(false);
     if (onSelectTool) {
@@ -184,34 +192,32 @@ export function Sidenav({
   }, [openSidenav]);
 
   React.useEffect(() => {
-  function handleClickOutside(event: MouseEvent) {
-    if (
-      openSidenavRef.current &&
-      sidenavRef.current &&
-      !sidenavRef.current.contains(event.target as Node)
-    ) {
-      setOpenSidenav(dispatch, false);
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        openSidenavRef.current &&
+        sidenavRef.current &&
+        !sidenavRef.current.contains(event.target as Node)
+      ) {
+        setOpenSidenav(dispatch, false);
+      }
     }
-  }
 
-  if (openSidenav) {
-    document.addEventListener("mousedown", handleClickOutside);
-  }
+    if (openSidenav) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
 
-  return () => {
-    document.removeEventListener("mousedown", handleClickOutside);
-  };
-}, [openSidenav, dispatch]);
-//  console.log(outlines, "outlines")
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [openSidenav, dispatch]);
+  //  console.log(outlines, "outlines")
 
   return (
     <aside
       ref={sidenavRef}
-      className={`routes-scroll-area ${sidenavTypes[sidenavType]} ${
-        openSidenav ? "translate-x-0" : "-translate-x-80"
-      } fixed inset-0 z-50 h-[calc(100vh)] ${
-        isCollapsed ? "w-28 " : "w-72"
-      } transition-transform duration-300 xl:translate-x-0 flex flex-col`}
+      className={`routes-scroll-area ${sidenavTypes[sidenavType]} ${openSidenav ? "translate-x-0" : "-translate-x-80"
+        } fixed inset-0 z-50 h-[calc(100vh)] ${isCollapsed ? "w-28 " : "w-72"
+        } transition-transform duration-300 xl:translate-x-0 flex flex-col`}
     >
       <div className="relative flex items-center justify-between p-4">
         <Link to={"/"}>
@@ -277,11 +283,10 @@ export function Sidenav({
                 outlines.map((outline, index) => (
                   <div
                     key={index}
-                    className={`flex flex-col gap-1 p-3 rounded-lg cursor-pointer ${
-                      selectedOutline?.name === outline.name
+                    className={`flex flex-col gap-1 p-3 rounded-lg cursor-pointer ${selectedOutline?.name === outline.name
                         ? "bg-gray-400 text-white"
                         : "bg-gray-100 hover:bg-gray-500 hover:text-black"
-                    } transition-all duration-300 mb-2`}
+                      } transition-all duration-300 mb-2`}
                     onClick={() => handleSelectOutlineInternal(outline)}
                   >
                     <span className="text-sm font-medium ">
@@ -296,9 +301,9 @@ export function Sidenav({
               )}
             </div>
             {outlines.every((outline) => outline.mark_as_read === 1) &&
-            outlines.some(
-              (outline) => outline.assessments && outline.assessments.length > 0
-            ) ? (
+              outlines.some(
+                (outline) => outline.assessments && outline.assessments.length > 0
+              ) ? (
               <Button
                 className="mt-4 w-full px-2 rounded-md"
                 onClick={handleViewGradesClick}
@@ -319,18 +324,17 @@ export function Sidenav({
             {!outlines?.some(
               (outline) => outline.assessments && outline.assessments.length > 0
             ) && (
-              <p className="text-sm px-2 text-gray-500 mt-2 italic">
-                No assessments available for this classroom.{" "}
-              </p>
-            )}
+                <p className="text-sm px-2 text-gray-500 mt-2 italic">
+                  No assessments available for this classroom.{" "}
+                </p>
+              )}
             <div className="mt-auto py-4 ">
               <h3 className="text-lg font-semibold mb-2">Class Tools</h3>
 
               <div
                 key="main"
-                className={`border cursor-pointer px-4 py-3 rounded-lg ${
-                  selectedTool === null ? "bg-primary text-white" : ""
-                }`}
+                className={`border cursor-pointer px-4 py-3 rounded-lg ${selectedTool === null ? "bg-primary text-white" : ""
+                  }`}
                 onClick={() => handleSelectToolInternal(null)}
               >
                 Main Classroom
@@ -341,11 +345,10 @@ export function Sidenav({
                   <div
                     key={index}
                     onClick={() => handleSelectToolInternal(tool.tool_name)}
-                    className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer ${
-                      selectedTool === tool.tool_name
+                    className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer ${selectedTool === tool.tool_name
                         ? "bg-primary text-white"
                         : "hover:bg-gray-200"
-                    }`}
+                      }`}
                   >
                     {!isCollapsed && <span>{tool.tool_name}</span>}
                   </div>
@@ -357,11 +360,10 @@ export function Sidenav({
                 <Button
                   onClick={onToggleView}
                   variant="outline"
-                  className={`w-full rounded-md ${
-                    sidenavType === "white"
+                  className={`w-full rounded-md ${sidenavType === "white"
                       ? "text-blue-gray-900 border-blue-gray-300 hover:bg-blue-gray-50"
                       : "text-white border-white/70 hover:bg-white/10"
-                  }`}
+                    }`}
                 >
                   View {viewState === "classroom" ? "Resources" : "Classroom"}
                 </Button>
@@ -370,7 +372,7 @@ export function Sidenav({
           </>
         )}
       </nav>
-
+      {/* 
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
         <DialogContent>
           <DialogTitle>Unread Outline</DialogTitle>
@@ -378,7 +380,7 @@ export function Sidenav({
             Please read the previous outline first.
           </DialogDescription>
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
 
       <Dialog open={showGradeDialog} onOpenChange={setShowGradeDialog}>
         <DialogContent className="max-w-3xl">
