@@ -155,14 +155,7 @@ export function StudentNavbar() {
             {/* Logout Dialog Trigger with Tooltip */}
             <Dialog>
               <DialogTrigger asChild>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <ArrowRightEndOnRectangleIcon className="h-5 w-5 text-blue-gray-500 cursor-pointer" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p className="font-extrabold text-md capitalize">Logout</p>
-                  </TooltipContent>
-                </Tooltip>
+                <ArrowRightEndOnRectangleIcon className="h-5 w-5 text-blue-gray-500 cursor-pointer" />
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
@@ -184,7 +177,6 @@ export function StudentNavbar() {
               </DialogContent>
             </Dialog>
 
-            {/* Settings Icon with Tooltip */}
             <Tooltip>
               <TooltipTrigger asChild>
                 <Cog6ToothIcon
