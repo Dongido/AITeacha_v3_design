@@ -23,14 +23,65 @@ import { FLUTTERWAVE_PUBLIC } from "../../lib/utils";
 import { useFlutterwave, closePaymentModal } from "flutterwave-react-v3";
 import { useNavigate } from "react-router-dom";
 import { verifyTransaction } from "../../api/subscription";
+import { AppDispatch, RootState } from "../../store";
+import { useDispatch } from "react-redux";
+import { useAppSelector } from "../../store/hooks";
+import { getPaymentplan } from "../../store/slices/notificationsSlice";
+
+const initialPrices = {
+  free: {
+    NGN: { month: 0, threeMonths: 0, year: 0 },
+    USD: { month: 0, threeMonths: 0, year: 0 },
+    GBP: { month: 0, threeMonths: 0, year: 0 },
+  },
+  basic: {
+    NGN: { month: 2000, threeMonths: 6000, year: 12000 },
+    USD: { month: 0, threeMonths: 0, year: 0 },
+    GBP: { month: 0, threeMonths: 0, year: 0 },
+  },
+  pro: {
+    NGN: { month: 5000, threeMonths: 15000, year: 55000 },
+    USD: { month: 5, threeMonths: 15, year: 55 },
+    GBP: { month: 4, threeMonths: 12, year: 50 },
+  },
+  premium: {
+    NGN: { month: 20000, threeMonths: 60000, year: 200000 },
+    USD: { month: 20, threeMonths: 60, year: 200 },
+    GBP: { month: 18, threeMonths: 54, year: 190 },
+  },
+  enterprise: {
+    NGN: { month: 100000, threeMonths: 300000, year: 1200000 },
+    USD: { month: 100, threeMonths: 300, year: 1200 },
+    GBP: { month: 96, threeMonths: 288, year: 1180 },
+  },
+  admin: {
+    NGN: { month: 100, threeMonths: 60, year: 50 },
+    USD: { month: 1, threeMonths: 3, year: 1 },
+    GBP: { month: 1, threeMonths: 3, year: 1 },
+  },
+};
+type PlanType = "free" | "basic" | "pro" | "premium" | "enterprise" | "admin";
+const packageMap: Record<PlanType, number> = {
+  free: 1,
+  basic: 5,
+  pro: 2,
+  premium: 3,
+  enterprise: 4,
+  admin: 2,
+};
+
+
 
 const UpgradeSupport = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
   const [userDetails, setUserDetails] = useState<any>(null);
   const [isEmailVerified, setIsEmailVerified] = useState<number>(0);
   const [numberOfTeachers, setNumberOfTeachers] = useState<number>(16);
   const [duration, setDuration] = useState<string>("1");
   const [unit, setUnit] = useState<string>("monthly");
+  const [prices, setPrices] = useState(initialPrices);
+
   const [calculatedPrice, setCalculatedPrice] = useState<number | 0>(0);
   const [currency, setCurrency] = useState<string>(
     localStorage.getItem("selectedCurrency") || "NGN"
@@ -47,7 +98,10 @@ const UpgradeSupport = () => {
   const [teacherCountError, setTeacherCountError] = useState<string | null>(
     null
   );
-
+  const { payment, error } = useAppSelector(
+    (state: RootState) => state.notifications
+  );
+  console.log("paymentid", payment?.data[0]?.id)
   const durations = [
     { value: "1", label: "1 Month", unit: "monthly" },
     { value: "2", label: "2 Months", unit: "monthly" },
@@ -57,6 +111,14 @@ const UpgradeSupport = () => {
     { value: "24", label: "2 Years", unit: "yearly" },
     { value: "36", label: "3 Years", unit: "yearly" },
   ];
+    const packageMap = {
+    free: 1,
+    basic: 5,
+    pro: 2,
+    premium: 3,
+    enterprise: 4,
+    admin: 2,
+  };
 
   useEffect(() => {
     const userDetailsFromStorage = localStorage.getItem("ai-teacha-user");
@@ -131,7 +193,19 @@ const UpgradeSupport = () => {
     setCalculatedPrice(totalPrice);
   };
 
-  const initiatePayment = () => {
+  const initiatePayment = async() => {
+
+    const amount = calculatedPrice;
+      const months = parseInt(duration, 10);
+     const originalPrice = numberOfTeachers * 1300 * months;
+      const payload = {
+        amount,
+        package_id: "4",
+        original_price:originalPrice,
+        interval: unit,
+        currency,
+      };
+   const response = await dispatch(getPaymentplan(payload)).unwrap();
     if (duration === "12") {
       setDuration("1");
     } else if (duration === "24") {
@@ -148,7 +222,8 @@ const UpgradeSupport = () => {
     setIsPaymentDialogOpen(true);
   };
   const getFlutterwaveConfig = (
-    plan: "basic" | "pro" | "premium" | "enterprise" | "admin"
+    plan: "basic" | "pro" | "premium" | "enterprise" | "admin",
+    payment_plan: string,
   ) => {
     const unit = billingCycle === "threeMonths" ? "month" : billingCycle;
 
@@ -158,6 +233,7 @@ const UpgradeSupport = () => {
       amount: calculatedPrice,
       currency: currency,
       payment_options: "card, banktransfer, ussd",
+      payment_plan,
       customer: {
         email: userDetails?.email || "default@email.com",
         phone_number: "08012345678",
@@ -202,8 +278,8 @@ const UpgradeSupport = () => {
         setLoadingPlan(null);
         return;
       }
-
-      const currentConfig = getFlutterwaveConfig("enterprise");
+      const payment_plan = payment?.data?.id;
+      const currentConfig = getFlutterwaveConfig("enterprise", payment_plan);
 
       const initiateFlutterwavePayment = useFlutterwave(currentConfig);
 

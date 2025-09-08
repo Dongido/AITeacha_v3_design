@@ -111,6 +111,7 @@ export function TeacherSignupForm({ className, ...props }: SignupFormProps) {
   const [statesOfSelectedCountry, setStatesOfSelectedCountry] = useState<
     Option[]
   >([]);
+  // console.log("statesOfSelectedCountry", statesOfSelectedCountry);
 
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();

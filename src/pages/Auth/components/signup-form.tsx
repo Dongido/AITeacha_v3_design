@@ -33,10 +33,11 @@ import {
   SelectItem,
   SelectValue,
 } from "../../../components/ui/Select";
+import { Country, State} from "country-state-city";
 
 declare const apiClient: any;
 
-interface SignupFormProps extends HTMLAttributes<HTMLDivElement> {}
+interface SignupFormProps extends HTMLAttributes<HTMLDivElement> { }
 
 const containsUrl = (text: string): boolean => {
   if (!text) return false;
@@ -126,6 +127,18 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
   const [toastVariant, setToastVariant] = useState<"default" | "destructive">(
     "default"
   );
+  const [role_id, setRoleId] = useState<number>(4);
+  const [statesOfSelectedCountry, setStatesOfSelectedCountry] = useState<
+    Option[]
+  >([]);
+  //  console.log("statesOfSelectedCountry", statesOfSelectedCountry);
+  const countryOptions: Option[] = Country.getAllCountries().map((country) => ({
+    value: country.isoCode,
+    label: country.name,
+  }));
+ 
+
+
 
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
@@ -166,7 +179,23 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
   });
 
   const hasDisability = form.watch("hasDisability");
-  let role_id: number = 4;
+   const selectedCountry = form.watch("country");
+   useEffect(() => {
+  if (selectedCountry) {
+    const states = State.getStatesOfCountry(selectedCountry).map((state) => ({
+      value: state.isoCode,
+      label: state.name,
+    }));
+    setStatesOfSelectedCountry(states);
+    form.setValue("state", "");
+  } else {
+    setStatesOfSelectedCountry([]);
+  }
+
+  // console.log("Stored role from localStorage:", storedRole);
+}, [selectedCountry, form]);
+
+  // let role_id: number = 4;
 
   const storedRole = localStorage.getItem("selectedRole");
   useEffect(() => {
@@ -175,18 +204,31 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
     if (storedReferralCode) {
       form.setValue("referred_by", storedReferralCode);
     }
-
+    let newRoleId = 4;
     if (storedRole === "student") {
-      role_id = 3;
+      newRoleId = 3;
     } else if (storedRole === "teacher" || storedRole === "lecturer") {
-      role_id = 2;
+      newRoleId = 2;
     }
-    console.log("Stored role from localStorage:", storedRole);
-    console.log("Determined role_id:", role_id);
+
+    setRoleId(newRoleId);
+    console.log(`Stored role: ${storedRole} → roleId: ${newRoleId}`);
+
+    // if (storedRole === "student") {
+    //   setRoleId(3)
+    //   // role_id = 3;
+    // } else if (storedRole === "teacher" || storedRole === "lecturer") {
+    //   // role_id = 2;
+    //   setRoleId(2)
+    // }
+    // console.log("Stored role from localStorage:", storedRole);
+    // console.log("Determined role_id:", role_id);
   }, [form]);
+
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true);
+    console.log("roleid", role_id)
 
     try {
       const res: SignupResponse = await registerUser(
@@ -366,7 +408,7 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
                   )}
                 />
               </div>
-
+              {/* 
               <div className="flex space-x-4">
                 <FormField
                   control={form.control}
@@ -398,6 +440,69 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
                           {...field}
                         />
                       </FormControl>
+                      <FormMessage className="text-red-700" />
+                    </FormItem>
+                  )}
+                />
+              </div> */}
+
+              <div className="flex space-x-4">
+                <FormField
+                  control={form.control}
+                  name="country"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col w-full space-y-2">
+                      <FormLabel className="font-semibold mt-2">
+                        Country
+                      </FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="h-10 rounded-full">
+                            <SelectValue placeholder="Select a Country" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {countryOptions.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage className="text-red-700" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="state"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col w-full space-y-2">
+                      <FormLabel className="font-semibold mt-2">
+                        State
+                      </FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                        disabled={statesOfSelectedCountry.length === 0}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="h-10 rounded-full">
+                            <SelectValue placeholder="Select a State" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {statesOfSelectedCountry.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       <FormMessage className="text-red-700" />
                     </FormItem>
                   )}
@@ -602,7 +707,7 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
               try {
                 const googleAuthUrl = `https://vd.aiteacha.com/api/auth/google/${storedRole}?redirect_uri=${encodeURIComponent(
                   window.location.origin +
-                    `/api/auth/google/${storedRole}/callback`
+                  `/api/auth/google/${storedRole}/callback`
                 )}`;
                 console.log("Constructed Google Auth URL:", googleAuthUrl);
 

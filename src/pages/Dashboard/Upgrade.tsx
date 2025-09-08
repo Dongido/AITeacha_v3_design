@@ -94,6 +94,7 @@ const Upgrade: React.FC = () => {
   const { payment, error } = useAppSelector(
     (state: RootState) => state.notifications
   );
+    // console.log("id", payment?.data?.id)
 
   //  useEffect(() => {
   //   if (selectedPlan) {
@@ -239,7 +240,7 @@ const Upgrade: React.FC = () => {
     const amount = prices[plan][currency][billingCycle];
     const duration = billingCycle === "threeMonths" ? 3 : 1;
     const unit = billingCycle === "threeMonths" ? "month" : billingCycle;
-    const payment_plan = payment?.data[0]?.id;
+    const payment_plan = payment?.data?.id;
     const originalAmount = initialPrices[plan][currency][billingCycle];
 
 

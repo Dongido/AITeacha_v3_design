@@ -61,6 +61,7 @@ export const registerUser = async (
   state: string
 ): Promise<SignupResponse> => {
   try {
+    // console.log("payload",email,firstname, role_id,"id",country,city,state)
     const response = await apiClient.post<SignupResponse>("auth/register", {
       email,
       firstname,

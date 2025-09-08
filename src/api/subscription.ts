@@ -29,7 +29,7 @@ export const verifyTransaction = async (transactionId: any): Promise<any> => {
     const response = await apiClient.get(
       `/payment/flw/verify/transaction/${transactionId}`
     );
-    return response.data;
+    return response.data.data;
   } catch (error: any) {
     throw new Error(
       error.response?.data?.message ||
