@@ -184,16 +184,31 @@ const TestDetailsPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="mt-8 flex justify-center">
-          <div className="flex gap-4 overflow-x-auto">
-            <button className="flex items-center gap-2 bg-purple-200 text-purple-800 rounded-full py-2 px-4 whitespace-nowrap">
-              Grade: {firstTest?.grade}
-            </button>
-            <button className="flex items-center gap-2 bg-blue-200 text-blue-800 rounded-full py-2 px-4 whitespace-nowrap">
-              No of Questions: {firstTest?.questions.length}
-            </button>
-          </div>
-        </div>
+      <div className="mt-8 flex justify-center">
+  <div className="flex gap-4 overflow-x-auto">
+    <button className="flex items-center gap-2 bg-purple-200 text-purple-800 rounded-full py-2 px-4 whitespace-nowrap">
+      Grade: {firstTest?.grade}
+    </button>
+    <button className="flex items-center gap-2 bg-blue-200 text-blue-800 rounded-full py-2 px-4 whitespace-nowrap">
+      No of Questions: {firstTest?.questions?.length ?? 0}
+    </button>
+    <button className="flex items-center gap-2 bg-green-200 text-green-800 rounded-full py-2 px-4 whitespace-nowrap">
+      Exam Type: {firstTest?.exam_type || "N/A"}
+    </button>
+
+    {firstTest?.academic_session && (
+      <button className="flex items-center gap-2 bg-yellow-200 text-yellow-800 rounded-full py-2 px-4 whitespace-nowrap">
+        Session: {firstTest.academic_session}
+      </button>
+    )}
+    {firstTest?.academic_term && (
+      <button className="flex items-center gap-2 bg-pink-200 text-pink-800 rounded-full py-2 px-4 whitespace-nowrap">
+        Term: {firstTest.academic_term}
+      </button>
+    )}
+  </div>
+</div>
+
         {/* <div className="p-6">
           <p>
             <strong>Grade:</strong> {firstTest.grade}

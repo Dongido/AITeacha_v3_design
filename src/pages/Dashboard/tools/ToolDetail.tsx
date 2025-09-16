@@ -392,12 +392,11 @@ const ToolDetail = () => {
     } catch (error: any) {
       const errorMessage = error.message || "Failed to submit tool data.";
       console.log(`error : ${errorMessage}`)
-      if (errorMessage.includes("Limit")) {
+      if (errorMessage.includes("Limit")) {  
         setPropsDialogContent(errorMessage);
         setShowPropsDialog(true);
       } else {
         setResponseMessage(errorMessage);
-
         setToastMessage(errorMessage);
         setToastVariant("destructive");
         setShowToast(true);

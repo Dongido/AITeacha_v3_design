@@ -25,6 +25,8 @@ const Team = () => {
   const dispatch = useAppDispatch();
   const { members, loading, error, inviteLoading, inviteError } =
     useAppSelector((state) => state.team);
+
+    //  console.log("member", members)
   const navigate = useNavigate();
   const [email, setEmail] = useState<string>("");
   const [userDetails, setUserDetails] = useState<any>(null);

@@ -1,6 +1,8 @@
+import { string } from "zod";
 import apiClient from "../lib/apiClient";
 
 export const createTest = async (testData: any): Promise<any> => {
+  //  console.log("testData", testData)
   try {
     const response = await apiClient.post<any>(`/examination`, testData);
     return response.data.data;
@@ -269,3 +271,56 @@ export const submitExamination = async (submissionData: {
     }
   }
 };
+
+
+export const getExamType = async () => {
+  try {
+     const response = await apiClient.get<{
+      status:string,
+      message:string,
+      data:any[]
+     }>("/examination/get/examtype");
+    //  console.log(response, "exam type response");
+     return response.data.data;
+  } catch (error:any) {
+    throw new Error(
+      error.response?.data?.message ||
+        "Failed to fetch examination types. Please try again."
+    );
+  }
+}
+
+ export const getSession = async () => {
+  try {
+     const response = await apiClient.get<{
+      status:string,
+      message:string,
+      data:any[],
+     }>("/examination/get/schoolsession");
+    //  console.log(response, "session response");
+     return response.data.data;
+  } catch (error:any) {
+    throw new Error(
+      error.response?.data?.message ||
+        "Failed to fetch examination session. Please try again."
+    );
+  }
+ }
+
+ export const getTerm = async () => {
+  try {
+     const response = await apiClient.get<{
+      status:string,
+      message:string,
+      data:any[]
+
+     }>("/examination/get/schoolterm");
+    //  console.log(response, "term response");
+     return response.data.data;
+  } catch (error:any) {
+    throw new Error(
+      error.response?.data?.message ||
+        "Failed to fetch examination term. Please try again."
+    );
+  }
+ }

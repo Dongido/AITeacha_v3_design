@@ -1,6 +1,7 @@
 import apiClient from "../lib/apiClient";
 
 export const uploadStudents = async (students: any): Promise<any> => {
+  console.log("students", students)
   try {
     const response = await apiClient.post(
       "/profile/add/students/batch",

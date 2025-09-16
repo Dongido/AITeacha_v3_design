@@ -35,6 +35,7 @@ interface StudentData {
   age?: string;
   gender?: string;
   disability_details?: string;
+  grade: string;
 }
 
 const UploadStudentsCSVDialog = forwardRef(
@@ -81,16 +82,18 @@ const UploadStudentsCSVDialog = forwardRef(
           phone,
           email,
           gender,
+          grade,
           age,
           student_number,
           disability_details,
         ] = lines[i].split(",").map((item) => item.trim());
+        // console.log("data", email, age, grade, age, student_number, firstname, lastname, phone);
 
-        if (!firstname || !lastname || !phone || !email || !age || !gender) {
+        if (!firstname || !lastname || !phone || !email || !age || !gender || !grade) {
           errors.push(
             `Row ${
               i + 1
-            }: Missing required fields (firstname, lastname, phone, email, age, or gender).`
+            }: Missing required fields (firstname, lastname, phone, email, grade, age, or gender).`
           );
         } else if (!email.includes("@") || !email.includes(".")) {
           errors.push(`Row ${i + 1}: Invalid email format for '${email}'.`);
@@ -102,6 +105,7 @@ const UploadStudentsCSVDialog = forwardRef(
             email,
             age,
             gender,
+            grade,
             student_number: student_number || undefined,
             disability_details: disability_details || undefined,
           });
@@ -193,7 +197,7 @@ const UploadStudentsCSVDialog = forwardRef(
                   Upload a **CSV document** containing student information. The
                   CSV should have columns in the order: <br />
                   <span className="font-bold">
-                    firstname, lastname, phone, email, gender, age
+                    firstname, lastname, phone, email, gender, grade, age
                   </span>
                   , and optionally{" "}
                   <span className="font-bold">student_number</span> and{" "}
@@ -202,7 +206,7 @@ const UploadStudentsCSVDialog = forwardRef(
                   <br />
                   <span className="text-sm text-gray-500">
                     (e.g.,
-                    John,Doe,1234567890,john.doe@example.com,Male,12,STU001,Wheelchair
+                    John,Doe,1234567890,john.doe@example.com,Male, Grade 1,12,STU001,Wheelchair
                     user)
                   </span>
                   <br />

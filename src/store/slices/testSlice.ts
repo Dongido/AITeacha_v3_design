@@ -4,7 +4,10 @@ import {
   fetchTests as fetchTestsAPI,
   fetchTestDetails as fetchTestDetailsAPI,
   fetchExamStudents as fetchExamStudentsAPI,
-  deleteTest as deleteTestAPI, // Import the deleteTest API function
+  deleteTest as deleteTestAPI,
+  getExamType,
+  getSession,
+  getTerm, // Import the deleteTest API function
 } from "../../api/test";
 
 interface TestState {
@@ -20,7 +23,10 @@ interface TestState {
   examStudentsLoading: boolean;
   examStudentsError: string | null;
   deleting: boolean; // Add the deleting state
-  deleteError: string | null; // Add potential delete error
+  deleteError: string | null;
+  examType:any[];
+  schoolSession:any[];
+  schoolTerm:any[];
 }
 
 const initialState: TestState = {
@@ -37,6 +43,9 @@ const initialState: TestState = {
   examStudentsError: null,
   deleting: false, // Initialize deleting to false
   deleteError: null, // Initialize deleteError to null
+  examType:[],
+  schoolSession:[],
+  schoolTerm:[]
 };
 
 export const createTest = createAsyncThunk(
@@ -96,6 +105,43 @@ export const deleteTest = createAsyncThunk(
       return testId; // Optionally return the deleted ID
     } catch (error: any) {
       return rejectWithValue(error.message || "Failed to delete test.");
+    }
+  }
+);
+
+
+export const fetchExamType = createAsyncThunk(
+  "tests/fetchExamType",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await getExamType();
+      return response;
+    } catch (error: any) {
+      return rejectWithValue(error.message || "Failed to fetch exam type.");
+    }
+  }
+);
+
+export const fetchSchoolSession = createAsyncThunk(
+  "tests/fetchSchoolSession",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await getSession();
+      return response;
+    } catch (error: any) {
+      return rejectWithValue(error.message || "Failed to fetch school session.");
+    }
+  }
+);
+
+export const fetchSchoolTerm = createAsyncThunk(
+  "tests/fetchSchoolTerm",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await getTerm();
+      return response;
+    } catch (error: any) {
+      return rejectWithValue(error.message || "Failed to fetch school term.");
     }
   }
 );
@@ -170,6 +216,42 @@ const testSlice = createSlice({
       .addCase(deleteTest.rejected, (state, action) => {
         state.deleting = false;
         state.deleteError = action.payload as string;
+      })
+      .addCase(fetchExamType.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchExamType.fulfilled, (state, action) => {
+        state.loading = false;
+        state.examType = action.payload;
+      })
+      .addCase(fetchExamType.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(fetchSchoolSession.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchSchoolSession.fulfilled, (state, action) => {
+        state.loading = false;
+        state.schoolSession = action.payload;
+      })
+      .addCase(fetchSchoolSession.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(fetchSchoolTerm.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchSchoolTerm.fulfilled, (state, action) => {
+        state.loading = false;
+        state.schoolTerm = action.payload;
+      })
+      .addCase(fetchSchoolTerm.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
       });
   },
 });

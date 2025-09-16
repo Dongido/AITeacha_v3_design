@@ -74,12 +74,16 @@ export const teamColumns = [
               );
               return Promise.resolve();
             }}
-          
+            deleteFunction={() => {
+              deleteDialogRef.current?.openDialog();
+              return Promise.resolve();
+            }}
+
           />
           <DeleteTeamMemberDialog
-            ref={deleteDialogRef}
+             ref={deleteDialogRef}
             email={teamMember.email}
-            onSuccess={() => {}}
+            onSuccess={() => { }}
           />
           <EditTeacherRoleDialog
             ref={editRoleDialogRef}
@@ -88,7 +92,7 @@ export const teamColumns = [
             firstname={teamMember.firstname}
             lastname={teamMember.lastname}
             currentTeamRole={teamMember.member_role as "admin" | "member"}
-            onSuccess={() => {}}
+            onSuccess={() => { }}
           />
         </div>
       );

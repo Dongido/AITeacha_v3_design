@@ -39,9 +39,9 @@ const SchoolStudents = () => {
 
   const handleDownloadTemplate = () => {
     const csvContent =
-      "firstname,lastname,phone,email,gender,age,student_number,disability_details\n" +
-      "John,Doe,1234567890,test.john@email.com,Male,12,STU001,Tumor\n" +
-      "Jane,Smith,0987654321,test.jane@email.com,Female,14,STU002";
+      "firstname,lastname,phone,email,gender,grade,age,student_number,disability_details\n" +
+      "John,Doe,1234567890,test.john@email.com,Male,grade 5,12,STU001,Tumor\n" +
+      "Jane,Smith,0987654321,test.jane@email.com,Female,grade 6,14,STU002";
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
