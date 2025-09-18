@@ -81,7 +81,7 @@ export const teamColumns = [
 
           />
           <DeleteTeamMemberDialog
-             ref={deleteDialogRef}
+            ref={deleteDialogRef}
             email={teamMember.email}
             onSuccess={() => { }}
           />

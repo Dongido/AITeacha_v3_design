@@ -178,14 +178,29 @@ export function Sidenav({
     setErrorGrade(null);
   };
 
+  // const handleOverviewClick = () => {
+  //   setSelectedOverview?.(true)
+  //   if (onOverviewClick) {
+  //     onOverviewClick();
+  //     setSelectedOverview?.(true);
+  //   }
+
+  //   handleSelectToolInternal(null);
+  // };
+
   const handleOverviewClick = () => {
+    setSelectedOverview?.(true);
     if (onOverviewClick) {
       onOverviewClick();
-      setSelectedOverview?.(true);
     }
-
-    handleSelectToolInternal(null);
+    if (onSelectTool) {
+      onSelectTool(null);
+    }
+    if (onSelectOutline) {
+      onSelectOutline(null);
+    }
   };
+
 
   React.useEffect(() => {
     openSidenavRef.current = openSidenav;
@@ -271,21 +286,25 @@ export function Sidenav({
                 Classroom Outlines
               </Text>
             </div>
-            <Button
-              variant={"outline"}
-              className="bg-black rounded-md text-white w-full my-2"
-              onClick={() => handleOverviewClick()}
+            <div
+              className={`flex flex-col gap-1 p-3 rounded-lg cursor-pointer text-start
+               ${selectedOverview
+                  ? "bg-gray-400 text-white"      
+                  : "bg-gray-100 hover:bg-gray-500 hover:text-black"
+                } transition-all duration-300 mb-2`}
+              onClick={handleOverviewClick}
             >
-              <span className="text-white">Overview</span>
-            </Button>
+              <span className="text-sm font-medium">Overview</span>
+            </div>
+
             <div className="max-h-60 overflow-y-auto">
               {outlines.length > 0 ? (
                 outlines.map((outline, index) => (
                   <div
                     key={index}
                     className={`flex flex-col gap-1 p-3 rounded-lg cursor-pointer ${selectedOutline?.name === outline.name
-                        ? "bg-gray-400 text-white"
-                        : "bg-gray-100 hover:bg-gray-500 hover:text-black"
+                      ? "bg-gray-400 text-white"
+                      : "bg-gray-100 hover:bg-gray-500 hover:text-black"
                       } transition-all duration-300 mb-2`}
                     onClick={() => handleSelectOutlineInternal(outline)}
                   >
@@ -346,8 +365,8 @@ export function Sidenav({
                     key={index}
                     onClick={() => handleSelectToolInternal(tool.tool_name)}
                     className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer ${selectedTool === tool.tool_name
-                        ? "bg-primary text-white"
-                        : "hover:bg-gray-200"
+                      ? "bg-primary text-white"
+                      : "hover:bg-gray-200"
                       }`}
                   >
                     {!isCollapsed && <span>{tool.tool_name}</span>}
@@ -361,8 +380,8 @@ export function Sidenav({
                   onClick={onToggleView}
                   variant="outline"
                   className={`w-full rounded-md ${sidenavType === "white"
-                      ? "text-blue-gray-900 border-blue-gray-300 hover:bg-blue-gray-50"
-                      : "text-white border-white/70 hover:bg-white/10"
+                    ? "text-blue-gray-900 border-blue-gray-300 hover:bg-blue-gray-50"
+                    : "text-white border-white/70 hover:bg-white/10"
                     }`}
                 >
                   View {viewState === "classroom" ? "Resources" : "Classroom"}
