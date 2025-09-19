@@ -1156,6 +1156,8 @@ const Classroom = () => {
       ? []
       : messages[getMessageKey()] || [];
 
+       console.log("currentmessage", currentMessages,  selectedOutline)
+
   const previousMessages =
     selectedOutline &&
       (!previousCurrentMessages["outline"] ||
@@ -1946,7 +1948,7 @@ const Classroom = () => {
                 <div className="relative flex flex-col lg:flex-row max-h-[550px]  overflow-y-auto pb-[1px] lg:pb-[70px] routes-scroll-area">
                   <div
                     ref={chatContainerRef}
-                    className="flex-grow overflow-y-auto bg-gray-50 border border-gray-3 rounded-lg shadow-inner space-y-2 m-4 p-4 max-h-[450px]"
+                    className="flex-grow overflow-y-autoborder border-gray-3 rounded-lg shadow-inner space-y-2 m-4 p-4 max-h-[450px]"
                   >
 
                     {showTopicPopup && (
