@@ -49,7 +49,7 @@ const Home = () => {
     (state: RootState) => state.notifications
   );
 
-  console.log("notificationlist", notificationList);
+  // console.log("notificationlist", notificationList);
 
   const [userDetails, setUserDetails] = useState<any>(null);
   const [isEmailVerified, setIsEmailVerified] = useState<number>(0);
@@ -61,7 +61,7 @@ const Home = () => {
     return dismissedDate === today;
   });
 
-  console.log("latestnotification", latestNotification);
+  // console.log("latestnotification", latestNotification);
 
   useEffect(() => {
     if (tools.length === 0) {

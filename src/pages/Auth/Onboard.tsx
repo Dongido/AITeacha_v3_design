@@ -140,12 +140,12 @@ const Onboard = () => {
       <h2 className="text-2xl lg:text-3xl text-center max-w-2xl font-bold mb-6">
         What are you joining AiTeacha as:
       </h2>
-      <div className="mt-8  flex items-center justify-center w-full">
-        <div className="flex flex-wrap gap-4 justify-center lg:justify-between w-full max-w-5xl pl-2">
+      <div className="mt-8  flex items-center justify-center w-full lg:px-0 px-8">
+        <div className="grid  grid-cols-2 gap-4 md:flex md:flex-wrap justify-center lg:justify-between w-full max-w-5xl  ">
           {roles.map((role) => (
             <div
               key={role.id}
-              className={`relative w-48 lg:w-56 h-40 flex items-center justify-center rounded-lg cursor-pointer transition-all duration-300 ${
+              className={`relative w-auto md:w-40 lg:w-56 h-40 flex items-center justify-center rounded-lg cursor-pointer transition-all duration-300 ${
                 selectedRole === role.id
                   ? "bg-primary text-white"
                   : "bg-white text-black"

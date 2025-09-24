@@ -213,7 +213,7 @@ export default () => {
                 to={"/auth/onboarding"}
                 className="block py-2 px-4 text-white font-medium bg-primary duration-150 hover:bg-indigo-500 active:bg-indigo-700 rounded-lg shadow-lg hover:shadow-none"
               >
-                Get Started for Free
+                Register for Free
               </Link>
               <Link
                 to="/#tools"

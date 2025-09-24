@@ -254,7 +254,7 @@ const Upgrade: React.FC = () => {
         noOfSeats,
         payment_plan
       );
-      console.log("flutterwave payload", currentConfig);
+      // console.log("flutterwave payload", currentConfig);
       const handleFlutterwavePayment = useFlutterwave(currentConfig);
       handleFlutterwavePayment({
         ...currentConfig,
@@ -267,14 +267,15 @@ const Upgrade: React.FC = () => {
               const verificationResponse = await verifyTransaction(
                 response.transaction_id
               );
-              console.log(
-                "Transaction Verification Response:",
-                verificationResponse
-              );
+              // console.log(
+              //   "Transaction Verification Response:",
+              //   verificationResponse
+              // );
+              //  console.log("verificationResponse", verificationResponse , verificationResponse?.paymentStatus , verificationResponse?.paymentStatus   )
 
               if (
-                verificationResponse.status === "success" &&
-                verificationResponse.data.paymentStatus === "success"
+                verificationResponse.status === "success" ||
+                verificationResponse?.paymentStatus === "success" 
               ) {
                 const packageId = packageMap[plan];
                 const noOfSeatsToUpdate =
