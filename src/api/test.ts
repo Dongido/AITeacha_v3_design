@@ -2,7 +2,7 @@ import { string } from "zod";
 import apiClient from "../lib/apiClient";
 
 export const createTest = async (testData: any): Promise<any> => {
-  //  console.log("testData", testData)
+   console.log(" response testData", testData)
   try {
     const response = await apiClient.post<any>(`/examination`, testData);
     return response.data.data;

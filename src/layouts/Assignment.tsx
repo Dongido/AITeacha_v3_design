@@ -47,9 +47,8 @@ export function AssignmentDashboard() {
         onToggle={(collapsed) => setIsCollapsed(collapsed)}
       /> */}
       <div
-        className={`p-4 transition-all duration-300 ${
-          isCollapsed ? "xl:ml-28" : "xl:ml-72"
-        }`}
+        className={`p-4 transition-all duration-300 ${isCollapsed ? "xl:ml-28" : "xl:ml-72"
+          }`}
       >
         <DashboardNavbar />
         {userDetails && isEmailVerified === 0 && (

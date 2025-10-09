@@ -90,6 +90,7 @@ const CreateTest: React.FC<CreateOrEditClassroomProps> = ({ isEdit }) => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [storedType, setStoredType] = useState<string | null>(null);
+  // console.log("storedType", storedType)
 
   const [toastOpen, setToastOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
@@ -127,9 +128,9 @@ const CreateTest: React.FC<CreateOrEditClassroomProps> = ({ isEdit }) => {
 
   const stepOneSchema = z.object({
     user_id: z.number(),
-    exam_type: z.string().min(1, { message: "Exam type is required" }),
-    academic_session: z.string().optional(),
-    academic_term: z.string().optional(),
+    examtype: z.string().min(1, { message: "Exam type is required" }),
+    academic_session_id: z.string().optional(),
+    academic_term_id: z.string().optional(),
     name: z
       .string()
       .min(1, { message: "School name is required" })
@@ -141,7 +142,7 @@ const CreateTest: React.FC<CreateOrEditClassroomProps> = ({ isEdit }) => {
       .number({ required_error: "Duration is required" })
       .min(1, { message: "Duration must be at least 1" }),
   });
-  
+
 
   const stepTwoSchema = z.object({
     instruction: z
@@ -164,40 +165,31 @@ const CreateTest: React.FC<CreateOrEditClassroomProps> = ({ isEdit }) => {
 
   // const formSchema = stepOneSchema.merge(stepTwoSchema).merge(finalStepSchema);
   const formSchema = stepOneSchema
-  .merge(stepTwoSchema)
-  .merge(finalStepSchema)
-  .superRefine((data, ctx) => {
-    // URL validation for school name
-    if (containsUrl(data.name)) {
+    .merge(stepTwoSchema)
+    .merge(finalStepSchema)
+   .superRefine((data, ctx) => {
+  const selectedExam = examType?.find(
+    (exam: any) => exam.name === data.examtype
+  );
+
+  if (selectedExam && selectedExam.name !== "General Assessment") {
+    if (!data.academic_session_id) {
       ctx.addIssue({
-        path: ["name"],
+        path: ["academic_session_id"],
         code: z.ZodIssueCode.custom,
-        message: "School name cannot contain URLs",
+        message: "Session is required",
       });
     }
-
-    // Exam type validation
-    const selectedExam = examType?.find(
-      (exam: any) => String(exam.id) === String(data.exam_type)
-    );
-
-    if (selectedExam && selectedExam.name !== "General Assessment") {
-      if (!data.academic_session) {
-        ctx.addIssue({
-          path: ["academic_session"],
-          code: z.ZodIssueCode.custom,
-          message: "Session is required",
-        });
-      }
-      if (!data.academic_term) {
-        ctx.addIssue({
-          path: ["academic_term"],
-          code: z.ZodIssueCode.custom,
-          message: "Term is required",
-        });
-      }
+    if (!data.academic_term_id) {
+      ctx.addIssue({
+        path: ["academic_term_id"],
+        code: z.ZodIssueCode.custom,
+        message: "Term is required",
+      });
     }
-  });
+  }
+})
+
 
   const formMethods = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -212,10 +204,10 @@ const CreateTest: React.FC<CreateOrEditClassroomProps> = ({ isEdit }) => {
   });
   const { handleSubmit, control, setValue, getValues, trigger, watch } = formMethods;
 
-  const selectedTypeId = watch("exam_type");
+  const selectedTypeId = watch("examtype");
 
   const selectedType = examType?.find(
-    (exam: any) => String(exam.id) === String(selectedTypeId)
+    (exam: any) => String(exam.name) === String(selectedTypeId)
   );
 
   useEffect(() => {
@@ -254,7 +246,7 @@ const CreateTest: React.FC<CreateOrEditClassroomProps> = ({ isEdit }) => {
 
     };
 
-    // console.log(data.academic_session, data.academic_term, data.examtype_id, "formdata");
+    // console.log(data.academic_session_id, data.academic_term_id, data.exam_type, "formdata");
     try {
       // console.log(testData, "test data to be sent", selectedExamType, selectedSession, selectedTerm);
       await dispatch(createTest(testData)).unwrap();
@@ -521,33 +513,52 @@ const CreateTest: React.FC<CreateOrEditClassroomProps> = ({ isEdit }) => {
           <form onSubmit={handleSubmit(onSubmit)}>
             {currentStep === 1 && (
               <div className="space-y-4">
-                <FormField
-                  control={control}
-                  name="exam_type"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xl lg:text-2xl">Exam Type</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <SelectTrigger className="text-xl">
-                          <SelectValue placeholder="Select exam type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {examType?.map((exam: any) => (
-                            <SelectItem key={exam.id} value={String(exam.id)}>
-                              {exam.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage  className="text-red-500" />
-                    </FormItem>
-                  )}
-                />
+                {storedType === "test" ? (
+                  <FormField
+                    control={control}
+                    name="examtype"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-xl lg:text-2xl">Exam Type</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <SelectTrigger className="text-xl">
+                            <SelectValue placeholder="Select exam type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {examType
+                              ?.filter((exam: any) => exam.name !== "Examination")
+                              .map((exam: any) => (
+                                <SelectItem key={exam.id} value={String(exam.name)}>
+                                  {exam.name}
+                                </SelectItem>
+                              ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage className="text-red-500" />
+                      </FormItem>
+                    )}
+                  />
+                ) : storedType === "exam" ? (
+                  <>
+                    {examType
+                      ?.filter((exam: any) => exam.name === "Examination")
+                      .map((exam: any) => (
+                        <input
+                          key={exam.id}
+                          type="hidden"
+                          {...formMethods.register("examtype")}
+                          value={String(exam.name)} 
+                        />
+                      ))}
+                    
+                  </>
+                ) : null}
+
                 {selectedType && selectedType.name !== "General Assessment" && (
                   <div className="space-y-4">
                     <FormField
                       control={control}
-                      name="academic_session"
+                      name="academic_session_id"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-xl lg:text-2xl">Session</FormLabel>
@@ -563,14 +574,14 @@ const CreateTest: React.FC<CreateOrEditClassroomProps> = ({ isEdit }) => {
                               ))}
                             </SelectContent>
                           </Select>
-                          <FormMessage  className="text-red-500"  />
+                          <FormMessage className="text-red-500" />
                         </FormItem>
                       )}
                     />
 
                     <FormField
                       control={control}
-                      name="academic_term"
+                      name="academic_term_id"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-xl lg:text-2xl">Term</FormLabel>
@@ -586,7 +597,7 @@ const CreateTest: React.FC<CreateOrEditClassroomProps> = ({ isEdit }) => {
                               ))}
                             </SelectContent>
                           </Select>
-                          <FormMessage  className="text-red-500"  />
+                          <FormMessage className="text-red-500" />
                         </FormItem>
                       )}
                     />
@@ -613,7 +624,7 @@ const CreateTest: React.FC<CreateOrEditClassroomProps> = ({ isEdit }) => {
                     </FormItem>
                   )}
                 />
-                
+
                 <div className="">
                   <div className="flex items-center space-x-2">
                     <input

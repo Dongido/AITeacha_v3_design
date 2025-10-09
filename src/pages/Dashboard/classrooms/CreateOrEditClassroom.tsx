@@ -151,6 +151,7 @@ const CreateOrEditClassroom: React.FC<CreateOrEditClassroomProps> = ({
   const [selectedOutlines, setSelectedOutlines] = useState<
     { title: string; items?: string[]; assessment?: AssessmentQuestion[] }[]
   >([]);
+   console.log("outline", selectedOutlines)
 
   const [isChecked, setIsChecked] = useState<boolean>(false);
   const [outlines, setOutlines] = useState<

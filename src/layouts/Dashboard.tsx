@@ -33,6 +33,7 @@ import AdminResourcesPage from "../pages/Dashboard/admin/AdminResources";
 import Forumpage from "../pages/Dashboard/Forumpage";
 import Notification from "../pages/Dashboard/admin/Nofification";
 import BranchPage from "../pages/Dashboard/school/Branch";
+import Result from "../pages/Dashboard/Result";
 export function Dashboard() {
   const navigate = useNavigate();
   const { controller, dispatch } = useMaterialTailwindController();
@@ -117,6 +118,7 @@ export function Dashboard() {
           <Route path="/premium/archive" element={<ArchivedAssistants />} />
           <Route path="/premium/resources/:id" element={<ResourceSingle />} />
           <Route path="/premium/branch" element={<BranchPage />} />
+          {/* <Route path="/premium/result" element={<Result />} /> */}
 
           <Route path="/resource/training" element={<Training />} />
           <Route path="/resource/training/form" element={<TrainingForm />} />

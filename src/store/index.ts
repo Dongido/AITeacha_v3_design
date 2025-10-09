@@ -25,7 +25,7 @@ import adminWithdrawalsReducer from "./slices/adminWithdrawalSlice";
 import adminUserReducer from "./slices/adminUserSlice";
 import adminResourcesReducer from "./slices/adminResourceSlice";
 import branchReducer from "./slices/branchSlice";
-
+import resultSlice  from "./slices/resultSlice"
 
 const store = configureStore({
   reducer: {
@@ -55,6 +55,7 @@ const store = configureStore({
     adminUser: adminUserReducer,
     adminResources: adminResourcesReducer,
     branches: branchReducer,
+    result:resultSlice,
   },
 });
 

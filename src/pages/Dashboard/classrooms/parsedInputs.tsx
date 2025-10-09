@@ -95,6 +95,7 @@ const OutlineInputs = ({
   onGenerateMoreOutlines,
 }: OutlineInputsProps) => {
   const [outlines, setOutlines] = useState(initialOutlines);
+   console.log("outlines", outlines)
   const [loading, setLoading] = useState<number | null>(null);
   const [questions, setQuestions] = useState<{
     [key: number]: AssessmentQuestion[];

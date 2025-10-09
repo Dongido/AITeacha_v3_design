@@ -124,6 +124,15 @@ import ChatHistory from "../pages/Dashboard/classrooms/chatHistory";
 import BranchPage from "../pages/Dashboard/school/Branch";
 import Support from "../pages/Dashboard/Support";
 import CardDetails from "../pages/Dashboard/CardDetails";
+import Result from "../pages/Dashboard/Result";
+import { BiSolidReport } from "react-icons/bi";
+import SavedResult from "../pages/Dashboard/result/savedResult";
+import PrimarySchool from "../pages/Dashboard/result/primarySchool_result";
+import SeniorSecondaryPage from "../pages/Dashboard/result/secoundarySchool_result";
+import JuniorSecondaryPage from "../pages/Dashboard/result/juniorSchool_result";
+import { SeniorTemplateDisplay } from "../pages/Dashboard/result/components/savedTemplate/SeniorTemplateDisplay";
+import { JuniorTemplateDisplay } from "../pages/Dashboard/result/components/savedTemplate/DisplayJuniorResultTemplate";
+import ViewEditedPrimaryTemplate from "../pages/Dashboard/result/components/savedTemplate/DisplayPrimaryResultTemplate";
 const icon = {
   className: "w-5 h-5 text-inherit",
 };
@@ -233,6 +242,12 @@ export const routes = [
             path: "/premium/students",
             element: <SchoolStudents />,
           },
+          //  {
+          //   icon: <BiSolidReport {...icon} />,
+          //   name: "Results",
+          //   path: "/premium/result",
+          //   element: <Result />,
+          // },
           {
             icon: <DocumentIcon {...icon} />,
             name: "Resources",
@@ -418,6 +433,30 @@ export const Paramroutes = [
         name: "classrooms",
         path: "/classrooms/create",
         element: <CreateOrEditClassroom isEdit={false} />,
+      },
+       {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "Result",
+        path: "/saved/result",
+        element: <SavedResult />,
+      },
+       {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "Primary",
+        path: "/primary",
+        element: <PrimarySchool />,
+      },
+       {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "Secondary",
+        path: "/Secondary",
+        element: < SeniorSecondaryPage />,
+      },
+       {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "Junior",
+        path: "/junior",
+        element: <JuniorSecondaryPage />,
       },
       {
         icon: <AcademicCapIcon {...icon} />,
@@ -606,6 +645,24 @@ export const Paramroutes = [
         name: "Join Test",
         path: "/classroom/cbt/:id",
         element: <JoinTest />,
+      },
+       {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "Result Template",
+        path: "/edit/result",
+        element: <SeniorTemplateDisplay />,
+      },
+      {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "Result Template",
+        path: "/edit/junior",
+        element: <JuniorTemplateDisplay />,
+      },
+      {
+        icon: <AcademicCapIcon {...icon} />,
+        name: "Result Template",
+        path: "/edit/primary",
+        element: <ViewEditedPrimaryTemplate />,
       },
       {
         icon: <AcademicCapIcon {...icon} />,
