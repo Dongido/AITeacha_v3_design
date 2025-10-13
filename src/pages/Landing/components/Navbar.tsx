@@ -1,600 +1,211 @@
-import React, { Fragment, useRef, useState, useEffect } from "react";
-import { Popover, Transition } from "@headlessui/react";
-import { Link, useLocation } from "react-router-dom";
-import brandImg from "../../../logo.png";
+import { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
-import { MenuIcon, XIcon, ChevronDownIcon } from "lucide-react";
-import { Button } from "../../../components/ui/Button";
-import {
-  IconSupport,
-  IconOne,
-  IconTools,
-  IconBlog,
-  IconFAQ,
-  IconTwo,
-  IconMission,
-  IconPrivacy,
-  IconTeam,
-} from "./HeaderComponents";
-import Drawer from "react-modern-drawer";
-import "react-modern-drawer/dist/index.css";
-
-let timeout: NodeJS.Timeout;
-const timeoutDuration = 400;
+import Logo from "../../../logo.png";
 
 const Navbar = () => {
+  const navLinks = [
+    { name: "Community", link: "/communities/pioneer-program" },
+    { name: "Pricing", link: "/pricing" },
+    { name: "Resources", link: "/educator-tools" },
+    { name: "About", link: "/about" },
+  ];
+
   const [menuOpen, setMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-  const token = Cookies.get("at-accessToken");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [dashboardPath, setDashboardPath] = useState("/dashboard");
   const location = useLocation();
-  const userDetails = token
-    ? JSON.parse(localStorage.getItem("ai-teacha-user") || "{}")
-    : null;
+  const navigate = useNavigate();
 
-  const getDashboardPath = () => {
-    // const currentPath = location.pathname;
-    if (userDetails?.role === 2 || userDetails?.role_id === 2) {
-      return `/dashboard`;
-    } else if (userDetails?.role === 3 || userDetails?.role_id === 3) {
-      return `/student/home`;
-    }
-    return `/dashboard`;
-  };
-  const buttonRef = useRef<HTMLButtonElement | null>(null);
-  const [openState, setOpenState] = useState<boolean>(false);
-
-  const handleClick = (open: boolean): void => {
-    setOpenState(!open);
-    clearTimeout(timeout);
-  };
-
-  const toggleMenu = (open: boolean): void => {
-    setOpenState((prevOpenState) => !prevOpenState);
-    buttonRef?.current?.click();
-  };
-
-  const onHover = (
-    open: boolean,
-    action: "onMouseEnter" | "onMouseLeave"
-  ): void => {
-    if (
-      (!open && !openState && action === "onMouseEnter") ||
-      (open && openState && action === "onMouseLeave")
-    ) {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => toggleMenu(open), timeoutDuration);
-    }
-  };
-  const handleClickOutside = (event: MouseEvent): void => {
-    if (
-      buttonRef.current &&
-      !buttonRef.current.contains(event.target as Node)
-    ) {
-      event.stopPropagation();
-    }
-  };
+  // Check login status and role
   useEffect(() => {
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    const token = Cookies.get("at-accessToken");
+    if (token) {
+      const userDetails = JSON.parse(
+        localStorage.getItem("ai-teacha-user") || "{}"
+      );
+      setIsLoggedIn(true);
+      if (userDetails?.role === 2 || userDetails?.role_id === 2) {
+        setDashboardPath("/dashboard");
+      } else if (userDetails?.role === 3 || userDetails?.role_id === 3) {
+        setDashboardPath("/student/home");
+      }
+    } else {
+      setIsLoggedIn(false);
+    }
   }, []);
 
-  const communities = [
-    {
-      name: "Pioneer Program",
-      to: "/communities/pioneer-program",
-      description:
-        "Track and analyze user interactions to improve learning outcomes.",
-      icon: IconOne,
-    },
-
-    {
-      name: "Heroes Wall",
-      description: "Showcase achievements and celebrate learner milestones.",
-      to: "/heroes-wall",
-      icon: IconTwo,
-    },
-    {
-      name: "Schools Onboarding Program",
-      description:
-        "A program to onboard schools effortlessly, empowering educators with innovative tools to enhance teaching and streamline operations.",
-      to: "/communities/pioneers",
-      icon: IconTwo,
-    },
-  ];
-
-  const resources = [
-    {
-      name: "Support Center",
-      to: "/contact",
-      description: "Get help and find answers to your questions.",
-      icon: IconSupport,
-    },
-    {
-      name: "Educator Tools",
-      description: "Leverage powerful tools designed for educators.",
-      to: "/educator-tools",
-      icon: IconTools,
-    },
-    {
-      name: "Student Tools",
-      description: "Leverage powerful tools designed for students.",
-      to: "/student-tools",
-      icon: IconFAQ,
-    },
-  ];
-  const about = [
-    {
-      name: "AiTeacha Mission",
-      description: "Discover how we aim to revolutionize education with AI.",
-      to: "/mission",
-      icon: IconMission,
-    },
-    {
-      name: "AiTeacha Privacy",
-      description:
-        "Understand how we protect and use your data responsibly,and learn about the guidelines and agreements for using our services responsibly and securely.",
-      to: "/legal-terms",
-      icon: IconPrivacy,
-    },
-
-    {
-      name: "FAQ",
-      description:
-        "Find answers to frequently asked questions about our services.",
-      to: "/faqs",
-      icon: IconFAQ,
-    },
-    {
-      name: "Blog",
-      description:
-        "Explore articles and updates about education and technology.",
-      to: "/blogs",
-      icon: IconBlog,
-    },
-    {
-      name: "Team AiTeacha",
-      description:
-        "Explore articles and updates about education and technology.",
-      to: "https://icedt.org/team_icedt",
-      icon: IconTeam,
-    },
-    {
-      name: "Contact Us",
-      description:
-        "Reach out to us for support, feedback, or collaboration opportunities. We're here to help!",
-
-      to: "/contact",
-      icon: IconTwo,
-    },
-  ];
+  // Redirect logged-in user away from login page
+  useEffect(() => {
+    const token = Cookies.get("at-accessToken");
+    if (token && location.pathname === "/auth/login") {
+      navigate(dashboardPath);
+    }
+  }, [dashboardPath, location.pathname, navigate]);
 
   return (
-    <header
-      className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-        isScrolled ? "bg-white shadow-md dark:bg-gray-800" : "bg-transparent"
-      }`}
-    >
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex-shrink-0">
-            <Link to="/" className="flex items-center">
-              <img
-                src={brandImg}
-                className="mr-2 h-6 sm:h-9"
-                alt="AiTeacha Logo"
-              />
-              <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">
-                AiTeacha
-              </span>
+    <div className="relative bg-white text-gray-900">
+      {/* Fixed Navbar */}
+      <nav className="fixed top-4 sm:top-6 left-4 sm:left-6 right-4 lg:left-[10%] lg:right-[10%] sm:right-6 z-30 bg-white shadow-sm rounded-full">
+        <div className="relative max-w-7xl mx-auto flex items-center justify-between px-4 md:px-6 py-3">
+          {/* Left: Logo */}
+          <div className="flex items-center gap-6">
+            <Link to="/">
+              <img src={Logo} alt="AiTeacha Logo" className="w-12 h-12" />
             </Link>
+
+            {/* Medium view links */}
+            <ul className="hidden md:flex lg:hidden items-center gap-8">
+              {navLinks.map((link, i) => (
+                <li key={i}>
+                  <Link
+                    to={link.link}
+                    className={`hover:text-[#6200EE] text-[#2A2929] transition-colors duration-200 font-[500] ${
+                      location.pathname === link.link ? "text-[#6200EE]" : ""
+                    }`}
+                  >
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
 
-          <div className="hidden lg:flex items-center justify-center flex-1 space-x-8">
-            <Popover className="relative">
-              {({ open }) => (
-                <div
-                  onMouseEnter={() => onHover(open, "onMouseEnter")}
-                  onMouseLeave={() => onHover(open, "onMouseLeave")}
-                  className="flex flex-col"
-                >
-                  <Popover.Button
-                    ref={buttonRef}
-                    className={`flex items-center  font-bold ${
-                      location.pathname === "/communities"
-                        ? "text-primary"
-                        : "text-gray-900"
+          {/* Centered nav links for large screens */}
+          <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 hidden lg:flex">
+            <ul className="flex items-center gap-8 font-medium">
+              {navLinks.map((link, i) => (
+                <li key={i}>
+                  <Link
+                    to={link.link}
+                    className={`hover:text-[#6200EE] text-[#2A2929] text-lg transition-colors duration-200 ${
+                      location.pathname === link.link ? "text-[#6200EE]" : ""
                     }`}
-                    onClick={() => handleClick(open)}
                   >
-                    Community
-                    <ChevronDownIcon className="ml-1 h-5 w-5" />
-                  </Popover.Button>
-                  <Transition
-                    show={open}
-                    as={Fragment}
-                    enter="transition ease-out duration-200"
-                    enterFrom="opacity-0 translate-y-1"
-                    enterTo="opacity-100 translate-y-0"
-                    leave="transition ease-in duration-150"
-                    leaveFrom="opacity-100 translate-y-0"
-                    leaveTo="opacity-0 translate-y-1"
-                  >
-                    <Popover.Panel className="absolute z-10 mt-8 p-4 w-48 bg-white shadow-lg rounded-lg">
-                      {communities.map((item) => (
-                        <Link
-                          key={item.name}
-                          to={item.to}
-                          className="-m-3 flex items-center rounded-lg p-2 transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus-visible:ring focus-visible:ring-orange-500/50"
-                        >
-                          <div className="flex h-10 w-10 shrink-0 items-center justify-center text-white sm:h-12 sm:w-12">
-                            <item.icon aria-hidden="true" />
-                          </div>
-                          <div className="ml-4">
-                            <p className="text-sm font-medium text-gray-900">
-                              {item.name}
-                            </p>
-                          </div>
-                        </Link>
-                      ))}
-                    </Popover.Panel>
-                  </Transition>
-                </div>
-              )}
-            </Popover>
-
-            <Link
-              to="/pricing"
-              className={`block font-bold  ${
-                location.pathname === "/pricing"
-                  ? "text-primary"
-                  : "text-gray-900"
-              }`}
-            >
-              Pricing
-            </Link>
-            <Popover className="relative">
-              {({ open }) => (
-                <div
-                  onMouseEnter={() => onHover(open, "onMouseEnter")}
-                  onMouseLeave={() => onHover(open, "onMouseLeave")}
-                  className="flex flex-col"
-                >
-                  <Popover.Button
-                    ref={buttonRef}
-                    className={`flex items-center  font-bold ${
-                      location.pathname === "/communities"
-                        ? "text-primary"
-                        : "text-gray-900"
-                    }`}
-                    onClick={() => handleClick(open)}
-                  >
-                    Resources
-                    <ChevronDownIcon className="ml-1 h-5 w-5" />
-                  </Popover.Button>
-                  <Transition
-                    show={open}
-                    as={Fragment}
-                    enter="transition ease-out duration-200"
-                    enterFrom="opacity-0 translate-y-1"
-                    enterTo="opacity-100 translate-y-0"
-                    leave="transition ease-in duration-150"
-                    leaveFrom="opacity-100 translate-y-0"
-                    leaveTo="opacity-0 translate-y-1"
-                  >
-                    <Popover.Panel className="absolute z-10 mt-8 p-4 w-48 bg-white shadow-lg rounded-lg">
-                      {resources.map((item) => (
-                        <Link
-                          key={item.name}
-                          to={item.to}
-                          className="-m-3 flex items-center rounded-lg p-2 transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus-visible:ring focus-visible:ring-orange-500/50"
-                        >
-                          <div className="flex h-10 w-10 shrink-0 items-center justify-center text-white sm:h-12 sm:w-12">
-                            <item.icon aria-hidden="true" />
-                          </div>
-                          <div className="ml-4">
-                            <p className="text-sm font-medium text-gray-900">
-                              {item.name}
-                            </p>
-                          </div>
-                        </Link>
-                      ))}
-                    </Popover.Panel>
-                  </Transition>
-                </div>
-              )}
-            </Popover>
-            <Popover className="relative">
-              {({ open }) => (
-                <div
-                  onMouseEnter={() => onHover(open, "onMouseEnter")}
-                  onMouseLeave={() => onHover(open, "onMouseLeave")}
-                  className="flex flex-col"
-                >
-                  <Popover.Button
-                    ref={buttonRef}
-                    className={`flex items-center  font-bold ${
-                      location.pathname === "/communities"
-                        ? "text-primary"
-                        : "text-gray-900"
-                    }`}
-                    onClick={() => handleClick(open)}
-                  >
-                    About AiTeacha
-                    <ChevronDownIcon className="ml-1 h-5 w-5" />
-                  </Popover.Button>
-                  <Transition
-                    show={open}
-                    as={Fragment}
-                    enter="transition ease-out duration-200"
-                    enterFrom="opacity-0 translate-y-1"
-                    enterTo="opacity-100 translate-y-0"
-                    leave="transition ease-in duration-150"
-                    leaveFrom="opacity-100 translate-y-0"
-                    leaveTo="opacity-0 translate-y-1"
-                  >
-                    <Popover.Panel className="absolute z-10 mt-8 w-64 p-4 bg-white shadow-lg rounded-lg">
-                      {about.map((item) => (
-                        <Link
-                          key={item.name}
-                          to={item.to}
-                          target={
-                            item.to === "https://icedt.org/team_icedt"
-                              ? "_blank"
-                              : undefined
-                          }
-                          className="-m-3 flex items-center rounded-lg p-2 transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus-visible:ring focus-visible:ring-orange-500/50"
-                        >
-                          <div className="flex h-10 w-10 shrink-0 items-center justify-center text-white sm:h-12 sm:w-12">
-                            <item.icon aria-hidden="true" />
-                          </div>
-                          <div className="ml-4">
-                            <p className="text-sm font-medium whitespace-nowrap text-gray-900">
-                              {item.name}
-                            </p>
-                          </div>
-                        </Link>
-                      ))}
-                    </Popover.Panel>
-                  </Transition>
-                </div>
-              )}
-            </Popover>
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
 
-          <div className="hidden lg:flex items-center space-x-4">
-            {token ? (
-              <Link
-                to={getDashboardPath()}
-                className="text-white bg-primary font-bold focus:ring-4 focus:ring-primary-300  rounded-full text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800"
-              >
-                Go to Dashboard
-              </Link>
-            ) : (
-              <>
+          {/* Right: Auth buttons + Mobile menu */}
+          <div className="flex items-center gap-4">
+            {/* Desktop Auth Buttons */}
+            <div className="hidden md:flex items-center gap-4">
+              {isLoggedIn ? (
                 <Link
-                  to="/auth/login"
-                  className="text-gray-800 dark:text-white font-bold hover:bg-gray-50 focus:ring-4 focus:ring-gray-300 rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800"
+                  to={dashboardPath}
+                  className="bg-[#6200EE] text-white font-semibold px-5 py-2 rounded-full shadow-md hover:opacity-90 transition"
                 >
-                  Log in
+                  Go to Dashboard
                 </Link>
-                <Link
-                  to="/auth/onboarding"
-                  className="text-white font-bold bg-primary focus:ring-4 focus:ring-primary-300 rounded-full text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800"
-                >
-                  Get Started
-                </Link>
-              </>
-            )}
-          </div>
-
-          <div className="lg:hidden">
-            <Button
-              onClick={() => setMenuOpen(!menuOpen)}
-              className="text-gray-900 dark:text-white focus:outline-none"
-            >
-              {menuOpen ? (
-                <XIcon className="h-6 w-6" />
               ) : (
-                <MenuIcon className="h-6 w-6" />
+                <>
+                  <Link
+                    to="/auth/login"
+                    className="text-[#6200EE] font-medium hover:underline"
+                  >
+                    Log in
+                  </Link>
+                  <Link
+                    to="/auth/onboarding"
+                    className="bg-[#6200EE] text-white font-semibold px-5 py-2 rounded-full shadow-md hover:opacity-90 transition"
+                  >
+                    Get Started
+                  </Link>
+                </>
               )}
-            </Button>
+            </div>
+
+            {/* Mobile Hamburger / Close Button */}
+            <div className="relative md:hidden">
+              {/* Hamburger Icon */}
+              {!menuOpen && (
+                <button
+                  onClick={() => setMenuOpen(true)}
+                  className="inline-flex items-center justify-center p-2 rounded-md focus:outline-none"
+                  aria-label="Open menu"
+                >
+                  <svg
+                    className="w-7 h-7 text-gray-800"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M4 6h16M4 12h16M4 18h16"
+                    ></path>
+                  </svg>
+                </button>
+              )}
+
+              {/* Close Icon (appears over same spot) */}
+              {menuOpen && (
+                <button
+                  onClick={() => setMenuOpen(false)}
+                  className="absolute -top-5 right-0 p-2 rounded-md bg-white focus:outline-none z-100"
+                  aria-label="Close menu"
+                >
+                  <svg
+                    className="w-7 h-7 text-gray-800"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              )}
+            </div>
           </div>
         </div>
+      </nav>
 
-        <Drawer
-          open={menuOpen}
-          onClose={() => setMenuOpen(false)}
-          direction="left"
-          className="lg:hidden px-6  pt-12"
-        >
-          <div className="flex flex-col space-y-4 mt-4">
-            <Popover className="relative">
-              {({ open }) => (
-                <div
-                  onMouseEnter={() => onHover(open, "onMouseEnter")}
-                  onMouseLeave={() => onHover(open, "onMouseLeave")}
-                  className="flex flex-col"
-                >
-                  <Popover.Button
-                    ref={buttonRef}
-                    className={`flex items-center  font-bold ${
-                      location.pathname === "/communities"
-                        ? "text-primary"
-                        : "text-gray-900"
-                    }`}
-                    onClick={() => handleClick(open)}
-                  >
-                    Community
-                    <ChevronDownIcon className="ml-1 h-5 w-5" />
-                  </Popover.Button>
-                  <Transition
-                    show={open}
-                    as={Fragment}
-                    enter="transition ease-out duration-200"
-                    enterFrom="opacity-0 translate-y-1"
-                    enterTo="opacity-100 translate-y-0"
-                    leave="transition ease-in duration-150"
-                    leaveFrom="opacity-100 translate-y-0"
-                    leaveTo="opacity-0 translate-y-1"
-                  >
-                    <Popover.Panel className="absolute z-10 mt-8 p-4 w-48 bg-white shadow-lg rounded-lg">
-                      {communities.map((item) => (
-                        <Link
-                          key={item.name}
-                          to={item.to}
-                          className="-m-3 flex items-center rounded-lg p-2 transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus-visible:ring focus-visible:ring-orange-500/50"
-                        >
-                          <div className="flex h-10 w-10 shrink-0 items-center justify-center text-white sm:h-12 sm:w-12">
-                            <item.icon aria-hidden="true" />
-                          </div>
-                          <div className="ml-4">
-                            <p className="text-sm font-medium text-gray-900">
-                              {item.name}
-                            </p>
-                          </div>
-                        </Link>
-                      ))}
-                    </Popover.Panel>
-                  </Transition>
-                </div>
-              )}
-            </Popover>
-            <Link
-              to="/pricing"
-              className={`block font-bold  ${
-                location.pathname === "/pricing"
-                  ? "text-primary"
-                  : "text-gray-900"
-              }`}
-            >
-              Pricing
-            </Link>
-            <Popover className="relative">
-              {({ open }) => (
-                <div
-                  onMouseEnter={() => onHover(open, "onMouseEnter")}
-                  onMouseLeave={() => onHover(open, "onMouseLeave")}
-                  className="flex flex-col"
-                >
-                  <Popover.Button
-                    ref={buttonRef}
-                    className={`flex items-center  font-bold ${
-                      location.pathname === "/communities"
-                        ? "text-primary"
-                        : "text-gray-900"
-                    }`}
-                    onClick={() => handleClick(open)}
-                  >
-                    Resources
-                    <ChevronDownIcon className="ml-1 h-5 w-5" />
-                  </Popover.Button>
-                  <Transition
-                    show={open}
-                    as={Fragment}
-                    enter="transition ease-out duration-200"
-                    enterFrom="opacity-0 translate-y-1"
-                    enterTo="opacity-100 translate-y-0"
-                    leave="transition ease-in duration-150"
-                    leaveFrom="opacity-100 translate-y-0"
-                    leaveTo="opacity-0 translate-y-1"
-                  >
-                    <Popover.Panel className="absolute z-10 mt-2 p-4 w-48 bg-white shadow-lg rounded-lg">
-                      {resources.map((item) => (
-                        <Link
-                          key={item.name}
-                          to={item.to}
-                          className="-m-3 flex items-center rounded-lg p-2 transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus-visible:ring focus-visible:ring-orange-500/50"
-                        >
-                          <div className="flex h-10 w-10 shrink-0 items-center justify-center text-white sm:h-12 sm:w-12">
-                            <item.icon aria-hidden="true" />
-                          </div>
-                          <div className="ml-4">
-                            <p className="text-sm font-medium text-gray-900">
-                              {item.name}
-                            </p>
-                          </div>
-                        </Link>
-                      ))}
-                    </Popover.Panel>
-                  </Transition>
-                </div>
-              )}
-            </Popover>
-            <Popover className="relative">
-              {({ open }) => (
-                <div
-                  onMouseEnter={() => onHover(open, "onMouseEnter")}
-                  onMouseLeave={() => onHover(open, "onMouseLeave")}
-                  className="flex flex-col"
-                >
-                  <Popover.Button
-                    ref={buttonRef}
-                    className={`flex items-center  font-bold ${
-                      location.pathname === "/communities"
-                        ? "text-primary"
-                        : "text-gray-900"
-                    }`}
-                    onClick={() => handleClick(open)}
-                  >
-                    About AiTeacha
-                    <ChevronDownIcon className="ml-1 h-5 w-5" />
-                  </Popover.Button>
-                  <Transition
-                    show={open}
-                    as={Fragment}
-                    enter="transition ease-out duration-200"
-                    enterFrom="opacity-0 translate-y-1"
-                    enterTo="opacity-100 translate-y-0"
-                    leave="transition ease-in duration-150"
-                    leaveFrom="opacity-100 translate-y-0"
-                    leaveTo="opacity-0 translate-y-1"
-                  >
-                    <Popover.Panel className="absolute z-10 mt-2 w-64 p-4 bg-white shadow-lg rounded-lg">
-                      {about.map((item) => (
-                        <Link
-                          key={item.name}
-                          to={item.to}
-                          target={
-                            item.to === "https://icedt.org/team_icedt"
-                              ? "_blank"
-                              : undefined
-                          }
-                          className="-m-3 flex items-center rounded-lg p-2 transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus-visible:ring focus-visible:ring-orange-500/50"
-                        >
-                          <div className="flex h-10 w-10 shrink-0 items-center justify-center text-white sm:h-12 sm:w-12">
-                            <item.icon aria-hidden="true" />
-                          </div>
-                          <div className="ml-4">
-                            <p className="text-sm font-medium whitespace-nowrap text-gray-900">
-                              {item.name}
-                            </p>
-                          </div>
-                        </Link>
-                      ))}
-                    </Popover.Panel>
-                  </Transition>
-                </div>
-              )}
-            </Popover>
-            {token ? (
+      {/* Mobile Overlay */}
+      <div
+        className={`fixed inset-0 bg-black/40 z-40 transition-opacity duration-300 ${
+          menuOpen
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
+        }`}
+        onClick={() => setMenuOpen(false)}
+      />
+
+      {/* Mobile Menu Drawer */}
+      <aside
+        className={`fixed top-0 left-0 h-full w-72 bg-white/95 backdrop-blur-md z-50 transform transition-transform duration-300 ${
+          menuOpen ? "translate-x-0" : "-translate-x-full"
+        } rounded-r-2xl shadow-2xl`}
+      >
+        <div className="p-6">
+          <nav className="flex flex-col gap-4">
+            {navLinks.map((link, i) => (
               <Link
-                to={getDashboardPath()}
-                className="text-white bg-primary font-bold focus:ring-4 focus:ring-primary-300 rounded-full text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800"
+                key={i}
+                to={link.link}
+                className="text-gray-800 font-medium text-lg"
+                onClick={() => setMenuOpen(false)}
+              >
+                {link.name}
+              </Link>
+            ))}
+          </nav>
+
+          <div className="mt-6 flex flex-col gap-3">
+            {isLoggedIn ? (
+              <Link
+                to={dashboardPath}
+                className="bg-[#6200EE] text-white font-semibold px-4 py-2 rounded-full shadow-md text-center"
+                onClick={() => setMenuOpen(false)}
               >
                 Go to Dashboard
               </Link>
@@ -602,22 +213,24 @@ const Navbar = () => {
               <>
                 <Link
                   to="/auth/login"
-                  className="text-gray-800 dark:text-white font-bold hover:bg-gray-50 focus:ring-4 focus:ring-gray-300 rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800"
+                  className="text-[#6200EE] font-medium"
+                  onClick={() => setMenuOpen(false)}
                 >
                   Log in
                 </Link>
                 <Link
                   to="/auth/onboarding"
-                  className="text-white font-bold bg-primary focus:ring-4 focus:ring-primary-300 rounded-full text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800"
+                  className="bg-[#6200EE] text-white font-semibold px-4 py-2 rounded-full shadow-md text-center"
+                  onClick={() => setMenuOpen(false)}
                 >
                   Get Started
                 </Link>
               </>
             )}
           </div>
-        </Drawer>
-      </nav>
-    </header>
+        </div>
+      </aside>
+    </div>
   );
 };
 

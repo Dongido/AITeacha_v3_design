@@ -8,8 +8,9 @@ import Onboard from "./pages/Auth/Onboard";
 import Auth from "./layouts/Auth";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { PublicRoute } from "./PublicRoute";
+import "@fontsource/vibur";
+import '@fontsource-variable/urbanist';
 import Home from "./pages/Landing/Home";
-
 import Blog from "./pages/Landing/Blog";
 import Contact from "./pages/Landing/Contact";
 import Pricing from "./pages/Landing/Pricing";

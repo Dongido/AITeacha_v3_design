@@ -1,176 +1,294 @@
-import React from "react";
-import brandImg from "../../../logo.png";
-import { Link } from "react-router-dom";
+// import React from "react";
+// import brandImg from "../../../logo.png";
+// import { Link } from "react-router-dom";
 
-const Footer: React.FC = () => {
-  const footerLinks = [
-    { name: "About", href: "/about" },
-    { name: "Contact us", href: "/contact" },
-    { name: "Pricing", href: "/pricing" },
-    { name: "Blog", href: "/blogs" },
-    { name: "Terms", href: "/terms-of-service" },
-    { name: "Privacy & Policy", href: "/privacy-policy" },
-  ];
+// const Footer: React.FC = () => {
+//   const footerLinks = [
+//     { name: "About", href: "/about" },
+//     { name: "Contact us", href: "/contact" },
+//     { name: "Pricing", href: "/pricing" },
+//     { name: "Blog", href: "/blogs" },
+//     { name: "Terms", href: "/terms-of-service" },
+//     { name: "Privacy & Policy", href: "/privacy-policy" },
+//   ];
 
+//   return (
+//     <footer
+//       className="p-4 mt-20 w-full md:p-8 lg:p-10 bg-gradient-to-r  from-[#07052DE5] to-[#07052D]"
+//       style={{
+//         clipPath: "ellipse(100% 100% at 50% 100%)",
+//       }}
+//     >
+//       <div className="mx-auto text-center mt-6">
+//         <div className="flex items-center justify-center py-6 px-8">
+//           {brandImg && (
+//             <img src={brandImg} alt="Brand Logo" className="h-8 w-8 mr-2" />
+//           )}
+//           <span className="text-center text-3xl text-white">AiTeacha</span>
+//         </div>
+//         <h2 className="text-white text-lg  md:text-3xl lg:text-4xl">
+//           Teachers Are Truly Heroes
+//         </h2>
+
+//         <p className="my-3 text-lg md:text-xl lg:text-2xl text-gray-200 dark:text-gray-400">
+//           Simplify lesson planning, resource creation, and student engagement by
+//           80%
+//         </p>
+//         <Link to={"/auth/onboarding"}>
+//           <button className="text-primary font-bold mb-8 bg-white rounded-full p-2 px-4 ">
+//             Try AiTeacha 100% Free
+//           </button>
+//         </Link>
+//         <ul className="flex flex-wrap justify-center items-center mb-6 text-gray-300 list-none">
+//           {footerLinks.map((link, index) => (
+//             <li key={index}>
+//               <Link to={link.href} className="mr-4 hover:underline md:mr-6">
+//                 {link.name}
+//               </Link>
+//             </li>
+//           ))}
+//         </ul>
+//       </div>
+//       <div className="border-t border-gray-800 pt-6 flex flex-col items-center sm:flex-row sm:justify-between">
+//         <span className="text-sm text-gray-500 sm:text-center dark:text-gray-400">
+//           © 2025{" "}
+//           <a href="https://flowbite.com" className="hover:underline">
+//             AiTeacha
+//           </a>
+//           . All Rights Reserved.
+//         </span>
+//         <div className="flex mt-4 space-x-6 sm:justify-center sm:mt-0">
+//           <a
+//             href="https://www.linkedin.com/in/aiteachaonline?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app"
+//             className="text-gray-500 hover:text-gray-900 dark:hover:text-white"
+//             target="_blank"
+//             rel="noopener noreferrer"
+//           >
+//             <svg
+//               width="26"
+//               height="26"
+//               viewBox="0 0 26 26"
+//               fill="none"
+//               xmlns="http://www.w3.org/2000/svg"
+//             >
+//               <path
+//                 d="M21.6674 3.25H4.33407C4.04675 3.25 3.7712 3.36414 3.56803 3.5673C3.36487 3.77047 3.25073 4.04602 3.25073 4.33333V21.6667C3.25073 21.954 3.36487 22.2295 3.56803 22.4327C3.7712 22.6359 4.04675 22.75 4.33407 22.75H21.6674C21.9547 22.75 22.2303 22.6359 22.4334 22.4327C22.6366 22.2295 22.7507 21.954 22.7507 21.6667V4.33333C22.7507 4.04602 22.6366 3.77047 22.4334 3.5673C22.2303 3.36414 21.9547 3.25 21.6674 3.25ZM9.03465 19.8651H6.13998V10.5592H9.03465V19.8651ZM7.58732 9.2885C7.14255 9.2885 6.716 9.11182 6.4015 8.79732C6.087 8.48282 5.91032 8.05627 5.91032 7.6115C5.91032 7.16673 6.087 6.74018 6.4015 6.42568C6.716 6.11118 7.14255 5.9345 7.58732 5.9345C8.03208 5.9345 8.45864 6.11118 8.77313 6.42568C9.08763 6.74018 9.26432 7.16673 9.26432 7.6115C9.26432 8.05627 9.08763 8.48282 8.77313 8.79732C8.45864 9.11182 8.03208 9.2885 7.58732 9.2885ZM19.8669 19.8651H16.9755V15.34C16.9755 14.261 16.956 12.8733 15.4718 12.8733C13.966 12.8733 13.7374 14.0498 13.7374 15.2642V19.8662H10.8481V10.5603H13.6215V11.8322H13.6616C14.0461 11.1009 14.9908 10.3296 16.3959 10.3296C19.3252 10.3296 19.8658 12.2558 19.8658 14.7626L19.8669 19.8651Z"
+//                 fill="#CCCCCC"
+//               />
+//             </svg>
+//           </a>
+//           <a
+//             href="https://www.facebook.com/profile.php?id=61572801435185&mibextid=wwXIfr&mibextid=wwXIfr"
+//             className="text-gray-500 hover:text-gray-900 dark:hover:text-white"
+//             target="_blank"
+//             rel="noopener noreferrer"
+//           >
+//             <svg
+//               width="26"
+//               height="26"
+//               viewBox="0 0 26 26"
+//               fill="none"
+//               xmlns="http://www.w3.org/2000/svg"
+//             >
+//               <path
+//                 d="M13.0018 2.16895C7.01964 2.16895 2.16956 7.01903 2.16956 13.0012C2.16956 18.407 6.13022 22.8877 11.3096 23.7034V16.1331H8.55797V13.0012H11.3096V10.6146C11.3096 7.89761 12.9271 6.39936 15.4003 6.39936C16.5855 6.39936 17.827 6.61061 17.827 6.61061V9.27453H16.4576C15.1143 9.27453 14.694 10.1109 14.694 10.9678V12.999H17.6959L17.216 16.1309H14.694V23.7013C19.8734 22.8899 23.8341 18.4081 23.8341 13.0012C23.8341 7.01903 18.984 2.16895 13.0018 2.16895Z"
+//                 fill="#CCCCCC"
+//               />
+//             </svg>
+//           </a>
+//           <a
+//             href="https://www.tiktok.com/@aiteachaonline?_t=ZM-8vvrut7F1pG&_r=1"
+//             className="text-gray-500 hover:text-gray-900 dark:hover:text-white"
+//             target="_blank"
+//             rel="noopener noreferrer"
+//           >
+//             <svg
+//               viewBox="0 0 48 48"
+//               xmlns="http://www.w3.org/2000/svg"
+//               width="26"
+//               height="26"
+//             >
+//               {" "}
+//               <path
+//                 fill="white"
+//                 d="M41.5 15.4c-3.6-.1-7-1.5-9.5-3.9-1.7-1.7-3-3.8-3.6-6.1-.2-.8-.3-1.6-.4-2.4H23v29.7c0 2.1-1.7 3.9-3.9 3.9s-3.9-1.7-3.9-3.9 1.7-3.9 3.9-3.9c.6 0 1.2.1 1.7.4V22.4c-.6-.1-1.1-.1-1.7-.1-6.1 0-11.1 4.9-11.1 11s5 11.1 11.1 11.1 11.1-5 11.1-11.1V15.1c2.5 2 5.6 3.3 8.8 3.5v-3.2z"
+//               />{" "}
+//             </svg>
+//           </a>
+//           <a
+//             href="https://www.instagram.com/aiteachaonline1?igsh=MXc1b3d2dWh1cGUxdg%3D%3D&utm_source=qr"
+//             className="text-gray-500 hover:text-gray-900 dark:hover:text-white"
+//             target="_blank"
+//             rel="noopener noreferrer"
+//           >
+//             <svg
+//               width="26"
+//               height="26"
+//               viewBox="0 0 26 26"
+//               fill="none"
+//               xmlns="http://www.w3.org/2000/svg"
+//             >
+//               <path
+//                 d="M22.6933 8.99716C22.6824 8.17667 22.5288 7.36433 22.2394 6.59649C21.9885 5.94882 21.6052 5.36062 21.114 4.86948C20.6229 4.37833 20.0347 3.99503 19.387 3.74408C18.629 3.45955 17.8283 3.3057 17.0188 3.28908C15.9767 3.24249 15.6462 3.22949 13.0007 3.22949C10.3552 3.22949 10.0162 3.22949 8.98158 3.28908C8.1725 3.30582 7.37212 3.45967 6.6145 3.74408C5.96673 3.99486 5.37844 4.37809 4.88727 4.86926C4.3961 5.36043 4.01286 5.94872 3.76208 6.59649C3.47698 7.35389 3.32346 8.15445 3.30816 8.96358C3.26158 10.0068 3.2475 10.3372 3.2475 12.9827C3.2475 15.6282 3.2475 15.9662 3.30816 17.0019C3.32441 17.8122 3.47716 18.6117 3.76208 19.3712C4.01328 20.0187 4.3968 20.6068 4.88814 21.0977C5.37947 21.5887 5.96782 21.9718 6.61558 22.2225C7.37113 22.5185 8.17165 22.6833 8.98267 22.71C10.0259 22.7566 10.3563 22.7707 13.0018 22.7707C15.6473 22.7707 15.9864 22.7707 17.021 22.71C17.8304 22.6941 18.6312 22.5406 19.3892 22.2561C20.0367 22.0048 20.6247 21.6214 21.1158 21.1303C21.6069 20.6392 21.9903 20.0512 22.2416 19.4037C22.5265 18.6453 22.6792 17.8458 22.6955 17.0344C22.7421 15.9922 22.7562 15.6618 22.7562 13.0152C22.754 10.3697 22.754 10.0339 22.6933 8.99716ZM12.9942 17.9856C10.2274 17.9856 7.986 15.7442 7.986 12.9773C7.986 10.2105 10.2274 7.96908 12.9942 7.96908C14.3225 7.96908 15.5964 8.49673 16.5356 9.43596C17.4748 10.3752 18.0025 11.6491 18.0025 12.9773C18.0025 14.3056 17.4748 15.5795 16.5356 16.5187C15.5964 17.4579 14.3225 17.9856 12.9942 17.9856ZM18.2018 8.95166C18.0484 8.9518 17.8965 8.92169 17.7548 8.86305C17.613 8.80442 17.4842 8.7184 17.3757 8.60993C17.2673 8.50145 17.1812 8.37266 17.1226 8.2309C17.064 8.08915 17.0339 7.93723 17.034 7.78383C17.034 7.63053 17.0642 7.47874 17.1229 7.33712C17.1815 7.1955 17.2675 7.06682 17.3759 6.95843C17.4843 6.85003 17.613 6.76405 17.7546 6.70539C17.8962 6.64673 18.048 6.61653 18.2013 6.61653C18.3546 6.61653 18.5064 6.64673 18.648 6.70539C18.7896 6.76405 18.9183 6.85003 19.0267 6.95843C19.1351 7.06682 19.2211 7.1955 19.2797 7.33712C19.3384 7.47874 19.3686 7.63053 19.3686 7.78383C19.3686 8.42949 18.8464 8.95166 18.2018 8.95166Z"
+//                 fill="#CCCCCC"
+//               />
+//               <path
+//                 d="M12.9942 16.2306C14.791 16.2306 16.2475 14.7741 16.2475 12.9774C16.2475 11.1807 14.791 9.72412 12.9942 9.72412C11.1975 9.72412 9.741 11.1807 9.741 12.9774C9.741 14.7741 11.1975 16.2306 12.9942 16.2306Z"
+//                 fill="#CCCCCC"
+//               />
+//             </svg>
+//           </a>
+//           <a
+//             href="https://x.com/aiteacha_online?s=21"
+//             className="text-gray-500 hover:text-gray-900 dark:hover:text-white"
+//             target="_blank"
+//             rel="noopener noreferrer"
+//           >
+//             <svg
+//               width="19"
+//               height="19"
+//               viewBox="0 0 19 19"
+//               fill="none"
+//               xmlns="http://www.w3.org/2000/svg"
+//             >
+//               <g clip-path="url(#clip0_142_747)">
+//                 <path
+//                   d="M14.4437 1.78125H17.0636L11.3413 8.31992L18.073 17.2188H12.8034L8.67317 11.823L3.95286 17.2188H1.32922L7.44856 10.2236L0.995239 1.78125H6.39836L10.1279 6.71309L14.4437 1.78125ZM13.5234 15.6527H14.9743L5.60793 3.26562H4.04934L13.5234 15.6527Z"
+//                   fill="#CCCCCC"
+//                 />
+//               </g>
+//               <defs>
+//                 <clipPath id="clip0_142_747">
+//                   <rect
+//                     width="19"
+//                     height="19"
+//                     fill="white"
+//                     transform="translate(0.000732422)"
+//                   />
+//                 </clipPath>
+//               </defs>
+//             </svg>
+//           </a>
+//         </div>
+//       </div>
+//     </footer>
+//   );
+// };
+
+// export default Footer;
+
+import "react";
+import Logo from "../../../assets/img/Logo.svg";
+import FooterLogo from "../../../assets/img/FooterLogo.svg";
+// Icons
+import { IoLogoInstagram } from "react-icons/io";
+import { TbBrandLinkedin } from "react-icons/tb";
+import { FiFacebook } from "react-icons/fi";
+import { PiTiktokLogoLight } from "react-icons/pi";
+import { FaXTwitter } from "react-icons/fa6";
+
+const Footer = () => {
   return (
-    <footer
-      className="p-4 mt-20 w-full md:p-8 lg:p-10 bg-gradient-to-r  from-[#07052DE5] to-[#07052D]"
-      style={{
-        clipPath: "ellipse(100% 100% at 50% 100%)",
-      }}
-    >
-      <div className="mx-auto text-center mt-6">
-        <div className="flex items-center justify-center py-6 px-8">
-          {brandImg && (
-            <img src={brandImg} alt="Brand Logo" className="h-8 w-8 mr-2" />
-          )}
-          <span className="text-center text-3xl text-white">AiTeacha</span>
+    <footer className="bg-white px-6 py-12 md:px-12 md:py-16 lg:px-[88px]">
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
+        {/* 1 */}
+        <div className="flex flex-col gap-8 md:gap-20 items-start">
+          <div>
+            <img src={Logo} alt="AiTeachea Logo" className="w-28 sm:w-32" />
+            <p className="text-sm mt-4 max-w-xl">
+              Simplify lesson planning, resource creation, and student
+              engagement by 80%
+            </p>
+          </div>
+          <div>
+            <img
+              src={FooterLogo}
+              alt="AiTeachea footer logo"
+              className="lg:w-[194px] lg:h-[36px] sm:w-28"
+            />
+          </div>
         </div>
-        <h2 className="text-white text-lg  md:text-3xl lg:text-4xl">
-          Teachers Are Truly Heroes
-        </h2>
 
-        <p className="my-3 text-lg md:text-xl lg:text-2xl text-gray-200 dark:text-gray-400">
-          Simplify lesson planning, resource creation, and student engagement by
-          80%
-        </p>
-        <Link to={"/auth/onboarding"}>
-          <button className="text-primary font-bold mb-8 bg-white rounded-full p-2 px-4 ">
-            Try AiTeacha 100% Free
-          </button>
-        </Link>
-        <ul className="flex flex-wrap justify-center items-center mb-6 text-gray-300 list-none">
-          {footerLinks.map((link, index) => (
-            <li key={index}>
-              <Link to={link.href} className="mr-4 hover:underline md:mr-6">
-                {link.name}
-              </Link>
+        {/* 2 */}
+        <div className="flex flex-col gap-4">
+          <p className="font-bold text-lg md:text-xl">Resources</p>
+          <ul className="space-y-2">
+            <li className="text-sm md:text-base">
+              <a href="/contact">Support Center</a>
             </li>
-          ))}
-        </ul>
-      </div>
-      <div className="border-t border-gray-800 pt-6 flex flex-col items-center sm:flex-row sm:justify-between">
-        <span className="text-sm text-gray-500 sm:text-center dark:text-gray-400">
-          © 2025{" "}
-          <a href="https://flowbite.com" className="hover:underline">
-            AiTeacha
+            <li className="text-sm md:text-base">
+              <a href="/educator-tools">Educational Tools</a>
+            </li>
+            <li className="text-sm md:text-base">
+              <a href="/student-tools">Student Tools</a>
+            </li>
+          </ul>
+        </div>
+
+        {/* 3 */}
+        <div className="flex flex-col gap-4">
+          <p className="font-bold text-lg md:text-xl">Company</p>
+          <ul className="space-y-2 text-sm md:text-base">
+            <li>
+              <a href="/about">About Us</a>
+            </li>
+            <li>
+              <a href="/contact">Contact Us</a>
+            </li>
+            <li>
+              <a href="#">Careers</a>
+            </li>
+            <li>
+              <a href="#">Team</a>
+            </li>
+            <li>
+              <a href="/blogs">Blog</a>
+            </li>
+          </ul>
+        </div>
+
+        {/* 4 */}
+        <div className="flex flex-col gap-4">
+          <p className="font-bold text-lg md:text-xl">Legal</p>
+          <ul className="space-y-2 text-sm md:text-base">
+            <li>
+              <a href="/privacy-policy">Privacy Policy</a>
+            </li>
+            <li>
+              <a href="/terms-of-service">Terms & Condition</a>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <hr className="border-t border-[#EEEEEE]" />
+
+      <section className="flex flex-col-reverse md:flex-row items-center md:justify-between gap-4 pt-10">
+        <div>
+          <small className="text-sm text-[#8E8E8E] text-center md:text-left block">
+            &copy; {new Date().getFullYear()} AiTeachea. All rights reserved.
+          </small>
+        </div>
+
+        {/* Icons */}
+        <div className="flex gap-4 text-2xl justify-center md:justify-end">
+          <a href="https://www.instagram.com/aiteachaonline1?igsh=MXc1b3d2dWh1cGUxdg%3D%3D&utm_source=qr" aria-label="Instagram">
+            <IoLogoInstagram />
           </a>
-          . All Rights Reserved.
-        </span>
-        <div className="flex mt-4 space-x-6 sm:justify-center sm:mt-0">
-          <a
-            href="https://www.linkedin.com/in/aiteachaonline?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app"
-            className="text-gray-500 hover:text-gray-900 dark:hover:text-white"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <svg
-              width="26"
-              height="26"
-              viewBox="0 0 26 26"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M21.6674 3.25H4.33407C4.04675 3.25 3.7712 3.36414 3.56803 3.5673C3.36487 3.77047 3.25073 4.04602 3.25073 4.33333V21.6667C3.25073 21.954 3.36487 22.2295 3.56803 22.4327C3.7712 22.6359 4.04675 22.75 4.33407 22.75H21.6674C21.9547 22.75 22.2303 22.6359 22.4334 22.4327C22.6366 22.2295 22.7507 21.954 22.7507 21.6667V4.33333C22.7507 4.04602 22.6366 3.77047 22.4334 3.5673C22.2303 3.36414 21.9547 3.25 21.6674 3.25ZM9.03465 19.8651H6.13998V10.5592H9.03465V19.8651ZM7.58732 9.2885C7.14255 9.2885 6.716 9.11182 6.4015 8.79732C6.087 8.48282 5.91032 8.05627 5.91032 7.6115C5.91032 7.16673 6.087 6.74018 6.4015 6.42568C6.716 6.11118 7.14255 5.9345 7.58732 5.9345C8.03208 5.9345 8.45864 6.11118 8.77313 6.42568C9.08763 6.74018 9.26432 7.16673 9.26432 7.6115C9.26432 8.05627 9.08763 8.48282 8.77313 8.79732C8.45864 9.11182 8.03208 9.2885 7.58732 9.2885ZM19.8669 19.8651H16.9755V15.34C16.9755 14.261 16.956 12.8733 15.4718 12.8733C13.966 12.8733 13.7374 14.0498 13.7374 15.2642V19.8662H10.8481V10.5603H13.6215V11.8322H13.6616C14.0461 11.1009 14.9908 10.3296 16.3959 10.3296C19.3252 10.3296 19.8658 12.2558 19.8658 14.7626L19.8669 19.8651Z"
-                fill="#CCCCCC"
-              />
-            </svg>
+          <a href="https://www.linkedin.com/in/aiteachaonline?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app" aria-label="LinkedIn">
+            <TbBrandLinkedin />
           </a>
-          <a
-            href="https://www.facebook.com/profile.php?id=61572801435185&mibextid=wwXIfr&mibextid=wwXIfr"
-            className="text-gray-500 hover:text-gray-900 dark:hover:text-white"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <svg
-              width="26"
-              height="26"
-              viewBox="0 0 26 26"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M13.0018 2.16895C7.01964 2.16895 2.16956 7.01903 2.16956 13.0012C2.16956 18.407 6.13022 22.8877 11.3096 23.7034V16.1331H8.55797V13.0012H11.3096V10.6146C11.3096 7.89761 12.9271 6.39936 15.4003 6.39936C16.5855 6.39936 17.827 6.61061 17.827 6.61061V9.27453H16.4576C15.1143 9.27453 14.694 10.1109 14.694 10.9678V12.999H17.6959L17.216 16.1309H14.694V23.7013C19.8734 22.8899 23.8341 18.4081 23.8341 13.0012C23.8341 7.01903 18.984 2.16895 13.0018 2.16895Z"
-                fill="#CCCCCC"
-              />
-            </svg>
+          <a href="https://www.facebook.com/profile.php?id=61572801435185&mibextid=wwXIfr&mibextid=wwXIfr" aria-label="Facebook">
+            <FiFacebook />
           </a>
-          <a
-            href="https://www.tiktok.com/@aiteachaonline?_t=ZM-8vvrut7F1pG&_r=1"
-            className="text-gray-500 hover:text-gray-900 dark:hover:text-white"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <svg
-              viewBox="0 0 48 48"
-              xmlns="http://www.w3.org/2000/svg"
-              width="26"
-              height="26"
-            >
-              {" "}
-              <path
-                fill="white"
-                d="M41.5 15.4c-3.6-.1-7-1.5-9.5-3.9-1.7-1.7-3-3.8-3.6-6.1-.2-.8-.3-1.6-.4-2.4H23v29.7c0 2.1-1.7 3.9-3.9 3.9s-3.9-1.7-3.9-3.9 1.7-3.9 3.9-3.9c.6 0 1.2.1 1.7.4V22.4c-.6-.1-1.1-.1-1.7-.1-6.1 0-11.1 4.9-11.1 11s5 11.1 11.1 11.1 11.1-5 11.1-11.1V15.1c2.5 2 5.6 3.3 8.8 3.5v-3.2z"
-              />{" "}
-            </svg>
+          <a href="https://www.tiktok.com/@aiteachaonline?_t=ZM-8vvrut7F1pG&_r=1" aria-label="TikTok">
+            <PiTiktokLogoLight />
           </a>
-          <a
-            href="https://www.instagram.com/aiteachaonline1?igsh=MXc1b3d2dWh1cGUxdg%3D%3D&utm_source=qr"
-            className="text-gray-500 hover:text-gray-900 dark:hover:text-white"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <svg
-              width="26"
-              height="26"
-              viewBox="0 0 26 26"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M22.6933 8.99716C22.6824 8.17667 22.5288 7.36433 22.2394 6.59649C21.9885 5.94882 21.6052 5.36062 21.114 4.86948C20.6229 4.37833 20.0347 3.99503 19.387 3.74408C18.629 3.45955 17.8283 3.3057 17.0188 3.28908C15.9767 3.24249 15.6462 3.22949 13.0007 3.22949C10.3552 3.22949 10.0162 3.22949 8.98158 3.28908C8.1725 3.30582 7.37212 3.45967 6.6145 3.74408C5.96673 3.99486 5.37844 4.37809 4.88727 4.86926C4.3961 5.36043 4.01286 5.94872 3.76208 6.59649C3.47698 7.35389 3.32346 8.15445 3.30816 8.96358C3.26158 10.0068 3.2475 10.3372 3.2475 12.9827C3.2475 15.6282 3.2475 15.9662 3.30816 17.0019C3.32441 17.8122 3.47716 18.6117 3.76208 19.3712C4.01328 20.0187 4.3968 20.6068 4.88814 21.0977C5.37947 21.5887 5.96782 21.9718 6.61558 22.2225C7.37113 22.5185 8.17165 22.6833 8.98267 22.71C10.0259 22.7566 10.3563 22.7707 13.0018 22.7707C15.6473 22.7707 15.9864 22.7707 17.021 22.71C17.8304 22.6941 18.6312 22.5406 19.3892 22.2561C20.0367 22.0048 20.6247 21.6214 21.1158 21.1303C21.6069 20.6392 21.9903 20.0512 22.2416 19.4037C22.5265 18.6453 22.6792 17.8458 22.6955 17.0344C22.7421 15.9922 22.7562 15.6618 22.7562 13.0152C22.754 10.3697 22.754 10.0339 22.6933 8.99716ZM12.9942 17.9856C10.2274 17.9856 7.986 15.7442 7.986 12.9773C7.986 10.2105 10.2274 7.96908 12.9942 7.96908C14.3225 7.96908 15.5964 8.49673 16.5356 9.43596C17.4748 10.3752 18.0025 11.6491 18.0025 12.9773C18.0025 14.3056 17.4748 15.5795 16.5356 16.5187C15.5964 17.4579 14.3225 17.9856 12.9942 17.9856ZM18.2018 8.95166C18.0484 8.9518 17.8965 8.92169 17.7548 8.86305C17.613 8.80442 17.4842 8.7184 17.3757 8.60993C17.2673 8.50145 17.1812 8.37266 17.1226 8.2309C17.064 8.08915 17.0339 7.93723 17.034 7.78383C17.034 7.63053 17.0642 7.47874 17.1229 7.33712C17.1815 7.1955 17.2675 7.06682 17.3759 6.95843C17.4843 6.85003 17.613 6.76405 17.7546 6.70539C17.8962 6.64673 18.048 6.61653 18.2013 6.61653C18.3546 6.61653 18.5064 6.64673 18.648 6.70539C18.7896 6.76405 18.9183 6.85003 19.0267 6.95843C19.1351 7.06682 19.2211 7.1955 19.2797 7.33712C19.3384 7.47874 19.3686 7.63053 19.3686 7.78383C19.3686 8.42949 18.8464 8.95166 18.2018 8.95166Z"
-                fill="#CCCCCC"
-              />
-              <path
-                d="M12.9942 16.2306C14.791 16.2306 16.2475 14.7741 16.2475 12.9774C16.2475 11.1807 14.791 9.72412 12.9942 9.72412C11.1975 9.72412 9.741 11.1807 9.741 12.9774C9.741 14.7741 11.1975 16.2306 12.9942 16.2306Z"
-                fill="#CCCCCC"
-              />
-            </svg>
-          </a>
-          <a
-            href="https://x.com/aiteacha_online?s=21"
-            className="text-gray-500 hover:text-gray-900 dark:hover:text-white"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <svg
-              width="19"
-              height="19"
-              viewBox="0 0 19 19"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <g clip-path="url(#clip0_142_747)">
-                <path
-                  d="M14.4437 1.78125H17.0636L11.3413 8.31992L18.073 17.2188H12.8034L8.67317 11.823L3.95286 17.2188H1.32922L7.44856 10.2236L0.995239 1.78125H6.39836L10.1279 6.71309L14.4437 1.78125ZM13.5234 15.6527H14.9743L5.60793 3.26562H4.04934L13.5234 15.6527Z"
-                  fill="#CCCCCC"
-                />
-              </g>
-              <defs>
-                <clipPath id="clip0_142_747">
-                  <rect
-                    width="19"
-                    height="19"
-                    fill="white"
-                    transform="translate(0.000732422)"
-                  />
-                </clipPath>
-              </defs>
-            </svg>
+          <a href="https://x.com/aiteacha_online?s=21" aria-label="X / Twitter">
+            <FaXTwitter />
           </a>
         </div>
-      </div>
+      </section>
     </footer>
   );
 };

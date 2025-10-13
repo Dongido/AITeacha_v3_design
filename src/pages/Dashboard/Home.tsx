@@ -239,7 +239,7 @@ const Home = () => {
             <div className="bg-[#5C3CBB] text-white p-8 rounded-lg overflow-hidden">
               <p className="text-sm font-semibold">Your Journey</p>
               <h2 className="text-2xl font-bold mt-2">
-                Hello, Inspiring Educator! 👋
+                Hell, Inspiring Educator! 👋
               </h2>
               <p className="text-lg mt-1">
                 Empower your students and create meaningful learning experiences

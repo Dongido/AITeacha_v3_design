@@ -4,7 +4,6 @@ import HeroToolBox from "./components/ToolBoxHero";
 import FaqHome from "./components/FaqHome";
 import CTA from "./components/CTA";
 import Footer from "./components/Footer";
-
 import HeroA from "./components/HeroA";
 import HowItWorks from "./components/HowItWorks";
 import WhatSetsUsApart from "./components/WhatSetsUsApart";
@@ -46,7 +45,7 @@ const Home: React.FC = () => {
   ];
 
   return (
-    <div className="flex flex-col  min-h-screen bg-white">
+    <div className="flex flex-col  min-h-screen">
       <AnimatedSection delay={0.4}>
         <HeroA />
       </AnimatedSection>
@@ -55,14 +54,14 @@ const Home: React.FC = () => {
         <HowItWorks />
         <AnimatedSection delay={0.4}>
           <section id="features">
-            <Feature />
+            {/* <Feature /> */}
           </section>
         </AnimatedSection>
         <div
-          style={{
-            background:
-              "linear-gradient(20deg, rgba(192, 132, 252, 0) 20.79%, rgba(232, 121, 249, 0.26) 40.92%, rgba(204, 171, 238, 0) 70.35%)",
-          }}
+          // style={{
+          //   background:
+          //     "linear-gradient(20deg, rgba(192, 132, 252, 0) 20.79%, rgba(232, 121, 249, 0.26) 40.92%, rgba(204, 171, 238, 0) 70.35%)",
+          // }}
         >
           <AnimatedSection delay={0.4}>
             <section>
@@ -71,14 +70,13 @@ const Home: React.FC = () => {
           </AnimatedSection>
           <AnimatedSection delay={0.6}>
             <section id="tools">
-              <HeroToolBox />
+              {/* <HeroToolBox /> */}
             </section>
           </AnimatedSection>
         </div>
-        <AnimatedSection delay={0.8}>
-          <CTA />
-        </AnimatedSection>
-        <TestimonialSlider testimonials={testimonials} />
+        {/* <AnimatedSection delay={0.8}>
+        </AnimatedSection> */}
+        <TestimonialSlider />
         <AnimatedSection delay={1.2}>
           <section
             id="faqs"
@@ -90,6 +88,7 @@ const Home: React.FC = () => {
             <FaqHome />
           </section>
         </AnimatedSection>
+        <CTA />
         <Footer />
       </div>
     </div>
