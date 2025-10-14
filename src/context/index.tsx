@@ -115,3 +115,4 @@ export const setOpenConfigurator = (
   dispatch: Dispatch<Action>,
   value: boolean
 ) => dispatch({ type: "OPEN_CONFIGURATOR", value });
+

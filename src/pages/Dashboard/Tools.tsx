@@ -139,7 +139,7 @@ const Tools = () => {
 
   return (
     <div className="mt-4">
-      {userDetails && isEmailVerified === 1 && (
+      {/* {userDetails && isEmailVerified === 1 && (
         <div
           className="bg-[#e5dbff] mt-3 mb-4 text-black p-4 rounded-md flex justify-center items-center"
           style={{
@@ -151,7 +151,7 @@ const Tools = () => {
             Teachers Are Heroes🎉
           </span>
         </div>
-      )}
+      )} */}
 
       <div className="flex justify-between items-center mb-6">
         <h2 className="hidden md:block text-xl font-medium text-gray-900">
@@ -220,11 +220,11 @@ const Tools = () => {
                   <div
                     key={tool.id}
                     onClick={() => handleToolClick(tool.id, tool.slug)}
-                    className="flex items-center border border-gray-300 px-4 py-3 rounded-3xl bg-white hover:bg-gray-50 cursor-pointer transition duration-500 ease-in-out transform hover:scale-105"
-                    style={{
-                      background: "rgba(232, 121, 249, 0.15)",
-                      transition: "background 0.3s ease",
-                    }}
+                    className="flex items-center border border-gray-300 px-4 py-3 rounded-3xl bg-[#efe6fd] hover:bg-gray-50 cursor-pointer transition duration-500 ease-in-out transform hover:scale-105"
+                    // style={{
+                    //   background: "rgba(232, 121, 249, 0.15)",
+                    //   transition: "background 0.3s ease",
+                    // }}
                   >
                     <div className="text-primary text-2xl mr-4">
                       {tool.thumbnail ? (

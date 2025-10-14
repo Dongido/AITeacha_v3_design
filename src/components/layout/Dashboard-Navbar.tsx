@@ -40,6 +40,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/Tooltip";
+import { HiMenuAlt2 } from "react-icons/hi";
 
 export function DashboardNavbar() {
   const { controller, dispatch: uiDispatch } = useMaterialTailwindController();
@@ -86,17 +87,17 @@ export function DashboardNavbar() {
   return (
     <TooltipProvider>
       <div
-        className={`rounded-xl transition-all bg-white py-3 ${
+        className={`rounded-full transition-all py-3 ${
           fixedNavbar
-            ? "sticky top-4 z-40 py-3 shadow-md shadow-blue-gray-500/5"
+            ? "sticky top-4 z-40 py-3 bg-white shadow-blue-gray-500/5"
             : "px-0 py-1"
         }`}
       >
         <div className="flex flex-col-reverse justify-between gap-6 md:flex-row md:items-center">
           <div className="capitalize px-4 hidden md:block">
-            <Text variant="large" color="blue-gray">
-              {pageName}
-            </Text>
+            <Button>
+              <HiMenuAlt2 />
+            </Button>
           </div>
 
           <div className="flex items-center gap-2">

@@ -61,6 +61,12 @@ const Home = () => {
     return dismissedDate === today;
   });
 
+  const stats = [
+    { label: "Classrooms", value: 12, status: "Total", link: "" },
+    { label: "Students", value: 105, status: "Total", link: "" },
+    { label: "Assignments", value: 4, status: "Active", link: "" },
+  ];
+
   // console.log("latestnotification", latestNotification);
 
   useEffect(() => {
@@ -208,7 +214,7 @@ const Home = () => {
         </div>
       )}
 
-      {userDetails && isEmailVerified === 1 && (
+      {/* {userDetails && isEmailVerified === 1 && (
         <div
           className="bg-[#e5dbff] mt-3 mb-4 text-black p-4 rounded-md flex justify-center items-center"
           style={{
@@ -217,10 +223,10 @@ const Home = () => {
           }}
         >
           <span className="text-center text-xl font-bold">
-            Teachers Are Heroes🎉
+            Teachers Are 
           </span>
         </div>
-      )}
+      )} */}
       {loading ? (
         <div className="space-y-4">
           <Skeleton className="h-64 w-full mx-auto rounded-lg" />
@@ -236,29 +242,32 @@ const Home = () => {
       ) : (
         <div>
           <div className="relative mt-4">
-            <div className="bg-[#5C3CBB] text-white p-8 rounded-lg overflow-hidden">
-              <p className="text-sm font-semibold">Your Journey</p>
-              <h2 className="text-2xl font-bold mt-2">
-                Hell, Inspiring Educator! 👋
-              </h2>
-              <p className="text-lg mt-1">
-                Empower your students and create meaningful learning experiences
-                today.
-              </p>
+            <div className="bg-[#EFE6FD] text-white p-8 rounded-lg overflow-hidden">
+              <div className="bg-white inline-block pl-[16px] pr-[16px] rounded-full">
+                <p className="text-sm sm:text-base bg-gradient-to-r from-[#F133E1] to-[#6200EE] bg-clip-text text-transparent font-[600] flex items-center pt-2 -pb-1">
+              Teachers are heroes
+            </p>
+              </div>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 mt-4 leading-snug">
+            Hello, Inspiring Educator!
+          </h2>
+              <p className="text-sm sm:text-base text-black mb-5 max-w-md mx-auto md:mx-0">
+            Empower your students and create meaningful learning experiences today.
+          </p>
               <div className="mt-4 flex items-center gap-2">
-                <Link to={"/dashboard/classrooms/create"}>
-                  <button className="flex hover:bg-gray-200 items-center bg-white text-[#5C3CBB] font-semibold py-2 px-4 rounded-full text-sm">
-                    launch classroom
-                    <ArrowRightIcon className="h-5 w-5 ml-2" />
+                <Link to={"/dashboard/tools"}>
+                  <button className="flex items-center bg-[#6200EE] text-white py-2 px-4 rounded-full text-sm">
+                    View All tools
+                    {/* <ArrowRightIcon className="h-5 w-5 ml-2" /> */}
                   </button>
                 </Link>
-                {showUpgradeLink && upgradeText && (
+                {/* {showUpgradeLink && upgradeText && (
                   <Link to={upgradeLink}>
                     <button className="flex hover:bg-pink-200 items-center bg-purple-100 text-black font-semibold py-2 px-4 rounded-full text-sm">
                       {upgradeText}
                     </button>
                   </Link>
-                )}
+                )} */}
               </div>
             </div>
 
@@ -269,13 +278,39 @@ const Home = () => {
               style={{
                 height: "300px",
                 right: "10%",
-                top: "28%",
+                top: "45%",
                 transform: "translateY(-50%)",
               }}
             />
           </div>
 
-          <div className="mt-8 flex justify-center">
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-10">
+      {stats.map((s, i) => (
+        <div
+          key={i}
+          className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm text-left flex justify-between relative"
+        >
+          <div>
+            <h3 className="text-3xl font-semibold text-[#C2C2C2] mb-1 text-left">
+              {String(s.value).padStart(2, "0")}
+            </h3>
+            <p className="text-sm text-primary font-medium">{s.status}</p>
+            <p className="text-black text-sm">{s.label}</p>
+          </div>
+
+          <div className="">
+            <a
+              href={s.link}
+              className="bg-[#6200EE] rounded-full px-5 py-2 text-white absolute bottom-5 right-5 text-sm"
+            >
+              Click here
+            </a>
+          </div>
+        </div>
+      ))}
+    </div>
+
+          {/* <div className="mt-8 flex justify-center">
             <div className="flex gap-4 overflow-x-auto">
               <Link to={"/dashboard/history"}>
                 <button className="flex items-center gap-2 bg-purple-200 text-purple-800 rounded-full py-2 px-4 whitespace-nowrap">
@@ -297,13 +332,17 @@ const Home = () => {
                 </button>
               </Link>
             </div>
-          </div>
-          <div className="mt-8 overflow-x-auto py-4">
+          </div> */}
+          <div className="mt-8 overflow-x-auto">
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-bold text-gray-900 mb-4 px-2">
                 Popular Tools
               </h2>
-              <div className="mb-4">
+
+              <div>
+                <Link to="/dashboard/tools" className="text-[#6200EE] font-semibold">View all tools</Link>
+              </div>
+              {/* <div className="mb-4">
                 <Select
                   value={selectedCategory || "all"}
                   onValueChange={handleCategoryChange}
@@ -326,20 +365,20 @@ const Home = () => {
                     )}
                   </SelectContent>
                 </Select>
-              </div>
+              </div> */}
             </div>
             {popularTools.length > 0 && (
-              <div className="mb-8">
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 text-center mx-auto">
-                  {popularTools.map((tool) => (
+              <div className="mb-8 bg-white p-6 rounded-xl">
+                <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4 text-center">
+                  {popularTools.slice(0, 8).map((tool) => (
                     <div
                       onClick={() => handleExternalNavigation(tool)}
                       key={tool.id}
-                      className="flex items-center border border-gray-300 px-4 py-3 rounded-3xl bg-white hover:bg-gray-50 cursor-pointer transition duration-500 ease-in-out transform hover:scale-105"
-                      style={{
-                        background: "rgba(232, 121, 249, 0.15)",
-                        transition: "background 0.3s ease",
-                      }}
+                      className="flex flex-col justify-left items-left border border-gray-300 pl-4 py-3 rounded-xl bg-[#EFE6FD] hover:bg-gray-50 cursor-pointer transition duration-500 ease-in-out transform hover:scale-105"
+                      // style={{
+                      //   background: "rgba(232, 121, 249, 0.15)",
+                      //   transition: "background 0.3s ease",
+                      // }}
                     >
                       <div className="text-primary text-2xl mr-4">
                         {tool.thumbnail ? (
@@ -350,20 +389,20 @@ const Home = () => {
                                 : `https://${tool.thumbnail}`
                             }
                             alt={tool.name || "Tool Thumbnail"}
-                            className="w-16 h-16 object-cover rounded-lg"
+                            className="w-full h-32 object-cover rounded-lg"
                           />
                         ) : (
                           <FaHeart className="text-purple-500 w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center" />
                         )}
                       </div>
 
-                      <div className="text-left">
-                        <h3 className="text-base capitalize font-semibold text-gray-900">
+                      <div className="text-left mt-3">
+                        <h3 className="text-base capitalize font-semibold">
                           {tool.name === "math calculator"
                             ? "Solver"
                             : tool.name}
                         </h3>
-                        <p className="text-gray-700 text-sm">
+                        <p className="text-[#000] text-sm max-w-sm mx-auto">
                           {tool.description.charAt(0).toUpperCase() +
                             tool.description.slice(1)}
                         </p>
@@ -378,20 +417,20 @@ const Home = () => {
                 </div>
               </div>
             )}
-            <div className="flex justify-between items-center mb-4 px-2">
+            {/* <div className="flex justify-between items-center mb-4 px-2">
               <h2 className="text-xl font-bold text-gray-900">All Tools</h2>
               <Link
                 to="/dashboard/tools"
                 className="text-sm text-blue-600 hover:underline"
               >
-                <button className="text-sm flex rounded-full px-6 py-2 bg-black hover:bg-gray-400 hover:text-black text-white">
-                  See All
+                <button className="text-sm flex text-[#6200EE] font-semibold">
+                  See All Tools
                   <ArrowRightIcon className="h-5 w-4 ml-2" />
                 </button>
               </Link>
-            </div>
+            </div> */}
 
-            <motion.div
+            {/* <motion.div
               className="flex gap-4"
               whileTap={{ cursor: "grabbing" }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
@@ -401,7 +440,7 @@ const Home = () => {
                   <div
                     onClick={() => handleExternalNavigation(tool)}
                     key={tool.id}
-                    className="flex items-center border border-gray-300 px-4 py-3 rounded-3xl bg-white hover:bg-gray-50 cursor-pointer transition duration-500 ease-in-out transform hover:scale-105"
+                    className="flex flex-col items-left border border-gray-300 px-4 py-3 rounded-3xl bg-white hover:bg-gray-50 cursor-pointer transition duration-500 ease-in-out transform hover:scale-105"
                   >
                     <div className="text-primary text-2xl mr-4">
                       {tool.thumbnail ? (
@@ -419,11 +458,11 @@ const Home = () => {
                       )}
                     </div>
 
-                    <div className="text-left">
-                      <h3 className="text-base capitalize font-semibold text-gray-900">
+                    <div className="text-left mt-2">
+                      <h3 className="text-base capitalize font-semibold text-black">
                         {tool.name === "math calculator" ? "Solver" : tool.name}
                       </h3>
-                      <p className="text-gray-700 text-sm">
+                      <p className="text-[#7C7B7B] text-sm">
                         {tool.description.charAt(0).toUpperCase() +
                           tool.description.slice(1)}
                       </p>
@@ -431,7 +470,7 @@ const Home = () => {
                   </div>
                 ))}
               </div>
-            </motion.div>
+            </motion.div> */}
           </div>
         </div>
       )}
