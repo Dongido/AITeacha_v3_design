@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import {
   loadTools,
   loadStudentTools,
   loadToolsCategory,
 } from "../../store/slices/toolsSlice";
 import { RootState, AppDispatch } from "../../store";
-import { FaHeart, FaBrain } from "react-icons/fa";
+import { FaHeart } from "react-icons/fa";
 import { Skeleton } from "../../components/ui/Skeleton";
-import { useNavigate } from "react-router-dom";
-import { Switch } from "../../components/ui/Switch";
 import { checkEligibility } from "../../api/tools";
 import {
   Dialog,
@@ -20,7 +19,6 @@ import {
   DialogTitle,
   DialogDescription,
   DialogClose,
-  DialogTrigger,
 } from "../../components/ui/Dialogue";
 import {
   Select,
@@ -50,16 +48,10 @@ const Tools = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
 
   useEffect(() => {
-    if (tools.length === 0) {
-      dispatch(loadTools());
-    }
-    if (studentTools.length === 0) {
-      dispatch(loadStudentTools());
-    }
-    if (categories.length === 0) {
-      dispatch(loadToolsCategory());
-    }
-  }, [dispatch, tools.length, studentTools.length]);
+    if (tools.length === 0) dispatch(loadTools());
+    if (studentTools.length === 0) dispatch(loadStudentTools());
+    if (categories.length === 0) dispatch(loadToolsCategory());
+  }, [dispatch, tools.length, studentTools.length, categories.length]);
 
   const [userDetails, setUserDetails] = useState<any>(null);
   const [isEmailVerified, setIsEmailVerified] = useState<number>(0);
@@ -87,7 +79,7 @@ const Tools = () => {
       } else {
         setIsDialogOpen(true);
       }
-    } catch (error) {
+    } catch {
       setIsDialogOpen(true);
     }
   };
@@ -132,72 +124,85 @@ const Tools = () => {
       } else {
         setIsDialogOpen(true);
       }
-    } catch (error) {
+    } catch {
       setIsDialogOpen(true);
     }
   };
 
   return (
     <div className="mt-4">
-      {/* {userDetails && isEmailVerified === 1 && (
-        <div
-          className="bg-[#e5dbff] mt-3 mb-4 text-black p-4 rounded-md flex justify-center items-center"
-          style={{
-            background:
-              "linear-gradient(143.6deg, rgba(192, 132, 252, 0) 20.79%, rgba(232, 121, 249, 0.26) 40.92%, rgba(204, 171, 238, 0) 70.35%)",
-          }}
-        >
-          <span className="text-center text-xl font-bold">
-            Teachers Are Heroes🎉
-          </span>
-        </div>
-      )} */}
+      <div>
+        <h1 className="text-xl text-black font-semibold">A.I Tools</h1>
+        <p className="text-sm text-gray-600">
+          AI Tools to enhance your experience
+        </p>
+      </div>
 
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="hidden md:block text-xl font-medium text-gray-900">
-          AI Tools to enhance your experience 🤓
-        </h2>
-
-        <div className="flex items-center gap-6">
-          <div>
-            <span className="text-gray-900 font-medium mr-2 -mt-4">
-              Student Tools
-            </span>
-            <Switch
-              checked={showStudentTools}
-              onCheckedChange={() => setShowStudentTools(!showStudentTools)}
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
+        {/* Left Tabs */}
+        <div className="flex items-center">
+          <div className="relative bg-white rounded-full flex items-center p-1 w-fit shadow-md border border-gray-200">
+            {/* Sliding Indicator */}
+            <motion.div
+              layout
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              className="absolute top-1 left-1 w-1/2 h-[calc(100%-8px)] rounded-full bg-[#6200EE] shadow-md"
+              animate={{
+                x: showStudentTools ? "100%" : "0%",
+              }}
             />
-          </div>
 
-          {!showStudentTools && (
-            <div>
-              <Select
-                value={selectedCategory || "all"}
-                onValueChange={handleCategoryChange}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="All Categories" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Categories</SelectItem>
-                  {categoryLoading ? (
-                    <SelectItem value="loading" disabled>
-                      Loading...
+            {/* Tabs */}
+            <button
+              onClick={() => setShowStudentTools(false)}
+              className={`relative z-10 px-5 py-2 rounded-full text-sm sm:text-base font-medium transition-all duration-300 ${
+                !showStudentTools ? "text-white" : "text-gray-800"
+              }`}
+            >
+              Teacher Tools
+            </button>
+            <button
+              onClick={() => setShowStudentTools(true)}
+              className={`relative z-10 px-5 py-2 rounded-full text-sm sm:text-base font-medium transition-all duration-300 ${
+                showStudentTools ? "text-white" : "text-gray-800"
+              }`}
+            >
+              Student Tools
+            </button>
+          </div>
+        </div>
+
+        {/* Right Dropdown (Always Visible) */}
+        <div className="flex justify-start md:justify-end">
+          <div className="lg:w-full w-[70%]">
+            <Select
+              value={selectedCategory || "all"}
+              onValueChange={handleCategoryChange}
+            >
+              <SelectTrigger className="bg-white border-gray-200 rounded-md text-sm sm:text-base font-medium w-full">
+                <SelectValue placeholder="All Categories" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Categories</SelectItem>
+                {categoryLoading ? (
+                  <SelectItem value="loading" disabled>
+                    Loading...
+                  </SelectItem>
+                ) : (
+                  categories.map((category) => (
+                    <SelectItem key={category.id} value={category.id}>
+                      {category.title}
                     </SelectItem>
-                  ) : (
-                    categories.map((category) => (
-                      <SelectItem key={category.id} value={category.id}>
-                        {category.title}
-                      </SelectItem>
-                    ))
-                  )}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
+                  ))
+                )}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
 
+      {/* Tools Display */}
       {(showStudentTools ? studentLoading : loading) ? (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 text-center mx-auto">
           {[...Array(6)].map((_, index) => (
@@ -205,7 +210,7 @@ const Tools = () => {
           ))}
         </div>
       ) : (showStudentTools ? studentError : error) ? (
-        <p className="text-red-500">
+        <p className="text-red-500 text-center mt-4">
           {showStudentTools ? studentError : error}
         </p>
       ) : (
@@ -216,15 +221,11 @@ const Tools = () => {
                 Recommended Tools
               </h2>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 text-center mx-auto">
-                {popularTools.map((tool) => (
+                {popularTools.slice(0, 6).map((tool) => (
                   <div
                     key={tool.id}
                     onClick={() => handleToolClick(tool.id, tool.slug)}
-                    className="flex items-center border border-gray-300 px-4 py-3 rounded-3xl bg-[#efe6fd] hover:bg-gray-50 cursor-pointer transition duration-500 ease-in-out transform hover:scale-105"
-                    // style={{
-                    //   background: "rgba(232, 121, 249, 0.15)",
-                    //   transition: "background 0.3s ease",
-                    // }}
+                    className="flex items-center border border-gray-300 px-4 py-3 rounded-3xl bg-[#EFE6FD] hover:bg-gray-50 cursor-pointer transition duration-500 ease-in-out transform hover:scale-105"
                   >
                     <div className="text-primary text-2xl mr-4">
                       {tool.thumbnail ? (
@@ -303,6 +304,7 @@ const Tools = () => {
         </>
       )}
 
+      {/* Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
           <DialogHeader className="flex justify-center items-center mx-auto text-center">

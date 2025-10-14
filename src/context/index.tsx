@@ -13,6 +13,7 @@ interface State {
   transparentNavbar: boolean;
   fixedNavbar: boolean;
   openConfigurator: boolean;
+  collapsed: boolean;
 }
 
 interface Action {
@@ -22,23 +23,24 @@ interface Action {
     | "SIDENAV_COLOR"
     | "TRANSPARENT_NAVBAR"
     | "FIXED_NAVBAR"
-    | "OPEN_CONFIGURATOR";
+    | "OPEN_CONFIGURATOR"
+    | "SET_COLLAPSED"; // ✅ fixed union type
   value: any;
 }
 
-// Define context type with an object structure for clarity
 interface MaterialTailwindContextType {
   controller: State;
   dispatch: Dispatch<Action>;
 }
 
 const initialState: State = {
-  openSidenav: false,
+  openSidenav: true,
   sidenavColor: "dark",
   sidenavType: "white",
   transparentNavbar: true,
   fixedNavbar: true,
   openConfigurator: false,
+  collapsed: false, // ✅ new state
 };
 
 export const MaterialTailwind =
@@ -59,23 +61,22 @@ export function reducer(state: State, action: Action): State {
       return { ...state, fixedNavbar: action.value };
     case "OPEN_CONFIGURATOR":
       return { ...state, openConfigurator: action.value };
+    case "SET_COLLAPSED":
+      return { ...state, collapsed: action.value };
     default:
       throw new Error(`Unhandled action type: ${action.type}`);
   }
 }
 
-// Context provider props
 interface MaterialTailwindControllerProviderProps {
   children: React.ReactNode;
 }
 
-// Context provider component
 export function MaterialTailwindControllerProvider({
   children,
 }: MaterialTailwindControllerProviderProps) {
   const [controller, dispatch] = useReducer(reducer, initialState);
 
-  // Pass `controller` and `dispatch` as an object for clarity
   const value = useMemo(
     () => ({ controller, dispatch }),
     [controller, dispatch]
@@ -99,20 +100,29 @@ export function useMaterialTailwindController(): MaterialTailwindContextType {
   return context;
 }
 
+// ✅ ACTION SETTERS
 export const setOpenSidenav = (dispatch: Dispatch<Action>, value: boolean) =>
   dispatch({ type: "OPEN_SIDENAV", value });
+
 export const setSidenavType = (dispatch: Dispatch<Action>, value: string) =>
   dispatch({ type: "SIDENAV_TYPE", value });
+
 export const setSidenavColor = (dispatch: Dispatch<Action>, value: string) =>
   dispatch({ type: "SIDENAV_COLOR", value });
+
 export const setTransparentNavbar = (
   dispatch: Dispatch<Action>,
   value: boolean
 ) => dispatch({ type: "TRANSPARENT_NAVBAR", value });
+
 export const setFixedNavbar = (dispatch: Dispatch<Action>, value: boolean) =>
   dispatch({ type: "FIXED_NAVBAR", value });
+
 export const setOpenConfigurator = (
   dispatch: Dispatch<Action>,
   value: boolean
 ) => dispatch({ type: "OPEN_CONFIGURATOR", value });
 
+// ✅ NEW collapse setter
+export const setCollapsed = (dispatch: Dispatch<Action>, value: boolean) =>
+  dispatch({ type: "SET_COLLAPSED", value });

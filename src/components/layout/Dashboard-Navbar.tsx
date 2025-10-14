@@ -11,6 +11,7 @@ import {
   useMaterialTailwindController,
   setOpenConfigurator,
   setOpenSidenav,
+  setCollapsed
 } from "../../context/index";
 import { Button } from "../ui/Button";
 import Text from "../ui/Text";
@@ -87,18 +88,22 @@ export function DashboardNavbar() {
   return (
     <TooltipProvider>
       <div
-        className={`rounded-full transition-all py-3 ${
-          fixedNavbar
-            ? "sticky top-4 z-40 py-3 bg-white shadow-blue-gray-500/5"
-            : "px-0 py-1"
-        }`}
+      // className={`rounded-full transition-all py-3 ${
+      //   fixedNavbar
+      //     ? "sticky top-4 z-40 py-3 bg-white shadow-blue-gray-500/5"
+      //     : "px-0 py-1"
+      // }`}
       >
         <div className="flex flex-col-reverse justify-between gap-6 md:flex-row md:items-center">
-          <div className="capitalize px-4 hidden md:block">
-            <Button>
-              <HiMenuAlt2 />
-            </Button>
-          </div>
+          <div className="hidden lg:flex text-black">
+  <Button
+    onClick={() => setCollapsed(uiDispatch, !controller.collapsed)}
+    className="hidden lg:flex text-black"
+  >
+    <HiMenuAlt2 />
+  </Button>
+</div>
+
 
           <div className="flex items-center gap-2">
             <Tooltip>
@@ -125,7 +130,7 @@ export function DashboardNavbar() {
               </TooltipContent>
             </Tooltip>
 
-            <Button
+            {/* <Button
               variant="text"
               color="blue-gray"
               className="grid xl:hidden"
@@ -136,7 +141,16 @@ export function DashboardNavbar() {
                 strokeWidth={3}
                 className="h-6 w-6 text-blue-gray-500"
               />
-            </Button>
+            </Button> */}
+
+            <Button
+  onClick={() => setOpenSidenav(uiDispatch, !openSidenav)}
+  className="flex xl:hidden md:hidden text-black"
+  aria-label="Toggle sidenav"
+>
+  <HiMenuAlt2 className="h-6 w-6" />
+</Button>
+
 
             <div className="flex items-center gap-x-6  ml-auto lg:mr-3">
               <Tooltip>

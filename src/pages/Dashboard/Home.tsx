@@ -245,15 +245,16 @@ const Home = () => {
             <div className="bg-[#EFE6FD] text-white p-8 rounded-lg overflow-hidden">
               <div className="bg-white inline-block pl-[16px] pr-[16px] rounded-full">
                 <p className="text-sm sm:text-base bg-gradient-to-r from-[#F133E1] to-[#6200EE] bg-clip-text text-transparent font-[600] flex items-center pt-2 -pb-1">
-              Teachers are heroes
-            </p>
+                  Teachers are heroes
+                </p>
               </div>
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 mt-4 leading-snug">
-            Hello, Inspiring Educator!
-          </h2>
+                Hello, Inspiring Educator!
+              </h2>
               <p className="text-sm sm:text-base text-black mb-5 max-w-md mx-auto md:mx-0">
-            Empower your students and create meaningful learning experiences today.
-          </p>
+                Empower your students and create meaningful learning experiences
+                today.
+              </p>
               <div className="mt-4 flex items-center gap-2">
                 <Link to={"/dashboard/tools"}>
                   <button className="flex items-center bg-[#6200EE] text-white py-2 px-4 rounded-full text-sm">
@@ -284,31 +285,31 @@ const Home = () => {
             />
           </div>
 
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-10">
-      {stats.map((s, i) => (
-        <div
-          key={i}
-          className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm text-left flex justify-between relative"
-        >
-          <div>
-            <h3 className="text-3xl font-semibold text-[#C2C2C2] mb-1 text-left">
-              {String(s.value).padStart(2, "0")}
-            </h3>
-            <p className="text-sm text-primary font-medium">{s.status}</p>
-            <p className="text-black text-sm">{s.label}</p>
-          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-10">
+            {stats.map((s, i) => (
+              <div
+                key={i}
+                className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm text-left flex justify-between relative"
+              >
+                <div>
+                  <h3 className="text-3xl font-semibold text-[#C2C2C2] mb-1 text-left">
+                    {String(s.value).padStart(2, "0")}
+                  </h3>
+                  <p className="text-sm text-primary font-medium">{s.status}</p>
+                  <p className="text-black text-sm">{s.label}</p>
+                </div>
 
-          <div className="">
-            <a
-              href={s.link}
-              className="bg-[#6200EE] rounded-full px-5 py-2 text-white absolute bottom-5 right-5 text-sm"
-            >
-              Click here
-            </a>
+                <div className="">
+                  <a
+                    href={s.link}
+                    className="bg-[#6200EE] rounded-full px-5 py-2 text-white absolute bottom-5 right-5 text-sm"
+                  >
+                    Click here
+                  </a>
+                </div>
+              </div>
+            ))}
           </div>
-        </div>
-      ))}
-    </div>
 
           {/* <div className="mt-8 flex justify-center">
             <div className="flex gap-4 overflow-x-auto">
@@ -340,7 +341,12 @@ const Home = () => {
               </h2>
 
               <div>
-                <Link to="/dashboard/tools" className="text-[#6200EE] font-semibold">View all tools</Link>
+                <Link
+                  to="/dashboard/tools"
+                  className="text-[#6200EE] font-semibold"
+                >
+                  View all tools
+                </Link>
               </div>
               {/* <div className="mb-4">
                 <Select
