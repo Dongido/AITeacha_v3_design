@@ -17,12 +17,17 @@ import RestrictedPage from "./RestrictionPage";
 import { Switch } from "../../../components/ui/Switch";
 import { Label } from "../../../components/ui/Label";
 import { cn } from "../../../lib/utils";
+import dashImg from "../../../assets/img/0e846ab4-992d-48b3-a818-d62a7803bd8e 1.png";
+import { IoBookOutline } from "react-icons/io5";
+import { PiGraduationCapThin } from "react-icons/pi";
+import { CiSearch } from "react-icons/ci";
 
 const Classrooms = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { classrooms, teamClassrooms, loading, error } = useSelector(
     (state: RootState) => state.classrooms
   );
+  const [searchQuery, setSearchQuery] = useState("");
 
   const [selectedType, setSelectedType] = useState<
     "classrooms" | "teamClassrooms"
@@ -71,13 +76,22 @@ const Classrooms = () => {
     const classroomsToFilter =
       selectedType === "classrooms" ? classrooms : teamClassrooms;
 
-    if (classTypeFilter === "All") {
-      return classroomsToFilter;
-    } else {
-      return classroomsToFilter.filter(
-        (classroom) => classroom.class_type === classTypeFilter
+    let result =
+      classTypeFilter === "All"
+        ? classroomsToFilter
+        : classroomsToFilter.filter(
+            (classroom) => classroom.class_type === classTypeFilter
+          );
+
+    if (searchQuery.trim() !== "") {
+      result = result.filter((classroom) =>
+        classroom.classroom_name
+          ?.toLowerCase()
+          .includes(searchQuery.toLowerCase().trim())
       );
     }
+
+    return result;
   };
 
   const videoUrls = [
@@ -195,8 +209,8 @@ const Classrooms = () => {
   }
 
   return (
-    <div className="mt-4 routes-scroll-area">
-      {userDetails && isEmailVerified === 1 && (
+    <div className="mt-4 routes-scroll-area lg:w-[80vw] w-[90vw]">
+      {/* {userDetails && isEmailVerified === 1 && (
         <div
           className="bg-[#e5dbff] mt-3 mb-4 text-black p-4 rounded-md flex justify-center items-center"
           style={{
@@ -208,127 +222,200 @@ const Classrooms = () => {
             Teachers Are Heroes🎉
           </span>
         </div>
-      )}
+      )} */}
 
-      <div className="flex w-full mt-12 mb-6 items-center justify-between flex-col sm:flex-row routes-scroll-area">
-        <h2 className="text-xl md:text-2xl lg:text-2xl font-bold text-gray-900 sm:mb-0 mb-4 whitespace-nowrap routes-scroll-area ">
-          {selectedType === "teamClassrooms"
-            ? "Team Classrooms"
-            : "My Classrooms"}
-        </h2>
-        <div className="flex flex-wrap items-center justify-center gap-3 p-0 md:p-2 lg:p-4 md:flex-row md:justify-end">
-          <div className="flex items-center space-x-2">
-            <Switch
-              checked={classTypeFilter === "Paid"}
-              onCheckedChange={(checked) =>
-                setClassTypeFilter(checked ? "Paid" : "Free")
-              }
-            />
-            <Label
-              htmlFor="class-type-switch"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              {classTypeFilter === "All" ? "All" : classTypeFilter} Classes
-            </Label>
-            {classTypeFilter !== "All" && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setClassTypeFilter("All")}
-                className="ml-2 flex-shrink-0"
-              >
-                <Undo2 className="h-4 w-4" />
-              </Button>
-            )}
+      <div>
+        <h1 className="text-black text-xl">My Classrooms</h1>
+        <p className="text-[#3B3A3A] text-sm">Manage all your classrooms</p>
+      </div>
+
+      <div className="relative mt-4">
+        <div className="bg-[#EFE6FD] text-white p-8 rounded-lg overflow-hidden">
+          <div className="">
+            <p className="text-xl text-black font-[600] flex items-center">
+              Teachers are heroes
+            </p>
           </div>
-
-          <div className="flex flex-wrap items-center justify-center gap-3 w-full sm:w-auto">
-            <select
-              value={selectedType}
-              onChange={(e) =>
-                setSelectedType(
-                  e.target.value as "classrooms" | "teamClassrooms"
-                )
-              }
-              className="p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent flex-grow"
-            >
-              <option value="classrooms">My Classrooms</option>
-              <option value="teamClassrooms">Team Classrooms</option>
-            </select>
-
-            <Link to={"/dashboard/classrooms/joined"} className="flex-grow">
-              <Button
-                variant="ghost"
-                className="flex items-center w-full sm:w-fit bg-gray-400 h-full gap-3 rounded-md"
-              >
-                Joined Classrooms
-              </Button>
-            </Link>
-          </div>
-
-          <div className="flex flex-wrap items-center justify-center gap-3 w-full sm:w-auto">
-            <Button
-              variant="gradient"
-              className="flex items-center w-full justify-center sm:w-fit h-10 gap-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 flex-grow"
+          <p className="text-sm text-[#3B3A3A] mx-auto md:mx-0">
+            Empower your students and create meaningful learning experiences
+            today.
+          </p>
+          <div className="mt-4 flex lg:flex-row flex-col gap-2">
+            <button
+              className="gap-2 rounded-full bg-[#6200EE] text-white flex pl-[16px] pr-[16px] pt-[8px] pb-[8px]"
               onClick={handleLaunchNewClassroom}
             >
-              <Plus size={"1.1rem"} />
+              <Plus className="mt-1" size={"1.1rem"} />
               Launch Classroom
-            </Button>
+            </button>
+            <button
+              className="gap-2 rounded-full border border-[#6200EE] text-[#6200EE] flex pl-[16px] pr-[16px] pt-[8px] pb-[8px]"
+              onClick={handleLaunchNewClassroom}
+            >
+              Join a Classroom
+            </button>
+          </div>
+        </div>
 
-            <Button
+        <img
+          src={dashImg}
+          alt="Robot reading a book"
+          className="absolute lg:block hidden"
+          style={{
+            height: "200px",
+            right: "10%",
+            top: "45%",
+            transform: "translateY(-50%)",
+          }}
+        />
+      </div>
+
+      <div className="w-full px-4 lg:-ml-3 mt-6 transition-all duration-300">
+        {/* Top Nav Tabs */}
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          {/* Teaching / Learning Tabs */}
+          <div className="flex items-center gap-4">
+            {(["teaching", "learning"] as const).map((tab) => (
+              <button
+                key={tab}
+                onClick={() =>
+                  setSelectedType(
+                    tab === "teaching" ? "classrooms" : "teamClassrooms"
+                  )
+                }
+                className={`flex items-center gap-2 text-sm font-medium transition-all duration-300 ${
+                  selectedType ===
+                  (tab === "teaching" ? "classrooms" : "teamClassrooms")
+                    ? tab === "teaching"
+                      ? "text-white bg-[#0DBA86] px-4 py-2 rounded-md"
+                      : "text-white bg-[#0DBA86] px-4 py-2 rounded-md"
+                    : "text-[#626161] hover:text-[#0DBA86]"
+                }`}
+              >
+                {tab === "teaching" ? (
+                  <IoBookOutline
+                    className={`text-lg ${
+                      selectedType === "classrooms"
+                        ? "text-white"
+                        : "text-[#626161]"
+                    }`}
+                  />
+                ) : (
+                  <PiGraduationCapThin
+                    className={`text-lg ${
+                      selectedType === "teamClassrooms"
+                        ? "text-white"
+                        : "text-[#626161]"
+                    }`}
+                  />
+                )}
+                {tab === "teaching" ? "Teaching" : "Learning"}
+              </button>
+            ))}
+          </div>
+
+          {/* Guides button */}
+          <Link to="/dashboard/resource/training">
+            <button
               onClick={openPopup}
-              variant={"outline"}
-              className="flex items-center px-6 py-2 bg-red-500 text-white text-base font-medium rounded-lg shadow-md hover:bg-red-600 space-x-2 w-full justify-center sm:w-fit h-10 flex-grow"
+              className="flex items-center text-red-600 border border-red-300 rounded-full py-2 px-4 text-sm font-medium hover:bg-red-200"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="w-5 h-5"
+                className="w-4 h-4 mr-1"
                 viewBox="0 0 24 24"
                 fill="currentColor"
               >
                 <path d="M19.615 3.184c-1.88-.33-9.379-.33-11.258 0C6.018 3.516 5.1 4.437 4.77 6.212c-.33 1.775-.33 5.514 0 7.29.33 1.774 1.248 2.696 3.587 3.03 1.88.33 9.379.33 11.258 0 2.339-.333 3.256-1.255 3.587-3.03.33-1.776.33-5.515 0-7.29-.33-1.775-1.248-2.696-3.587-3.03zm-9.78 5.952l5.723 3.328-5.723 3.33V9.136z" />
               </svg>
-              <span className="text-white">Guide</span>
-            </Button>
+              Guides
+            </button>
+          </Link>
+        </div>
+
+        {/* Subheading */}
+        <p className="text-sm text-[#3B3A3A] mt-2">
+          These are classrooms you created, and you are the teacher in them.
+        </p>
+
+        {/* Tabs (All | Paid | Free) */}
+        <div className="flex gap-6 mt-4 border-b border-gray-200">
+          {["All", "Paid", "Free"].map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setClassTypeFilter(tab as any)}
+              className={cn(
+                "pb-2 text-sm font-bold relative",
+                classTypeFilter === tab
+                  ? "text-[#6200EE] border-b-2 border-[#6200EE]"
+                  : "text-[#626161] hover:text-[#6200EE]"
+              )}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+
+        {/* Dropdown + Search */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-6 gap-3">
+          <select
+            value={selectedType}
+            onChange={(e) =>
+              setSelectedType(e.target.value as "classrooms" | "teamClassrooms")
+            }
+            className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#6200EE] w-full sm:w-fit"
+          >
+            <option value="classrooms">My Classrooms</option>
+            <option value="teamClassrooms">Team Classrooms</option>
+          </select>
+        </div>
+
+        {/* Table Area */}
+        <div className="mt-6 bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
+          <div className="m-8 inline-flex gap-2 pl-4 pr-20 py-2 bg-[#EBEBEB] text-[#7C7B7B] rounded-md ">
+            <CiSearch className="mt-1" />
+            <input
+              type="text"
+              placeholder="Search classroom by name"
+              className="text-sm bg-transparent w-full focus:outline-none"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
           </div>
 
-          {isPopupOpen && (
-            <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-70 z-[100]">
-              <div className="relative bg-white rounded-lg shadow-2xl w-[95%] max-w-4xl max-h-[90vh] overflow-hidden">
-                <button
-                  onClick={closePopup}
-                  className="absolute top-2 right-2 bg-red-500 text-white hover:bg-red-600 p-2 rounded-full text-lg z-10"
-                  aria-label="Close Guide"
-                >
-                  ✕
-                </button>
-
-                <div className="p-4 pt-10">
-                  <iframe
-                    width="100%"
-                    height="450"
-                    src="https://www.youtube.com/embed/o688vxKkcPw?si=ML-K6a0dBhyH7WqM"
-                    title="Community Preview"
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    className="rounded-lg"
-                  ></iframe>
-                </div>
-              </div>
-            </div>
-          )}
+          <BaseTable
+            data={displayedClassrooms}
+            columns={classroomColumns}
+            onRowClick={handleRowClick}
+          />
         </div>
+
+        {/* Floating Edubot Card */}
+        {/* <div className="fixed bottom-6 right-8 bg-[#F4EDFF] border border-[#D6C4FF] rounded-lg shadow-md flex items-center justify-between px-4 py-3 w-[220px]">
+          <div className="flex items-center gap-2">
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/4712/4712027.png"
+              alt="bot"
+              className="w-8 h-8 rounded-full"
+            />
+            <div>
+              <p className="text-sm font-semibold text-gray-800">Zyra</p>
+              <p className="text-xs text-gray-500">Your Edubot</p>
+            </div>
+          </div>
+          <button className="text-[#6200EE] hover:text-[#4B00C9] text-lg font-bold">
+            ⤢
+          </button>
+        </div> */}
       </div>
 
-      <BaseTable
+      {/* <BaseTable
         data={displayedClassrooms}
         columns={classroomColumns}
         onRowClick={handleRowClick}
-      />
+      /> */}
 
-      <div className="bg-white rounded-md shadow-md p-4 mb-4 mt-12">
+      {/* <div className="bg-white rounded-md shadow-md p-4 mb-4 mt-12">
         <h2 className="text-lg font-semibold mb-2">
           Quick videos to get started
         </h2>
@@ -351,7 +438,7 @@ const Classrooms = () => {
             );
           })}
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

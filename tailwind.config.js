@@ -32,6 +32,26 @@ module.exports = withMT({
           "-webkit-box-reflect":
             "below 1px linear-gradient(transparent, #0004)",
         },
+
+        ".scrollbar-thin": {
+          "scrollbar-width": "thin",
+        },
+        ".scrollbar-custom": {
+          "&::-webkit-scrollbar": {
+            width: "8px",
+            height: "8px",
+          },
+          "&::-webkit-scrollbar-thumb": {
+            backgroundColor: "#EFE6FD",
+            borderRadius: "8px",
+          },
+          "&::-webkit-scrollbar-thumb:hover": {
+            backgroundColor: "#EFE6FD",
+          },
+          "&::-webkit-scrollbar-track": {
+            backgroundColor: "#F3F4F6",
+          },
+        },
       });
     },
   ],

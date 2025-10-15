@@ -132,7 +132,7 @@ const Tools = () => {
   return (
     <div className="mt-4">
       <div>
-        <h1 className="text-xl text-black font-semibold">A.I Tools</h1>
+        <h1 className="text-xl text-black font-semibold">AI Tools</h1>
         <p className="text-sm text-gray-600">
           AI Tools to enhance your experience
         </p>
