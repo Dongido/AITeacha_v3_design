@@ -20,6 +20,15 @@ code {
     monospace;
 }
 
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.animate-spin-slow {
+  animation: spin-slow 3s linear infinite;
+}
+
+
 :root,
 [data-bs-theme="light"] {
   --bs-blue: #0d6efd;

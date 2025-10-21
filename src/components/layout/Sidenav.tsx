@@ -183,7 +183,7 @@ export function Sidenav({
               : "max-h-[calc(100vh-160px)]"
           }`}
         >
-          {/* 🌟 Zyra EduBot (now scrolls with other links) */}
+          {/* 🌟 Zyra EduBot */}
           <div className="px-1 mb-2">
             <NavLink
               to="/dashboard/chats"

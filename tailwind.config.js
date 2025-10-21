@@ -22,6 +22,7 @@ module.exports = withMT({
       },
       animation: {
         anim: "animate 5s infinite",
+        "spin-slow": "spin 2.5s linear infinite",
       },
     },
   },

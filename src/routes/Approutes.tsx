@@ -133,6 +133,7 @@ import JuniorSecondaryPage from "../pages/Dashboard/result/juniorSchool_result";
 import { SeniorTemplateDisplay } from "../pages/Dashboard/result/components/savedTemplate/SeniorTemplateDisplay";
 import { JuniorTemplateDisplay } from "../pages/Dashboard/result/components/savedTemplate/DisplayJuniorResultTemplate";
 import ViewEditedPrimaryTemplate from "../pages/Dashboard/result/components/savedTemplate/DisplayPrimaryResultTemplate";
+
 const icon = {
   className: "w-5 h-5 text-inherit",
 };
@@ -301,57 +302,57 @@ export const routes = [
           },
         ],
       },
-      {
-        icon: <ShieldCheckIcon {...icon} />,
-        name: "Admin",
-        path: "/admin",
-        element: <AdminTools />,
-        adminOnly: true,
-        submenu: [
-          {
-            icon: <WrenchScrewdriverIcon {...icon} />,
-            name: "Tools",
-            path: "/admin/tools",
-            element: <AdminTools />,
-          },
-          {
-            icon: <UsersIcon {...icon} />,
-            name: "Free users",
-            path: "/admin/free-users",
-            element: <FreeUsers />,
-          },
-          {
-            icon: <UsersIcon {...icon} />,
-            name: "Past users",
-            path: "/admin/past-users",
-            element: <PastUsers />,
-          },
-          {
-            icon: <UsersIcon {...icon} />,
-            name: "Subscribers",
-            path: "/admin/subscribers",
-            element: <Subscribers />,
-          },
-          {
-            icon: <BanknotesIcon {...icon} />,
-            name: "Withdrawals",
-            path: "/admin/withdrawals",
-            element: <AdminWithdrawalsPage />,
-          },
-          {
-            icon: <FolderIcon {...icon} />,
-            name: "Resources",
-            path: "/admin/resources",
-            element: <AdminResourcesPage />,
-          },
-          {
-            icon: <IoMdNotificationsOutline {...icon} />,
-            name: "Notification",
-            path: "/admin/notification",
-            element: <Notification />,
-          },
-        ],
-      },
+      // {
+      //   icon: <ShieldCheckIcon {...icon} />,
+      //   name: "Admin",
+      //   path: "/admin",
+      //   element: <AdminTools />,
+      //   adminOnly: true,
+      //   submenu: [
+      //     {
+      //       icon: <WrenchScrewdriverIcon {...icon} />,
+      //       name: "Tools",
+      //       path: "/admin/tools",
+      //       element: <AdminTools />,
+      //     },
+      //     {
+      //       icon: <UsersIcon {...icon} />,
+      //       name: "Free users",
+      //       path: "/admin/free-users",
+      //       element: <FreeUsers />,
+      //     },
+      //     {
+      //       icon: <UsersIcon {...icon} />,
+      //       name: "Past users",
+      //       path: "/admin/past-users",
+      //       element: <PastUsers />,
+      //     },
+      //     {
+      //       icon: <UsersIcon {...icon} />,
+      //       name: "Subscribers",
+      //       path: "/admin/subscribers",
+      //       element: <Subscribers />,
+      //     },
+      //     {
+      //       icon: <BanknotesIcon {...icon} />,
+      //       name: "Withdrawals",
+      //       path: "/admin/withdrawals",
+      //       element: <AdminWithdrawalsPage />,
+      //     },
+      //     {
+      //       icon: <FolderIcon {...icon} />,
+      //       name: "Resources",
+      //       path: "/admin/resources",
+      //       element: <AdminResourcesPage />,
+      //     },
+      //     {
+      //       icon: <IoMdNotificationsOutline {...icon} />,
+      //       name: "Notification",
+      //       path: "/admin/notification",
+      //       element: <Notification />,
+      //     },
+      //   ],
+      // },
 
       {
         icon: <WrenchScrewdriverIcon {...icon} />,
@@ -410,6 +411,10 @@ export const Paramroutes = [
         path: "/classrooms/details/:id",
         element: <ClassroomDetail />,
       },
+//       <Route
+//   path="/dashboard/classrooms/create/step2"
+//   element={<CreateClassroomStep2 />}
+// />
       {
         icon: <AcademicCapIcon {...icon} />,
         name: "classrooms",

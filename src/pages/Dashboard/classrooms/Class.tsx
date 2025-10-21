@@ -43,7 +43,7 @@ const Classrooms = () => {
   const navigate = useNavigate();
 
   const handleRowClick = (classroom: Classroom) => {
-    // navigate(`/dashboard/classrooms/details/${classroom.classroom_id}`);
+    navigate(`/dashboard/classrooms/details/${classroom.classroom_id}`);
   };
 
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -57,6 +57,10 @@ const Classrooms = () => {
 
   const handleLaunchNewClassroom = () => {
     navigate("/dashboard/classrooms/create");
+  };
+
+  const handleJoinAClassroom = () => {
+    navigate("/dashboard/classrooms/joined");
   };
 
   const [userDetails, setUserDetails] = useState<any>(null);
@@ -250,7 +254,7 @@ const Classrooms = () => {
             </button>
             <button
               className="gap-2 rounded-full border border-[#6200EE] text-[#6200EE] flex pl-[16px] pr-[16px] pt-[8px] pb-[8px]"
-              onClick={handleLaunchNewClassroom}
+              onClick={handleJoinAClassroom}
             >
               Join a Classroom
             </button>
