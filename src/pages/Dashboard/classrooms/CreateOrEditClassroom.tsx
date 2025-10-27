@@ -1202,6 +1202,7 @@ import { PiFile, PiNoteBold, PiYoutubeLogo } from "react-icons/pi";
 import { PiSlideshow } from "react-icons/pi";
 import { PiLinkSimple } from "react-icons/pi";
 import { suggestClassroomOutlines } from "../../../api/classrooms";
+import { motion } from "framer-motion";
 import {
   parseOutlines,
   OutlineInputs,
@@ -1729,7 +1730,13 @@ const CreateOrEditClassroom = ({ isEdit }: { isEdit?: boolean }) => {
   // UI START
   return (
     <ToastProvider swipeDirection="left">
-      <section className="fixed inset-0 z-[9999] bg-[#F5F5F5] flex flex-col">
+      <motion.section
+        initial={{ x: 300, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        exit={{ x: 300, opacity: 0 }}
+        transition={{ duration: 0.3 }}
+        className="fixed inset-0 z-[9999] bg-[#F5F5F5] flex flex-col"
+      >
         {/* Close Button */}
         <div className="fixed top-4 left-6 z-[10000]">
           <button
@@ -2972,7 +2979,7 @@ const CreateOrEditClassroom = ({ isEdit }: { isEdit?: boolean }) => {
           <ToastTitle>{toastMessage}</ToastTitle>
         </Toast>
         <ToastViewport />
-      </section>
+      </motion.section>
     </ToastProvider>
   );
 };

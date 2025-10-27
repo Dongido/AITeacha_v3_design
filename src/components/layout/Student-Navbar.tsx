@@ -40,6 +40,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/Tooltip";
+import { MdChevronLeft, MdChevronRight } from "react-icons/md";
 
 export function StudentNavbar() {
   const { controller, dispatch: uiDispatch } = useMaterialTailwindController();
@@ -104,9 +105,13 @@ export function StudentNavbar() {
               />
             </Button>
             <div className="capitalize px-4 hidden sm:block">
-              <Text variant="large" color="blue-gray">
+              {/* <Text variant="large" color="blue-gray">
                 {page}
-              </Text>
+              </Text> */}
+
+              <button onClick={() => navigate(-1)} className="flex gap-1">
+                <MdChevronLeft className="mt-1" /> Back
+              </button>
             </div>
           </div>
           <div className="flex items-center gap-x-6  ml-auto lg:mr-3 ">

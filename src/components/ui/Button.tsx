@@ -23,7 +23,7 @@ const buttonVariants = cva(
         "ghost-inner": "hover:bg-accent text-gray-600 hover:text-gray-800",
         "default-inner": "text-primary bg-primary/10 hover:bg-primary/20",
         gradient:
-          "bg-gradient-to-r from-[#7a5ef8] to-[#5c3cbb] text-white hover:opacity-90",
+          "bg-[#EFE6FD] text-black border-r-[#6200EE] hover:opacity-90",
         black: "bg-black text-white hover:bg-gray-100 hover:text-gray-800",
         outlined: "border border-primary text-primary hover:bg-primary/10",
         gray: "bg-gray-400 text-black",

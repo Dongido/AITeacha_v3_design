@@ -117,31 +117,31 @@ export default function SimulationDashboardPage({
           <h1 className="text-3xl sm:text-4xl font-extrabold text-center text-gray-900 mb-2">
             AI Simulation Generator
           </h1>
-          <p className="text-center text-gray-600 text-md sm:text-lg mb-6 max-w-prose mx-auto">
+          <p className="text-center text-black text-md sm:text-lg mb-6 max-w-prose mx-auto">
             Generate interactive simulations for your students based on specific
             topics within your classroom content.
           </p>
 
           <div
-            className="bg-blue-50 border-l-4 border-blue-400 text-blue-800 p-4 rounded-md mb-6"
+            className="bg-blue-50 border-l-8 border-blue-400 text-black p-4 mb-6"
             role="alert"
           >
-            <p className="font-semibold">Context:</p>
+            <p className="font-bold font-lg">Context:</p>
             <p className="text-sm">
-              <span className="font-medium">Grade:</span> {grade}
+              <span className="font-bold">Grade:</span> {grade}
             </p>
             <p className="text-sm">
-              <span className="font-medium">Description:</span> {description}
+              <span className="font-bold">Description:</span> {description}
             </p>
           </div>
 
           <div className="space-y-4">
             {!topicsGenerated && (
-              <Button
+              <button
                 onClick={handleFetchTopics}
                 disabled={loading}
-                variant={"gradient"}
-                className="w-full h-12 text-lg font-semibold shadow-md hover:shadow-lg transition-shadow duration-200"
+                // variant={"gradient"}
+                className="w-full h-12 flex justify-center items-center text-lg text-white rounded-full shadow-md bg-[#6200EE] hover:shadow-lg transition-shadow duration-200"
               >
                 {loading ? (
                   <>
@@ -151,12 +151,15 @@ export default function SimulationDashboardPage({
                 ) : (
                   "Generate Suggested Topics"
                 )}
-              </Button>
+              </button>
             )}
 
             {error && (
               <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative text-center">
-                <span className="font-medium">Error: unable to fetch simulation try again</span> {error}
+                <span className="font-medium">
+                  Error: unable to fetch simulation try again
+                </span>{" "}
+                {error}
               </div>
             )}
 
@@ -183,21 +186,23 @@ export default function SimulationDashboardPage({
                     ))}
                   </SelectContent>
                 </Select>
-                <Button
+                <button
                   onClick={fetchSimulation}
                   disabled={loading || !selectedTopic}
-                  variant={"gradient"}
-                  className="w-full h-12 text-lg font-semibold shadow-md hover:shadow-lg transition-shadow duration-200"
+                  // variant={"gradient"}
+                  className="w-full h-12 text-lg font-semibold rounded-full bg-[#6200EE] text-white shadow-md hover:shadow-lg transition-shadow duration-200"
                 >
                   {loading ? (
                     <>
-                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                      Generating Simulation...
+                      <p className="flex gap-2 items-center justify-center text-center">
+                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                        Generating Simulation...
+                      </p>
                     </>
                   ) : (
                     "Generate Simulation"
                   )}
-                </Button>
+                </button>
               </div>
             )}
 

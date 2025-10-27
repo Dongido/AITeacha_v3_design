@@ -224,7 +224,7 @@ export function Sidenav({
                                 ? "white"
                                 : "blue-gray"
                             }
-                            className={`w-full px-4 capitalize rounded-full flex items-center hover:bg-[#d2a9f3] hover:text-white`}
+                            className={`w-full px-4 capitalize rounded-lg  flex items-center hover:bg-[#EFE6FD] hover:text-black`}
                           >
                             <div className="flex items-center gap-2">
                               <span className="w-6 flex items-center justify-center">

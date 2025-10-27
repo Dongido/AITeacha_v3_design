@@ -247,6 +247,16 @@ import { PiEyeSlashLight } from "react-icons/pi";
 import { IoTrashOutline } from "react-icons/io5";
 import { Pagination } from "../../../components/table/Pagination";
 
+interface Assessment {
+  title: string;
+  options: string[];
+}
+
+interface Outline {
+  title: string;
+  assessments?: Assessment[];
+}
+
 const ClassroomDetail = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
@@ -259,6 +269,12 @@ const ClassroomDetail = () => {
   const fetchingClassroom = useSelector(
     (state: RootState) => state.classrooms.fetchingClassroom
   );
+
+  const outlines: Outline[] = Array.isArray((classroom as any)?.outlines)
+    ? (classroom as any).outlines
+    : Array.isArray((classroom as any)?.classroomoutlines)
+    ? (classroom as any).classroomoutlines
+    : [];
 
   useEffect(() => {
     if (id) {
@@ -412,7 +428,7 @@ const ClassroomDetail = () => {
           </div>
 
           {/* Tabbed Section */}
-          <div className="bg-white rounded-lg border p-4 md:p-6 mt-10">
+          <div className="p-4 md:p-6 mt-10">
             <div className="flex gap-8 border-b border-gray-200">
               {tabs.map((tab) => (
                 <button
@@ -431,8 +447,8 @@ const ClassroomDetail = () => {
 
             <div className="mt-6">
               {activeTab === "Overview" && (
-                <div>
-                  <h2 className="text-lg font-semibold mb-4">Class Details</h2>
+                <div className="bg-white rounded-2xl p-8">
+                  <h2 className="text-lg font-semibold mb-8">Class Details</h2>
                   <div className="space-y-5">
                     <input
                       type="text"
@@ -480,37 +496,91 @@ const ClassroomDetail = () => {
                 </div>
               )}
 
-              {activeTab === "Contents" && (
-                <div>
-                  <h3 className="text-lg font-semibold mb-4">Outlines</h3>
+              {classroom?.tools?.length ? (
+                <div className="bg-white mt-10 rounded-2xl p-8">
+                  <h1 className="text-lg lg:text-xl font-bold text-gray-900 mb-8">
+                    Classroom A.I Tools
+                  </h1>
 
-                  <div className="space-y-4">
-                    {[1, 2, 3, 4].map((_, i) => (
-                      <div
-                        key={i}
-                        className="flex items-center justify-between border rounded-lg p-3"
-                      >
-                        <input
-                          type="text"
-                          value="Learning Numbers and counting"
-                          readOnly
-                          className="border-none outline-none flex-1 text-sm"
-                        />
-                        <div className="flex gap-4">
-                          <button className="text-[#000000] flex items-center gap-1 text-sm">
-                            <FaEdit /> Edit Content
-                          </button>
-                          <button className="text-red-500 flex items-center gap-1 text-sm">
-                            <Delete size={16} /> Delete
-                          </button>
-                        </div>
+                  <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 text-center mx-auto">
+                    {classroom.tools.map((tool) => (
+                      <div key={tool.tool_id}>
+                        <Link
+                          to={`/dashboard/student/tools/${tool.tool_slug}`}
+                          className="flex flex-col items-center border border-gray-200 p-5 rounded-2xl bg-white hover:shadow-sm hover:bg-gray-50 transition-all duration-300 ease-in-out transform hover:scale-[1.02]"
+                        >
+                          {tool.tool_thumbnail ? (
+                            <img
+                              src={
+                                tool.tool_thumbnail.startsWith("http")
+                                  ? tool.tool_thumbnail
+                                  : `https://${tool.tool_thumbnail}`
+                              }
+                              alt={tool.tool_name || "Tool Thumbnail"}
+                              className="w-full h-40 object-cover rounded-xl mb-3"
+                            />
+                          ) : (
+                            <div className="w-16 h-16 flex items-center justify-center bg-gray-100 rounded-xl mb-3">
+                              <span className="text-[#6B46FF] font-bold text-xl">
+                                {tool.tool_name?.[0] || "T"}
+                              </span>
+                            </div>
+                          )}
+
+                          {/* Tool Info */}
+                          <div className="text-left">
+                            <h3 className="font-semibold text-gray-900 text-base capitalize">
+                              {tool.tool_name}
+                            </h3>
+                            <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+                              {tool.tool_description ||
+                                "Tool to assist with learning and content creation."}
+                            </p>
+                          </div>
+                        </Link>
                       </div>
                     ))}
                   </div>
+                </div>
+              ) : (
+                <p className="text-gray-500 mt-4">No tools added.</p>
+              )}
 
-                  <button className="text-[#6200EE] text-sm mt-4 font-medium">
-                    + Add Outline
-                  </button>
+              {activeTab === "Contents" && (
+                <div>
+                  {outlines.length > 0 ? (
+                    outlines.map((outline, i) => (
+                      <div
+                        key={i}
+                        className="mb-6 border p-4 rounded-lg bg-white"
+                      >
+                        <h3 className="font-semibold text-lg mb-2">
+                          {outline.title}
+                        </h3>
+
+                        {outline.assessments?.length ? (
+                          outline.assessments.map((ass, j) => (
+                            <div key={j} className="ml-4 mb-3">
+                              <p className="font-medium">{ass.title}</p>
+                              <ul className="list-disc ml-6 text-sm">
+                                {ass.options?.map((opt, k) => (
+                                  <li key={k}>{opt}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          ))
+                        ) : (
+                          <p className="text-gray-500 text-sm">
+                            No assessments available
+                          </p>
+                        )}
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-gray-500 text-sm mt-2">
+                      No outlines available.
+                    </p>
+                  )}
                 </div>
               )}
 

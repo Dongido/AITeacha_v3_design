@@ -45,9 +45,9 @@ const ZyraResponse: React.FC<{ isLoading: boolean; response: string | null }> = 
         <span className="text-sm font-medium text-blue-700">Zyra AI</span>
       </div>
       {isLoading ? (
-        <p className="text-blue-700 text-sm animate-pulse">Zyra is thinking...</p>
+        <p className="text-[#6200EE] text-sm animate-pulse">Zyra is thinking...</p>
       ) : (
-        <p className="text-blue-700 text-sm">{response}</p>
+        <p className="text-[#6200EE] text-sm">{response}</p>
       )}
     </div>
   );
@@ -195,7 +195,7 @@ const Forumcomments: React.FC<Props> = ({
                 </Link> 
                 <div className="flex flex-col">
                    <Link to={`/dashboard/user-profile/${msg?.user_id}`}>
-                  <span className="font-semibold text-black">{msg.sender}</span>
+                  <span className="font-semibold text-[#6200EE]">{msg.sender}</span>
                   </Link>
                   <span className="text-xs text-gray-800">{msg.date}</span>
                 </div>
@@ -203,8 +203,8 @@ const Forumcomments: React.FC<Props> = ({
               <p className="text-gray-800 mb-2 text-sm">{msg.text}</p>
 
               <div className="flex gap-4 text-xs text-purple-600">
-                <button onClick={() => onReply(msg)} className="hover:underline">Reply</button>
-                <button onClick={() => handleCopy(msg.text)} className="flex items-center gap-1 hover:underline">
+                <button onClick={() => onReply(msg)} className="hover:underline text-[#6200EE]">Reply</button>
+                <button onClick={() => handleCopy(msg.text)} className="flex items-center gap-1 hover:underline text-[#6200EE]">
                   <FiCopy /> Copy
                 </button>
                 {admin && (
@@ -215,25 +215,25 @@ const Forumcomments: React.FC<Props> = ({
                     {pinnedId === msg.id ? (
                       <>
                         <span className="flex items-center">
-                          <TbPinnedOff className="text-[16px]" />{" "}
+                          <TbPinnedOff className="text-[16px] text-[#6200EE]" />{" "}
                         </span>{" "}
                       </>
                     ) : (
                       <>
                         <span className="flex">
                           {" "}
-                          <VscPinned className="text-[16px]" />
+                          <VscPinned className="text-[16px] text-[#6200EE]" />
                         </span>
                       </>
                     )}
                   </button>
                 )}
                {msg.isZyraLoading ? (
-                <span className="text-purple-600 text-xs animate-pulse">Loading reply...</span>
+                <span className="text-[#6200EE] text-xs animate-pulse">Loading reply...</span>
               ) : getReplies(msg.id).length > 0 && (
                 <button
                   onClick={() => toggleReplies(msg.id)}
-                  className="hover:underline"
+                  className="hover:underline text-[#6200EE]"
                 >
                   {visibleReplies[msg.id] ? "Hide Replies" : "View Replies"}
                 </button>
@@ -254,7 +254,7 @@ const Forumcomments: React.FC<Props> = ({
         {messages.filter((msg) => !msg.parent_id).length > visibleMessageCount && (
           <button
             onClick={() => onLoadMore()}
-            className="text-sm text-purple-700 hover:underline"
+            className="text-sm text-[#6200EE] hover:underline"
           >
             Show More
           </button>
@@ -262,7 +262,7 @@ const Forumcomments: React.FC<Props> = ({
         {visibleMessageCount > 5 && (
           <button
             onClick={() => onShowLess()}
-            className="text-sm text-purple-700 hover:underline"
+            className="text-sm text-[#6200EE] hover:underline"
           >
             Show Less
           </button>

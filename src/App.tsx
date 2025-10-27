@@ -45,6 +45,8 @@ import Community from "./pages/Dashboard/Community";
 import AuthCallback from "./pages/Dashboard/live-class/AuthCallback";
 import CreateLiveClass from "./pages/Dashboard/live-class/CreateLiveClass";
 import ExamPage from "./pages/Dashboard/test/TestPage";
+import Outline from "./pages/Dashboard/student/Outline";
+// import ToolChatPage from "./pages/Dashboard/student/ToolchatPage";
 
 function App() {
   const location = useLocation();
@@ -129,7 +131,20 @@ function App() {
           />
           <Route path="/student/*" element={<StudentDashboard />} />
           <Route path="/class/*" element={<PaidLayout />} />
+          <Route path="/student/classrooms/outlines" element={<Outline />} />
+          {/* <Route
+            path="/class/class-details/:classId/tools/:toolName"
+            element={<ToolchatPage />}
+          /> */}
         </Route>
+
+       
+          {/* <Route path="/class/class-details/:classId" element={<Classroom />} /> */}
+          {/* <Route
+            path="/class/class-details/:classId/tools/:toolName"
+            element={<ToolChatPage />}
+          /> */}
+       
 
         <Route element={<PublicRoute />}>
           <Route path="/auth/*" element={<Auth />} />

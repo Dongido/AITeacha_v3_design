@@ -4,7 +4,12 @@ import io from "socket.io-client";
 import EmojiPicker from "emoji-picker-react";
 import { RootState } from "../../../store";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getCount, getMessages, unreadMessageCounts } from "../../../store/slices/staffchats";
+import {
+  getCount,
+  getMessages,
+  unreadMessageCounts,
+} from "../../../store/slices/staffchats";
+import { FiSend } from "react-icons/fi";
 
 const socket = io("https://vd.aiteacha.com");
 
@@ -24,9 +29,15 @@ interface ChatMessage {
   time: string;
 }
 
-const SideChatPopup: React.FC<SideChatPopupProps> = ({ isOpen, onClose, id: receiverId }) => {
+const SideChatPopup: React.FC<SideChatPopupProps> = ({
+  isOpen,
+  onClose,
+  id: receiverId,
+}) => {
   const dispatch = useAppDispatch();
-  const { message, loading, messageCount } = useAppSelector((state: RootState) => state.staffChats);
+  const { message, loading, messageCount } = useAppSelector(
+    (state: RootState) => state.staffChats
+  );
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
@@ -46,9 +57,7 @@ const SideChatPopup: React.FC<SideChatPopupProps> = ({ isOpen, onClose, id: rece
     if (senderId !== null) {
       dispatch(getMessages({ senderId, receiverId: parseInt(receiverId, 10) }));
     }
-
   }, [dispatch, senderId, receiverId]);
-
 
   useEffect(() => {
     const payload = { senderId: receiverId };
@@ -57,14 +66,15 @@ const SideChatPopup: React.FC<SideChatPopupProps> = ({ isOpen, onClose, id: rece
     }
   }, [isOpen, dispatch, receiverId]);
 
-
   useEffect(() => {
     if (message && Array.isArray(message)) {
       const transformed = message.map((msg) => {
         const isMe = msg.sender_id === senderId;
         const name = isMe ? "Me" : "User";
         const displayName = isMe ? "Me" : name.charAt(0).toUpperCase();
-        const image = `https://ui-avatars.com/api/?name=${displayName}&background=${isMe ? "4B5563" : "E5E7EB"}&color=${isMe ? "fff" : "000"}`;
+        const image = `https://ui-avatars.com/api/?name=${displayName}&background=${
+          isMe ? "4B5563" : "E5E7EB"
+        }&color=${isMe ? "fff" : "000"}`;
 
         return {
           id: msg.id,
@@ -89,7 +99,9 @@ const SideChatPopup: React.FC<SideChatPopupProps> = ({ isOpen, onClose, id: rece
       const isMe = msg.sender_id === senderId;
       const name = isMe ? "Me" : msg.name || "User";
       const displayName = isMe ? "Me" : name.charAt(0).toUpperCase();
-      const image = `https://ui-avatars.com/api/?name=${displayName}&background=${isMe ? "4B5563" : "E5E7EB"}&color=${isMe ? "fff" : "000"}`;
+      const image = `https://ui-avatars.com/api/?name=${displayName}&background=${
+        isMe ? "4B5563" : "E5E7EB"
+      }&color=${isMe ? "fff" : "000"}`;
 
       const time = new Date(msg.created_at).toLocaleTimeString([], {
         hour: "2-digit",
@@ -143,28 +155,38 @@ const SideChatPopup: React.FC<SideChatPopupProps> = ({ isOpen, onClose, id: rece
 
   return (
     <div
-      className={`fixed top-0 right-0 h-full w-full sm:w-[370px] bg-white shadow-2xl transition-transform duration-300 z-[1000] ${isOpen ? "translate-x-0" : "translate-x-full"
+      className={`fixed inset-0 h-full w-full bg-white shadow-2xl transition-all duration-300 z-[1000] ${
+        +isOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-full"
       }`}
     >
       {/* Header */}
-      <div className="flex justify-between items-center p-4 border-b bg-gray-100">
-        <h3 className="font-semibold text-lg text-gray-800">Live Chat</h3>
-        <button onClick={onClose}>
-          <X className="text-gray-600 hover:text-black" />
+      <div className="flex gap-10 items-center p-2 border-b bg-gray-100">
+        <button onClick={onClose} className="lg:ml-10">
+          <X className="text-black font-bold" />
         </button>
+        <div className="mt-3">
+          <h3 className="font-bold text-lg text-gray-800">Live Chat</h3>
+          <p className="text-sm -mt-4">Author</p>
+        </div>{" "} 
       </div>
 
       {/* Messages */}
-      <div className="p-4 overflow-y-auto h-[calc(100%-200px)] space-y-4 bg-gray-50">
+      <div className="p-4 overflow-y-auto h-[calc(100%-200px)] space-y-4 bg-gray-50 lg:px-56">
         {loading ? (
-          <p className="text-gray-500 text-sm text-center animate-pulse">Loading messages...</p>
+          <p className="text-gray-500 text-sm text-center animate-pulse">
+            Loading messages...
+          </p>
         ) : messages.length === 0 ? (
-          <p className="text-sm text-gray-400 italic text-center">No messages yet</p>
+          <p className="text-sm text-gray-400 italic text-center">
+            No messages yet
+          </p>
         ) : (
           messages.map((msg) => (
             <div
               key={msg.id}
-              className={`flex items-end gap-2 ${msg.isMe ? "justify-end" : "justify-start"}`}
+              className={`flex items-end gap-2 ${
+                msg.isMe ? "justify-end" : "justify-start"
+              }`}
             >
               {!msg.isMe && (
                 <img
@@ -174,14 +196,16 @@ const SideChatPopup: React.FC<SideChatPopupProps> = ({ isOpen, onClose, id: rece
                 />
               )}
               <div
-                className={`max-w-[40%] px-3 py-2 rounded-2xl text-sm flex flex-col tex-black  h-auto ${msg.isMe
-                  ? "bg-purple-50 text-black rounded-br-none ml-auto"
-                  : "bg-gray-100 text-gray-900 rounded-bl-none mr-auto"
-                  }`}
+                className={`max-w-[40%] px-3 py-2 rounded-2xl text-sm flex flex-col tex-black  h-auto ${
+                  msg.isMe
+                    ? "bg-[#290064] p-4 text-white rounded-tr-none ml-auto"
+                    : "bg-gray-100 text-gray-900 rounded-bl-none mr-auto"
+                }`}
               >
                 <span className=" text-sm mt-1">{msg.text}</span>
-                <span className="text-[10px] text-right opacity-70 mt-0">{msg.time}</span>
-
+                <span className="text-[10px] text-right opacity-70 mt-0">
+                  {msg.time}
+                </span>
               </div>
               {msg.isMe && (
                 <img
@@ -197,32 +221,32 @@ const SideChatPopup: React.FC<SideChatPopupProps> = ({ isOpen, onClose, id: rece
       </div>
 
       {/* Emoji Picker */}
-      {showEmojiPicker && (
+      {/* {showEmojiPicker && (
         <div className="absolute bottom-[90px] right-10 z-[2000] w-[250px]">
           <EmojiPicker onEmojiClick={handleEmojiClick} />
         </div>
-      )}
+      )} */}
 
       {/* Input */}
-      <div className="p-4 border-t flex items-center gap-2 bg-white">
+      <div className="p-8 flex items-center gap-2 lg:px-56 mb-10">
         <button
           onClick={() => setShowEmojiPicker((prev) => !prev)}
           className="text-gray-500 hover:text-gray-700"
         >
-          <Smile />
+          {/* <Smile /> */}
         </button>
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Type a message..."
           rows={2}
-          className="flex-1 border border-gray-300 rounded-lg px-3 py-2 resize-none focus:outline-none focus:ring-2 focus:ring-gray-400"
+          className="flex-1 bg-[#EBEBEB] rounded-lg px-3 py-2 resize-none focus:outline-none focus:ring-2 focus:ring-gray-400 placeholder:text-black"
         />
         <button
           onClick={handleSend}
-          className="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-black"
+          className="bg-[#6200EE] text-white p-2 hover:bg-black rounded-full w-8 h-8"
         >
-          Send
+          <FiSend className="text-white" />
         </button>
       </div>
     </div>

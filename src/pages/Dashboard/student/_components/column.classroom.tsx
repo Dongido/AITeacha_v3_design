@@ -18,17 +18,17 @@ export const classroomColumns = [
       const classroomThumbnail = classroom.thumbnail;
       const classroomName = classroom.name;
 
-      return classroomThumbnail ? (
-        <img
-          src={classroomThumbnail}
-          alt="Classroom Thumbnail"
-          className="w-8 h-8 rounded-full object-cover"
-        />
-      ) : (
-        <div className="flex capitalize items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-[#7a5ef8] to-[#5c3cbb] text-white font-semibold">
-          {"C"}
-        </div>
-      );
+      // return classroomThumbnail ? (
+      //   <img
+      //     src={classroomThumbnail}
+      //     alt="Classroom Thumbnail"
+      //     className="w-8 h-8 rounded-full object-cover"
+      //   />
+      // ) : (
+      //   <div className="flex capitalize items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-[#7a5ef8] to-[#5c3cbb] text-white font-semibold">
+      //     {"C"}
+      //   </div>
+      // );
     },
   }),
   classroomColumnHelper.accessor("name", {

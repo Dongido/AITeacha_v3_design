@@ -84,8 +84,14 @@ import {
 } from "../tools/data";
 import VoiceIcon from "../../../assets/img/voiceIcon.svg";
 import SimulationDashboardPage from "../tools/SimulationPage";
-
 import StudentNavbar from "../../../components/layout/Student-Navbar";
+import { FiPlayCircle } from "react-icons/fi";
+import { button } from "@material-tailwind/react";
+import Participant from "./Particpant";
+import { FaHeart } from "react-icons/fa";
+import Avatar from "../../../assets/img/0e846ab4-992d-48b3-a818-d62a7803bd8e 1.png";
+import StudentClass from "./StudentChat";
+import { Outlet } from "react-router-dom";
 
 type OutlineType = {
   name: string;
@@ -115,6 +121,10 @@ const Classroom = () => {
   const [toastVariant, setToastVariant] = useState<"default" | "destructive">(
     "default"
   );
+  const [showToolChat, setShowToolChat] = useState(false);
+  const [toolChatMessages, setToolChatMessages] = useState<any[]>([]);
+  const [toolChatInput, setToolChatInput] = useState("");
+  const [toolChatLoading, setToolChatLoading] = useState(false);
 
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const speechRef = useRef<SpeechSynthesisUtterance | null>(null);
@@ -248,6 +258,68 @@ const Classroom = () => {
     (state: RootState) => state.classrooms
   );
 
+  const [isListening, setIsListening] = useState(false);
+
+  // 🎙 Voice-to-Text Handler
+  const handleVoiceInput = () => {
+    if (!("webkitSpeechRecognition" in window)) {
+      alert("Speech recognition is not supported in this browser.");
+      return;
+    }
+
+    const recognition = new (window as any).webkitSpeechRecognition();
+    recognition.lang = "en-US";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    if (isListening) {
+      recognition.stop();
+      setIsListening(false);
+      return;
+    }
+
+    setIsListening(true);
+    recognition.start();
+
+    recognition.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      setToolChatInput((prev) => prev + (prev ? " " : "") + transcript);
+      setIsListening(false);
+    };
+
+    recognition.onerror = () => {
+      setIsListening(false);
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+  };
+
+  // ✅ Load saved chat history
+  useEffect(() => {
+    const saved = localStorage.getItem(`toolChat_${selectedTool}`);
+    if (saved) {
+      setToolChatMessages(JSON.parse(saved));
+    }
+  }, [selectedTool]);
+
+  // ✅ Save chat history automatically
+  useEffect(() => {
+    if (toolChatMessages.length > 0 && selectedTool) {
+      localStorage.setItem(
+        `toolChat_${selectedTool}`,
+        JSON.stringify(toolChatMessages)
+      );
+    }
+  }, [toolChatMessages, selectedTool]);
+
+  // ✅ Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    const chatEnd = document.getElementById("tool-chat-scroll");
+    chatEnd?.scrollTo({ top: chatEnd.scrollHeight, behavior: "smooth" });
+  }, [toolChatMessages]);
+
   const MAX_CALL_DURATION_SECONDS = 30 * 60;
   const handleOverviewClick = () => {
     setSelectedOverview(true);
@@ -256,11 +328,11 @@ const Classroom = () => {
   };
 
   const [showTopicPopup, setShowTopicPopup] = useState(false);
-  useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [messages, selectedTool]);
+  // useEffect(() => {
+  //   if (messagesEndRef.current) {
+  //     messagesEndRef.current.scrollIntoView();
+  //   }
+  // }, [messages, selectedTool]);
 
   useEffect(() => {
     const userDetailsFromStorage = localStorage.getItem("ai-teacha-user");
@@ -275,8 +347,6 @@ const Classroom = () => {
       setSelectedOutlines(outlines[0]);
     }
   }, [outlines]);
-
-
 
   const playNextAudioChunk = useCallback(() => {
     if (
@@ -334,7 +404,6 @@ const Classroom = () => {
     let intervalId: NodeJS.Timeout;
 
     const initialTimeout = setTimeout(() => {
-
       dispatch(
         createClassroomSuggestion({
           description: classroom.classroom_description || "",
@@ -346,9 +415,7 @@ const Classroom = () => {
         })
       );
 
-
       setShowTopicPopup(true);
-
 
       intervalId = setInterval(() => {
         dispatch(
@@ -362,7 +429,6 @@ const Classroom = () => {
           })
         );
 
-
         setShowTopicPopup(true);
       }, 10 * 60 * 1000);
     }, 60 * 1000);
@@ -372,8 +438,6 @@ const Classroom = () => {
       clearInterval(intervalId);
     };
   }, [classroom, dispatch]);
-
-
 
   useEffect(() => {
     if (!audioContextRef.current) {
@@ -725,11 +789,11 @@ const Classroom = () => {
       console.error("Error starting WebRTC session:", err);
       setSubmissionError(
         err.message ||
-        "Failed to start WebRTC session. Check microphone permissions."
+          "Failed to start WebRTC session. Check microphone permissions."
       );
       setToastMessage(
         err.message ||
-        "Failed to start WebRTC session. Check microphone permissions."
+          "Failed to start WebRTC session. Check microphone permissions."
       );
       setToastVariant("destructive");
       setToastOpen(true);
@@ -929,21 +993,26 @@ const Classroom = () => {
     console.log("selectedOverview", selectedOverview);
     if (selectedOverview) {
       if (!newMessage) {
-        newMessage = `Hi👋 ${userDetails?.firstname || "there"
-          }, welcome to class "<strong>${classroom?.classroom_name || "the classroom"
-          }</strong>." Start your conversation here!`;
+        newMessage = `Hi👋 ${
+          userDetails?.firstname || "there"
+        }, welcome to class "<strong>${
+          classroom?.classroom_name || "the classroom"
+        }</strong>." Start your conversation here!`;
       }
     } else if (newMessage && selectedTool) {
-      newMessage = `Hi👋 ${userDetails?.firstname || "there"
-        }, welcome to <strong>${selectedTool}</strong>. Start your conversation here!`;
+      newMessage = `Hi👋 ${
+        userDetails?.firstname || "there"
+      }, welcome to <strong>${selectedTool}</strong>. Start your conversation here!`;
     } else if (newMessage && selectedOutline) {
       newMessage = selectedOutline.path || "Welcome to the selected outline.";
     } else if (!newMessage && selectedOutline) {
       newMessage = selectedOutline.path || "Welcome to the selected outline.";
     } else if (!newMessage) {
-      newMessage = `Hi👋 ${userDetails?.firstname || "there"
-        }, welcome to class "<strong>${classroom?.classroom_name || "the classroom"
-        }</strong>." Start your conversation here!`;
+      newMessage = `Hi👋 ${
+        userDetails?.firstname || "there"
+      }, welcome to class "<strong>${
+        classroom?.classroom_name || "the classroom"
+      }</strong>." Start your conversation here!`;
     }
 
     setWelcomeMessage(newMessage);
@@ -1082,8 +1151,6 @@ const Classroom = () => {
     previouslySelectedTool,
   ]);
 
-
-
   useEffect(() => {
     setPreviousCurrentMessages(messages);
   }, [messages]);
@@ -1152,21 +1219,21 @@ const Classroom = () => {
 
   const currentMessages =
     selectedOutline &&
-      (!messages["outline"] || messages["outline"].length === 0)
+    (!messages["outline"] || messages["outline"].length === 0)
       ? []
       : messages[getMessageKey()] || [];
 
-       console.log("currentmessage", currentMessages,  selectedOutline)
+  console.log("currentmessage", currentMessages, selectedOutline);
 
   const previousMessages =
     selectedOutline &&
-      (!previousCurrentMessages["outline"] ||
-        previousCurrentMessages["outline"].length === 0)
+    (!previousCurrentMessages["outline"] ||
+      previousCurrentMessages["outline"].length === 0)
       ? []
       : previousCurrentMessages[getMessageKey()]?.slice(
-        0,
-        -currentMessages.length
-      ) || [];
+          0,
+          -currentMessages.length
+        ) || [];
 
   const handleMarkAsRead = async (outlineId: number) => {
     if (!classroom) return;
@@ -1189,8 +1256,8 @@ const Classroom = () => {
     let currentKey = selectedOverview
       ? "main"
       : selectedTool
-        ? selectedTool
-        : "main";
+      ? selectedTool
+      : "main";
     console.log(currentKey);
 
     setMessages((prev) => ({
@@ -1217,38 +1284,38 @@ const Classroom = () => {
 
     let messageData: MessageData = selectedTool
       ? {
-        classroom_id: classroom?.classroom_id || 0,
-        classname: classroom?.classroom_name || "",
-        description: classroom?.classroom_description || "",
-        scope_restriction: classroom?.scope_restriction || true,
-        grade: classroom?.grade || "",
-        student_message: inputText,
-        content_from: "classroom_tools",
-        file_content:
-          classroom?.classroomresources?.map(
-            (resource) => resource.file_content
-          ) || [],
-        tool_name: selectedTool || "",
-        tool_id:
-          tools.find((tool) => tool.tool_name === selectedTool)?.tool_id || 0,
-        tool_description:
-          tools.find((tool) => tool.tool_name === selectedTool)
-            ?.tool_description || "",
-      }
+          classroom_id: classroom?.classroom_id || 0,
+          classname: classroom?.classroom_name || "",
+          description: classroom?.classroom_description || "",
+          scope_restriction: classroom?.scope_restriction || true,
+          grade: classroom?.grade || "",
+          student_message: inputText,
+          content_from: "classroom_tools",
+          file_content:
+            classroom?.classroomresources?.map(
+              (resource) => resource.file_content
+            ) || [],
+          tool_name: selectedTool || "",
+          tool_id:
+            tools.find((tool) => tool.tool_name === selectedTool)?.tool_id || 0,
+          tool_description:
+            tools.find((tool) => tool.tool_name === selectedTool)
+              ?.tool_description || "",
+        }
       : {
-        classroom_id: classroom?.classroom_id || 0,
-        classname: classroom?.classroom_name || "",
-        scope_restriction: classroom?.scope_restriction || true,
-        description: classroom?.classroom_description || "",
-        grade: classroom?.grade || "",
-        file_content: classroom?.classroomresources
-          ? classroom.classroomresources.map(
-            (resource) => resource.file_content
-          ) || []
-          : [],
-        student_message: inputText,
-        content_from: "classroom",
-      };
+          classroom_id: classroom?.classroom_id || 0,
+          classname: classroom?.classroom_name || "",
+          scope_restriction: classroom?.scope_restriction || true,
+          description: classroom?.classroom_description || "",
+          grade: classroom?.grade || "",
+          file_content: classroom?.classroomresources
+            ? classroom.classroomresources.map(
+                (resource) => resource.file_content
+              ) || []
+            : [],
+          student_message: inputText,
+          content_from: "classroom",
+        };
 
     if (selectedOutline) {
       messageData = {
@@ -1301,8 +1368,8 @@ const Classroom = () => {
     const currentKey = selectedOverview
       ? "main"
       : selectedTool
-        ? selectedTool
-        : "main";
+      ? selectedTool
+      : "main";
 
     setSelectedOutline(null);
     console.log(currentKey);
@@ -1329,37 +1396,37 @@ const Classroom = () => {
 
     let messageData: MessageData = selectedTool
       ? {
-        classroom_id: classroom?.classroom_id || 0,
-        classname: classroom?.classroom_name || "",
-        description: classroom?.classroom_description || "",
-        scope_restriction: classroom?.scope_restriction ?? true,
-        grade: classroom?.grade || "",
-        student_message: classroomTopic,
-        content_from: "classroom_tools",
-        file_content:
-          classroom?.classroomresources?.map(
-            (resource) => resource.file_content
-          ) || [],
-        tool_name: selectedTool,
-        tool_id:
-          tools.find((tool) => tool.tool_name === selectedTool)?.tool_id || 0,
-        tool_description:
-          tools.find((tool) => tool.tool_name === selectedTool)
-            ?.tool_description || "",
-      }
+          classroom_id: classroom?.classroom_id || 0,
+          classname: classroom?.classroom_name || "",
+          description: classroom?.classroom_description || "",
+          scope_restriction: classroom?.scope_restriction ?? true,
+          grade: classroom?.grade || "",
+          student_message: classroomTopic,
+          content_from: "classroom_tools",
+          file_content:
+            classroom?.classroomresources?.map(
+              (resource) => resource.file_content
+            ) || [],
+          tool_name: selectedTool,
+          tool_id:
+            tools.find((tool) => tool.tool_name === selectedTool)?.tool_id || 0,
+          tool_description:
+            tools.find((tool) => tool.tool_name === selectedTool)
+              ?.tool_description || "",
+        }
       : {
-        classroom_id: classroom?.classroom_id || 0,
-        classname: classroom?.classroom_name || "",
-        scope_restriction: classroom?.scope_restriction ?? true,
-        description: classroom?.classroom_description || "",
-        grade: classroom?.grade || "",
-        file_content:
-          classroom?.classroomresources?.map(
-            (resource) => resource.file_content
-          ) || [],
-        student_message: classroomTopic,
-        content_from: "classroom",
-      };
+          classroom_id: classroom?.classroom_id || 0,
+          classname: classroom?.classroom_name || "",
+          scope_restriction: classroom?.scope_restriction ?? true,
+          description: classroom?.classroom_description || "",
+          grade: classroom?.grade || "",
+          file_content:
+            classroom?.classroomresources?.map(
+              (resource) => resource.file_content
+            ) || [],
+          student_message: classroomTopic,
+          content_from: "classroom",
+        };
 
     if (selectedOutline) {
       messageData = {
@@ -1373,8 +1440,8 @@ const Classroom = () => {
       const response = selectedOutline
         ? await sendClassroomOutlineMessage(messageData)
         : selectedTool
-          ? await sendClassroomToolMessage(messageData)
-          : await sendClassroomMessage(messageData);
+        ? await sendClassroomToolMessage(messageData)
+        : await sendClassroomMessage(messageData);
 
       setMessages((prev) => ({
         ...prev,
@@ -1458,7 +1525,7 @@ const Classroom = () => {
       console.error("Error submitting live class assessment answers:", error);
       setSubmissionError(
         error.response?.data?.message ||
-        "Failed to submit live class assessment."
+          "Failed to submit live class assessment."
       );
     } finally {
       setSubmittingAssessment(false);
@@ -1642,7 +1709,7 @@ const Classroom = () => {
         );
         setErrorToolHistory(
           error.message ||
-          `Failed to load more chat history for ${selectedTool}.`
+            `Failed to load more chat history for ${selectedTool}.`
         );
       } finally {
         setLoadingToolHistory(false);
@@ -1730,6 +1797,82 @@ const Classroom = () => {
       </div>
     );
   }
+
+  const handleToolChatSend = async () => {
+    if (!toolChatInput.trim()) return;
+
+    // Add user message
+    const userMsg = { text: toolChatInput, fromUser: true };
+    setToolChatMessages((prev) => [...prev, userMsg]);
+    setToolChatInput("");
+
+    // Add temporary "thinking" message
+    const thinkingMsg = {
+      text: `${selectedTool} is thinking...`,
+      fromUser: false,
+      isLoading: true,
+    };
+    setToolChatMessages((prev) => [...prev, thinkingMsg]);
+    setToolChatLoading(true);
+
+    try {
+      // ✅ Ensure valid data types before calling API
+      if (!classroom?.classroom_id || !selectedTool) {
+        console.warn("Missing classroom_id or selectedTool.");
+        setToolChatMessages((prev) =>
+          prev.map((msg) =>
+            msg.isLoading
+              ? {
+                  ...msg,
+                  text: "⚠️ Cannot send message — missing classroom or tool.",
+                  isLoading: false,
+                }
+              : msg
+          )
+        );
+        setToolChatLoading(false);
+        return;
+      }
+
+      // ✅ Send message to backend AI
+      const response = await sendClassroomToolMessage({
+        classroom_id: Number(classroom?.classroom_id ?? 0),
+        tool_name: selectedTool ?? "",
+        student_message: userMsg.text,
+        content_from: "classroom_tools",
+      } as any);
+
+      // ✅ Update messages with AI response
+      setToolChatMessages((prev) =>
+        prev.map((msg) =>
+          msg.isLoading
+            ? {
+                ...msg,
+                text: response?.data || "No response received.",
+                isLoading: false,
+              }
+            : msg
+        )
+      );
+    } catch (error) {
+      console.error("AI error:", error);
+
+      setToolChatMessages((prev) =>
+        prev.map((msg) =>
+          msg.isLoading
+            ? {
+                ...msg,
+                text: "⚠️ Error: Could not get a response from AI.",
+                isLoading: false,
+              }
+            : msg
+        )
+      );
+    } finally {
+      setToolChatLoading(false);
+    }
+  };
+
   // console.log("tools", tools)
   return (
     <ToastProvider>
@@ -1758,8 +1901,9 @@ const Classroom = () => {
           onToggleView={handleToggleView}
         />
         <div
-          className={`flex-1 transition-all duration-3 px-2  ${isCollapsed ? "xl:ml-28" : "xl:ml-72"
-            }`}
+          className={`flex-1 transition-all duration-3  ${
+            isCollapsed ? "xl:ml-28" : "xl:ml-72"
+          }`}
         >
           {userrole === 3 ? (
             <>
@@ -1772,48 +1916,106 @@ const Classroom = () => {
             </>
           )}
           <div className="mt-4 md:mt-6 lg:mt-10">
-            <div className="flex items-center  justify-between flex-col sm:flex-row">
-              <div className="mt-4 ml-4 sm:mt-0 flex items-center justify-between w-full">
-                <div className="text-left">
-                  <h2 className="text-lg sm:text-xl font-semibold text-gray-9">
-                    {classroom?.classroom_name}
-                    {selectedTool && (
-                      <>
-                        /
-                        <p className="text-primary text-sm font-bold">
-                          In use: {selectedTool}
-                        </p>
-                      </>
-                    )}
-                  </h2>
-                </div>
-              </div>
-              <div className=" flex gap-4">
+            <div className="text-left mt-10 mb- lg:px-10 px-5">
+              <p className="text-black text-sm bg-gray-300 rounded-full px-4 py-2 inline-flex">
+                End Date: Jan 25, 2026
+              </p>
+              <h2 className="text-xl font-semibold text-black">
+                {classroom?.classroom_name}
+                {selectedTool && (
+                  <>
+                    /
+                    <p className="text-primary text-sm font-bold">
+                      In use: {selectedTool}
+                    </p>
+                  </>
+                )}
+              </h2>
+              <p>{classroom?.classroom_description}</p>
+            </div>
+
+            <div className="flex items-center pb-2 lg:px-8 px-5">
+              <div className="flex gap-6">
+                {/* Overview */}
+                <button
+                  onClick={() => setViewState("classroom")}
+                  className={`text-md font-semibold pb-2 transition-all duration-200 ${
+                    viewState === "classroom"
+                      ? "text-[#5c3cbb] border-b-4 border-[#6200EE]"
+                      : "text-gray-700 hover:text-[#6200EE]"
+                  }`}
+                >
+                  Overview
+                </button>
+
+                {/* Simulation */}
+                <button
+                  onClick={() => setViewState("simulation")}
+                  className={`text-md font-semibold pb-2 transition-all duration-200 ${
+                    viewState === "simulation"
+                      ? "text-[#5c3cbb] border-b-4 border-[#6200EE]"
+                      : "text-gray-700 hover:text-[#6200EE]"
+                  }`}
+                >
+                  Simulation
+                </button>
+
+                {/* Live Class */}
+                <button
+                  onClick={() => setViewState("liveclass")}
+                  className={`text-md font-semibold pb-2 transition-all duration-200 ${
+                    viewState === "liveclass"
+                      ? "text-[#5c3cbb] border-b-4 border-[#6200EE]"
+                      : "text-gray-700 hover:text-[#6200EE]"
+                  }`}
+                >
+                  Live Class
+                </button>
+
+                {/* Chats */}
+                <button
+                  // onClick={() => navigate(`/student/Studentforum/${id}`)}
+                  onClick={() => setViewState("chats")}
+                  className={`text-md font-semibold pb-2 transition-all duration-200 ${
+                    viewState === "chats"
+                      ? "text-[#5c3cbb] border-b-4 border-[#6200EE]"
+                      : "text-gray-700 hover:text-[#6200EE]"
+                  }`}
+                >
+                  Chats
+                </button>
+
+                {/* Participants */}
+                <button
+                  onClick={() => setViewState("participant")}
+                  className={`text-md font-semibold pb-2 transition-all duration-200 ${
+                    viewState === "participant"
+                      ? "text-[#5c3cbb] border-b-4 border-[#6200EE]"
+                      : "text-gray-700 hover:text-[#6200EE]"
+                  }`}
+                >
+                  Participants
+                </button>
+
+                {/* Voice Settings */}
                 <Dialog
                   open={showVoiceSettingsDialog}
                   onOpenChange={setShowVoiceSettingsDialog}
                 >
                   <DialogTrigger asChild>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className={`rounded-full hover:bg-gray-400 mt-5 border-[#5c3cbb]  ${isVoiceRecording
-                        ? "bg-red-500 text-white"
-                        : "bg-gray-200 text-black"
-                        }`}
+                    <button
+                      className={`text-md font-semibold pb-2 transition-all duration-200 ${
+                        viewState === "voice"
+                          ? "text-[#5c3cbb] border-b-4 border-[#6200EE]"
+                          : "text-gray-700 hover:text-[#6200EE]"
+                      }`}
+                      onClick={() => setViewState("voice")}
                       disabled={isVoiceRecording}
                     >
-                      {isVoiceRecording ? (
-                        <FiX className="h-5 w-5" />
-                      ) : (
-                        <img
-                          src={VoiceIcon}
-                          alt="Microphone"
-                          className="h-16 w-5"
-                        />
-                      )}
-                    </Button>
+                      Voice Session
+                    </button>
                   </DialogTrigger>
+
                   <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
                       <DialogTitle>Voice Session Settings</DialogTitle>
@@ -1822,6 +2024,7 @@ const Classroom = () => {
                         AI.
                       </DialogDescription>
                     </DialogHeader>
+
                     <div className="grid gap-4 py-4">
                       <div className="grid grid-cols-4 items-center gap-4">
                         <label htmlFor="voiceType" className="text-right">
@@ -1840,6 +2043,7 @@ const Classroom = () => {
                           ))}
                         </select>
                       </div>
+
                       <div className="grid grid-cols-4 items-center gap-4">
                         <label htmlFor="language" className="text-right">
                           Language
@@ -1857,6 +2061,7 @@ const Classroom = () => {
                           ))}
                         </select>
                       </div>
+
                       <div className="grid grid-cols-4 items-center gap-4">
                         <label htmlFor="grade" className="text-right">
                           Grade
@@ -1876,6 +2081,7 @@ const Classroom = () => {
                         </select>
                       </div>
                     </div>
+
                     <DialogFooter>
                       <Button
                         onClick={() =>
@@ -1896,61 +2102,16 @@ const Classroom = () => {
                     </DialogFooter>
                   </DialogContent>
                 </Dialog>
-                <Button
-                  onClick={() => navigate(`/student/Studentforum/${id}`)}
-                  className="relative flex items-center justify-center bg-white border border-[#5c3cbb] mt-5
-                  hover:border-purple-600 hover:bg-purple-50 rounded-full  text-sm text-[#5c3cbb] pt-1 font-medium shadow-sm transition-all"
-                >
-                  Chat
-                  <span
-                    className="absolute -top-1.5 -right-1.5 bg-[#5c3cbb]
-                  text-white rounded-full p-1 flex items-center justify-center shadow-md"
-                  >
-                    <FiMessageCircle size={14} />
-                  </span>
-                </Button>
-                {classroom?.isLiveclassroom === 1 ||
-                  (viewState !== "liveclass" && (
-                    <Button
-                      variant={"gradient"}
-                      className="rounded-full mt-4"
-                      onClick={() => setViewState("liveclass")}
-                    >
-                      Live Class
-                    </Button>
-                  ))}
-
-                {viewState === "classroom" && (
-                  <Button
-                    variant="black"
-                    className="rounded-full mt-4"
-                    onClick={() => setViewState("simulation")}
-                  >
-                    Start Simulation
-                  </Button>
-                )}
-
-                {classroom?.isLiveclassroom === 1 ||
-                  (viewState !== "classroom" && (
-                    <Button
-                      variant={"gradient"}
-                      className="rounded-full mt-4"
-                      onClick={() => setViewState("classroom")}
-                    >
-                      Back to Classroom
-                    </Button>
-                  ))}
               </div>
             </div>
 
             {viewState === "classroom" ? (
               <>
-                <div className="relative flex flex-col lg:flex-row max-h-[550px]  overflow-y-auto pb-[1px] lg:pb-[70px] routes-scroll-area">
+                <div className="relative flex flex-col lg:flex-row routes-scroll-area">
                   <div
                     ref={chatContainerRef}
-                    className="flex-grow overflow-y-autoborder border-gray-3 rounded-lg shadow-inner space-y-2 m-4 p-4 max-h-[450px]"
+                    className="flex-grow space-y-2 m-4 p-4"
                   >
-
                     {showTopicPopup && (
                       <motion.div
                         initial={{ opacity: 0, translateY: -10 }}
@@ -1982,8 +2143,7 @@ const Classroom = () => {
 
                               <button
                                 onClick={() => {
-                                  handleSendTopic(),
-                                    setShowTopicPopup(false);
+                                  handleSendTopic(), setShowTopicPopup(false);
                                 }}
                                 className="bg-white text-purple-600 text-sm font-medium px-4 py-2 rounded-lg hover:bg-yellow-100 transition-all mt-2"
                               >
@@ -1995,7 +2155,186 @@ const Classroom = () => {
                       </motion.div>
                     )}
 
-                    {selectedOverview ? (
+                    <div className="flex lg:flex-row flex-col gap-5">
+                      <div className="bg-white p-4 rounded-xl shadow-md w-full">
+                        <h1 className="text-2xl font-semi-bold text-[#6200EE]">
+                          3/10
+                        </h1>
+                        <p className="text-gray-500">completed</p>
+                        <p className="text-black">Assignments</p>
+                      </div>
+                      <div className="bg-white p-4 rounded-xl shadow-md w-full">
+                        <h1 className="text-2xl font-semibold text-[#6200EE]">
+                          2/10
+                        </h1>
+                        <p className="text-gray-500">completed</p>
+                        <p className="text-black">Test & Exams</p>
+                      </div>
+                    </div>
+
+                    <br />
+
+                    <div className="w-full mt-10">
+                      <h2 className="text-lg font-semibold text-gray-800 mb-4">
+                        Class Tools
+                      </h2>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-6">
+                        <div
+                          key="zyra"
+                          onClick={() => {
+                            setSelectedTool("Zyra AI Chat");
+                            setSelectedOverview(false);
+                            setSelectedOutline(null);
+                            setViewState("classroom");
+                            setShowToolChat(true);
+
+                            const savedChat = localStorage.getItem(
+                              "toolChat_Zyra AI Chat"
+                            );
+                            setToolChatMessages(
+                              savedChat ? JSON.parse(savedChat) : []
+                            );
+                          }}
+                          className={`flex flex-col items-center justify-center border rounded-2xl p-6 transition-all duration-300 cursor-pointer ${
+                            selectedTool === "Zyra AI Chat"
+                              ? "bg-[#EFE6FD] border-[#6200EE]/30 shadow-md scale-[1.02]"
+                              : "bg-[#EFE6FD] border-gray-200 hover:border-[#6200EE]/30 hover:shadow-lg hover:scale-[1.02]"
+                          }`}
+                        >
+                          <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-50 mb-3 shadow-sm">
+                            <img
+                              src={Avatar}
+                              alt="Zyra AI Chat"
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <p className="text-sm font-semibold text-gray-800 text-center">
+                            Zyra AI Chat
+                          </p>
+                        </div>
+
+                        {/* ✅ Dynamic Tool Cards */}
+                        {tools.map((tool, index) => (
+                          <div
+                            key={index}
+                            onClick={() => {
+                              setSelectedTool(tool.tool_name);
+                              setSelectedOverview(false);
+                              setSelectedOutline(null);
+                              setViewState("classroom");
+                              setShowToolChat(true);
+
+                              // ✅ Load stored chat if exists
+                              const savedChat = localStorage.getItem(
+                                `toolChat_${tool.tool_name}`
+                              );
+                              setToolChatMessages(
+                                savedChat ? JSON.parse(savedChat) : []
+                              );
+                            }}
+                            className={`flex flex-col items-center justify-between border rounded-2xl p-5 transition-all duration-300 cursor-pointer ${
+                              selectedTool === tool.tool_name
+                                ? "bg-[#EFE6FD] border-[#6200EE]/30 shadow-md scale-[1.02]"
+                                : "bg-white border-gray-200 hover:border-[#6200EE]/30 hover:shadow-lg hover:scale-[1.02]"
+                            }`}
+                          >
+                            {/* Thumbnail */}
+                            <div className="w-full h-24 flex items-center justify-center overflow-hidden rounded-xl bg-gray-50 mb-3">
+                              {tool.tool_thumbnail ? (
+                                <img
+                                  src={
+                                    tool.tool_thumbnail.startsWith("http")
+                                      ? tool.tool_thumbnail
+                                      : `https://${tool.tool_thumbnail}`
+                                  }
+                                  alt={tool.tool_name || "Tool Thumbnail"}
+                                  className="w-full h-full object-cover rounded-lg"
+                                />
+                              ) : (
+                                <FaHeart className="text-[#6200EE] w-10 h-10" />
+                              )}
+                            </div>
+
+                            {/* Label */}
+                            <p className="text-sm font-semibold text-gray-800 text-center">
+                              {tool.tool_name}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <br />
+
+                    {classroom?.classroomresources &&
+                      classroom.classroomresources.length > 0 && (
+                        <div className="mt-32">
+                          <h2 className="text-lg font-semibold text-gray-800 mb-4">
+                            Resources
+                          </h2>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                            {classroom.classroomresources.map((resource) => (
+                              <div
+                                key={resource.resources_id}
+                                className="group bg-white border border-gray-200 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-[#6200EE]/30 transition-all duration-300 flex flex-col justify-between"
+                              >
+                                {/* File Info */}
+                                <div className="flex items-start space-x-3">
+                                  <div className="flex-shrink-0 w-10 h-10 bg-[#EFE6FD] text-[#6200EE] rounded-xl flex items-center justify-center shadow-sm">
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      className="w-5 h-5"
+                                      fill="none"
+                                      viewBox="0 0 24 24"
+                                      stroke="currentColor"
+                                      strokeWidth="2"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        d="M12 16v-4m0 0l-2-2m2 2l2-2m12-8v14l-4-4H8l-4 4V4h16z"
+                                      />
+                                    </svg>
+                                  </div>
+
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-semibold text-gray-800 truncate">
+                                      {resource.resources_filename}
+                                    </p>
+                                    <p className="text-xs text-gray-500 mt-1">
+                                      {resource.resources_type || "Document"}
+                                    </p>
+                                  </div>
+                                </div>
+
+                                {/* Actions */}
+                                <div className="mt-5 flex justify-between items-center border-t border-gray-100 pt-4">
+                                  <p className="text-xs text-gray-500 truncate">
+                                    {resource.resources_size
+                                      ? `${(
+                                          resource.resources_size / 1024
+                                        ).toFixed(1)} KB`
+                                      : ""}
+                                  </p>
+                                  <button
+                                    onClick={() => {
+                                      const fullUrl = `https://${resource.resources_path}`;
+                                      window.open(fullUrl, "_blank");
+                                    }}
+                                    className="bg-[#6200EE] text-white text-sm font-medium px-4 py-2 rounded-lg shadow-sm hover:bg-[#5300d6] transition-all duration-200"
+                                  >
+                                    View
+                                  </button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                    {/* {selectedOverview ? (
                       <MarkdownRenderer
                         content={welcomeMessage}
                         shouldType={false}
@@ -2012,78 +2351,82 @@ const Classroom = () => {
                         <div className="flex justify-between items-center w-full p-4">
                           <div className="flex-1 ">
                             {selectedOutline &&
-                              selectedOutline.mark_as_read === 0 ? (
-                              <Button
+                            selectedOutline.mark_as_read === 0 ? (
+                              <button
                                 onClick={() =>
                                   handleMarkAsRead(
                                     selectedOutline.classroomoutline_id
                                   )
                                 }
-                                variant={"gradient"}
-                                className="rounded-md"
+                       
+                                className="rounded-full text-black bg-[#EFE6FD] px-4 py-2"
                                 disabled={loading}
                               >
                                 {loading ? "Marking..." : "Mark as Read"}
-                              </Button>
+                              </button>
                             ) : selectedOutline &&
                               selectedOutline.mark_as_read === 1 ? (
-                              <Button
-                                variant={"gray"}
-                                className="rounded-md"
+                              <button
+                                // variant={"gray"}
+                                className="rounded-full text-white bg-[#6200EE] px-4 py-2"
                                 disabled
                               >
                                 Completed
-                              </Button>
+                              </button>
                             ) : null}
                           </div>
 
-                          {
-                            selectedOutline && (
-                              <div className="flex-1 flex justify-end gap-2">
-                                {(() => {
-                                  const Nexoutlines = (classroom?.classroomoutlines || []).map((outline) => ({
-                                    name: outline.classroomoutline_title,
-                                    path: outline.classroomoutline_content || "#",
-                                    classroomoutline_id: outline.classroomoutline_id,
-                                    assessmentStatus: outline.assessment_status,
-                                    assessments: outline.assessments,
-                                  }));
+                          {selectedOutline && (
+                            <div className="flex-1 flex justify-end gap-2">
+                              {(() => {
+                                const Nexoutlines = (
+                                  classroom?.classroomoutlines || []
+                                ).map((outline) => ({
+                                  name: outline.classroomoutline_title,
+                                  path: outline.classroomoutline_content || "#",
+                                  classroomoutline_id:
+                                    outline.classroomoutline_id,
+                                  assessmentStatus: outline.assessment_status,
+                                  assessments: outline.assessments,
+                                }));
 
-                                  const currentIndex = Nexoutlines.findIndex(
-                                    (o) => o.name === selectedOutline?.name
-                                  );
+                                const currentIndex = Nexoutlines.findIndex(
+                                  (o) => o.name === selectedOutline?.name
+                                );
 
-                                  const prev = currentIndex > 0 ? Nexoutlines[currentIndex - 1] : null;
-                                  const next = currentIndex < Nexoutlines.length - 1 ? Nexoutlines[currentIndex + 1] : null;
+                                const prev =
+                                  currentIndex > 0
+                                    ? Nexoutlines[currentIndex - 1]
+                                    : null;
+                                const next =
+                                  currentIndex < Nexoutlines.length - 1
+                                    ? Nexoutlines[currentIndex + 1]
+                                    : null;
 
-                                  return (
-                                    <>
-                                      {prev && (
-                                        <button
-                                          className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md transition-all duration-200"
-                                          onClick={() => setSelectedOutline(prev)}
-                                        >
-                                          Previous
-                                        </button>
-                                      )}
+                                return (
+                                  <>
+                                    {prev && (
+                                      <button
+                                        className="bg-[#6200EE] text-white px-4 py-2 rounded-full transition-all duration-200"
+                                        onClick={() => setSelectedOutline(prev)}
+                                      >
+                                        Previous
+                                      </button>
+                                    )}
 
-                                      {next && (
-                                        <button
-                                          className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md transition-all duration-200"
-                                          onClick={() => setSelectedOutline(next)}
-                                        >
-                                          Next
-                                        </button>
-                                      )}
-                                    </>
-                                  );
-                                })()}
-                              </div>
-
-                            )
-                          }
-
-
+                                    {next && (
+                                      <button
+                                        className="bg-[#6200EE] text-white px-4 py-2 rounded-full transition-all duration-200"
+                                        onClick={() => setSelectedOutline(next)}
+                                      >
+                                        Next
+                                      </button>
+                                    )}
+                                  </>
+                                );
+                              })()}
+                            </div>
+                          )}
                         </div>
                         {selectedOutline &&
                           selectedOutline.assessments &&
@@ -2308,8 +2651,9 @@ const Classroom = () => {
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ duration: 0.3, delay: index * 0.1 }}
-                            className={`flex flex-col mb-2 ${message.fromUser ? "items-end" : "items-start"
-                              }`}
+                            className={`flex flex-col mb-2 ${
+                              message.fromUser ? "items-end" : "items-start"
+                            }`}
                           >
                             {!message.fromUser && (
                               <div className="flex justify-end space-x-4 mb-1">
@@ -2335,10 +2679,11 @@ const Classroom = () => {
                             )}
                             <MarkdownRenderer
                               content={message.text}
-                              className={`p-3 text-sm ${message.fromUser
-                                ? "bg-primary max-w-xs text-white rounded-tl-lg"
-                                : "bg-gray-2 max-w-xl text-black rounded-tr-lg"
-                                }`}
+                              className={`p-3 text-sm ${
+                                message.fromUser
+                                  ? "bg-primary max-w-xs text-white rounded-tl-lg"
+                                  : "bg-gray-2 max-w-xl text-black rounded-tr-lg"
+                              }`}
                               shouldType={
                                 !message.fromUser && !message.isHistory
                               }
@@ -2350,63 +2695,9 @@ const Classroom = () => {
                           </motion.div>
                         ))}
                       </>
-                    )}
+                    )} */}
                     <div ref={messagesEndRef} />
                   </div>
-                </div>
-
-                <div
-                  className="fixed bottom-0 left-0 w-full bg-white 
-                 border-t lg:flex lg:w-[calc(100%-5rem)] lg:ml-[5rem] flex-col lg:flex-row"
-                >
-                  <div className="flex justify-between items-center gap-24 w-full">
-                    <div
-                      className="w-64 h-20 bg-cover bg-center relative hidden lg:block"
-                      style={{ backgroundImage: `url(${greyImg})` }}
-                    >
-                      <span
-                        className="absolute inset-0 flex items-center italic justify-center
-                       text-white text-lg font-bold bg-black bg-opacity-20"
-                      >
-                        Powered By <span className="text-lg ml-1"> Zyra</span>
-                      </span>
-                    </div>
-
-                    <div className="relative p-2 lg:-ml-24 flex items-center w-full">
-                      <TextArea
-                        value={inputText}
-                        onChange={(e) => setInputText(e.target.value)}
-                        onKeyDown={handleKeyDown}
-                        placeholder="Type your message..."
-                        className="flex-grow pr-16 px-3 py-2 border text-md rounded-lg"
-                      />
-                      <button
-                        onClick={toggleRecording}
-                        className={`absolute right-16 top-1/2 transform -translate-y-1/2 p-3 rounded-full ${isRecording
-                          ? "bg-red-500 text-white"
-                          : "bg-gray-200 text-black"
-                          }`}
-                      >
-                        <FiMic />
-                      </button>
-                      <button
-                        onClick={handleSend}
-                        aria-label="Send Message"
-                        disabled={inputText.trim().length === 0}
-                        className="absolute right-2 top-1/2 transform -translate-y-1/2 p-2 bg-primary text-white rounded-full mr-4"
-                      >
-                        <FiSend className="w-5 h-5" />
-                      </button>
-                    </div>
-                  </div>
-
-                  <Button
-                    onClick={() => setIsDrawerOpen(true)}
-                    variant={"gradient"}
-                    className="flex items-center bg-white w-full rounded-md text-black lg:hidden mt-2 mx-auto"
-                  >
-                    View Tools
-                  </Button>
                 </div>
               </>
             ) : viewState === "simulation" ? (
@@ -2418,11 +2709,15 @@ const Classroom = () => {
                 outline_title={outlineTitlesString || ""}
                 outline_content={outlineContentString || ""}
               />
+            ) : viewState === "participant" && <Participant /> ? (
+              <Participant />
+            ) : viewState === "chats" && <StudentClass /> ? (
+              <StudentClass />
             ) : viewState === "liveclass" ? (
-              <div className="liveclass-div">
-                <div className="my-8 p-6 bg-gradient-to-r from-gray-50 to-purple-50 border border-purple-2 rounded-lg shadow-sm">
+              <div className="lg:px-10">
+                <div className="my-8 px-6 py-20 bg-white border border-purple-2 rounded-lg shadow-sm">
                   {classroom?.liveclassroomassessments &&
-                    classroom.liveclassroomassessments.length > 0 ? (
+                  classroom.liveclassroomassessments.length > 0 ? (
                     <>
                       <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-8 mb-6 text-center">
                         Live Class Assessments
@@ -2439,17 +2734,17 @@ const Classroom = () => {
                           const isQuestionAnswered =
                             isAssessmentCompleted ||
                             question.liveclassroomassessment_student_answer !==
-                            null;
+                              null;
 
                           const isCorrect =
                             isQuestionAnswered &&
                             studentAnswerForThisQuestion ===
-                            question.liveclassroomassessment_correct_answer;
+                              question.liveclassroomassessment_correct_answer;
 
                           const didStudentFailToAnswer =
                             isAssessmentCompleted &&
                             question.liveclassroomassessment_student_answer ===
-                            null;
+                              null;
 
                           return (
                             <div
@@ -2499,25 +2794,29 @@ const Classroom = () => {
                                       <label
                                         key={optionKey}
                                         className={`flex items-center space-x-2 p-2 rounded-md transition-colors duration-2
-                        ${!isAssessmentCompleted
-                                            ? "cursor-pointer hover:bg-gray-1"
-                                            : "cursor-not-allowed"
-                                          }
-                        ${isAssessmentCompleted &&
-                                          isChecked &&
-                                          isCorrect &&
-                                          "bg-green-1 border border-green-3"
-                                          }
-                        ${isAssessmentCompleted &&
-                                          isChecked &&
-                                          !isCorrect &&
-                                          "bg-red-1 border border-red-3"
-                                          }
-                        ${isAssessmentCompleted &&
-                                          !isChecked &&
-                                          isCorrectAnswerOption &&
-                                          "bg-blue-50 border border-blue-2"
-                                          }
+                        ${
+                          !isAssessmentCompleted
+                            ? "cursor-pointer hover:bg-gray-1"
+                            : "cursor-not-allowed"
+                        }
+                        ${
+                          isAssessmentCompleted &&
+                          isChecked &&
+                          isCorrect &&
+                          "bg-green-1 border border-green-3"
+                        }
+                        ${
+                          isAssessmentCompleted &&
+                          isChecked &&
+                          !isCorrect &&
+                          "bg-red-1 border border-red-3"
+                        }
+                        ${
+                          isAssessmentCompleted &&
+                          !isChecked &&
+                          isCorrectAnswerOption &&
+                          "bg-blue-50 border border-blue-2"
+                        }
                       `}
                                       >
                                         <input
@@ -2531,10 +2830,11 @@ const Classroom = () => {
                                               optionKey
                                             )
                                           }
-                                          className={`form-radio h-4 w-4 ${isAssessmentCompleted
-                                            ? "cursor-not-allowed"
-                                            : "text-purple-6 focus:ring-purple-5"
-                                            }`}
+                                          className={`form-radio h-4 w-4 ${
+                                            isAssessmentCompleted
+                                              ? "cursor-not-allowed"
+                                              : "text-purple-6 focus:ring-purple-5"
+                                          }`}
                                           readOnly={isAssessmentCompleted}
                                           disabled={isAssessmentCompleted}
                                         />
@@ -2563,9 +2863,9 @@ const Classroom = () => {
                                       .{" "}
                                       {
                                         options[
-                                        question.liveclassroomassessment_correct_answer.charCodeAt(
-                                          0
-                                        ) - 65
+                                          question.liveclassroomassessment_correct_answer.charCodeAt(
+                                            0
+                                          ) - 65
                                         ]
                                       }
                                     </p>
@@ -2635,11 +2935,11 @@ const Classroom = () => {
                     </>
                   ) : (
                     <div className="text-center">
-                      <LightBulbIcon className="w-16 h-16 text-yellow-5 mb-4 animate-pulse mx-auto" />
+                      <FiPlayCircle className="w-16 h-16 text-[red] mb-4 mx-auto" />
                       <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-8 mb-2">
                         No Live Class Assessments Available Yet!
                       </h2>
-                      <p className="text-md sm:text-lg text-gray-6 max-w-prose mx-auto">
+                      <p className="text-md sm:text-lg text-gray-6 max-w-prose mx-auto mt-5">
                         It looks like the{" "}
                         <span className="font-bold">
                           assessment for this live session isn't ready yet.
@@ -2673,190 +2973,7 @@ const Classroom = () => {
                 </div>
               </div>
             ) : (
-              <div className="bg-white border border-gray-2 rounded-lg shadow-md p-6 mt-6 space-y-6">
-                <h2 className="text-xl font-semibold text-primary">
-                  Explore Classroom Resources
-                </h2>
-
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-8 mb-3">
-                    <svg
-                      xmlns="http://www.w3.org/20/svg"
-                      className="h-5 w-5 inline-block mr-2 text-primary"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H10a2 2 0 01-2-2v-4a2 2 0 012-2h4v-2a2 2 0 012-2h1m-2 8H9a2 2 0 -2 2v4a2 2 0 2 2h1m2-8h2m-2 8H9"
-                      />
-                    </svg>
-                    Uploaded Files
-                  </h3>
-                  {classroom?.classroomresources &&
-                    classroom.classroomresources.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {classroom.classroomresources.map((resource) => (
-                        <div
-                          key={resource.resources_id}
-                          className="bg-gray-50 border border-gray-3 rounded-md p-4 flex flex-col items-center justify-between"
-                        >
-                          <div className="flex items-center w-full">
-                            <svg
-                              xmlns="http://www.w3.org/20/svg"
-                              className="h-6 w-6 mr-2 text-gray-6"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M12 16v-4m0 0l-2-2m2 2l2-2m12-8v14l-4-4H8l-4 4V4h16z"
-                              />
-                            </svg>
-                            <p className="text-sm font-medium text-gray-8 truncate">
-                              {resource.resources_filename}
-                            </p>
-                          </div>
-                          <div className="mt-2 w-full flex justify-center">
-                            <Button
-                              onClick={() => {
-                                const fullUrl = `https://${resource.resources_path}`;
-                                window.open(fullUrl, "_blank");
-                              }}
-                              className="text-primary hover:underline mr-2"
-                            >
-                              View
-                            </Button>
-                            <Button
-                              onClick={() => {
-                                const fullUrl = `https://${resource.resources_path}`;
-                                window.open(fullUrl, "_blank");
-                              }}
-                              variant="outline"
-                              size="sm"
-                              className="rounded-md text-primary border-indigo-3 hover:bg-indigo-50"
-                            >
-                              Download
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-gray-5 italic">No files uploaded yet.</p>
-                  )}
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-8 mb-3">
-                    <svg
-                      xmlns="http://www.w3.org/20/svg"
-                      className="h-5 w-5 inline-block mr-2 text-primary"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M13.828 10.172a4 4 0 -5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.99a4 4 0 5.656 0l4-4a4 4 0 10-5.656-5.656l-1.1 1.1"
-                      />
-                    </svg>
-                    External Links
-                  </h3>
-                  {classroom?.classroomresources_link &&
-                    Array.isArray(classroom.classroomresources_link) &&
-                    classroom.classroomresources_link.length > 0 ? (
-                    <ul className="space-y-2">
-                      {classroom.classroomresources_link.map(
-                        (link: string, index: number) => (
-                          <li key={index}>
-                            <a
-                              href={link}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-indigo-6 hover:text-indigo-8 hover:underline text-sm"
-                            >
-                              {link || "No link provided"}
-                            </a>
-                          </li>
-                        )
-                      )}
-                    </ul>
-                  ) : (
-                    <p className="text-gray-5 italic">
-                      No external links provided.
-                    </p>
-                  )}
-                </div>
-                <hr className="my-6 border-t border-gray-6" />
-
-                <h3 className="text-lg font-semibold text-gray-8 mb-3">
-                  <svg
-                    xmlns="http://www.w3.org/20/svg"
-                    className="h-5 w-5 inline-block mr-2 text-green-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  Grades & Certification
-                </h3>
-
-                {classroom?.classroomoutlines &&
-                  classroom.classroomoutlines.every(
-                    (outline) => outline.mark_as_read === 1
-                  ) &&
-                  classroom.classroomoutlines.some(
-                    (outline) =>
-                      outline.assessments && outline.assessments.length > 0
-                  ) ? (
-                  <Button
-                    className="mt-4  flex justify-center rounded-md"
-                    onClick={handleViewGradesClick}
-                    variant={"gray"}
-                  >
-                    View Grades
-                  </Button>
-                ) : (
-                  <Button
-                    className="mt-4 flex justify-center rounded-md"
-                    variant={"gray"}
-                    disabled
-                  >
-                    View Grades (Complete All Assessments)
-                  </Button>
-                )}
-
-                {!classroom?.classroomoutlines?.some(
-                  (outline) =>
-                    outline.assessments && outline.assessments.length > 0
-                ) && (
-                    <p className="text-sm text-gray-5 mt-2 italic">
-                      No assessments available for this classroom.
-                    </p>
-                  )}
-                <Button
-                  onClick={handleToggleView}
-                  variant="outline"
-                  className="rounded-md text-indigo-6 border-indigo-3 hover:bg-indigo-50"
-                >
-                  Back to Classroom
-                </Button>
-              </div>
+              <div className=""></div>
             )}
 
             <Drawer
@@ -2869,8 +2986,9 @@ const Classroom = () => {
                 <h3 className="text-xl font-semibold">Class Tools</h3>
                 <ul className="space-y-4 mt-4">
                   <li
-                    className={`cursor-pointer px-4 py-2 rounded-lg ${selectedTool === null ? "bg-primary text-white" : ""
-                      }`}
+                    className={`cursor-pointer px-4 py-2 rounded-lg ${
+                      selectedTool === null ? "bg-primary text-white" : ""
+                    }`}
                     onClick={() => setSelectedTool(null)}
                   >
                     Main Classroom
@@ -2878,10 +2996,11 @@ const Classroom = () => {
                   {tools.map((tool) => (
                     <li
                       key={tool.tool_id}
-                      className={`capitalize cursor-pointer px-4 py-2 rounded-lg ${selectedTool === tool.tool_name
-                        ? "bg-primary text-white"
-                        : ""
-                        }`}
+                      className={`capitalize cursor-pointer px-4 py-2 rounded-lg ${
+                        selectedTool === tool.tool_name
+                          ? "bg-primary text-white"
+                          : ""
+                      }`}
                       onClick={() => setSelectedTool(tool.tool_name)}
                     >
                       {tool.tool_name}
@@ -2966,6 +3085,158 @@ const Classroom = () => {
             </div>
           </DialogContent>
         </Dialog>
+
+        {showToolChat && selectedTool && (
+          <motion.div
+            initial={{ x: 300, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: 300, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="
+      fixed top-0 z-40
+      bg-white border-l shadow-2xl
+      flex flex-col
+      h-screen
+      right-0
+      left-[18rem]   /* ✅ Adjust for sidenav width */
+    "
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-4 border-b bg-gray-50">
+              <h3 className="text-base font-semibold text-[#6200EE]">
+                {selectedTool} Assistant
+              </h3>
+              <button
+                onClick={() => setShowToolChat(false)}
+                className="text-gray-500 hover:text-red-500 transition"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Chat Messages */}
+            <div
+              id="tool-chat-scroll"
+              className="flex-1 overflow-y-auto p-5 space-y-3 bg-gray-50"
+            >
+              {toolChatMessages.length === 0 && (
+                <p className="text-gray-400 text-center text-sm mt-6">
+                  Start a conversation with {selectedTool}
+                </p>
+              )}
+
+              {toolChatMessages.map((msg, i) => (
+                <div
+                  key={i}
+                  className={`flex ${
+                    msg.fromUser ? "justify-end" : "justify-start"
+                  }`}
+                >
+                  <div
+                    className={`p-3 rounded-2xl max-w-[75%] text-sm ${
+                      msg.fromUser
+                        ? "bg-[#6200EE] text-white rounded-tr-none"
+                        : "bg-white text-gray-800 rounded-tl-none border"
+                    }`}
+                  >
+                    {/* Copy + Voice + Pause Buttons for AI Messages */}
+                    {!msg.fromUser && (
+                      <div className="flex justify-end gap-3 mb-1 text-xs text-gray-500">
+                        {/* Copy */}
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(msg.text);
+                            const toast = document.createElement("div");
+                            toast.innerText = "Copied!";
+                            toast.className =
+                              "fixed bottom-6 right-6 bg-green-600 text-white text-sm px-3 py-2 rounded-md shadow-md animate-fadeInOut z-[9999]";
+                            document.body.appendChild(toast);
+                            setTimeout(() => toast.remove(), 1200);
+                          }}
+                          className="hover:text-[#6200EE] flex items-center gap-1"
+                          title="Copy"
+                        >
+                          <FiCopy size={14} /> Copy
+                        </button>
+
+                        {/* Voice Play / Pause */}
+                        <button
+                          onClick={() => {
+                            if (window.speechSynthesis.speaking) {
+                              window.speechSynthesis.cancel();
+                              setIsSpeaking(false);
+                            } else {
+                              const utterance = new SpeechSynthesisUtterance(
+                                msg.text
+                              );
+                              setIsSpeaking(true);
+                              utterance.onend = () => setIsSpeaking(false);
+                              window.speechSynthesis.speak(utterance);
+                            }
+                          }}
+                          className="hover:text-[#6200EE] flex items-center gap-1"
+                          title={isSpeaking ? "Pause Voice" : "Play Voice"}
+                        >
+                          {isSpeaking ? (
+                            <>
+                              <FiPause size={14} /> Pause
+                            </>
+                          ) : (
+                            <>
+                              <FiVolume2 size={14} /> Voice
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    )}
+                    <p className="whitespace-pre-wrap break-words">
+                      {msg.text}
+                    </p>
+                  </div>
+                </div>
+              ))}
+              <div ref={messagesEndRef} />
+            </div>
+
+            {/* Input Area */}
+            <div className="border-t p-4 bg-white flex items-center gap-3">
+              <input
+                value={toolChatInput}
+                onChange={(e) => setToolChatInput(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleToolChatSend()}
+                placeholder={`Ask ${selectedTool}...`}
+                className="flex-grow border rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-[#6200EE] outline-none bg-gray-50"
+              />
+
+              {/* 🎙 Voice Input Button */}
+              <button
+                onClick={() => handleVoiceInput()}
+                className={`p-3 rounded-full border text-[#6200EE] hover:bg-[#EFE6FD] transition ${
+                  isListening ? "bg-[#EFE6FD]" : ""
+                }`}
+                title="Voice Input"
+              >
+                <FiMic
+                  className={`${isListening ? "text-[#6200EE]" : ""}`}
+                  size={18}
+                />
+              </button>
+
+              {/* 📨 Send Button */}
+              <button
+                onClick={() => handleToolChatSend()}
+                disabled={!toolChatInput.trim() || toolChatLoading}
+                className={`p-3 rounded-full text-white ${
+                  toolChatLoading
+                    ? "bg-gray-400"
+                    : "bg-[#6200EE] hover:bg-[#5300d6]"
+                }`}
+              >
+                <FiSend size={18} />
+              </button>
+            </div>
+          </motion.div>
+        )}
       </div>
       {showCallPopup && (
         <CallPopup
