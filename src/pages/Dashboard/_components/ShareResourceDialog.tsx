@@ -36,6 +36,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../../components/ui/Select";
+import { FormLabel } from "../../../components/ui/Form";
 
 interface IProps {
   resourceName: string;
@@ -119,17 +120,20 @@ const ShareResourceDialog = forwardRef(
               <DialogHeader>
                 <DialogTitle>Share Resource</DialogTitle>
               </DialogHeader>
-              <DialogDescription>
+              <DialogDescription className="m-0 p-0">
                 Enter the User and Resource to Share{" "}
                 <strong>{resourceName}</strong>.
               </DialogDescription>
 
-              <div className="mt-4">
+              <div className="">
+                <label className="font-semibold mb-2">
+                  Team Member
+                </label>
                 <Select
                   value={selectedUserId}
                   onValueChange={setSelectedUserId}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger  className="h-10 rounded-full">
                     <SelectValue placeholder="Select a team member" />
                   </SelectTrigger>
                   <SelectContent>
@@ -142,12 +146,16 @@ const ShareResourceDialog = forwardRef(
                 </Select>
               </div>
 
-              <div className="mt-4">
+              <div className="">
+                <label className="font-semibold mb-2">
+                  Resource
+                </label>
                 <Select
                   value={selectedResourceId}
                   onValueChange={setSelectedResourceId}
+                  
                 >
-                  <SelectTrigger>
+                  <SelectTrigger  className="h-10 rounded-full">
                     <SelectValue placeholder="Select a resource" />
                   </SelectTrigger>
                   <SelectContent>

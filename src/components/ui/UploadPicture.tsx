@@ -36,7 +36,7 @@ const UploadPicture: React.FC<UploadPictureProps> = ({ onFileChange }) => {
     <div className="flex flex-col items-center space-y-4 p-4">
       <label
         htmlFor="upload-picture"
-        className="cursor-pointer flex flex-col items-center justify-center w-32 h-32 bg-white border-2 border-dashed border-gray-300 rounded-full hover:bg-gray-100 transition relative"
+        className="cursor-pointer flex  items-center justify-center w-32 bg-white b border-gray-300  hover:bg-gray-100 transition relative"
       >
         {previewUrl ? (
           <img
@@ -53,7 +53,7 @@ const UploadPicture: React.FC<UploadPictureProps> = ({ onFileChange }) => {
                 handleBrowseClick();
               }}
             />
-            <p className="mt-2 text-sm text-center text-gray-500">
+            <p className="text-sm text-center text-gray-500">
               Browse Picture
             </p>
           </>

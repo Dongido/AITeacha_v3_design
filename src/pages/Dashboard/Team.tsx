@@ -26,7 +26,7 @@ const Team = () => {
   const { members, loading, error, inviteLoading, inviteError } =
     useAppSelector((state) => state.team);
 
-    //  console.log("member", members)
+     console.log("member", members)
   const navigate = useNavigate();
   const [email, setEmail] = useState<string>("");
   const [userDetails, setUserDetails] = useState<any>(null);
@@ -34,6 +34,8 @@ const Team = () => {
   const [showToast, setShowToast] = useState(false);
   const [isInviteAttempted, setIsInviteAttempted] = useState(false);
   const addTeachersDialogRef = useRef<{ openDialog: () => void }>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+
 
   const handleAddStudentsClick = () => {
     addTeachersDialogRef.current?.openDialog();
@@ -77,6 +79,21 @@ const Team = () => {
   const handleTeachersAdded = () => {
     dispatch(loadTeamMembers());
   };
+
+
+  const filteredMembers = members.filter((member) => {
+  if (!searchTerm.trim()) return true;
+  const fullName = `${member.firstname} ${member.lastname}`.toLowerCase();
+  return (
+    fullName.includes(searchTerm.toLowerCase()) ||
+    member.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+});
+
+
+  
+
+
   const handleDownloadTemplate = () => {
     const csvContent =
       "firstname,lastname,phone,email,country,city,gender,age,disability_details\n" +
@@ -179,8 +196,8 @@ const Team = () => {
 
   return (
     <ToastProvider>
-      <div className="mt-4">
-        {userDetails && isEmailVerified === 1 && (
+      <div className="p-3 md:p-[30px]">
+        {/* {userDetails && isEmailVerified === 1 && (
           <div
             className="bg-[#e5dbff] mt-3 mb-4 text-black p-4 rounded-md flex justify-center items-center"
             style={{
@@ -192,15 +209,23 @@ const Team = () => {
               Teachers Are Heroes🎉
             </span>
           </div>
-        )}
-        <div className="flex items-center gap-2 my-8">
+        )} */}
+
+        <div>
+          <h5 className="m-0 font-semibold text-lg">Teams</h5>
+          <p  className="text-sm m-0">invite or add teammates</p>
+        </div>
+        <div className="bg-white gap-2 my-8 rounded-2xl p-6">
+          <label className="block test-sm font-semibold mb-1">Email</label>
+          <div className="flex items-center bg-white gap-2">
+
           <Input
             type="email"
             placeholder="Enter email to invite"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="w-full py-3"
-          />
+            />
           <Button
             onClick={handleInvite}
             disabled={inviteLoading}
@@ -208,22 +233,34 @@ const Team = () => {
             className={`px-4 py-3 rounded-md ${
               inviteLoading ? "opacity-50 cursor-not-allowed" : ""
             }`}
-          >
+            >
             {inviteLoading ? "Inviting..." : "Invite"}
           </Button>
+          </div>
         </div>
-        <div className="relative flex justify-center items-center my-6">
-          <div className="absolute inset-x-0 h-px bg-gray-300"></div>
-          <span className="relative z-10 bg-white px-4 text-gray-700 text-sm font-bold">
-            OR
-          </span>
+        <div className="relative my-[32px]">
+          <h6 className="font-semibold">All Teamates</h6>
         </div>
-        <div className="py-2">
-          <div className="mb-4 flex justify-end">
+
+
+        <div className="bg-white p-5 rounded-2xl">
+        
+        <div className="py-2 flex flex-wrap gap-3 justify-between mb-5 items-center">
+          {/* search Teamates */}
+          <div>
+            <Input
+              type="text"
+              placeholder="Search team by name"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="py-3 max-w-full w-[300px] bg-gray-100"
+            />
+
+          </div>
+          {/* sample and upload csv */}
+          <div className="flex justify-end">
             <Button
               onClick={handleDownloadTemplate}
-              variant={"outlined"}
-              className="rounded-md underline border border-gray-200"
             >
               Sample Template
             </Button>
@@ -236,7 +273,7 @@ const Team = () => {
             </Button>
           </div>
         </div>
-        <BaseTable data={members} columns={teamColumns} />{" "}
+        <BaseTable data={filteredMembers} columns={teamColumns} />{" "}
         <AddSchoolTeachersDialog
           ref={addTeachersDialogRef}
           onSuccess={handleTeachersAdded}
@@ -253,6 +290,9 @@ const Team = () => {
             <ToastClose />
           </Toast>
         )}
+
+
+        </div>
         <ToastViewport />
       </div>
     </ToastProvider>

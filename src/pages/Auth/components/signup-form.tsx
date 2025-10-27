@@ -1,3 +1,747 @@
+// import { HTMLAttributes, useState, useEffect } from "react";
+// import { z } from "zod";
+// import {
+//   Form,
+//   FormControl,
+//   FormField,
+//   FormItem,
+//   FormLabel,
+//   FormMessage,
+// } from "../../../components/ui/Form";
+// import { Input } from "../../../components/ui/Input";
+// import { cn } from "../../../lib/utils";
+// import { Button } from "../../../components/ui/Button";
+// import { useForm } from "react-hook-form";
+// import { zodResolver } from "@hookform/resolvers/zod";
+// import { PasswordInput } from "../../../components/ui/PasswordInput";
+// import {
+//   ToastProvider,
+//   Toast,
+//   ToastTitle,
+//   ToastViewport,
+// } from "../../../components/ui/Toast";
+// import { useDispatch } from "react-redux";
+// import { AppDispatch } from "../../../store";
+// import { Link, useNavigate } from "react-router-dom";
+// import { registerUser, SignupResponse } from "../../../api/auth";
+// import { FcGoogle } from "react-icons/fc";
+// import { Checkbox } from "../../../components/ui/Checkbox";
+// import {
+//   Select,
+//   SelectTrigger,
+//   SelectContent,
+//   SelectItem,
+//   SelectValue,
+// } from "../../../components/ui/Select";
+// import { Country, State} from "country-state-city";
+
+// declare const apiClient: any;
+
+// interface SignupFormProps extends HTMLAttributes<HTMLDivElement> { }
+
+// const containsUrl = (text: string): boolean => {
+//   if (!text) return false;
+//   const urlRegex = /(https?:\/\/|www\.)[^\s]+/i;
+//   return urlRegex.test(text);
+// };
+
+// const formSchema = z
+//   .object({
+//     firstName: z
+//       .string()
+//       .min(3, { message: "First name must be at least 3 characters long" })
+//       .refine((val) => !containsUrl(val), {
+//         message: "First name cannot contain URLs",
+//       }),
+//     lastName: z
+//       .string()
+//       .min(3, { message: "Last name must be at least 3 characters long" })
+//       .refine((val) => !containsUrl(val), {
+//         message: "Last name cannot contain URLs",
+//       }),
+//     email: z
+//       .string()
+//       .min(1, { message: "Please enter your email" })
+//       .email({ message: "Invalid email address" }),
+//     phone: z
+//       .string()
+//       .min(10, { message: "Phone number must be at least 10 characters" })
+//       .refine((val) => !containsUrl(val), {
+//         message: "Phone number cannot contain URLs",
+//       }),
+//     gender: z.enum(["Male", "Female", "Other"], {
+//       errorMap: () => ({ message: "Please select a gender" }),
+//     }),
+//     ageRange: z.string().min(1, { message: "Please select an age range" }),
+//     country: z.string().min(1, { message: "Please enter your country" }),
+//     state: z.string().min(1, { message: "Please enter your state" }),
+//     city: z.string().min(1, { message: "Please enter your city" }),
+//     password: z
+//       .string()
+//       .min(8, { message: "Password must be at least 8 characters long" }),
+//     referred_by: z
+//       .string()
+//       .optional()
+//       .refine((val) => !containsUrl(val || ""), {
+//         message: "Referral code cannot contain URLs",
+//       }),
+//     acceptTerms: z.boolean().refine((val) => val, {
+//       message: "You must accept the Terms & Policy",
+//     }),
+//     receiveNewsletters: z.boolean(),
+//     confirmPassword: z
+//       .string()
+//       .min(1, { message: "Please confirm your password" }),
+//     hasDisability: z.boolean(),
+//     disabilityDetails: z.string().optional(),
+//   })
+//   .refine((data) => data.password === data.confirmPassword, {
+//     message: "Passwords do not match",
+//     path: ["confirmPassword"],
+//   })
+//   .refine(
+//     (data) => {
+//       if (
+//         data.hasDisability &&
+//         (!data.disabilityDetails || data.disabilityDetails.trim() === "")
+//       ) {
+//         return false;
+//       }
+//       return true;
+//     },
+//     {
+//       message: "Please specify your disability",
+//       path: ["disabilityDetails"],
+//     }
+//   );
+
+// type Option = {
+//   value: string;
+//   label: string;
+// };
+
+// export function SignupForm({ className, ...props }: SignupFormProps) {
+//   const [isLoading, setIsLoading] = useState(false);
+//   const [toastOpen, setToastOpen] = useState(false);
+//   const [toastMessage, setToastMessage] = useState("");
+//   const [toastVariant, setToastVariant] = useState<"default" | "destructive">(
+//     "default"
+//   );
+//   const [role_id, setRoleId] = useState<number>(4);
+//   const [statesOfSelectedCountry, setStatesOfSelectedCountry] = useState<
+//     Option[]
+//   >([]);
+//   //  console.log("statesOfSelectedCountry", statesOfSelectedCountry);
+//   const countryOptions: Option[] = Country.getAllCountries().map((country) => ({
+//     value: country.isoCode,
+//     label: country.name,
+//   }));
+ 
+
+
+
+//   const navigate = useNavigate();
+//   const dispatch = useDispatch<AppDispatch>();
+
+//   const ageRanges: Option[] = [
+//     { value: "5-10", label: "5-10" },
+//     { value: "11-15", label: "11-15" },
+//     { value: "16-21", label: "16-21" },
+//     { value: "22-28", label: "22-28" },
+//     { value: "29-40", label: "29-40" },
+//     { value: "41-45", label: "41-45" },
+//     { value: "46-53", label: "46-53" },
+//     { value: "54-60", label: "54-60" },
+//     { value: "60-70", label: "60-70" },
+//     { value: "71-100", label: "71-100" },
+//   ];
+
+//   const form = useForm<z.infer<typeof formSchema>>({
+//     resolver: zodResolver(formSchema),
+//     defaultValues: {
+//       firstName: "",
+//       lastName: "",
+//       email: "",
+//       phone: "",
+//       gender: "Male",
+//       ageRange: "",
+//       country: "",
+//       state: "",
+//       city: "",
+//       referred_by: "",
+//       password: "",
+//       confirmPassword: "",
+//       acceptTerms: false,
+//       receiveNewsletters: false,
+//       hasDisability: false,
+//       disabilityDetails: "",
+//     },
+//   });
+
+//   const hasDisability = form.watch("hasDisability");
+//    const selectedCountry = form.watch("country");
+//    useEffect(() => {
+//   if (selectedCountry) {
+//     const states = State.getStatesOfCountry(selectedCountry).map((state) => ({
+//       value: state.isoCode,
+//       label: state.name,
+//     }));
+//     setStatesOfSelectedCountry(states);
+//     form.setValue("state", "");
+//   } else {
+//     setStatesOfSelectedCountry([]);
+//   }
+
+//   // console.log("Stored role from localStorage:", storedRole);
+// }, [selectedCountry, form]);
+
+//   // let role_id: number = 4;
+
+//   const storedRole = localStorage.getItem("selectedRole");
+//   useEffect(() => {
+//     const storedRole = localStorage.getItem("selectedRole");
+//     const storedReferralCode = localStorage.getItem("referralCode");
+//     if (storedReferralCode) {
+//       form.setValue("referred_by", storedReferralCode);
+//     }
+//     let newRoleId = 4;
+//     if (storedRole === "student") {
+//       newRoleId = 3;
+//     } else if (storedRole === "teacher" || storedRole === "lecturer") {
+//       newRoleId = 2;
+//     }
+
+//     setRoleId(newRoleId);
+//     console.log(`Stored role: ${storedRole} → roleId: ${newRoleId}`);
+
+//     // if (storedRole === "student") {
+//     //   setRoleId(3)
+//     //   // role_id = 3;
+//     // } else if (storedRole === "teacher" || storedRole === "lecturer") {
+//     //   // role_id = 2;
+//     //   setRoleId(2)
+//     // }
+//     // console.log("Stored role from localStorage:", storedRole);
+//     // console.log("Determined role_id:", role_id);
+//   }, [form]);
+
+
+//   async function onSubmit(data: z.infer<typeof formSchema>) {
+//     setIsLoading(true);
+//     console.log("roleid", role_id)
+
+//     try {
+//       const res: SignupResponse = await registerUser(
+//         data.email,
+//         data.firstName,
+//         data.lastName,
+//         data.password,
+//         role_id,
+//         data.acceptTerms,
+//         data.receiveNewsletters,
+//         data.phone,
+//         undefined,
+//         data.country,
+//         data.city,
+//         data.gender,
+//         data.ageRange,
+//         data.hasDisability ? data.disabilityDetails : undefined,
+//         data.referred_by,
+//         undefined,
+//         data.state
+//       );
+//       setToastMessage(res.message || "Signup successful! Redirecting...");
+//       setToastVariant("default");
+//       localStorage.setItem("userEmail", data.email);
+
+//       setToastOpen(true);
+//       setTimeout(() => {
+//         navigate("/auth/verify-email");
+//       }, 1500);
+//     } catch (error: any) {
+//       setToastMessage(error.message || "Oops! Something went wrong.");
+//       setToastVariant("destructive");
+//       setToastOpen(true);
+//     } finally {
+//       setIsLoading(false);
+//     }
+//   }
+
+//   return (
+//     <ToastProvider swipeDirection="right">
+//       <div className={cn("grid gap-6", className)} {...props}>
+//         <Form {...form}>
+//           <form onSubmit={form.handleSubmit(onSubmit)}>
+//             <div className="grid gap-4">
+//               <div className="flex space-x-4">
+//                 <FormField
+//                   control={form.control}
+//                   name="firstName"
+//                   render={({ field }) => (
+//                     <FormItem className="space-y-1 w-full">
+//                       <FormLabel className="font-semibold">
+//                         First Name
+//                       </FormLabel>
+//                       <FormControl>
+//                         <Input
+//                           placeholder="Enter First Name"
+//                           className="rounded-full"
+//                           {...field}
+//                         />
+//                       </FormControl>
+//                       <FormMessage className="text-red-700" />
+//                     </FormItem>
+//                   )}
+//                 />
+//                 <FormField
+//                   control={form.control}
+//                   name="lastName"
+//                   render={({ field }) => (
+//                     <FormItem className="space-y-1 w-full">
+//                       <FormLabel className="font-semibold">Last Name</FormLabel>
+//                       <FormControl>
+//                         <Input
+//                           placeholder="Enter Last Name"
+//                           className="rounded-full"
+//                           {...field}
+//                         />
+//                       </FormControl>
+//                       <FormMessage className="text-red-700" />
+//                     </FormItem>
+//                   )}
+//                 />
+//               </div>
+//               <div className="flex space-x-4">
+//                 <FormField
+//                   control={form.control}
+//                   name="email"
+//                   render={({ field }) => (
+//                     <FormItem className="space-y-1 w-full">
+//                       <FormLabel className="font-semibold">Email</FormLabel>
+//                       <FormControl>
+//                         <Input
+//                           placeholder="Enter Email"
+//                           className="rounded-full"
+//                           {...field}
+//                         />
+//                       </FormControl>
+//                       <FormMessage className="text-red-700" />
+//                     </FormItem>
+//                   )}
+//                 />
+//                 <FormField
+//                   control={form.control}
+//                   name="phone"
+//                   render={({ field }) => (
+//                     <FormItem className="space-y-1 w-full">
+//                       <FormLabel className="font-semibold">
+//                         Phone Number
+//                       </FormLabel>
+//                       <FormControl>
+//                         <Input
+//                           placeholder="Enter Phone Number"
+//                           className="rounded-full"
+//                           {...field}
+//                         />
+//                       </FormControl>
+//                       <FormMessage className="text-red-700" />
+//                     </FormItem>
+//                   )}
+//                 />
+//               </div>
+
+//               <div className="flex space-x-4">
+//                 <FormField
+//                   control={form.control}
+//                   name="gender"
+//                   render={({ field }) => (
+//                     <FormItem className="flex flex-col w-full space-y-2">
+//                       <FormLabel className="font-semibold mt-2">
+//                         Gender
+//                       </FormLabel>
+//                       <Select
+//                         onValueChange={field.onChange}
+//                         value={field.value}
+//                       >
+//                         <FormControl>
+//                           <SelectTrigger className="h-10 rounded-full">
+//                             <SelectValue placeholder="Select Gender" />
+//                           </SelectTrigger>
+//                         </FormControl>
+//                         <SelectContent>
+//                           <SelectItem value="Male">Male</SelectItem>
+//                           <SelectItem value="Female">Female</SelectItem>
+//                           <SelectItem value="Other">Other</SelectItem>
+//                         </SelectContent>
+//                       </Select>
+//                       <FormMessage className="text-red-700" />
+//                     </FormItem>
+//                   )}
+//                 />
+//                 <FormField
+//                   control={form.control}
+//                   name="ageRange"
+//                   render={({ field }) => (
+//                     <FormItem className="flex flex-col w-full space-y-2">
+//                       <FormLabel className="font-semibold mt-2">
+//                         Age Range
+//                       </FormLabel>
+//                       <Select
+//                         onValueChange={field.onChange}
+//                         value={field.value}
+//                       >
+//                         <FormControl>
+//                           <SelectTrigger className="h-10 rounded-full">
+//                             <SelectValue placeholder="Select Age Range" />
+//                           </SelectTrigger>
+//                         </FormControl>
+//                         <SelectContent>
+//                           {ageRanges.map((range) => (
+//                             <SelectItem key={range.value} value={range.value}>
+//                               {range.label}
+//                             </SelectItem>
+//                           ))}
+//                         </SelectContent>
+//                       </Select>
+//                       <FormMessage className="text-red-700" />
+//                     </FormItem>
+//                   )}
+//                 />
+//               </div>
+//               {/* 
+//               <div className="flex space-x-4">
+//                 <FormField
+//                   control={form.control}
+//                   name="country"
+//                   render={({ field }) => (
+//                     <FormItem className="space-y-1 w-full">
+//                       <FormLabel className="font-semibold">Country</FormLabel>
+//                       <FormControl>
+//                         <Input
+//                           placeholder="Enter Country"
+//                           className="rounded-full"
+//                           {...field}
+//                         />
+//                       </FormControl>
+//                       <FormMessage className="text-red-700" />
+//                     </FormItem>
+//                   )}
+//                 />
+//                 <FormField
+//                   control={form.control}
+//                   name="state"
+//                   render={({ field }) => (
+//                     <FormItem className="space-y-1 w-full">
+//                       <FormLabel className="font-semibold">State</FormLabel>
+//                       <FormControl>
+//                         <Input
+//                           placeholder="Enter State"
+//                           className="rounded-full"
+//                           {...field}
+//                         />
+//                       </FormControl>
+//                       <FormMessage className="text-red-700" />
+//                     </FormItem>
+//                   )}
+//                 />
+//               </div> */}
+
+//               <div className="flex space-x-4">
+//                 <FormField
+//                   control={form.control}
+//                   name="country"
+//                   render={({ field }) => (
+//                     <FormItem className="flex flex-col w-full space-y-2">
+//                       <FormLabel className="font-semibold mt-2">
+//                         Country
+//                       </FormLabel>
+//                       <Select
+//                         onValueChange={field.onChange}
+//                         value={field.value}
+//                       >
+//                         <FormControl>
+//                           <SelectTrigger className="h-10 rounded-full">
+//                             <SelectValue placeholder="Select a Country" />
+//                           </SelectTrigger>
+//                         </FormControl>
+//                         <SelectContent>
+//                           {countryOptions.map((option) => (
+//                             <SelectItem key={option.value} value={option.value}>
+//                               {option.label}
+//                             </SelectItem>
+//                           ))}
+//                         </SelectContent>
+//                       </Select>
+//                       <FormMessage className="text-red-700" />
+//                     </FormItem>
+//                   )}
+//                 />
+
+//                 <FormField
+//                   control={form.control}
+//                   name="state"
+//                   render={({ field }) => (
+//                     <FormItem className="flex flex-col w-full space-y-2">
+//                       <FormLabel className="font-semibold mt-2">
+//                         State
+//                       </FormLabel>
+//                       <Select
+//                         onValueChange={field.onChange}
+//                         value={field.value}
+//                         disabled={statesOfSelectedCountry.length === 0}
+//                       >
+//                         <FormControl>
+//                           <SelectTrigger className="h-10 rounded-full">
+//                             <SelectValue placeholder="Select a State" />
+//                           </SelectTrigger>
+//                         </FormControl>
+//                         <SelectContent>
+//                           {statesOfSelectedCountry.map((option) => (
+//                             <SelectItem key={option.value} value={option.value}>
+//                               {option.label}
+//                             </SelectItem>
+//                           ))}
+//                         </SelectContent>
+//                       </Select>
+//                       <FormMessage className="text-red-700" />
+//                     </FormItem>
+//                   )}
+//                 />
+//               </div>
+//               <FormField
+//                 control={form.control}
+//                 name="city"
+//                 render={({ field }) => (
+//                   <FormItem className="space-y-1 w-full">
+//                     <FormLabel className="font-semibold">City</FormLabel>
+//                     <FormControl>
+//                       <Input
+//                         placeholder="Enter City"
+//                         className="rounded-full"
+//                         {...field}
+//                       />
+//                     </FormControl>
+//                     <FormMessage className="text-red-700" />
+//                   </FormItem>
+//                 )}
+//               />
+
+//               <div className="grid gap-2">
+//                 <FormField
+//                   control={form.control}
+//                   name="hasDisability"
+//                   render={({ field }) => (
+//                     <FormItem className="flex flex-row items-start space-x-3 space-y-0 p-4 border border-gray-200 rounded-lg">
+//                       <FormControl>
+//                         <Checkbox
+//                           checked={field.value}
+//                           onCheckedChange={field.onChange}
+//                           id="hasDisability"
+//                         />
+//                       </FormControl>
+//                       <div className="space-y-1 leading-none">
+//                         <FormLabel htmlFor="hasDisability">
+//                           Do you have a disability?
+//                         </FormLabel>
+//                       </div>
+//                       <FormMessage />
+//                     </FormItem>
+//                   )}
+//                 />
+//                 {hasDisability && (
+//                   <FormField
+//                     control={form.control}
+//                     name="disabilityDetails"
+//                     render={({ field }) => (
+//                       <FormItem className="space-y-1">
+//                         <FormLabel className="font-semibold">
+//                           Disability Details
+//                         </FormLabel>
+//                         <FormControl>
+//                           <Input
+//                             placeholder="e.g., Visually Impaired, Hearing Impaired"
+//                             className="rounded-full"
+//                             {...field}
+//                           />
+//                         </FormControl>
+//                         <FormMessage className="text-red-700" />
+//                       </FormItem>
+//                     )}
+//                   />
+//                 )}
+//               </div>
+
+//               <FormField
+//                 control={form.control}
+//                 name="password"
+//                 render={({ field }) => (
+//                   <FormItem className="space-y-1">
+//                     <FormLabel className="font-semibold">Password</FormLabel>
+//                     <FormControl>
+//                       <PasswordInput
+//                         placeholder="********"
+//                         className="rounded-full"
+//                         {...field}
+//                       />
+//                     </FormControl>
+//                     <FormMessage className="text-red-700" />
+//                   </FormItem>
+//                 )}
+//               />
+//               <FormField
+//                 control={form.control}
+//                 name="confirmPassword"
+//                 render={({ field }) => (
+//                   <FormItem className="space-y-1">
+//                     <FormLabel className="font-semibold">
+//                       Confirm Password
+//                     </FormLabel>
+//                     <FormControl>
+//                       <PasswordInput
+//                         placeholder="********"
+//                         className="rounded-full"
+//                         {...field}
+//                       />
+//                     </FormControl>
+//                     <FormMessage className="text-red-700" />
+//                   </FormItem>
+//                 )}
+//               />
+//               <FormField
+//                 control={form.control}
+//                 name="referred_by"
+//                 render={({ field }) => (
+//                   <FormItem className="space-y-1 w-full">
+//                     <FormLabel className="font-semibold">
+//                       Referred By (Optional)
+//                     </FormLabel>
+//                     <FormControl>
+//                       <Input
+//                         placeholder="Enter referral code"
+//                         className="rounded-full"
+//                         {...field}
+//                       />
+//                     </FormControl>
+//                     <FormMessage className="text-red-700" />
+//                   </FormItem>
+//                 )}
+//               />
+//               <div className="flex space-x-6">
+//                 <div className="flex items-center space-x-2">
+//                   <FormField
+//                     control={form.control}
+//                     name="acceptTerms"
+//                     render={({ field }) => (
+//                       <FormItem className="flex items-center space-x-2">
+//                         <FormControl>
+//                           <Checkbox
+//                             id="acceptTerms"
+//                             checked={field.value}
+//                             onCheckedChange={field.onChange}
+//                           />
+//                         </FormControl>
+//                         <a
+//                           href="/terms-of-service"
+//                           target="_blank"
+//                           rel="noopener noreferrer"
+//                           className="text-blue-600 underline"
+//                         >
+//                           Accept Terms & Policy
+//                         </a>
+//                         <FormMessage className="text-red-700" />
+//                       </FormItem>
+//                     )}
+//                   />
+//                 </div>
+//                 <div className="flex items-center space-x-2">
+//                   <FormField
+//                     control={form.control}
+//                     name="receiveNewsletters"
+//                     render={({ field }) => (
+//                       <FormItem className="flex items-center space-x-2">
+//                         <FormControl>
+//                           <Checkbox
+//                             id="receiveNewsletters"
+//                             checked={field.value}
+//                             onCheckedChange={field.onChange}
+//                           />
+//                         </FormControl>
+//                         <FormLabel
+//                           htmlFor="receiveNewsletters"
+//                           className="text-sm text-gray-700"
+//                         >
+//                           Receive Newsletters
+//                         </FormLabel>
+//                       </FormItem>
+//                     )}
+//                   />
+//                 </div>
+//               </div>
+//               <Button
+//                 className="mt-2 bg-primary text-white rounded-full"
+//                 type="submit"
+//                 disabled={isLoading}
+//               >
+//                 {isLoading ? "Signing up..." : "Sign Up"}
+//               </Button>
+//               <div className="relative my-3">
+//                 <div className="absolute inset-0 flex items-center">
+//                   <div className="w-full border-t border-gray-300"></div>
+//                 </div>
+//                 <div className="relative flex justify-center text-sm">
+//                   <span className="bg-white px-2 text-gray-900">
+//                     or continue with
+//                   </span>
+//                 </div>
+//               </div>
+//             </div>
+//           </form>
+//         </Form>
+//         <div className="flex flex-col sm:flex-row justify-center mt-0 space-y-4 sm:space-y-0 sm:space-x-4">
+//           <Button
+//             variant="outline"
+//             type="button"
+//             className="w-full flex items-center rounded-full justify-center"
+//             onClick={(event) => {
+//               event.preventDefault();
+//               try {
+//                 const googleAuthUrl = `https://vd.aiteacha.com/api/auth/google/${storedRole}?redirect_uri=${encodeURIComponent(
+//                   window.location.origin +
+//                   `/api/auth/google/${storedRole}/callback`
+//                 )}`;
+//                 console.log("Constructed Google Auth URL:", googleAuthUrl);
+
+//                 window.location.href = googleAuthUrl;
+//               } catch (error: any) {
+//                 console.log(error);
+//                 setToastMessage(
+//                   error.message || "Google login failed. Please try again."
+//                 );
+//                 setToastVariant("destructive");
+//                 setToastOpen(true);
+//               }
+//             }}
+//           >
+//             <FcGoogle className="mr-2" /> Google
+//           </Button>
+//         </div>
+//         <Toast
+//           open={toastOpen}
+//           onOpenChange={setToastOpen}
+//           variant={toastVariant}
+//         >
+//           <ToastTitle>{toastMessage}</ToastTitle>
+//         </Toast>
+//         <ToastViewport />
+//       </div>
+//     </ToastProvider>
+//   );
+// }
+
+
+
+
+
 import { HTMLAttributes, useState, useEffect } from "react";
 import { z } from "zod";
 import {
@@ -20,11 +764,8 @@ import {
   ToastTitle,
   ToastViewport,
 } from "../../../components/ui/Toast";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../../../store";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { registerUser, SignupResponse } from "../../../api/auth";
-import { FcGoogle } from "react-icons/fc";
 import { Checkbox } from "../../../components/ui/Checkbox";
 import {
   Select,
@@ -33,11 +774,14 @@ import {
   SelectItem,
   SelectValue,
 } from "../../../components/ui/Select";
-import { Country, State} from "country-state-city";
 
-declare const apiClient: any;
+import { motion, AnimatePresence } from "framer-motion";
+import { Country, State } from "country-state-city";
+import { FcGoogle } from "react-icons/fc";
 
-interface SignupFormProps extends HTMLAttributes<HTMLDivElement> { }
+import { ChevronLeft, Eye, EyeOff } from "lucide-react";
+
+interface SignupFormProps extends HTMLAttributes<HTMLDivElement> {}
 
 const containsUrl = (text: string): boolean => {
   if (!text) return false;
@@ -45,53 +789,37 @@ const containsUrl = (text: string): boolean => {
   return urlRegex.test(text);
 };
 
+// ✅ Validation Schema
 const formSchema = z
   .object({
     firstName: z
       .string()
-      .min(3, { message: "First name must be at least 3 characters long" })
+      .min(3, "First name must be at least 3 characters long")
       .refine((val) => !containsUrl(val), {
         message: "First name cannot contain URLs",
       }),
     lastName: z
       .string()
-      .min(3, { message: "Last name must be at least 3 characters long" })
+      .min(3, "Last name must be at least 3 characters long")
       .refine((val) => !containsUrl(val), {
         message: "Last name cannot contain URLs",
       }),
-    email: z
-      .string()
-      .min(1, { message: "Please enter your email" })
-      .email({ message: "Invalid email address" }),
-    phone: z
-      .string()
-      .min(10, { message: "Phone number must be at least 10 characters" })
-      .refine((val) => !containsUrl(val), {
-        message: "Phone number cannot contain URLs",
-      }),
+    email: z.string().email("Invalid email address"),
+    phone: z.string().min(10, "Phone number must be at least 10 characters"),
     gender: z.enum(["Male", "Female", "Other"], {
       errorMap: () => ({ message: "Please select a gender" }),
     }),
-    ageRange: z.string().min(1, { message: "Please select an age range" }),
-    country: z.string().min(1, { message: "Please enter your country" }),
-    state: z.string().min(1, { message: "Please enter your state" }),
-    city: z.string().min(1, { message: "Please enter your city" }),
-    password: z
-      .string()
-      .min(8, { message: "Password must be at least 8 characters long" }),
-    referred_by: z
-      .string()
-      .optional()
-      .refine((val) => !containsUrl(val || ""), {
-        message: "Referral code cannot contain URLs",
-      }),
+    ageRange: z.string().min(1, "Please select an age range"),
+    country: z.string().min(1, "Please select a country"),
+    state: z.string().min(1, "Please select a state"),
+    city: z.string().min(1, "Please enter your city"),
+    password: z.string().min(8, "Password must be at least 8 characters"),
+    confirmPassword: z.string().min(1, "Please confirm your password"),
+    referred_by: z.string().optional(),
     acceptTerms: z.boolean().refine((val) => val, {
       message: "You must accept the Terms & Policy",
     }),
     receiveNewsletters: z.boolean(),
-    confirmPassword: z
-      .string()
-      .min(1, { message: "Please confirm your password" }),
     hasDisability: z.boolean(),
     disabilityDetails: z.string().optional(),
   })
@@ -121,27 +849,33 @@ type Option = {
 };
 
 export function SignupForm({ className, ...props }: SignupFormProps) {
+  const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [statesOfSelectedCountry, setStatesOfSelectedCountry] = useState<
+    Option[]
+  >([]);
+    // const [isLoading, setIsLoading] = useState(false);
   const [toastOpen, setToastOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [toastVariant, setToastVariant] = useState<"default" | "destructive">(
     "default"
   );
   const [role_id, setRoleId] = useState<number>(4);
-  const [statesOfSelectedCountry, setStatesOfSelectedCountry] = useState<
-    Option[]
-  >([]);
+  // const [statesOfSelectedCountry, setStatesOfSelectedCountry] = useState<
+  //   Option[]
+  // >([]);
   //  console.log("statesOfSelectedCountry", statesOfSelectedCountry);
-  const countryOptions: Option[] = Country.getAllCountries().map((country) => ({
-    value: country.isoCode,
-    label: country.name,
-  }));
- 
-
-
+  // const countryOptions: Option[] = Country.getAllCountries().map((country) => ({
+  //   value: country.isoCode,
+  //   label: country.name,
+  // }));
 
   const navigate = useNavigate();
-  const dispatch = useDispatch<AppDispatch>();
+
+  const countryOptions: Option[] = Country.getAllCountries().map((c) => ({
+    value: c.isoCode,
+    label: c.name,
+  }));
 
   const ageRanges: Option[] = [
     { value: "5-10", label: "5-10" },
@@ -156,8 +890,10 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
     { value: "71-100", label: "71-100" },
   ];
 
-  const form = useForm<z.infer<typeof formSchema>>({
+   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    shouldUnregister: false,
+    mode: "onSubmit",
     defaultValues: {
       firstName: "",
       lastName: "",
@@ -179,23 +915,25 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
   });
 
   const hasDisability = form.watch("hasDisability");
-   const selectedCountry = form.watch("country");
-   useEffect(() => {
-  if (selectedCountry) {
-    const states = State.getStatesOfCountry(selectedCountry).map((state) => ({
-      value: state.isoCode,
-      label: state.name,
-    }));
-    setStatesOfSelectedCountry(states);
-    form.setValue("state", "");
-  } else {
-    setStatesOfSelectedCountry([]);
-  }
+  const selectedCountry = form.watch("country");
 
-  // console.log("Stored role from localStorage:", storedRole);
-}, [selectedCountry, form]);
+  // Load states dynamically
+  useEffect(() => {
+    if (selectedCountry) {
+      const states = State.getStatesOfCountry(selectedCountry).map((s) => ({
+        value: s.isoCode,
+        label: s.name,
+      }));
+      setStatesOfSelectedCountry(states);
+      form.setValue("state", "");
+    } else {
+      setStatesOfSelectedCountry([]);
+    }
+  }, [selectedCountry, form]);
 
-  // let role_id: number = 4;
+
+
+    // let role_id: number = 4;
 
   const storedRole = localStorage.getItem("selectedRole");
   useEffect(() => {
@@ -213,24 +951,33 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
 
     setRoleId(newRoleId);
     console.log(`Stored role: ${storedRole} → roleId: ${newRoleId}`);
-
-    // if (storedRole === "student") {
-    //   setRoleId(3)
-    //   // role_id = 3;
-    // } else if (storedRole === "teacher" || storedRole === "lecturer") {
-    //   // role_id = 2;
-    //   setRoleId(2)
-    // }
-    // console.log("Stored role from localStorage:", storedRole);
-    // console.log("Determined role_id:", role_id);
   }, [form]);
 
+
+  // Handle next step validation
+ const handleNext = async () => {
+  let fieldsToValidate: (keyof z.infer<typeof formSchema>)[] = [];
+  if (currentStep === 1)
+    fieldsToValidate = ["firstName", "lastName", "email", "phone", "password", "confirmPassword", "acceptTerms"];
+  else if (currentStep === 2)
+    fieldsToValidate = ["gender", "ageRange", "country", "state", "city"];
+
+  const isValid = await form.trigger(fieldsToValidate, { shouldFocus: true });
+  if (isValid) {
+    setCurrentStep((s) => s + 1);
+  } else {
+    fieldsToValidate.forEach((field) => form.setFocus(field));
+  }
+};
+
+  const handleBack = () => setCurrentStep((s) => s - 1);
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true);
     console.log("roleid", role_id)
 
     try {
+      console.log("signing up .....")
       const res: SignupResponse = await registerUser(
         data.email,
         data.firstName,
@@ -250,6 +997,7 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
         undefined,
         data.state
       );
+      console.log("Registration response:", res);
       setToastMessage(res.message || "Signup successful! Redirecting...");
       setToastVariant("default");
       localStorage.setItem("userEmail", data.email);
@@ -269,11 +1017,31 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
 
   return (
     <ToastProvider swipeDirection="right">
-      <div className={cn("grid gap-6", className)} {...props}>
+      <div className={cn("max-w-[500px] mx-auto grid gap-6", className)} {...props}>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            <div className="grid gap-4">
-              <div className="flex space-x-4">
+            <div className="w-full grid gap-6 ">
+
+              <AnimatePresence mode="wait">
+              {/* STEP 1 */}
+              {currentStep === 1 && (
+                <motion.div
+                key={currentStep}
+                className="grid gap-4"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.4 }}>
+
+                   <button
+                      type="button"
+                      onClick={() => window.history.back()}
+                      // className="w-fit mb-2 border flex items-center cursor-pointer hover:text-[#8133F1] transition gap-2 rounded-full"
+                      className="flex cursor-pointer hover:text-[#8133F1] transition   mb-[20px] gap-2 text-base font-medium"
+                    >
+                      <ChevronLeft size={20} /> Back
+                    </button> 
+                  <div className="flex space-x-4">
                 <FormField
                   control={form.control}
                   name="firstName"
@@ -311,7 +1079,8 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
                   )}
                 />
               </div>
-              <div className="flex space-x-4">
+
+                  <div className="flex space-x-4">
                 <FormField
                   control={form.control}
                   name="email"
@@ -329,6 +1098,7 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
                     </FormItem>
                   )}
                 />
+
                 <FormField
                   control={form.control}
                   name="phone"
@@ -350,7 +1120,159 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
                 />
               </div>
 
-              <div className="flex space-x-4">
+
+                  <FormField            
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="font-semibold">Password</FormLabel>
+                        <FormControl>
+                          <PasswordInput className="rounded-full" placeholder="********" {...field} />
+                        </FormControl>
+                        <FormMessage className="text-red-700"/>
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="confirmPassword"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="font-semibold">Confirm Password</FormLabel>
+                        <FormControl>
+                          <PasswordInput className="rounded-full" placeholder="********" {...field} />
+                        </FormControl>
+                        <FormMessage className="text-red-700"/>
+                      </FormItem>
+                    )}
+                  />
+
+
+                <div className="flex justify-between space-x-6">
+                <div className="flex items-center space-x-2">
+                  <FormField
+                    control={form.control}
+                    name="acceptTerms"
+                    render={({ field }) => (
+                      <FormItem className="flex items-center space-x-2">
+                        <FormControl>
+                          <Checkbox
+                            id="acceptTerms"
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <a
+                          href="/terms-of-service"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 underline m-0"
+                        >
+                          Accept Terms & Policy
+                        </a>
+                        <FormMessage className="text-red-700" />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <FormField
+                    control={form.control}
+                    name="receiveNewsletters"
+                    render={({ field }) => (
+                      <FormItem className="flex items-center space-x-2">
+                        <FormControl>
+                          <Checkbox
+                            id="receiveNewsletters"
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <FormLabel
+                          htmlFor="receiveNewsletters"
+                          className="text-sm text-gray-700"
+                        >
+                          Receive Newsletters
+                        </FormLabel>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+
+
+
+
+                  <Button type="button" onClick={handleNext} className="mt-2 bg-primary text-white rounded-full">
+                    Continue 
+                  </Button>
+
+                  <div className="relative my-3">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-300"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="bg-white px-2 text-gray-900">
+                    or 
+                  </span>
+                </div>
+              </div>
+
+                    <Button
+            variant="outline"
+            type="button"
+            className="w-full flex items-center rounded-full justify-center"
+            onClick={(event) => {
+              event.preventDefault();
+              try {
+                const googleAuthUrl = `https://api.aiteacha.com/api/auth/google/${storedRole}?redirect_uri=${encodeURIComponent(
+                  window.location.origin +
+                    `/api/auth/google/${storedRole}/callback`
+                )}`;
+                window.location.href = googleAuthUrl;
+              } catch (error) {
+                console.log(error);
+                setToastMessage(
+                  (error as Error).message ||
+                    "Google login failed. Please try again."
+                );
+                setToastVariant("destructive");
+                setToastOpen(true);
+              }
+            }}
+          >
+            <FcGoogle className="mr-2" />Sign up Google
+          </Button>
+                      
+
+
+
+                </motion.div>
+              )}
+
+              {/* STEP 2 */}
+              {currentStep === 2 && (
+                <motion.div
+                // key="step2 "
+                key={currentStep}
+                className="grid gap-4"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.4 }}>
+                  <button
+                      type="button"
+                      // variant="outline"
+                      onClick={handleBack}
+                        className="flex cursor-pointer hover:text-[#8133F1] transition   mb-[20px] gap-2 text-base font-medium"
+                    >
+                      <ChevronLeft size={20} /> Back
+                    </button> 
+
+                   <div className="flex space-x-4">
                 <FormField
                   control={form.control}
                   name="gender"
@@ -371,7 +1293,7 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
                         <SelectContent>
                           <SelectItem value="Male">Male</SelectItem>
                           <SelectItem value="Female">Female</SelectItem>
-                          <SelectItem value="Other">Other</SelectItem>
+                          {/* <SelectItem value="Other">Other</SelectItem> */}
                         </SelectContent>
                       </Select>
                       <FormMessage className="text-red-700" />
@@ -408,43 +1330,7 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
                   )}
                 />
               </div>
-              {/* 
-              <div className="flex space-x-4">
-                <FormField
-                  control={form.control}
-                  name="country"
-                  render={({ field }) => (
-                    <FormItem className="space-y-1 w-full">
-                      <FormLabel className="font-semibold">Country</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Enter Country"
-                          className="rounded-full"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage className="text-red-700" />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="state"
-                  render={({ field }) => (
-                    <FormItem className="space-y-1 w-full">
-                      <FormLabel className="font-semibold">State</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Enter State"
-                          className="rounded-full"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage className="text-red-700" />
-                    </FormItem>
-                  )}
-                />
-              </div> */}
+
 
               <div className="flex space-x-4">
                 <FormField
@@ -508,7 +1394,9 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
                   )}
                 />
               </div>
-              <FormField
+
+
+               <FormField
                 control={form.control}
                 name="city"
                 render={({ field }) => (
@@ -571,43 +1459,8 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
                 )}
               </div>
 
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem className="space-y-1">
-                    <FormLabel className="font-semibold">Password</FormLabel>
-                    <FormControl>
-                      <PasswordInput
-                        placeholder="********"
-                        className="rounded-full"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage className="text-red-700" />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="confirmPassword"
-                render={({ field }) => (
-                  <FormItem className="space-y-1">
-                    <FormLabel className="font-semibold">
-                      Confirm Password
-                    </FormLabel>
-                    <FormControl>
-                      <PasswordInput
-                        placeholder="********"
-                        className="rounded-full"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage className="text-red-700" />
-                  </FormItem>
-                )}
-              />
-              <FormField
+
+                <FormField
                 control={form.control}
                 name="referred_by"
                 render={({ field }) => (
@@ -626,105 +1479,30 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
                   </FormItem>
                 )}
               />
-              <div className="flex space-x-6">
-                <div className="flex items-center space-x-2">
-                  <FormField
-                    control={form.control}
-                    name="acceptTerms"
-                    render={({ field }) => (
-                      <FormItem className="flex items-center space-x-2">
-                        <FormControl>
-                          <Checkbox
-                            id="acceptTerms"
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                        <a
-                          href="/terms-of-service"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 underline"
-                        >
-                          Accept Terms & Policy
-                        </a>
-                        <FormMessage className="text-red-700" />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <div className="flex items-center space-x-2">
-                  <FormField
-                    control={form.control}
-                    name="receiveNewsletters"
-                    render={({ field }) => (
-                      <FormItem className="flex items-center space-x-2">
-                        <FormControl>
-                          <Checkbox
-                            id="receiveNewsletters"
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                        <FormLabel
-                          htmlFor="receiveNewsletters"
-                          className="text-sm text-gray-700"
-                        >
-                          Receive Newsletters
-                        </FormLabel>
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </div>
-              <Button
-                className="mt-2 bg-primary text-white rounded-full"
-                type="submit"
-                disabled={isLoading}
-              >
-                {isLoading ? "Signing up..." : "Sign Up"}
-              </Button>
-              <div className="relative my-3">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300"></div>
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="bg-white px-2 text-gray-900">
-                    or continue with
-                  </span>
-                </div>
-              </div>
+                  
+
+                  
+
+                 
+
+                  <div className="">
+                    
+                    <Button type="submit" disabled={isLoading} className="mt-2 w-full bg-primary text-white rounded-full">
+                      {isLoading ? "Signing up..." : "Sign Up"}
+                    </Button>
+                  </div>
+                </motion.div>
+              )}
+
+              
+             
+
+              </AnimatePresence>
             </div>
           </form>
         </Form>
-        <div className="flex flex-col sm:flex-row justify-center mt-0 space-y-4 sm:space-y-0 sm:space-x-4">
-          <Button
-            variant="outline"
-            type="button"
-            className="w-full flex items-center rounded-full justify-center"
-            onClick={(event) => {
-              event.preventDefault();
-              try {
-                const googleAuthUrl = `https://vd.aiteacha.com/api/auth/google/${storedRole}?redirect_uri=${encodeURIComponent(
-                  window.location.origin +
-                  `/api/auth/google/${storedRole}/callback`
-                )}`;
-                console.log("Constructed Google Auth URL:", googleAuthUrl);
 
-                window.location.href = googleAuthUrl;
-              } catch (error: any) {
-                console.log(error);
-                setToastMessage(
-                  error.message || "Google login failed. Please try again."
-                );
-                setToastVariant("destructive");
-                setToastOpen(true);
-              }
-            }}
-          >
-            <FcGoogle className="mr-2" /> Google
-          </Button>
-        </div>
+
         <Toast
           open={toastOpen}
           onOpenChange={setToastOpen}

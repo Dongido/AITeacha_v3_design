@@ -21,6 +21,8 @@ import { Button } from "../../../components/ui/Button";
 import { Skeleton } from "../../../components/ui/Skeleton";
 import GeneralRestrictedPage from "../_components/GeneralRestrictedPage";
 import { useNavigate } from "react-router-dom";
+import { RiDeleteBin5Line } from "react-icons/ri";
+import { UploadCloud } from "lucide-react";
 
 const ArchivedAssistants = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -36,6 +38,34 @@ const ArchivedAssistants = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isEmailVerified, setIsEmailVerified] = useState<number>(0);
   const [userDetails, setUserDetails] = useState<any>(null);
+  const [isDragOver, setIsDragOver] = useState(false);
+
+ const handleFileSelect = (files: FileList | null) => {
+  if (!files) return;
+
+  const validFiles: File[] = Array.from(files).filter((file: File) =>
+    [
+      "application/pdf",
+      "image/png",
+      "image/jpeg",
+      "image/jpg",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ].includes(file.type)
+  );
+
+  if (validFiles.length === 0) {
+    alert("Only PDF, PNG, JPEG, DOC, and DOCX files are allowed.");
+    return;
+  }
+
+  setUploadFile(validFiles);
+};
+
+
+
+
+
   useEffect(() => {
     const userDetailsFromStorage = localStorage.getItem("ai-teacha-user");
     if (userDetailsFromStorage) {
@@ -180,17 +210,102 @@ const ArchivedAssistants = () => {
   }
 
   return (
-    <div className="mt-6">
-      <h2>Archived Assistants</h2>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      <div className="my-4">
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button variant={"gradient"} className="rounded-md">
-              Upload Archive
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
+    <div className="mt-6 p-[30px]">
+      <div className="flex items-center justify-between">
+      <div>
+        <h2 className="text-xl font-semibold m-0 ">Archived Assistants</h2>
+        <p className="text-sm text-gray-800">Manage documents</p>
+      </div>
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button variant={"gradient"} className="rounded-md">
+            Upload Archive
+          </Button>
+        </DialogTrigger>
+
+        <DialogContent className="max-w-md space-y-4">
+      <DialogTitle className="text-xl font-semibold">Upload Document</DialogTitle>
+
+      {/* Title Input */}
+
+      <label>Title</label>
+      <Input
+        type="text"
+        placeholder="Enter a title"
+        value={uploadTitle}
+        onChange={(e) => setUploadTitle(e.target.value)}
+        className="rounded-full"
+      />
+
+      {/* Custom Drag & Drop Upload Box */}
+      <div
+       onDrop={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragOver(false);
+        handleFileSelect(e.dataTransfer.files);
+      }}
+
+        onDragOver={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setIsDragOver(true);
+        }}
+        onDragLeave={() => setIsDragOver(false)}
+        onClick={() => document.getElementById("fileInput")?.click()}
+        className={`flex flex-col items-center justify-center border-2 border-dashed rounded-xl p-8 cursor-pointer transition
+          ${isDragOver ? "border-primary bg-muted" : "border-gray-300 hover:border-primary/70"}
+        `}
+      >
+        <p className="text-sm text-gray-600">
+          Select or Drag & drop your file here
+        </p>
+        <p className="flex items-center gap-3 text-sm border-2 p-2 px-5 rounded-full border-gray-300">
+          <UploadCloud className="w-5 h-5 text-muted-foreground" />
+              <span>Choose file</span>
+          </p>
+        <input
+          id="fileInput"
+          type="file"
+          multiple
+          accept=".pdf, .png, .jpeg, .jpg, .doc, .docx"
+          className="hidden"
+          onChange={(e) => handleFileSelect(e.target.files)}
+
+        />
+      </div>
+
+      {/* File Preview */}
+      {uploadFile && uploadFile.length > 0 && (
+        <div className="text-sm text-gray-700 bg-gray-50 p-2 rounded-md">
+          <p className="font-medium mb-1">Selected files:</p>
+          <ul className="list-disc list-inside space-y-1">
+            {uploadFile.map((file, index) => (
+              <li key={index}>{file.name}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Footer */}
+      <DialogFooter>
+        <Button
+          onClick={handleUpload}
+          className="rounded-md"
+          variant="gradient"
+          disabled={!uploadTitle || !uploadFile || isUploading}
+        >
+          {isUploading ? "Uploading..." : "Upload"}
+        </Button>
+        <DialogClose asChild>
+          <Button  disabled={isUploading}>
+            Cancel
+          </Button>
+        </DialogClose>
+        
+      </DialogFooter>
+    </DialogContent>
+        {/* <DialogContent>
             <DialogTitle>Upload Doc</DialogTitle>
             <Input
               type="text"
@@ -244,25 +359,29 @@ const ArchivedAssistants = () => {
                 {isUploading ? "Uploading..." : "Upload"}
               </Button>
             </DialogFooter>
-          </DialogContent>
-        </Dialog>
+          </DialogContent> */}
+      </Dialog>
       </div>
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {archivedAssistants.map((assistant: any) => (
           <div
             key={assistant.ref}
-            className="border border-gray-300 p-4 rounded-lg shadow-sm bg-white"
+            className="border flex flex-col justify-start border-gray-300 p-5 md:py-[40px]  rounded-lg bg-white"
           >
             <h3 className="text-lg font-semibold">{assistant.title}</h3>
             <Dialog>
               <DialogTrigger asChild>
-                <Button
+                <button
                   onClick={() => setDeleteRef(assistant.ref)}
-                  variant="destructive"
-                  className="mt-4 rounded-md"
+                  // variant="destructive"
+                  className="mt-4 w-fit flex   gap-2 text-red-600 items-center rounded-md"
                 >
+                  <RiDeleteBin5Line />
                   Delete
-                </Button>
+
+                </button>
               </DialogTrigger>
               <DialogContent>
                 <DialogTitle>Confirm Delete</DialogTitle>

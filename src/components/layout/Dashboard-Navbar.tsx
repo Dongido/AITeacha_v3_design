@@ -81,6 +81,7 @@ export function DashboardNavbar() {
     Cookies.remove("at-refreshToken");
     localStorage.removeItem("ai-teacha-user");
     dispatch(resetProfileState());
+    sessionStorage.clear();
     localStorage.removeItem("redirectPath");
     navigate("/auth/login");
   };

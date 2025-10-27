@@ -185,7 +185,13 @@ import { Skeleton } from "../../../components/ui/Skeleton";
 import { useDispatch, useSelector } from "react-redux";
 import { loadStudentClassrooms } from "../../../store/slices/studentClassroomSlice";
 import { RootState, AppDispatch } from "../../../store";
+import {
+  checkProfileCompletion,
+  checkInterestCompletion,
+} from "../../../api/checkCompletion";
 import BaseTable from "../../../components/table/BaseTable";
+import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
 
 interface UserDetails {
   id: string;
@@ -200,6 +206,8 @@ const Home = () => {
   const { classrooms, loading, error } = useSelector(
     (state: RootState) => state.studentClassrooms
   );
+  const [checking, setChecking] = useState(true);
+  const [checkingError, setCheckingError] = useState(false);
 
   // Example placeholder for tools
   const [tools, setTools] = useState<any[]>([]); // You’ll replace this with your fetched tools
@@ -216,6 +224,129 @@ const Home = () => {
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   const [isEmailVerified, setIsEmailVerified] = useState<number>(0);
 
+  //  const profileComplete = false;   // ⬅️ set true or false
+  // const interestComplete = true;   // ⬅️ set true or false
+
+  // useEffect(() => {
+  //   const checkCompletion = () => {
+  //     if (!profileComplete) {
+  //       console.log("🧭 Redirecting to /complete-profile");
+  //       navigate("/student/complete-profile");
+  //       return;
+  //     }
+
+  // if (!interestComplete) {
+  //   console.log("🧭 Redirecting to /interest");
+  //   navigate("/interest");
+  //   return;
+  // }
+
+  //     console.log("✅ All checks passed — stay on dashboard");
+  //   };
+
+  //   checkCompletion();
+  // }, [navigate, profileComplete, interestComplete]);
+
+  //     useEffect(() => {
+  //   const checkCompletion = async () => {
+  //     try {
+  //       const token = Cookies.get("at-accessToken");
+  //       if (!token) return;
+
+  //       const decoded: any = jwtDecode(token);
+  //       const userId = String(decoded.id);
+
+  //       const profileComplete = await checkProfileCompletion(userId);
+  //       const interestComplete = await checkInterestCompletion(userId);
+
+  //       // If profile not complete
+  //       if (!profileComplete) {
+  //         console.log("🧭 Redirecting to /auth/complete-profile");
+  //         navigate("/student/complete-profile");
+  //         return;
+  //       }
+
+  //       // If interest not complete and user hasn't skipped this session
+  //       const interestSkipped = sessionStorage.getItem("interestSkipped");
+
+  //       console.log(interestSkipped)
+  //       if (!interestComplete && !interestSkipped) {
+  //         console.log("🧭 Redirecting to /student/interest");
+  //         navigate("/student/interest");
+  //         return;
+  //       }
+
+  //     } catch (err) {
+  //       console.error("Error checking completion:", err);
+  //     }
+  //   };
+
+  //   checkCompletion();
+  // }, [navigate]);
+
+  useEffect(() => {
+    let isMounted = true;
+    const checkCompletion = async () => {
+      try {
+        const token = Cookies.get("at-accessToken");
+        if (!token) return;
+
+        const decoded: any = jwtDecode(token);
+        const userId = String(decoded.id);
+
+        // start loading state
+        setChecking(true);
+
+        const [profileComplete, interestComplete] = await Promise.all([
+          checkProfileCompletion(userId),
+          checkInterestCompletion(userId),
+        ]);
+
+        if (!isMounted) return;
+
+        // ✅ Only redirect *after* we have real data
+        if (!profileComplete) {
+          console.log("🧭 Redirecting to /student/complete-profile");
+          navigate("/student/complete-profile");
+          return;
+        }
+
+        const interestSkipped = sessionStorage.getItem("interestSkipped");
+        if (!interestComplete && !interestSkipped) {
+          console.log("🧭 Redirecting to /student/interest");
+          navigate("/student/interest");
+          return;
+        }
+
+        // ✅ Mark checks as done
+        setChecking(false);
+      } catch (err) {
+        console.error("Error checking completion:", err);
+        // Instead of redirecting, show error message or retry
+        setCheckingError(true);
+        setChecking(false);
+      }
+    };
+
+    checkCompletion();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [navigate]);
+
+  const showInterestPage = async (userId: string) => {
+    const completed = await checkInterestCompletion(userId);
+    const skipped = sessionStorage.getItem("interestSkipped") === "true";
+    console.log(skipped);
+
+    if (!completed && !skipped) {
+      navigate("/student/interests"); // show interest page
+    } else {
+      navigate("/student/home"); // skip to dashboard
+    }
+  };
+
   useEffect(() => {
     const userDetailsFromStorage = localStorage.getItem("ai-teacha-user");
     if (userDetailsFromStorage) {
@@ -228,6 +359,30 @@ const Home = () => {
   const handleVerifyEmail = () => {
     navigate("/dashboard/verify-email");
   };
+
+  if (checking) {
+  return (
+    <div className="flex flex-col items-center justify-center h-screen">
+      <p className="text-gray-500 text-lg">Checking your account...</p>
+      <Skeleton className="h-6 w-40 mt-4 rounded" />
+    </div>
+  );
+}
+
+if (checkingError) {
+  return (
+    <div className="flex flex-col items-center justify-center h-screen">
+      <p className="text-red-500 text-lg">Unable to verify your account. Check your network and try again.</p>
+      <button
+        onClick={() => window.location.reload()}
+        className="mt-4 px-4 py-2 bg-primary text-white rounded-lg"
+      >
+        Retry
+      </button>
+    </div>
+  );
+}
+
 
   return (
     <div className="mt-12">

@@ -123,7 +123,7 @@ const EditTeacherRoleDialog = forwardRef(
               <div className="my-4">
                 <label
                   htmlFor="role-select"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="block font-bold text-sm text-gray-700 mb-2"
                 >
                   New Role
                 </label>
@@ -132,7 +132,7 @@ const EditTeacherRoleDialog = forwardRef(
                   onValueChange={(value) => setSelectedRole(value)}
                   disabled={isUpdating}
                 >
-                  <SelectTrigger id="role-select" className="w-full h-1/2">
+                  <SelectTrigger id="role-select" className="w-full rounded-full h-1/2">
                     <SelectValue
                       placeholder="Select a role"
                       className="w-full py-2"

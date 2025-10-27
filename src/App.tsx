@@ -45,8 +45,12 @@ import Community from "./pages/Dashboard/Community";
 import AuthCallback from "./pages/Dashboard/live-class/AuthCallback";
 import CreateLiveClass from "./pages/Dashboard/live-class/CreateLiveClass";
 import ExamPage from "./pages/Dashboard/test/TestPage";
+import Interest from "./pages/Auth/Interes";
+// import { CompleteProfileForm } from "./pages/Auth/components/complete-profile-form";
+import CompleteProfile from "./pages/Auth/CompleteProfile";
+import CompleteProfileStudent from "./pages/Auth/CompleteProfileStudent";
+import StudentInterest from "./pages/Auth/StudentInterest";
 import Outline from "./pages/Dashboard/student/Outline";
-// import ToolChatPage from "./pages/Dashboard/student/ToolchatPage";
 
 function App() {
   const location = useLocation();
@@ -121,6 +125,10 @@ function App() {
           {/* <Route path="/dashboard/resource/training" element={<Training />} />
             <Route path="/dashboard/resource/community" element={<Community />} />  */}
           <Route path="/payment" element={<Payment />} />
+          <Route path="/interest" element={<Interest />} />
+          <Route path="/student/interest" element={<StudentInterest />} />
+          <Route path="/complete-profile" element={<CompleteProfile />} />
+          <Route path="/student/complete-profile" element={<CompleteProfileStudent />} />
           <Route path="/classroom/s/*" element={<RoleBasedRedirect />} />
           <Route path="/classroom/cbt/*" element={<RoleBasedRedirect />} />
           <Route path="/examination/attempt/:id" element={<ExamPage />} />
@@ -138,12 +146,7 @@ function App() {
           /> */}
         </Route>
 
-       
-          {/* <Route path="/class/class-details/:classId" element={<Classroom />} /> */}
-          {/* <Route
-            path="/class/class-details/:classId/tools/:toolName"
-            element={<ToolChatPage />}
-          /> */}
+  
        
 
         <Route element={<PublicRoute />}>

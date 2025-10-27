@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FiSend } from "react-icons/fi";
-import { Undo2 } from "lucide-react";
+// import { Undo2 } from "lucide-react";
 import { Button } from "../../../components/ui/Button";
 import { TextArea } from "../../../components/ui/TextArea";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,6 +9,7 @@ import {
   fetchAssignmentByIdThunk,
   loadStudentAssignments,
 } from "../../../store/slices/studentAssignmentSlice";
+import { IoChevronBackOutline } from "react-icons/io5";
 import { RootState, AppDispatch } from "../../../store";
 import { Skeleton } from "../../../components/ui/Skeleton";
 import { submitAssignmentAnswer } from "../../../api/studentassignment";
@@ -173,19 +174,19 @@ const StudentAssignment: React.FC = () => {
   }
 
   return (
-    <>
-      <Button
-        className="flex items-center bg-white rounded-md my-3 text-black w-fit h-full mr-2 gap-3 py-2"
+    <div className="p-[30px]">
+      <button
+        className="flex items-center  rounded-md my-3 text-black w-fit h-full mr-2 gap-3 py-2"
         onClick={() => navigate(-1)}
       >
-        <Undo2 size={"1.1rem"} color="black" />
+        <IoChevronBackOutline size={"1.1rem"} color="black" />
         Back
-      </Button>
+      </button>
 
-      <div className="flex flex-col lg:flex-row p-4 space-y-4 lg:space-x-8 lg:space-y-0">
-        <div className="w-full lg:w-2/3 h-[550px] p-4 border rounded-lg overflow-y-auto bg-gray-100 space-y-4">
+      <div className="flex flex-col  lg:flex-row p-4 space-y-4 lg:space-x-8 lg:space-y-0">
+        <div className="w-full bg-gradient-to-r from-[#6200EE1A] from-[10%] to-[#F133E11A] to-[90%] lg:w-2/3 h-[550px] p-4 border rounded-lg overflow-y-auto  space-y-4">
           <h2 className="text-xl font-bold">AI Assistant</h2>
-          <div className="flex flex-col space-y-2 h-[420px] bg-white p-3 ax-h-[450px] overflow-y-auto">
+          <div className="flex flex-col space-y-2 h-[420px] p-3 ax-h-[450px] overflow-y-auto">
             {chatMessages.map((msg, index) => (
               <div
                 key={index}
@@ -214,25 +215,26 @@ const StudentAssignment: React.FC = () => {
             )}
           </div>
 
-          <div className="mt-4 flex flex-col sm:flex-row">
+          <div className="mt-4 relative w-full ">
             <input
               type="text"
               value={currentMessage}
               onChange={handleChatMessageChange}
-              className="w-full sm:w-4/5 lg:w-5/6 p-2 border rounded-md"
+              className="w-full  p-3 pr-12 border rounded-full bg-transparent focus:outline-none focus:ring-2 focus:ring-purple-600"
               placeholder="Ask the AI a question..."
             />
-            <Button
+            <button
               onClick={handleChatMessageSubmit}
-              variant={"gray"}
-              className="mt-2 sm:mt-0 sm:ml-2 w-full sm:w-1/4 lg:w-1/5 rounded-md"
+              // variant="gray"
+              className="absolute bg-[#6200EE] right-2 top-1/2 -translate-y-1/2 rounded-full p-2 h-10 w-10 flex items-center justify-center"
             >
-              <FiSend />
-            </Button>
+              <FiSend className="text-white" />
+            </button>
           </div>
+
         </div>
 
-        <div className="w-full lg:w-1/3 p-4 space-y-4 overflow-y-auto max-h-[550px]">
+        <div className="w-full bg-white lg:w-1/3 p-4 space-y-4 overflow-y-auto max-h-[550px]">
           <p className="text-gray-800 text-xl font-bold capitalize">
             Questions
           </p>
@@ -278,7 +280,7 @@ const StudentAssignment: React.FC = () => {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

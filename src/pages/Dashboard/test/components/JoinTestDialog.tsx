@@ -144,6 +144,7 @@ const JoinTestDialog = forwardRef((_, ref) => {
                         type="text"
                         placeholder="Enter test code"
                         {...field}
+                        className="rounded-full"
                       />
                     </FormControl>
                     <FormMessage className="text-red-300" />

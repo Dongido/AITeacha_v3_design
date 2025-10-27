@@ -1,5 +1,4 @@
-
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchTests,
@@ -21,12 +20,16 @@ import { useNavigate, Link } from "react-router-dom";
 import { Plus, ClipboardList, PenBox } from "lucide-react";
 import clsx from "clsx";
 import RestrictedPage from "./RestrictedPage";
+import { Input } from "../../../components/ui/Input";
+import { fetchStudentExaminations, selectStudentExaminations } from "../../../store/slices/studentTestsSlice";
 const TestPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState("");
 
   const selectedType = useSelector(selectSelectedTestType);
-
+  
+  const examinations = useSelector(selectStudentExaminations);
   const tests = useSelector(selectTests);
   const loading = useSelector(selectTestsLoading);
   const error = useSelector(selectTestsError);
@@ -35,6 +38,8 @@ const TestPage: React.FC = () => {
   const handleVerifyEmail = () => {
     console.log("Verify email clicked");
   };
+    const fetched = useRef(false);
+
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -56,6 +61,43 @@ const TestPage: React.FC = () => {
       navigate("/dashboard/create-test");
     }
   };
+
+
+   useEffect(() => {
+      if (!fetched.current) {
+        dispatch(fetchStudentExaminations());
+        fetched.current = true;
+      }
+    }, [dispatch]);
+  
+   useEffect(() => {
+       if (typeof window !== "undefined") {
+         if (selectedType) {
+           localStorage.setItem("selectedTestType", selectedType);
+           dispatch(fetchTests());
+         }
+       }
+     }, [dispatch, selectedType]);
+
+  
+    const [activeTab, setActiveTab] = useState<"created" | "joined">("created");
+
+
+  // Filter data safely
+const filteredTests = React.useMemo(() => {
+  if (!tests) return [];
+  if (!searchTerm.trim()) return tests;
+
+  const term = searchTerm.toLowerCase();
+  return tests.filter((item: any) => {
+    const values = Object.values(item)
+      .filter((v) => typeof v === "string")
+      .map((v) => v.toLowerCase());
+    return values.some((v) => v.includes(term));
+  });
+}, [tests, searchTerm]);
+
+
 
   if (error === "Permission restricted for unverified email") {
     return (
@@ -151,39 +193,70 @@ const TestPage: React.FC = () => {
   }
 
   return (
-    <div className="p-6 animate-fade-in">
-      <div className="flex w-full mt-12 mb-6 items-center justify-between flex-col sm:flex-row">
-        <div className="flex items-center gap-3 mb-4 sm:mb-0">
-          <h2 className="text-3xl font-extrabold text-gray-800">
-            {selectedType === "test" ? "Test Manager" : "Exam Manager"}
-          </h2>
-          <button
-            onClick={() => dispatch(setSelectedTestType(null))}
-            className="text-sm text-blue-500 hover:underline"
-          >
-            Change Type
-          </button>
-        </div>
+    <div className="p-2 md:p-[30px] animate-fade-in">
 
-        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-          <Link to={"/dashboard/test/joined"} className="w-full sm:w-auto">
-            <Button
-              variant="ghost"
-              className="flex items-center w-full sm:w-fit bg-gray-100 hover:bg-gray-200 h-full gap-3 rounded-md transition"
-            >
-              Joined {selectedType === "test" ? "Tests" : "Exams"}
-            </Button>
-          </Link>
-          <Button
-            variant="gradient"
-            className="flex items-center w-full sm:w-fit h-full gap-3 rounded-md  text-white shadow-md hover:scale-105 transition-transform"
-            onClick={handleLaunchNew}
-          >
-            <Plus size={"1.1rem"} />
-            Create {selectedType === "test" ? "Test" : "Exam"}
-          </Button>
-        </div>
+
+      <div>
+        <h2 className="text-lg font-bold m-0">Test & Exams</h2>
+        <p className="text-sm text-gray-800 m-0">Manage all your tests & exams</p>
       </div>
+
+
+       {/* Test / Exam toggle */}
+      <div className="flex items-center gap-3 mt-[40px]">
+        <button
+          onClick={() => dispatch(setSelectedTestType("test"))}
+          className={`rounded-md p-3 px-4 ${
+            selectedType === "test"
+              ? "bg-green-600 text-white hover:bg-green-700"
+              : "bg-transparent text-gray-700 hover:text-gray-900"
+          }`}
+        >
+          Test Manager
+        </button>
+        <button
+          onClick={() => dispatch(setSelectedTestType("exam"))}
+          className={`rounded-md p-3 px-4 ${
+            selectedType === "exam"
+              ? "bg-green-600 text-white hover:bg-green-700"
+              : "bg-transparent text-gray-700 hover:text-gray-900"
+          }`}
+        >
+          Exam Manager
+        </button>
+      </div>
+
+      
+
+
+
+         <div className="flex border-b-2 my-[30px] border-gray-300">
+        <Button
+          variant="ghost"
+          onClick={() => setActiveTab("created")}
+          className={`flex items-center w-full sm:w-fit h-full gap-3  transition font-semibold ${
+            activeTab === "created"
+              ? "border-b-2 border-purple-900 text-purple-900"
+              : "text-gray-600"
+          }`}
+        >
+          Created 
+        </Button>
+      
+        <Button
+          variant="ghost"
+          onClick={() => setActiveTab("joined")}
+          className={`flex items-center w-full sm:w-fit h-full gap-3  transition font-semibold ${
+            activeTab === "joined"
+              ? "border-b-2 border-purple-900 text-purple-900"
+              : "text-gray-600"
+          }`}
+        >
+          Joined
+        </Button>
+      </div>
+
+
 
       {loading && (
         <div className="overflow-x-auto animate-pulse">
@@ -213,11 +286,54 @@ const TestPage: React.FC = () => {
       )}
 
       {!loading && !error && (
+        <div className="bg-white p-4 rounded-3xl">
+
+          <div className="flex items-center flex-wrap justify-between gap-3 my-5">
+           <Input
+              type="text"
+              placeholder={
+                selectedType === "exam"
+                  ? "Search by exam title"
+                  : "Search by test title"
+              }
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="py-3 max-w-full w-[300px] bg-gray-100"
+            />
+
+
+            <button
+            className="flex rounded-full items-center justify-center w-full sm:w-fit h-full gap-3  text-purple-900 px-4 p-2 bg-white border-2 border-purple-900 hover:scale-105 transition-transform"
+            onClick={handleLaunchNew}
+          >
+            <Plus size={"1.1rem"} />
+            Create {selectedType === "test" ? "Test" : "Exam"}
+          </button>
+
+
+          </div>
+
+
+
+          {activeTab === "created" ? (
+                        <BaseTable
+                          // data={filteredTests}
+                          data={filteredTests || []}
+                          columns={testColumns}
+                          onRowClick={handleRowClick}
+                        />
+                      ) : (
+                        
+                        <BaseTable data={examinations} columns={testColumns} />
+                      )}
+
         <BaseTable
-          data={tests}
+          // data={filteredTests}
+          data={filteredTests || []}
           columns={testColumns}
           onRowClick={handleRowClick}
-        />
+          />
+          </div>
       )}
     </div>
   );

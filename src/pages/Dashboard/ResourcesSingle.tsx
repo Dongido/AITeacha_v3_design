@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../store";
 import { loadUserResourceById } from "../../store/slices/teamResourcesSlice";
@@ -7,6 +7,9 @@ import { Skeleton } from "../../components/ui/Skeleton";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import MarkdownRenderer from "./_components/MarkdownRenderer";
+import { Button } from "../../components/ui/Button";
+import { Undo2 } from "lucide-react";
+import { IoChevronBackOutline } from "react-icons/io5";
 
 const ResourceSingle: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -15,6 +18,9 @@ const ResourceSingle: React.FC = () => {
   const { selectedResource, loading, error } = useSelector(
     (state: RootState) => state.teamResources
   );
+
+
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (id) {
@@ -36,19 +42,24 @@ const ResourceSingle: React.FC = () => {
     );
 
   return (
-    <div className="min-h-screen bg-gray-100  items-center justify-center py-6">
+    <div className="min-h-screen  p-[30px] items-center justify-center py-6">
       {selectedResource ? (
         <>
           <h1 className="text-3xl capitalize font-bold text-primary mb-2">
             {selectedResource.category}
           </h1>
-          <p className="text-gray-800 text-lg mb-4">
-            <span className="font-semibold">Title:</span>{" "}
-            {selectedResource.prompt}
-          </p>
-          <div className="bg-white   p-6 w-full">
+          {/* Back Button */}
+                <button
+                  onClick={() => navigate(-1)}
+                  // variant="outline"
+                  className="flex items-center gap-2  mb-[40px] font-semibold w-full sm:w-fit  text-gray-700"
+                >
+                  <IoChevronBackOutline size={18} />
+                  Back
+                </button>
+          <div className="bg-purple-50   p-6 w-full">
             <p className="text-gray-800 mb-6 ">
-              <span className="font-bold text-lg">AI Response:</span> <br />
+              <span className="font-bold mb-3 block text-lg">AI Response:</span> <br />
               <MarkdownRenderer
                 className="w-full rounded-md resize-none markdown overflow-auto"
                 content={selectedResource.returned_answer}

@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import { Button } from "./Button";
+import { IoCloseOutline } from "react-icons/io5";
 
 interface FileUploadProps {
   onFilesChange: (files: File[]) => void;
@@ -106,7 +107,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
       {files.length > 0 && (
         <div className="w-full mt-4 space-y-2">
           {files.map((file, index) => (
-            <div key={index} className="flex items-center space-x-4">
+            <div key={index} className="items-center space">
               {file.type.startsWith("image/") && previewUrls[index] ? (
                 <img
                   src={previewUrls[index]}
@@ -114,7 +115,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
                   className="w-16 h-16 object-cover rounded-lg"
                 />
               ) : (
-                <p className="text-gray-500">
+                <p className="text-gray-500 block">
                   {file.type === "application/pdf"
                     ? "PDF ready to be uploaded"
                     : file.type === "application/msword" ||
@@ -124,19 +125,24 @@ const FileUpload: React.FC<FileUploadProps> = ({
                     : "File ready to be uploaded"}
                 </p>
               )}
-              <p className="text-gray-700 font-semibold flex-1">{file.name}</p>
-              <Button
-                variant="outline"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleRemoveFile(index);
-                }}
-                className="text-red-500"
-              >
-                Remove
-              </Button>
+              <div className="flex items-center bg-white p-3 justify-between">
+                <p className="text-gray-700 font-semibold m-0">{file.name}</p>
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleRemoveFile(index);
+                  }}
+                  className="text-red-500 flex gap-1 font-semibold items-center "
+                >
+                  <IoCloseOutline />
+                  <span>
+                    remove
+                  </span>
+                </button>
+              </div>
             </div>
           ))}
+
           {multiple && files.length >= maxFiles && (
             <p className="text-yellow-500 text-sm mt-2">
               Maximum of {maxFiles} files uploaded.

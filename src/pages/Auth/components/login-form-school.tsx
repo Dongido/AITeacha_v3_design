@@ -83,7 +83,7 @@ export function LoginFormSchool({ className, ...props }: LoginFormProps) {
         const userDetails = {
           id: decodedToken.id,
           email: decodedToken.uemail,
-          role: decodedToken.role,
+          role_id: decodedToken.role,
           package: decodedToken.package,
           firstname: decodedToken.firstname,
           is_email_verified: decodedToken.is_email_verified,
@@ -213,7 +213,7 @@ export function LoginFormSchool({ className, ...props }: LoginFormProps) {
                 </div>
                 <div className="relative flex justify-center text-sm">
                   <span className="bg-white px-2 text-gray-900">
-                    or continue with
+                    or 
                   </span>
                 </div>
               </div>
@@ -242,7 +242,7 @@ export function LoginFormSchool({ className, ...props }: LoginFormProps) {
               }
             }}
           >
-            <FcGoogle className="mr-2" /> Google
+            <FcGoogle className="mr-2" />Login with Google
           </Button>
         </div>
 

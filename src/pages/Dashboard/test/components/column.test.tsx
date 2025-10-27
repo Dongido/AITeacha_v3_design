@@ -93,14 +93,26 @@ export const testColumns = [
       <span className="capitalize whitespace-nowrap">{info.getValue()}</span>
     ),
   }),
+
   testColumnHelper.accessor("status", {
-    header: ({ column }) => <Header title="Status" column={column} />,
-    sortingFn: "text",
-    cell: (info) => {
-      const val = info.getValue()?.toString() as StatusType;
-      return <Status value={val} />;
-    },
-  }),
+  header: ({ column }) => <Header title="Status" column={column} />,
+  sortingFn: "text",
+  cell: (info) => {
+    const rawVal = info.getValue();
+    const val = rawVal ? rawVal.toString() : "unknown"; // ✅ fallback value
+
+    return <Status value={val as StatusType} />;
+  },
+}),
+
+  // testColumnHelper.accessor("status", {
+  //   header: ({ column }) => <Header title="Status" column={column} />,
+  //   sortingFn: "text",
+  //   cell: (info) => {
+  //     const val = info.getValue()?.toString() as StatusType;
+  //     return <Status value={val} />;
+  //   },
+  // }),
   testColumnHelper.accessor("questions", {
     header: ({ column }) => <Header title="No. of Questions" column={column} />,
     cell: (info) => {

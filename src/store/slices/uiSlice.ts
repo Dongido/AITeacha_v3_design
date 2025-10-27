@@ -7,7 +7,7 @@ interface UiState {
 }
 
 const initialState: UiState = {
-  selectedTestType: null,
+  selectedTestType: "test",
 };
 
 const uiSlice = createSlice({

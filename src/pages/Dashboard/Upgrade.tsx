@@ -6,6 +6,7 @@ import { FLUTTERWAVE_PUBLIC } from "../../lib/utils";
 import Logo from "../../assets/img/logo.png";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { IoCheckmark } from "react-icons/io5";
 
 import PricingFaq from "../Landing/components/PricingFaq";
 import PaymentMethodDialog from "./UpgradeDialog";
@@ -64,6 +65,25 @@ const initialPrices = {
   },
 };
 
+
+const currencies = [
+  {
+    code: "NGN",
+    name: "Naira",
+    flag: "https://flagcdn.com/w40/ng.png",
+  },
+  {
+    code: "USD",
+    name: "Dollar",
+    flag: "https://flagcdn.com/w40/us.png",
+  },
+  {
+    code: "GBP",
+    name: "Pounds",
+    flag: "https://flagcdn.com/w40/gb.png",
+  },
+];
+
 const Upgrade: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
@@ -109,6 +129,8 @@ const Upgrade: React.FC = () => {
 
 
   const user = useSelector(selectUser);
+
+  console.log(user)
 
   useEffect(() => {
     if (discountPercentage > 0) {
@@ -518,6 +540,8 @@ const Upgrade: React.FC = () => {
     }
   };
 
+  const selectedCurrency = currencies.find((c) => c.code === currency);
+  
   const aitachaDetails = JSON.parse(
     localStorage.getItem("ai-teacha-user") || "{}"
   );
@@ -551,15 +575,18 @@ const Upgrade: React.FC = () => {
     }
 
     const buttonClassName: string = `
-      w-full py-2 rounded-md transition duration-200 mt-auto text-lg font-medium
+      w-full py-2 rounded-full px-2 transition duration-200 mt-auto text-lg font-medium
       ${isCurrentPlanActive
-        ? "bg-gray-600  hover:bg-gray-300 text-white"
+        ? "bg-[#000000]  hover:bg-gray-300 hover:text-black text-white"
         : isCurrentPlanExpired
           ? "bg-red-600 text-white hover:bg-red-700"
-          : "bg-primary text-white hover:bg-[#4a2fa3]"
+          : "bg-white border border-[#6200EE]  text-[#6200EE] hover:text-white hover:bg-[#4a2fa3]"
       }
       ${isProcessing ? "opacity-70 cursor-not-allowed" : ""}
     `;
+
+
+    console.log(userDetails)
 
     return (
       <button
@@ -576,13 +603,63 @@ const Upgrade: React.FC = () => {
   };
 
   return (
-    <div className="mt-12">
+    <div className="p-[30px]">
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 md:mb-0">
-            Welcome! 👋
+          <div>
+
+          <h2 className="text-2xl font-bold text-gray-900 mb-4 md:mb-0">
+            Subscription
           </h2>
+          <p className="text-sm m-0">Manage, upgrade or downgrade your account</p>
+          <p className="text-sm mt-1 w-fit border-2 rounded-full border-green-600 text-green-600 p-1 px-2 bg-green-50 font-semibold" >Current Plan : {user.package}</p>
+          </div>
           <div className="w-full md:w-60">
+      <label
+        htmlFor="currency-select"
+        className="text-gray-700 font-medium mb-2 block"
+      >
+        Select Currency
+      </label>
+
+      {/* Wrapper for flag + select */}
+      <div className="relative">
+        <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+          <img
+            src={selectedCurrency?.flag}
+            alt={selectedCurrency?.code}
+            className="w-6 h-4 rounded-sm object-cover"
+          />
+        </div>
+
+        <select
+          id="currency-select"
+          className="border border-[#4b2aad] w-full py-2 pl-10 pr-3 text-gray-800 focus:outline-none rounded-full focus:ring-2 focus:ring-blue-500 appearance-none bg-white"
+          value={currency}
+          onChange={handleCurrencyChange}
+        >
+          {currencies.map((cur) => (
+            <option key={cur.code} value={cur.code}>
+              {cur.code} ({cur.name})
+            </option>
+          ))}
+        </select>
+
+        {/* Dropdown icon */}
+        <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+          <svg
+            className="w-4 h-4 text-gray-600"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+      </div>
+    </div>
+          {/* <div className="w-full md:w-60">
             <label
               htmlFor="currency-select"
               className="text-gray-700 font-medium mb-2 block"
@@ -591,47 +668,104 @@ const Upgrade: React.FC = () => {
             </label>
             <select
               id="currency-select"
-              className="border border-[#4b2aad] rounded-md w-full py-2 px-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="border border-[#4b2aad]  w-full py-2 px-3 text-gray-800 focus:outline-none rounded-full focus:ring-2 focus:ring-blue-500"
               value={currency}
               onChange={handleCurrencyChange}
             >
               <option value="NGN">NGN (Naira)</option>
               <option value="USD">USD (Dollar)</option>
               <option value="GBP">GBP (Pounds)</option>
+
+              
             </select>
-          </div>
+          </div> */}
         </div>
 
-        <div className="mt-6">
+
+        <div>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-7 text-gray-800">
+            For Individuals
+          </h2>
+        </div>
+
+        <div className="mt-6  bg-white p-5 rounded-2xl ">
+          <div className=" flex flex-col items-center sm:flex-row gap-2">
+
+          
+              
+              <div>
+                <label
+            htmlFor="coupon-input"
+            className=" font-bold mb-2 block"
+          >
+            Duration
+          </label>
+                <select
+                id="billing-cycle-select"
+                value={billingCycle}
+                onChange={(e) =>
+                  setBillingCycle(
+                    e.target.value as "month" | "threeMonths" | "year"
+                  )
+                }
+                className={`max-w-full w-[300px] py-3 px-3 rounded-full border   text-gray-800 bg-white h-fit focus:outline-none focus:ring-2 border-[#4b2aad] focus:ring-blue-500 ${couponApplied ? "opacity-50 cursor-not-allowed bg-gray-100" : ""
+                  }`}
+              >
+                {allowedBillingCycles.includes("month") && (
+                  <option value="month">Monthly</option>
+                )}
+                {allowedBillingCycles.includes("threeMonths") && (
+                  <option value="threeMonths">3 Months</option>
+                )}
+                {allowedBillingCycles.includes("year") && (
+                  <option value="year">Yearly</option>
+                )}
+              </select>
+                
+              </div>
+
+          <div className="w-full">
+            
           <label
             htmlFor="coupon-input"
-            className="text-gray-700 font-medium mb-2 block"
+            className=" font-bold block"
           >
             Enter Coupon Code
           </label>
-          <div className="flex flex-col sm:flex-row gap-2">
+          <div className="flex flex-col items-center sm:flex-row gap-2">
+            <div className="flex-1">
+
             <input
               id="coupon-input"
               type="text"
               value={couponCode}
               onChange={(e) => setCouponCode(e.target.value)}
-              className="border border-[#4b2aad] rounded-md w-full sm:flex-grow py-2 px-3 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="border border-[#4b2aad] rounded-full w-full sm:flex-grow py-3 px-3 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter your coupon code"
-            />
-            <button
-              onClick={handleVerifyCoupon}
-              disabled={loading || !couponCode}
-              className="w-full sm:w-auto mt-2 sm:mt-0 bg-[#4b2aad] text-white rounded-md px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#3a2588] transition duration-200 ease-in-out"
-            >
-              {loading ? "Verifying..." : "Apply Coupon"}
-            </button>
+              />
+              </div>
+            <div className="flex flex-col gap-1">
+              <button
+                onClick={handleVerifyCoupon}
+                disabled={loading || !couponCode}
+                className="w-full sm:w-[200px] mt-2 sm:mt-0 bg-[#4b2aad] text-white rounded-full px-4 py-3 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#3a2588] transition duration-200 ease-in-out"
+              >
+                {loading ? "Verifying..." : "Apply Coupon"}
+              </button>
+
+            </div>
           </div>
+
+          </div>
+          </div>
+
           {verificationMessage && (
-            <p className="mt-2 text-sm text-gray-600">{verificationMessage}</p>
-          )}
+          <p className="mt-2 w-fit mx-auto mb-0 block border-2 text-sm text-gray-600">{verificationMessage}</p>
+            )}
+          
         </div>
 
-        <div className="mb-4 mt-8 w-full md:w-60 mx-auto flex flex-col items-center">
+        <div className="mb-4 block w-full md:w-60 mx-auto  flex-col items-center">
           <label htmlFor="billing-cycle-select" className="sr-only">
             Select Billing Cycle
           </label>
@@ -640,7 +774,7 @@ const Upgrade: React.FC = () => {
               Coupon applied! Your billing cycle is set to match the coupon.
             </p>
           )}
-          <select
+          {/* <select
             id="billing-cycle-select"
             value={billingCycle}
             onChange={(e) =>
@@ -660,18 +794,26 @@ const Upgrade: React.FC = () => {
             {allowedBillingCycles.includes("year") && (
               <option value="year">Yearly</option>
             )}
-          </select>
+          </select> */}
         </div>
       </div>
 
       <div>
-        <div className=" mx-auto px-4 py-8">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-10 text-gray-800">
-            For Individuals
-          </h2>
+        <div className=" mx-auto px-4 ">
+          
 
           <div className="flex flex-col lg:flex-row justify-center items-stretch lg:space-x-8 space-y-8 lg:space-y-0">
-            <div className="border rounded-lg p-6 bg-gray-50 shadow-md flex flex-col flex-1">
+
+
+
+            <div 
+              // className="border rounded-3xl p-6 bg-gray-50 shadow flex flex-col flex-1"
+              className={`rounded-3xl p-6 shadow flex flex-col flex-1 transition-all duration-300 ${
+                userDetails?.package === "AiTeacha Free"
+                  ? "border-2 border-green-500 bg-white"
+                  : "border border-gray-200 bg-white hover:border-[#4b2aad]"
+              }`}
+            >
               <h3 className="text-lg font-semibold mb-4">AiTeacha Free</h3>
               <p className="text-2xl font-bold mb-2">
                 {getCurrencySign(currency)}{" "}
@@ -685,25 +827,30 @@ const Upgrade: React.FC = () => {
                 Get started for Free, learn how AiTeacha saves you time and
                 generates tailored resources.
               </p>
-              <ul className="list-disc pl-5 space-y-2 mb-6 flex-grow">
-                <strong>Save time, get resources...</strong>
-                <li>Unlimited use of our essential free tools</li>
-                <li>Generate tailored, high-quality resources</li>
-                <li>
+              <ul className="list-none pl-0 space-y-2 mb-6 flex-grow">
+                <strong className={`text-xl ${
+                userDetails?.package === "AiTeacha Free"
+                  ? "text-green-600 "
+                  : "text-[#6200EE] "
+              }`}>Save time, get resources...</strong>
+                <li className="flex items-center gap-2 border-b-2 border-dashed pb-2 border-gray-400"> <IoCheckmark className="shrink-0"  size={20}/> Unlimited use of our essential free tools</li>
+                <li className="flex items-center gap-2 border-b-2 border-dashed pb-2 border-gray-400"><IoCheckmark  className="shrink-0" size={20}/> Generate tailored, high-quality resources</li>
+                <li className="flex items-center gap-2 border-b-2 border-dashed pb-2 border-gray-400"><IoCheckmark  className="shrink-0" size={20}/>
                   15 Time-Saving Tools to simplify lesson planning, assessments,
                   and more
                 </li>
-                <li>Easily download and save your generated resources</li>
-                <li>
+                <li className="flex items-center gap-2 border-b-2 border-dashed pb-2 border-gray-400"><IoCheckmark  className="shrink-0" size={20}/> Easily download and save your generated resources</li>
+                <li className="flex items-center gap-2 border-b-2 border-dashed pb-2 border-gray-400"> <IoCheckmark className="shrink-0"  size={20}/>
                   Interact with Zyra, our AI Chat Assistant, built exclusively
                   for educators and students
                 </li>
-                <li>AI Image generation for educators and students</li>
+                <li className="flex items-center gap-2"><IoCheckmark  className="shrink-0" size={20}/> AI Image generation for educators and students</li>
               </ul>
+              
               <button
-                className={`w-full py-2 rounded-md mt-auto ${userDetails?.package === "AiTeacha Free"
+                className={`w-full py-2 rounded-full text-lg px-2 font-medium mt-auto ${userDetails?.package === "AiTeacha Free"
                     ? "bg-gray-300 text-gray-700 cursor-not-allowed"
-                    : "bg-primary text-white hover:bg-[#4a2fa3] transition"
+                    : "bg-white text-[#6200EE] border border-[#6200EE] hover:bg-[#6200EE] hover:text-white   transition"
                   }`}
                 disabled={userDetails?.package === "AiTeacha Free"}
               >
@@ -714,7 +861,15 @@ const Upgrade: React.FC = () => {
             </div>
 
             {currency === "NGN" && (
-              <div className="border rounded-lg p-6 bg-white shadow-md flex flex-col flex-1">
+              <div 
+                // className="border rounded-3xl p-6 bg-white shadow flex flex-col flex-1"
+                className={`rounded-3xl p-6 shadow flex flex-col flex-1 transition-all duration-300 ${
+                userDetails?.package === "AI Teacha Basic"
+                  ? "border-2 border-green-500 bg-white"
+                  : "border border-gray-200 bg-white hover:border-[#4b2aad]"
+              }`}
+                
+                >
                 <h3 className="text-xl font-semibold mb-4 text-black">
                   AiTeacha Basic
                 </h3>
@@ -742,34 +897,47 @@ const Upgrade: React.FC = () => {
                   AI tools for lesson planning and content creation.
                 </p>
 
-                <ul className="list-disc pl-5 space-y-2 mb-6 flex-grow">
-                  <strong>Everything in Free, Plus...</strong>
-                  <li>
+                <ul className="list-disc pl-0 space-y-2 mb-6 flex-grow">
+                  <strong className={`text-xl ${
+                userDetails?.package === "AI Teacha Basic"
+                  ? "text-green-600 "
+                  : "text-[#6200EE] "
+              }`}>Everything in Free, Plus...</strong>
+                  <li className="flex items-center gap-2 border-b-2 border-dashed pb-2 border-gray-400"><IoCheckmark  className="shrink-0" size={20}/>
+                    <span>
                     Access to all<strong> 45 AI tools </strong> under the{" "}
                     <strong>"My Tools"</strong> section
+                      </span> 
                   </li>
-                  <li>
+                  <li className="flex items-center gap-2 border-b-2 border-dashed pb-2 border-gray-400"><IoCheckmark  className="shrink-0" size={20}/> 
                     {" "}
                     Unlimited content generation for lesson plans, assessments,
                     and more.{" "}
                   </li>
-                  <li>
+                  <li className="flex items-center gap-2 border-b-2 border-dashed pb-2 border-gray-400"><IoCheckmark  className="shrink-0" size={20}/> 
                     Generate AI-powered slides and export directly to Microsoft
                     PowerPoint
                   </li>
-                  <li>Unlimited AI-generated images and labeled diagrams.</li>
-                  <li>
+                  <li className="flex items-center gap-2 border-b-2 border-dashed pb-2 border-gray-400"><IoCheckmark  className="shrink-0" size={20}/> Unlimited AI-generated images and labeled diagrams.</li>
+                  <li className="flex items-center gap-2 border-b-2 border-dashed pb-2 border-gray-400"><IoCheckmark  className="shrink-0" size={20}/> 
                     Download and save all your generated resources for offline
                     use.
                   </li>
-                  <li> No Classroom Management</li>
+                  <li className="flex items-center gap-2 pb-2"><IoCheckmark  className="shrink-0" size={20}/>  No Classroom Management</li>
                 </ul>
 
                 {renderPlanButton("basic", "Basic", "Ai Teacha Basic")}
               </div>
             )}
 
-            <div className="border rounded-lg p-6 bg-gray-50 shadow-md flex flex-col flex-1">
+            <div 
+              // className="border rounded-3xl p-6 bg-gray-50 shadow flex flex-col flex-1"
+               className={`rounded-3xl p-6 shadow flex flex-col flex-1 transition-all duration-300 ${
+                userDetails?.package === "Ai Teacha Basic"
+                  ? "border-2 border-green-500 bg-white"
+                  : "border border-gray-200 bg-white hover:border-[#4b2aad]"
+              }`}
+              >
               <h3 className="text-lg font-semibold mb-4">AiTeacha Pro</h3>
               <p className="text-2xl font-bold mb-2">
                 {getCurrencySign(currency)} {prices.pro[currency][billingCycle]}
@@ -800,22 +968,26 @@ const Upgrade: React.FC = () => {
                 Upgrade to AiTeacha Pro for unlimited access to all resources
                 and pro tools.
               </p>
-              <ul className="list-disc pl-5 space-y-2 mb-6 flex-grow">
-                <strong>Everything in Basic, Plus...</strong>
-                <li>Unlock all 45 advanced, time-saving AI tools</li>
-                <li>Unlimited content generation as you need</li>
-                <li>
+              <ul className="list-disc pl-0 space-y-2 mb-6 flex-grow">
+                <strong className={`text-xl ${
+                userDetails?.package === "AI Teacha Pro"
+                  ? "text-green-600 "
+                  : "text-[#6200EE] "
+              }`}>Everything in Basic, Plus...</strong>
+                <li className="flex items-center gap-2 border-b-2 border-dashed pb-2 border-gray-400"><IoCheckmark  className="shrink-0" size={20}/> Unlock all 45 advanced, time-saving AI tools</li>
+                <li className="flex items-center gap-2 border-b-2 border-dashed pb-2 border-gray-400"><IoCheckmark  className="shrink-0" size={20}/> Unlimited content generation as you need</li>
+                <li className="flex items-center gap-2 border-b-2 border-dashed pb-2 border-gray-400"><IoCheckmark  className="shrink-0" size={20}/> 
                   Generate unlimited AI-powered slides, exportable directly to
                   Microsoft PowerPoint
                 </li>
-                <li>Unlimited assignments for student evaluation needs</li>
-                <li>
+                <li className="flex items-center gap-2 border-b-2 border-dashed pb-2 border-gray-400"><IoCheckmark  className="shrink-0" size={20}/> Unlimited assignments for student evaluation needs</li>
+                <li className="flex items-center gap-2 border-b-2 border-dashed pb-2 border-gray-400"><IoCheckmark  className="shrink-0" size={20}/> 
                   Unlimited student performance reports to track and enhance
                   learning outcomes
                 </li>
 
-                <li>Virtual Classroom access </li>
-                <li>Full Access to Computer-Based Tests (CBT)</li>
+                <li className="flex items-center gap-2 border-b-2 border-dashed pb-2 border-gray-400"><IoCheckmark  className="shrink-0" size={20}/> Virtual Classroom access </li>
+                <li className="flex items-center gap-2 pb-2"><IoCheckmark  className="shrink-0" size={20}/> Full Access to Computer-Based Tests (CBT)</li>
               </ul>
 
               {renderPlanButton("pro", "Pro", "Ai Teacha Pro")}
@@ -828,8 +1000,87 @@ const Upgrade: React.FC = () => {
             For Schools
           </h2>
 
-          <div className="flex flex-col lg:flex-row justify-center items-stretch lg:space-x-8 space-y-8 lg:space-y-0  mx-auto">
-            <div className="border rounded-lg p-6 bg-gray-50 shadow-md flex flex-col flex-1">
+
+
+          <div className="my-6 bg-white p-5 rounded-2xl  flex flex-col items-center sm:flex-row gap-2">
+              
+              <div>
+                <label
+            htmlFor="coupon-input"
+            className=" font-bold mb-2 block"
+          >
+            Duration
+          </label>
+                <select
+                id="billing-cycle-select"
+                value={billingCycle}
+                onChange={(e) =>
+                  setBillingCycle(
+                    e.target.value as "month" | "threeMonths" | "year"
+                  )
+                }
+                className={`max-w-full w-[300px] py-3 px-3 rounded-full border   text-gray-800 bg-white h-fit focus:outline-none focus:ring-2 border-[#4b2aad] focus:ring-blue-500 ${couponApplied ? "opacity-50 cursor-not-allowed bg-gray-100" : ""
+                  }`}
+              >
+                {allowedBillingCycles.includes("month") && (
+                  <option value="month">Monthly</option>
+                )}
+                {allowedBillingCycles.includes("threeMonths") && (
+                  <option value="threeMonths">3 Months</option>
+                )}
+                {allowedBillingCycles.includes("year") && (
+                  <option value="year">Yearly</option>
+                )}
+              </select>
+                
+              </div>
+
+          <div className="w-full">
+            
+          <label
+            htmlFor="coupon-input"
+            className=" font-bold mb-2 block"
+          >
+            Enter Coupon Code
+          </label>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <input
+              id="coupon-input"
+              type="text"
+              value={couponCode}
+              onChange={(e) => setCouponCode(e.target.value)}
+              className="border border-[#4b2aad] rounded-full w-full sm:flex-grow py-3 px-3 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter your coupon code"
+            />
+            <button
+              onClick={handleVerifyCoupon}
+              disabled={loading || !couponCode}
+              className="w-full sm:w-[200px] mt-2 sm:mt-0 bg-[#4b2aad] text-white rounded-full px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#3a2588] transition duration-200 ease-in-out"
+            >
+              {loading ? "Verifying..." : "Apply Coupon"}
+            </button>
+          </div>
+
+          </div>
+
+          {verificationMessage && (
+            <p className="mt-2 text-sm text-gray-600">{verificationMessage}</p>
+          )}
+        </div>
+
+          <div className="flex flex-col lg:flex-row justify-center items-stretch lg:space-x-7 space-y-8 lg:space-y-0  mx-auto">
+
+
+
+
+            <div 
+              // className="border rounded-3xl p-6 bg-gray-50 shadow flex flex-col flex-1"
+              className={`rounded-3xl p-6 shadow flex flex-col flex-1 transition-all duration-300 ${
+                userDetails?.package === "AI Teacha Premium"
+                  ? "border-2 border-green-500 bg-white"
+                  : "border border-gray-200 bg-white hover:border-[#4b2aad]"
+              }`}
+            >
               <h3 className="text-lg font-semibold mb-4">AiTeacha Premium</h3>
               <p className="text-2xl font-bold mb-2">
                 {getCurrencySign(currency)}{" "}
@@ -865,29 +1116,33 @@ const Upgrade: React.FC = () => {
                 Full AiTeacha suite for schools with classroom, assignment, and
                 report features.
               </p>
-              <ul className="list-disc pl-5 space-y-2 mb-6 flex-grow">
-                <strong>Everything in Pro, Plus...</strong>
-                <li>
+              <ul className="list-disc pl-0 space-y-2 mb-6 flex-grow">
+                <strong className={`text-xl ${
+                userDetails?.package === "AI Teacha Premium"
+                  ? "text-green-600 "
+                  : "text-[#6200EE] "
+              }`}>Everything in Pro, Plus...</strong>
+                <li className="flex items-center gap-2 border-b-2 border-dashed pb-2 border-gray-400"><IoCheckmark  className="shrink-0" size={20}/> 
                   Institution-wide monitoring of teachers and students activity
                 </li>
-                <li>
+                <li className="flex items-center gap-2 border-b-2 border-dashed pb-2 border-gray-400"><IoCheckmark  className="shrink-0" size={20}/> 
                   Moderation features to prioritize student safety and
                   compliance
                 </li>
-                <li>Data Privacy Agreements (DPA)</li>
-                <li>Personalized AI training and tool customizations</li>
-                <li>
+                <li className="flex items-center gap-2 border-b-2 border-dashed pb-2 border-gray-400"><IoCheckmark  className="shrink-0" size={20}/> Data Privacy Agreements (DPA)</li>
+                <li className="flex items-center gap-2 border-b-2 border-dashed pb-2 border-gray-400"><IoCheckmark  className="shrink-0" size={20}/> Personalized AI training and tool customizations</li>
+                <li className="flex items-center gap-2 border-b-2 border-dashed pb-2 border-gray-400"><IoCheckmark  className="shrink-0" size={20}/> 
                   Special pricing and discounts on bulk licenses for schools
                 </li>
-                <li>Unlimited chat and resource histories</li>
-                <li>Unlimited number of educators</li>
-                <li>Dedicated support for your school or institution</li>
+                <li className="flex items-center gap-2 border-b-2 border-dashed pb-2 border-gray-400"><IoCheckmark  className="shrink-0" size={20}/> Unlimited chat and resource histories</li>
+                <li className="flex items-center gap-2 border-b-2 border-dashed pb-2 border-gray-400"><IoCheckmark  className="shrink-0" size={20}/> Unlimited number of educators</li>
+                <li className="flex items-center gap-2"><IoCheckmark  className="shrink-0" size={20}/> Dedicated support for your school or institution</li>
               </ul>
 
               {renderPlanButton("premium", "Premium", "Ai Teacha Premium")}
             </div>
 
-            <div className="border rounded-lg p-6 bg-gray-50 shadow-md flex flex-col flex-1">
+            <div className="border rounded-3xl p-6 bg-gray-50 shadow flex flex-col flex-1">
               <h3 className="text-lg font-semibold mb-4">
                 AiTeacha Enterprise
               </h3>
@@ -896,37 +1151,37 @@ const Upgrade: React.FC = () => {
                 Custom discounted pricing for schools, districts, institutions,
                 and tutorial centers.
               </p>
-              <ul className="list-disc pl-5 space-y-2 mb-6 flex-grow">
-                <strong>Everything in Premium, Plus...</strong>
-                <li>Designed for large schools and institutions</li>
-                <li>
+              <ul className="list-disc pl-0 space-y-2 mb-6 flex-grow">
+                <strong className="text-[#6200EE] text-xl">Everything in Premium, Plus...</strong>
+                <li className="flex items-center gap-2 border-b-2 border-dashed pb-2 border-gray-400"><IoCheckmark  className="shrink-0" size={20}/> Designed for large schools and institutions</li>
+                <li className="flex items-center gap-2 border-b-2 border-dashed pb-2 border-gray-400"><IoCheckmark  className="shrink-0" size={20}/> 
                   The AiTeacha Enterprise Plan is tailored for organizations
                   with 15 or more educators seeking comprehensive AI solutions
                 </li>
-                <li>Dedicated account manager and priority support</li>
-                <li>
+                <li className="flex items-center gap-2 border-b-2 border-dashed pb-2 border-gray-400"><IoCheckmark  className="shrink-0" size={20}/> Dedicated account manager and priority support</li>
+                <li className="flex items-center gap-2 border-b-2 border-dashed pb-2 border-gray-400"><IoCheckmark  className="shrink-0" size={20}/> 
                   On-site training and implementation support (where applicable)
                 </li>
-                <li>
+                <li className="flex items-center gap-2 border-b-2 border-dashed pb-2 border-gray-400"><IoCheckmark  className="shrink-0" size={20}/> 
                   Advanced analytics and reporting for institution-wide insights
                 </li>
-                <li>Custom integrations and API access</li>
-                <li>Scalable solutions for growing educational needs</li>
-                <li>
+                <li className="flex items-center gap-2 border-b-2 border-dashed pb-2 border-gray-400"><IoCheckmark  className="shrink-0" size={20}/> Custom integrations and API access</li>
+                <li className="flex items-center gap-2 border-b-2 border-dashed pb-2 border-gray-400"><IoCheckmark  className="shrink-0" size={20}/> Scalable solutions for growing educational needs</li>
+                <li className="flex items-center gap-2 pb-2"><IoCheckmark  className="shrink-0" size={20}/> 
                   Contact us today or use our Quote Calculator to receive
                   customized pricing and exclusive discounts for your
                   institution.
                 </li>
               </ul>
-              <Button
+              <button
                 onClick={() => navigate("/dashboard/upgrade/support")}
                 disabled={
                   loadingPlan === "enterprise" ||
                   userDetails?.package === "AI Teacha Enterprise"
                 }
-                className={`bg-primary text-white w-full py-2 rounded-md transition mt-auto text-center ${userDetails?.package === "AI Teacha Enterprise"
-                    ? "bg-gray-300 text-gray-700 cursor-not-allowed"
-                    : "hover:bg-[#4a2fa3]"
+                className={`w-full px-2 py-2 rounded-full text-lg font-medium transition mt-auto text-center ${userDetails?.package === "AI Teacha Enterprise"
+                    ? "bg-black  text-white cursor-not-allowed"
+                    : "bg-white text-[#6200EE] border border-[#6200EE] hover:bg-[#6200EE] hover:text-white   transition"
                   }`}
               >
                 {userDetails?.package === "AI Teacha Enterprise"
@@ -934,7 +1189,7 @@ const Upgrade: React.FC = () => {
                   : loadingPlan === "enterprise"
                     ? "Processing..."
                     : "Contact Sales"}{" "}
-              </Button>
+              </button>
             </div>
           </div>
         </div>

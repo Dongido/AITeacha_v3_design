@@ -678,7 +678,7 @@ const AddSingleStudentDialog = forwardRef(
                         />
                       )}
                     </div>
-                    <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <FormField
                         control={singleStudentForm.control}
                         name="password"

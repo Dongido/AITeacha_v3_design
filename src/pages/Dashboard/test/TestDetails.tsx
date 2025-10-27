@@ -13,10 +13,13 @@ import {
   selectExamStudentsError as selectStudentsError,
 } from "../../../store/slices/testSlice";
 import { Skeleton } from "../../../components/ui/Skeleton";
+import { IoCopyOutline } from "react-icons/io5";
 
-import { Undo2, CheckIcon, ArrowRightIcon, AlertCircle } from "lucide-react";
+import {  CheckIcon, ArrowRightIcon, AlertCircle } from "lucide-react";
+import { IoChevronBackOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../../components/ui/Button";
+import TestStudentsPage from "./TestStudents";
 
 const TestDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -117,19 +120,59 @@ const TestDetailsPage: React.FC = () => {
   return (
     <div className="p-4">
       <div className="flex w-full mt-12 mb-6 items-center justify-between">
-        <Button
-          className="flex items-center bg-white rounded-md text-black w-fit h-full mr-2 gap-3 py-2"
+        <button
+          className="flex items-center  rounded-md text-black w-fit h-full mr-2 gap-3 py-2"
           onClick={() => navigate(-1)}
         >
-          <Undo2 size={"1.1rem"} color="black" />
+          <IoChevronBackOutline size={"1.1rem"} color="black" />
           Back
-        </Button>
+        </button>
       </div>
+        
+      <div className="flex w-full mt-12 mb-6 items-center justify-between">
+        <p className="text-sm border-2 rounded-full border-green-600 text-green-600 p-1 px-2 bg-green-50 font-semibold">Status: {firstTest.status}</p>
+        <div className="mt-4 sm:mt-0 flex flex-row gap-4 items-center">
+              <button
+                className="flex items-center gap-2 bg-white border border-purple-900 text-[#5C3CBB] font-semibold py-2 px-4 rounded-full text-sm"
+                onClick={() => {
+                  navigator.clipboard.writeText(
+                    firstTest?.join_url || "Link not available"
+                  );
+                  handleCopyLink();
+                }}
+              >
+                <IoCopyOutline />
+                Copy Link
+              </button>
+
+              <button
+                className="flex items-center gap-2 text-white bg-[#5C3CBB] font-semibold py-2 px-4 rounded-full text-sm"
+                onClick={() => {
+                  navigator.clipboard.writeText(
+                    firstTest?.join_code || "Code not available"
+                  );
+                  handleCopyCode();
+                }}
+              >
+                <IoCopyOutline />
+                Copy Code
+              </button>
+
+              <div className="flex items-center mt-2">
+                {copied && (
+                  <CheckIcon className="h-5 w-5 ml-2 text-green-400" />
+                )}
+              </div>
+            </div>
+      </div>
+
+
+
       <div className="border rounded-lg">
-        <div className="bg-[#5C3CBB] text-white p-8 rounded-lg overflow-hidden">
-          <div className="flex items-center justify-between mb-4">
+        <div className="bg-purple-50 p-8 rounded-2xl overflow-hidden">
+          {/* <div className="flex items-center justify-between mb-4">
             <p className="text-sm font-semibold">Test Details</p>
-          </div>
+          </div> */}
           <h2 className="text-2xl font-bold mt-2">{firstTest.subject}</h2>
           <p className="text-lg mt-1">
             {firstTest.examination_description
@@ -138,8 +181,8 @@ const TestDetailsPage: React.FC = () => {
                 : firstTest.examination_description
               : ""}
           </p>
-          <p className="text-lg">Status: {firstTest.status}</p>
-          <div className="flex flex-col sm:flex-row items-center mt-2 justify-between sm:space-x-4">
+          
+          {/* <div className="flex flex-col sm:flex-row items-center mt-2 justify-between sm:space-x-4">
             <button
               onClick={() => {
                 window.location.href = `/dashboard/test/students/${firstTest.examination_id}`;
@@ -150,63 +193,36 @@ const TestDetailsPage: React.FC = () => {
               <ArrowRightIcon className="h-5 w-5 ml-2" />
             </button>
 
-            <div className="mt-4 sm:mt-0 flex flex-row gap-4 items-center">
-              <button
-                className="bg-[#e5dbff] text-[#5C3CBB] font-semibold py-2 px-4 rounded-full text-sm"
-                onClick={() => {
-                  navigator.clipboard.writeText(
-                    firstTest?.join_url || "Link not available"
-                  );
-                  handleCopyLink();
-                }}
-              >
-                Copy Link
-              </button>
+            
+          </div> */}
 
-              <button
-                className=" bg-[#e5dbff] text-[#5C3CBB] font-semibold py-2 px-4 rounded-full text-sm"
-                onClick={() => {
-                  navigator.clipboard.writeText(
-                    firstTest?.join_code || "Code not available"
-                  );
-                  handleCopyCode();
-                }}
-              >
-                Copy Code
-              </button>
 
-              <div className="flex items-center mt-2">
-                {copied && (
-                  <CheckIcon className="h-5 w-5 ml-2 text-green-400" />
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-
-      <div className="mt-8 flex justify-center">
-  <div className="flex gap-4 overflow-x-auto">
-    <button className="flex items-center gap-2 bg-purple-200 text-purple-800 rounded-full py-2 px-4 whitespace-nowrap">
+          <div className="flex gap-4 overflow-x-auto">
+    <button className="flex items-center gap-2 border border-gray-400  rounded-full py-1 px-4 whitespace-nowrap">
       Grade: {firstTest?.grade}
     </button>
-    <button className="flex items-center gap-2 bg-blue-200 text-blue-800 rounded-full py-2 px-4 whitespace-nowrap">
+    <button className="flex items-center gap-2 border border-gray-400 rounded-full py-1 px-4 whitespace-nowrap">
       No of Questions: {firstTest?.questions?.length ?? 0}
     </button>
-    <button className="flex items-center gap-2 bg-green-200 text-green-800 rounded-full py-2 px-4 whitespace-nowrap">
+    <button className="flex items-center gap-2 border border-gray-400  rounded-full py-1 px-4 whitespace-nowrap">
       Exam Type: {firstTest?.exam_type || "N/A"}
     </button>
 
     {firstTest?.academic_session && (
-      <button className="flex items-center gap-2 bg-yellow-200 text-yellow-800 rounded-full py-2 px-4 whitespace-nowrap">
+      <button className="flex items-center gap-2 border border-gray-400  rounded-full py-1 px-4 whitespace-nowrap">
         Session: {firstTest.academic_session}
       </button>
     )}
     {firstTest?.academic_term && (
-      <button className="flex items-center gap-2 bg-pink-200 text-pink-800 rounded-full py-2 px-4 whitespace-nowrap">
+      <button className="flex items-center gap-2 border border-gray-400 rounded-full py-1 px-4 whitespace-nowrap">
         Term: {firstTest.academic_term}
       </button>
     )}
   </div>
+        </div>
+
+      <div className="mt-8 flex justify-center">
+  
 </div>
 
         {/* <div className="p-6">
@@ -242,8 +258,13 @@ const TestDetailsPage: React.FC = () => {
             </>
           )}
         </div> */}
+
+
+
+        <TestStudentsPage />
       </div>
     </div>
+
   );
 };
 

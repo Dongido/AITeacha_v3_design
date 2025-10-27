@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "../../../components/ui/Button";
 import { useDispatch, useSelector } from "react-redux";
 import { loadStudentAssignments } from "../../../store/slices/studentAssignmentSlice";
@@ -7,6 +7,9 @@ import JoinAssignment from "./_components/joinAssignmentDialog";
 import AssignmentColumnsComponent from "./_components/column.assignment";
 import { Skeleton } from "../../../components/ui/Skeleton";
 import BaseTable from "../../../components/table/BaseTable";
+import { Link } from "react-router-dom";
+import { Plus, Search, Undo2 } from "lucide-react";
+import { Input } from "../../../components/ui/Input";
 
 const StudentAssignments = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -15,6 +18,11 @@ const StudentAssignments = () => {
   );
   const joinClassDialogRef = useRef<any>(null);
   const columns = AssignmentColumnsComponent();
+  const [searchTerm, setSearchTerm] = useState("");
+
+   const { assignments: TeacherAssignments } = useSelector(
+    (state: RootState) => state.assignments
+  );
 
   useEffect(() => {
     if (assignments.length === 0) {
@@ -22,13 +30,35 @@ const StudentAssignments = () => {
     }
   }, [dispatch, assignments.length]);
 
+
+  const filteredAssignments = useMemo(() => {
+    const term = searchTerm.trim().toLowerCase();
+    if (!term) return assignments;
+
+    return assignments.filter((assignment: any) => {
+      // Adjust depending on your data structure
+      const classroomName =
+        assignment?.classroom?.name ||
+        assignment?.classroom_name ||
+        assignment?.classroomName ||
+        ""; 
+
+      return classroomName.toLowerCase().includes(term);
+    });
+  }, [assignments, searchTerm]);
+
   return (
-    <div className="mt-12">
-      <div className="flex justify-between">
-        <h2 className="text-3xl font-bold text-gray-900 mb-4">
-          Assignment Overview
-        </h2>
+    <div className="p-[30px]">
+      <div className="">
+        <div className="mb-[50px] ">
+          <h2 className="text-2xl font-bold text-gray-900 sm:mb-0 my-4">
+           Assignment Overview
+          </h2>
+        </div>
+
       </div>
+
+      <div className="flex justify-between"></div>
       {loading ? (
         <div className="overflow-x-auto">
           <table className="min-w-full border-collapse">
@@ -57,7 +87,18 @@ const StudentAssignments = () => {
       ) : error ? (
         <p className="text-red-500">{error}</p>
       ) : (
-        <BaseTable data={assignments} columns={columns} />
+        <div className="bg-white p-4 rounded-3xl">
+          <div className="flex items-center my-4 justify-between">
+            <Input
+              type="text"
+              placeholder="Search by classroom"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="py-3 max-w-full w-[300px] bg-gray-100"
+            />
+          </div>
+          <BaseTable data={filteredAssignments} columns={columns} />
+        </div>
       )}
       <JoinAssignment ref={joinClassDialogRef} classId={1} />
     </div>

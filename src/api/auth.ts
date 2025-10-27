@@ -15,6 +15,32 @@ export interface SignupResponse {
   userId?: string;
 }
 
+
+interface StudentProfileData {
+  gender: string;
+  age_range: string;
+  country: string;
+  state: string;
+  city: string;
+  phone: string;
+  grade: string;
+  disability?: string;
+}
+
+interface TeacherProfileData {
+  organization: string;
+  gender: string;
+  state: string;
+  age_range: string;
+  country : string;
+  city: string;
+  phone: string;
+  referral?: string;
+  disability?: string;
+  confirm_policy: boolean;
+  confirm_newsletter: boolean;
+}
+
 export const loginUser = async (
   email: string,
   password: string
@@ -174,3 +200,69 @@ export const contactUs = async (payload:any): Promise<any> => {
     );
   }
 };
+
+
+export const completeStudentProfile = async (
+  userId: string,
+  data: StudentProfileData
+) => {
+  try {
+    const response = await apiClient.put(`/auth/complete/profile/${userId}`, {
+      ...data,
+    });
+
+    return response.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data?.message ||
+        "Failed to complete student profile. Please try again."
+    );
+  }
+};
+
+
+
+// TEACHER PROFILE COMPLETION
+
+export const completeTeacherProfile = async (
+  userId: string,
+  data: TeacherProfileData
+) => {
+  try {
+    const response = await apiClient.put(`/auth/complete/profile/${userId}`, {
+      ...data,
+    });
+
+    return response.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data?.message ||
+        "Failed to complete teacher profile. Please try again."
+    );
+  }
+};
+
+
+//  Complete User Interest
+export const completeInterest = async (userId: string, interests: string[]) => {
+  if (!interests || interests.length === 0) {
+    throw new Error("No interest added to the array");
+  }
+
+  try {
+    const response = await apiClient.post(`/auth/complete/interest/${userId}`, {
+      interests , 
+    });
+
+    return response.data;
+  } catch (error: any) {
+    console.error("Interest submission failed:", error.response?.data || error);
+    throw new Error(
+      error.response?.data?.message ||
+        "Failed to submit interests. Please try again."
+    );
+  }
+};
+
+
+

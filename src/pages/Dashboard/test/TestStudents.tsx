@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../../store";
@@ -17,12 +17,15 @@ import { AlertCircle } from "lucide-react";
 import BaseTable from "../../../components/table/BaseTable";
 import { studentColumns } from "./components/column.student";
 import { Button } from "../../../components/ui/Button";
+import { Input } from "../../../components/ui/Input";
 const TestStudentsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const students = useSelector(selectStudents);
   const loading = useSelector(selectStudentsLoading);
+  const [searchTerm, setSearchTerm] = useState("");
+
   const error = useSelector(selectStudentsError);
 
   useEffect(() => {
@@ -34,6 +37,22 @@ const TestStudentsPage: React.FC = () => {
   const handleBack = () => {
     navigate(-1);
   };
+
+
+  const filteredStudents = React.useMemo(() => {
+  if (!students) return [];
+  if (!searchTerm.trim()) return students;
+
+  const term = searchTerm.toLowerCase();
+
+  return students.filter((item: any) => {
+    const values = Object.values(item)
+      .filter((v) => typeof v === "string")
+      .map((v) => v.toLowerCase());
+    return values.some((v) => v.includes(term));
+  });
+}, [students, searchTerm]);
+
 
   if (loading) {
     return (
@@ -96,20 +115,25 @@ const TestStudentsPage: React.FC = () => {
     <div className="p-4">
       <div>
         <div className="flex items-center mb-4 justify-between flex-col sm:flex-row">
-          <Button
-            className="flex items-center bg-white rounded-md text-black w-fit h-full gap-3 py-2"
-            onClick={handleBack}
-          >
-            Back
-          </Button>
+          
 
-          <div className="mx-auto text-center mt-4 sm:mt-0">
+          <div className=" mt-4 sm:mt-0">
             <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">
               Students
             </h2>
           </div>
         </div>
-        <BaseTable data={students} columns={studentColumns(id)} />
+
+        <div className="bg-white p-4 rounded-3xl">
+          <Input
+            type="text"
+            placeholder="Search students..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="py-3 my-4 w-full sm:w-[300px] bg-gray-100"
+          />
+        <BaseTable data={filteredStudents} columns={studentColumns(id)} />
+        </div>
       </div>
     </div>
   );

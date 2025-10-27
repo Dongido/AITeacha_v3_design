@@ -76,6 +76,7 @@ export function StudentNavbar() {
     Cookies.remove("at-accessToken");
     Cookies.remove("at-refreshToken");
     localStorage.removeItem("ai-teacha-user");
+    sessionStorage.clear();
     localStorage.removeItem("redirectPath");
     dispatch(resetProfileState());
     navigate("/auth/login");

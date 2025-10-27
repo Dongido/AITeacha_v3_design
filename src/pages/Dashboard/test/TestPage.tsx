@@ -7,6 +7,7 @@ import {
   selectTestDetailsLoading,
 } from "../../../store/slices/testSlice";
 import { submitExamination, fetchTestAnswerDetails } from "../../../api/test";
+import { FaRegClock } from "react-icons/fa";
 
 interface Question {
   examinationquestions_id: number;
@@ -234,51 +235,59 @@ const ExamPage = () => {
   }
 
   return (
-    <div className="mx-auto px-4 py-8">
+    <div className="p-3 bg-gray-100 md:p-[30px]">
+
+      <div className="max-w-5xl mx-auto ">
+
+      
+
+      <div className="bg-[#FEEAEA]  text-red-700 px-4 py-3 rounded-2xl z-50">
+        <strong className="font-bold">Warning!</strong>
+        <span className="block sm:inline">
+          If you leave this tab, your exam will be automatically submitted
+          after a short delay. Please stay focused.
+        </span>
+      </div>
+
+
+      <div className="bg-white rounded-2xl my-[30px] p-[20px] flex items-center justify-between gap-[30px]">
+        <div>
+          <h3>School :  {testDetails?.school_name}</h3>
+          <h3>Subject : {testDetails?.subject}</h3>
+          <h3>instrution : {testDetails?.instruction}</h3>
+        </div>
+        
+
+        <div className="border rounded-md border-purple-900 bg-[#EFE6FD] p-3 ">
+          <h1 className="text-center font-semibold text-3xl">{Math.floor(timer / 60)}:{String(timer % 60).padStart(2, "0")}</h1>
+          <div className="flex items-center gap-2">
+            <FaRegClock size={20}/>
+            <p className="m-0">Time Left</p>
+          </div>
+        </div>
+
+
+      </div>
+
+
       <div className="bg-white shadow-md rounded-2xl p-6 mb-6 border border-gray-200">
-        <h1 className="text-2xl text-gray-900  font-bold mb-1">
-          School: {testDetails?.school_name}
-        </h1>
-        <h2 className="text-xl font-bold text-gray-800 mb-2">
-          Subject: {testDetails?.subject}
-        </h2>
-        <p className="text-gray-800 italic mb-4">
-          <span className="font-bold text-black">Instruction:</span>{" "}
-          {testDetails?.instruction}
-        </p>
-
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 bg-red-200 border border-red-500 text-red-700 px-4 py-3 rounded-md shadow-lg z-50">
-          <strong className="font-bold">Warning!</strong>
-          <span className="block sm:inline">
-            If you leave this tab, your exam will be automatically submitted
-            after a short delay. Please stay focused.
-          </span>
-        </div>
-
-        <div className="flex items-center justify-between bg-gray-100 p-4 rounded-lg shadow-inner mb-6">
-          <p className="text-lg font-semibold text-gray-700">⏰ Time Left:</p>
-          <p className="text-xl font-bold text-red-500">
-            {Math.floor(timer / 60)}:{String(timer % 60).padStart(2, "0")}
-          </p>
-        </div>
-
         <div className="space-y-10">
           {hasObjective && viewingObjective && (
             <div>
               <h3 className="text-xl font-bold mb-4">
-                Section A: Objective Questions
+                Objective Questions
               </h3>
-              <div className="space-y-8">
+              <div className="space-y-5">
                 {objectiveQuestions?.map((q: Question, idx: number) => (
                   <div
                     key={q.examinationquestions_id}
-                    className="bg-gray-50 p-5 rounded-xl border border-gray-200 shadow-sm"
+                    className=""
                   >
                     <p className="text-lg font-medium mb-4">
                       {idx + 1}. {q.examinationquestions_question}
                     </p>
 
-                    <div className="space-y-2">
+                    {/* <div className="space-y-2">
                       {q.examinationquestions_options &&
                         JSON.parse(q.examinationquestions_options).map(
                           (opt: string, i: number) => {
@@ -311,7 +320,60 @@ const ExamPage = () => {
                             );
                           }
                         )}
-                    </div>
+                    </div> */}
+
+                    <div className="space-y-2">
+  {q.examinationquestions_options &&
+    JSON.parse(q.examinationquestions_options).map(
+      (opt: string, i: number) => {
+        const optionLetter = String.fromCharCode(65 + i);
+        const isSelected =
+          answers[q.examinationquestions_id] === optionLetter;
+
+        return (
+          <label
+            key={i}
+            onClick={() =>
+              handleAnswerChange(q.examinationquestions_id, optionLetter)
+            }
+            className={`flex items-center justify-between p-3 border rounded-md cursor-pointer transition-all ${
+              isSelected
+                ? "border-green-500 bg-green-50/5"
+                : "border-gray-300 hover:bg-gray-100"
+            }`}
+          >
+            {/* Left side text */}
+            <span className="text-gray-700">
+              <strong>{optionLetter}.</strong> {opt}
+            </span>
+
+            {/* Custom Checkbox */}
+            <span
+              className={`w-5 h-5 flex items-center justify-center rounded border transition-all ${
+                isSelected
+                  ? "bg-green-500 border-green-600"
+                  : "border-gray-400 bg-white"
+              }`}
+            >
+              {isSelected && (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-3 h-3 text-white"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={3}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              )}
+            </span>
+          </label>
+        );
+      }
+    )}
+</div>
+
                   </div>
                 ))}
               </div>
@@ -409,6 +471,8 @@ const ExamPage = () => {
             </button>
           ) : null}
         </div>
+      </div>
+
       </div>
     </div>
   );

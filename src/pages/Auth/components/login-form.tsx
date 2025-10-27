@@ -213,7 +213,7 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
                 </div>
                 <div className="relative flex justify-center text-sm">
                   <span className="bg-white px-2 text-gray-900">
-                    or continue with
+                    or 
                   </span>
                 </div>
               </div>
@@ -242,7 +242,7 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
               }
             }}
           >
-            <FcGoogle className="mr-2" /> Google
+            <FcGoogle className="mr-2" />Login with Google
           </Button>
         </div>
 

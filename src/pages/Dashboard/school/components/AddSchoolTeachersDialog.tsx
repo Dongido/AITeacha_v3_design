@@ -21,6 +21,8 @@ import { uploadTeachers } from "../../../../api/school";
 interface AddSchoolTeachersDialogProps {
   onSuccess?: () => void;
 }
+import { UploadCloud } from "lucide-react";
+import { cn } from "../../../../lib/utils";
 
 interface TeacherData {
   firstname: string;
@@ -44,6 +46,25 @@ const AddSchoolTeachersDialog = forwardRef(
     const [toastVariant, setToastVariant] = useState<"default" | "destructive">(
       "default"
     );
+    const [isDragging, setIsDragging] = useState(false);
+    const [fileName, setFileName] = useState<string | null>(null);
+
+    const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      setIsDragging(false);
+      const droppedFile = e.dataTransfer.files?.[0];
+      if (droppedFile && droppedFile.type === "text/csv") {
+        handleFileChange({ target: { files: [droppedFile] } } as any);
+        setFileName(droppedFile.name);
+      }
+    };
+
+    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+      handleFileChange(e);
+      if (e.target.files && e.target.files[0]) {
+        setFileName(e.target.files[0].name);
+      }
+    };
 
     useImperativeHandle(ref, () => ({
       openDialog: () => setOpen(true),
@@ -177,12 +198,12 @@ const AddSchoolTeachersDialog = forwardRef(
     return (
       <ToastProvider swipeDirection="right">
         <>
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent className="max-w-[700px] text-gray-800 max-h-[90vh] overflow-y-auto">
+          <Dialog open={open} onOpenChange={setOpen} >
+            <DialogContent className="max-w-[600px] text-gray-800 max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Add New Teachers</DialogTitle>
               </DialogHeader>
-              <DialogDescription className="mb-4">
+              <DialogDescription className="mb-4 ">
                 Upload a{" "}
                 <strong className="block mb-2">
                   CSV (Comma Separated Values)
@@ -206,7 +227,7 @@ const AddSchoolTeachersDialog = forwardRef(
                   optional. Leave blank if not applicable.
                 </span>
               </DialogDescription>
-              <div className="grid gap-4 py-4">
+              {/* <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="csvFile" className="text-right">
                     CSV File
@@ -220,8 +241,52 @@ const AddSchoolTeachersDialog = forwardRef(
                     disabled={loading}
                   />
                 </div>
+              </div> */}
+
+              <div className="grid gap-4 py-4">
+                <div className="flex flex-col gap-4">
+                  <Label htmlFor="csvFile" className="">
+                    CSV File
+                  </Label>
+
+                  <div
+                    onDrop={handleDrop}
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      setIsDragging(true);
+                    }}
+                    onDragLeave={() => setIsDragging(false)}
+                    onClick={() =>
+                      document.getElementById("csvFileInput")?.click()
+                    }
+                    className={cn(
+                      "col-span-3 bg-gray-50 flex flex-col items-center justify-center p-6 border-2 border-dashed rounded-lg cursor-pointer transition-all duration-200",
+                      isDragging
+                        ? "border-primary bg-primary/10 shadow-md scale-[1.01]"
+                        : "border-gray-300 hover:border-primary/50 hover:bg-muted/40"
+                    )}
+                  >
+                    <p className="text-sm text-center text-gray-500">
+                      {fileName
+                        ? `Selected file: ${fileName}`
+                        : "Select or Drag & drop your CSV file here"}
+                    </p>
+                    <p className="flex items-center gap-3 text-sm border-2 p-2 px-5 rounded-full border-gray-300">
+                    <UploadCloud className="w-5 h-5 text-muted-foreground" />
+                        <span>Choose file</span>
+                    </p>
+                    <input
+                      id="csvFileInput"
+                      type="file"
+                      accept=".csv"
+                      onChange={handleFileSelect}
+                      className="hidden"
+                      disabled={loading}
+                    />
+                  </div>
+                </div>
               </div>
-              <DialogFooter>
+              <DialogFooter className="flex justify-start">
                 <Button
                   onClick={handleUpload}
                   disabled={loading || !file}

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "../../../store";
 import BaseTable from "../../../components/table/BaseTable";
@@ -8,10 +8,13 @@ import AddSingleStudentDialog from "./components/AddSchoolStudentDialog";
 import UploadStudentsCSVDialog from "./components/UploadStudentDialog";
 import { getSchoolStudents } from "../../../store/slices/schoolStudentSlice";
 import { Skeleton } from "../../../components/ui/Skeleton";
+import { Input } from "../../../components/ui/Input";
+import { IoAddOutline } from "react-icons/io5";
 
 const SchoolStudents = () => {
   const addSingleStudentDialogRef = useRef<{ openDialog: () => void }>(null);
   const uploadStudentsCSVDialogRef = useRef<{ openDialog: () => void }>(null);
+   const [searchTerm, setSearchTerm] = useState("");
 
   const columns = React.useMemo(() => schoolStudentColumns(), []);
 
@@ -19,6 +22,8 @@ const SchoolStudents = () => {
   const { students, loadingStudents, error } = useSelector(
     (state: RootState) => state.schoolStudent
   );
+
+  // console.log(students)
  
   console.log("student", students)
   useEffect(() => {
@@ -61,21 +66,26 @@ const SchoolStudents = () => {
     }
   };
 
+
+  const filteredStudents = students.filter((student : any) => {
+    if (!searchTerm.trim()) return true;
+    const fullName = `${student.firstname || ""} ${student.lastname || ""}`.toLowerCase();
+    return (
+      fullName.includes(searchTerm.toLowerCase()) ||
+      student.email?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
+
+
   return (
-    <div className="mt-12">
-      <div
-        className="bg-[#e5dbff] mt-3 mb-4 text-black p-4 rounded-md flex justify-center items-center"
-        style={{
-          background:
-            "linear-gradient(143.6deg, rgba(192, 132, 252, 0) 20.79%, rgba(232, 121, 249, 0.26) 40.92%, rgba(204, 171, 238, 0) 70.35%)",
-        }}
-      >
-        <span className="text-center text-xl font-bold">
-          Teachers Are Heroes🎉
-        </span>
-      </div>
-      <div className="mb-4 flex flex-col sm:flex-row sm:justify-end gap-2 items-center">
-        <Button
+    <div className=" p-[30px]">
+     
+      <div className="mb-[30px] flex flex-col sm:flex-row sm:justify-between gap-2 items-center">
+        <div>
+          <h1 className="text-xl font-semibold m-0">Students</h1>
+          <p className="text-gray-800 text-sm">View all students</p>
+        </div>
+        {/* <Button
           onClick={handleDownloadTemplate}
           variant={"outline"}
           className="w-full sm:w-auto rounded-md underline"
@@ -88,12 +98,13 @@ const SchoolStudents = () => {
           className="w-full sm:w-auto rounded-full"
         >
           Upload CSV
-        </Button>
+        </Button> */}
         <Button
           onClick={handleAddSingleStudentClick}
-          variant={"outlined"}
-          className="w-full sm:w-auto rounded-full bg-gray-300"
+          variant={"gradient"}
+          className="w-full flex gap-3 items-center sm:w-auto rounded-md bg-gray-300"
         >
+          <IoAddOutline size={22} />
           Add Single Student
         </Button>
       </div>
@@ -117,7 +128,41 @@ const SchoolStudents = () => {
           Error loading students: {error}
         </div>
       ) : (
-        <BaseTable data={students} columns={columns} />
+        <div className="bg-white rounded-2xl p-4">
+
+        <div className="mb-5 flex flex-col sm:flex-row sm:justify-between gap-2 items-center">
+        {/* search student */}
+          <div>
+            <Input
+              type="text"
+              placeholder="Search student by name"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="py-3 max-w-full bg-gray-100 w-[300px]"
+            />
+          </div>
+          <div>
+
+            <Button
+              onClick={handleDownloadTemplate}
+              // variant={"outline"}
+              className="w-full sm:w-auto "
+            >
+              Sample Template
+            </Button>
+            <Button
+              onClick={handleUploadCSVClick}
+              variant={"dark"}
+              className="w-full sm:w-auto bg-black rounded-md"
+            >
+              Upload CSV
+            </Button>
+          </div>
+      </div>
+
+        
+        <BaseTable data={filteredStudents} columns={columns} />
+        </div>
       )}
 
       <AddSingleStudentDialog

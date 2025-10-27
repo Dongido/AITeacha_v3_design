@@ -12,6 +12,8 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default: "bg-transparent text-black hover:bg-primary/90",
+        dark: "bg-black text-white",
+        green: "bg-green-500 text-white hover:bg-green-700 transition",
         destructive: "bg-red-700 text-white hover:bg-red-900",
         danger: "border border-[#2A2929] px-6 py-2 rounded-full",
         outline:

@@ -73,6 +73,7 @@ const DialogFooter = ({
   <div
     className={cn(
       "flex sm:flex-row sm:justify-start sm:space-x-2",
+      "flex flex-col-reverse sm:flex-row  sm:space-x-2",
       className
     )}
     {...props}
@@ -101,7 +102,7 @@ const DialogDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Description
     ref={ref}
-    className={cn("text-sm text-muted-foreground", className)}
+    className={cn("text-sm m-0 p-0 text-muted-foreground", className)}
     {...props}
   />
 ));

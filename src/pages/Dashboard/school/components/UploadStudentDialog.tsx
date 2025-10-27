@@ -21,6 +21,8 @@ import {
 } from "../../../../components/ui/Toast";
 import { uploadStudents } from "../../../../api/school";
 
+import { UploadCloud } from "lucide-react";
+import { cn } from "../../../../lib/utils";
 import { Loader2 } from "lucide-react";
 interface UploadStudentsCSVDialogProps {
   onSuccess?: () => void;
@@ -48,6 +50,26 @@ const UploadStudentsCSVDialog = forwardRef(
     const [toastVariant, setToastVariant] = useState<"default" | "destructive">(
       "default"
     );
+    const [isDragging, setIsDragging] = useState(false);
+    const [fileName, setFileName] = useState<string | null>(null);
+
+
+    const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+          e.preventDefault();
+          setIsDragging(false);
+          const droppedFile = e.dataTransfer.files?.[0];
+          if (droppedFile && droppedFile.type === "text/csv") {
+            handleFileChange({ target: { files: [droppedFile] } } as any);
+            setFileName(droppedFile.name);
+          }
+        };
+    
+        const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+          handleFileChange(e);
+          if (e.target.files && e.target.files[0]) {
+            setFileName(e.target.files[0].name);
+          }
+        };
 
     useImperativeHandle(ref, () => ({
       openDialog: () => {
@@ -219,7 +241,53 @@ const UploadStudentsCSVDialog = forwardRef(
                 </DialogDescription>
               </DialogHeader>
 
+
+
               <div className="grid gap-4 py-4">
+                              <div className="flex flex-col gap-4">
+                                <Label htmlFor="csvFile" className="">
+                                  CSV File
+                                </Label>
+              
+                                <div
+                                  onDrop={handleDrop}
+                                  onDragOver={(e) => {
+                                    e.preventDefault();
+                                    setIsDragging(true);
+                                  }}
+                                  onDragLeave={() => setIsDragging(false)}
+                                  onClick={() =>
+                                    document.getElementById("csvFileInput")?.click()
+                                  }
+                                  className={cn(
+                                    "col-span-3 bg-gray-50 flex flex-col items-center justify-center p-6 border-2 border-dashed rounded-lg cursor-pointer transition-all duration-200",
+                                    isDragging
+                                      ? "border-primary bg-primary/10 shadow-md scale-[1.01]"
+                                      : "border-gray-300 hover:border-primary/50 hover:bg-muted/40"
+                                  )}
+                                >
+                                  <p className="text-sm text-center text-gray-500">
+                                    {fileName
+                                      ? `Selected file: ${fileName}`
+                                      : "Select or Drag & drop your CSV file here"}
+                                  </p>
+                                  <p className="flex items-center gap-3 text-sm border-2 p-2 px-5 rounded-full border-gray-300">
+                                  <UploadCloud className="w-5 h-5 text-muted-foreground" />
+                                      <span>Choose file</span>
+                                  </p>
+                                  <input
+                                    id="csvFileInput"
+                                    type="file"
+                                    accept=".csv"
+                                    onChange={handleFileSelect}
+                                    className="hidden"
+                                    disabled={loading}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+
+              {/* <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="csvFile" className="text-right">
                     CSV File
@@ -233,7 +301,7 @@ const UploadStudentsCSVDialog = forwardRef(
                     disabled={loading}
                   />
                 </div>
-              </div>
+              </div> */}
 
               <DialogFooter>
                 <Button

@@ -62,7 +62,7 @@ const GenerateQuestionsDialog: React.FC<GenerateQuestionsDialogProps> = ({
   return (
     <Dialog onOpenChange={(isOpen) => isOpen && handleDialogOpen()}>
       <DialogTrigger asChild>
-        <Button variant={"ghost"} className="rounded-md text-white bg-black">
+        <Button variant={"ghost"} className="rounded-full text-white bg-black">
           Generate AI Questions
         </Button>
       </DialogTrigger>

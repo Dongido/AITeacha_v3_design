@@ -6,6 +6,8 @@ import { contactUs } from "../../api/auth";
 import { contactSlice } from "../../store/slices/authSlice";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { RootState } from "../../store";
+import { BsTelephone } from "react-icons/bs";
+import { AiOutlineMail } from "react-icons/ai";
 
 const Support = () => {
   const dispatch = useAppDispatch();
@@ -105,14 +107,16 @@ const Support = () => {
   };
 
   return (
-    <div className="bg-gray-50 ">
+    <div className="p-[30px]">
+
+      <h4 className="font-semibold text-xl mb-[35px]">Contact Support</h4>
       {" "}
       <section>
         {" "}
-        <div className="mt-4">
+        <div className="">
           {" "}
-          <div className="max-w-screen-xl shadow-md border mx-auto mt-12 px-4 py-8 rounded-t-3xl text-center md:px-8">
-            <ul className="flex flex-wrap gap-x-8 gap-y-6 items-center lg:gap-x-18 list-none justify-center">
+          {/* <div className="border  mx-auto mt-12 px-4 py-8 rounded-t-3xl text-center md:px-8">
+            <ul className="bg-white border border-red-400 grid grid-cols-1 md:grid-cols-2  gap-[20px] gap-y-6 items-center lg:gap-x-18 list-none justify-center">
               {contactMethods.map((item, idx) => (
                 <li key={idx}>
                   <h4 className="text-gray-900 text-lg font-bold">
@@ -130,21 +134,35 @@ const Support = () => {
                 </li>
               ))}
             </ul>
+          </div> */}
+
+
+          <div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-[20px] mb-[30px]">
+              <div className="bg-white flex flex-col gap-4 rounded-xl p-[25px]">
+                <BsTelephone className="text-primary font-bold" size={25}/>
+                <div>
+                  <p className="font-bold text-gray-700 m-0">Phone: +234 708-9115-000</p>
+                  <p className="text-sm m-0">Give us a call. Our Experts are ready to talk to you.</p>
+                </div>
+
+              </div>
+              <div className="bg-white rounded-xl p-[25px] flex flex-col gap-4">
+                <AiOutlineMail className="text-primary font-bold" size={25} />
+                
+                <div>
+                  <p className="font-bold text-gray-700 m-0">Email: info@aiteacha.com</p>
+                  <p className="text-sm m-0">Drop us an email and you will receive a reply within a short time.</p>
+                </div>
+
+
+              </div>
+            </div>
           </div>
         </div>{" "}
-        <div className="gap-8 items-center py-8 px-4 mx-auto max-w-screen-xl xl:gap-16 md:grid md:grid-cols-2 sm:py-16 lg:px-6">
-          {" "}
-          <img
-            className="w-full dark:hidden"
-            src="https://images.template.net/78027/Free-Contact-Us-Illustration-JPEG-1.jpg"
-            alt="Contact image"
-          />{" "}
-          <img
-            className="w-full hidden dark:block"
-            src="https://images.template.net/78027/Free-Contact-Us-Illustration-JPEG-1.jpg"
-            alt="Contact image"
-          />{" "}
-          <div className="md:mt-0">
+        <div className="border-2 gap-8 w-full bg-white rounded-2xl p-5 md:p-10  xl:gap-16 ">
+          
+          <div className="md:mt-0 w-full">
             {" "}
             <h2 className="mb-4 text-2xl tracking-tight font-extrabold text-gray-900 dark:text-white">
               Submit a Support Ticket{" "}
@@ -153,12 +171,15 @@ const Support = () => {
               Please describe your issue in detail, and one of our experts will
               get back to you as soon as possible.{" "}
             </p>{" "}
-            <form className="space-y-6" onSubmit={handleSubmit}>
+            <form className="space-y-6 w-full" onSubmit={handleSubmit}>
               {" "}
               <div className="flex space-x-4">
                 {" "}
                 <div className="flex-1">
                   {" "}
+                  <label htmlFor="" className="font-semibold">
+                    First Name
+                  </label>
                   <Input
                     name="firstname"
                     type="text"
@@ -166,10 +187,14 @@ const Support = () => {
                     onChange={handleChange}
                     placeholder="First Name"
                     required
+                    className="rounded-full border-gray-600"
                   />{" "}
                 </div>{" "}
                 <div className="flex-1">
                   {" "}
+                  <label htmlFor="" className="font-semibold">
+                    Last Name
+                  </label>
                   <Input
                     name="lastname"
                     value={formData.lastname}
@@ -177,11 +202,15 @@ const Support = () => {
                     type="text"
                     placeholder="Last Name"
                     required
+                    className="rounded-full border-gray-600"
                   />{" "}
                 </div>{" "}
               </div>{" "}
               <div>
                 {" "}
+                <label htmlFor="" className="font-semibold">
+                    Email
+                  </label>
                 <Input
                   name="email"
                   value={formData.email}
@@ -189,10 +218,14 @@ const Support = () => {
                   type="email"
                   placeholder="Email Address"
                   required
+                    className="rounded-full border-gray-600"
                 />{" "}
               </div>{" "}
               <div>
                 {" "}
+                <label htmlFor="" className="font-semibold">
+                    Subject of your request
+                  </label>
                 <Input
                   name="subject"
                   value={formData.subject}
@@ -200,16 +233,21 @@ const Support = () => {
                   type="text"
                   placeholder="Subject of your request"
                   required
+                    className="rounded-full border-gray-600"
                 />{" "}
               </div>{" "}
               <div>
                 {" "}
+                <label htmlFor="" className="font-semibold">
+                    Describe your issue
+                  </label>
                 <TextArea
                   name="message_content"
                   value={formData.message_content}
                   onChange={handleChange}
                   placeholder="Describe your issue"
                   required
+                    className="rounded-xl border-gray-600"
                 />{" "}
               </div>{" "}
               <div className="text-center">
@@ -218,7 +256,7 @@ const Support = () => {
                   type="submit"
                   disabled={loading}
                   variant={"gradient"}
-                  className="inline-flex items-center text-white focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center w-full dark:focus:ring-primary-900"
+                  className="inline-flex items-center text-white focus:ring-4 focus:ring-primary-300 font-medium rounded-full text-sm px-5 py-2.5 text-center w-full dark:focus:ring-primary-900"
                 >
                   Send Request{" "}
                 </Button>{" "}

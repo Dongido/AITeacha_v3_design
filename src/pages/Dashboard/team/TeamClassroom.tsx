@@ -26,6 +26,7 @@ import { Button } from "../../../components/ui/Button";
 import { Skeleton } from "../../../components/ui/Skeleton";
 import RestrictedPage from "../classrooms/RestrictionPage";
 import { useNavigate, Link } from "react-router-dom";
+import { Input } from "../../../components/ui/Input";
 const TeamClassroomPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
@@ -41,7 +42,7 @@ const TeamClassroomPage: React.FC = () => {
   const [selectionType, setSelectionType] = useState("teamClassroom");
   const [selectedItemId, setSelectedItemId] = useState("");
   const [activeTab, setActiveTab] = useState("teamClassrooms"); // New state for active tab
-
+const [searchTerm, setSearchTerm] = useState("");
   const { assignedClassrooms, teacherAssignedClassrooms, loading, error } =
     useSelector((state: RootState) => state.teamClassroom);
 
@@ -82,6 +83,36 @@ const TeamClassroomPage: React.FC = () => {
       setSubmitting(false);
     }
   };
+
+  const handleAddStudentsClick = () => {
+    // addTeachersDialogRef.current?.openDialog();
+    console.log("clicked..")
+  };
+
+   const handleDownloadTemplate = () => {
+    const csvContent =
+      "firstname,lastname,phone,email,country,city,gender,age,disability_details\n" +
+      "John,Doe,1234567890,teacher.john@example.com,Nigeria,Lagos,Male,40,Wheelchair user\n" +
+      "Jane,Smith,0987654321,teacher.jane@example.com,Ghana,Accra,Female,35,";
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", "teacher_template.csv");
+      link.style.visibility = "hidden";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } else {
+      window.open(
+        `data:text/csv;charset=utf-8,${encodeURIComponent(csvContent)}`
+      );
+    }
+  };
+
 
   useEffect(() => {
     const userDetailsFromStorage = localStorage.getItem("ai-teacha-user");
@@ -188,41 +219,50 @@ const TeamClassroomPage: React.FC = () => {
   }
 
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-semibold mb-4">Class Management</h2>
+    <div className=" p-[30px]">
+      <div>
+        <h2 className="text-lg font-semibold m-0">Class Management</h2>
+        <p className="text-sm">Manage classroom</p>
 
-      <div className="mb-4">
-        <nav
-          className="flex space-x-2 bg-white rounded-full p-1"
-          aria-label="Tabs"
-        >
+      </div>
+
+      <div className="mb-4 mt-[50px] border-b-2 ">
+        
           <button
-            className={`rounded-l-full ${
+            className={` font-bold text-[19px] ${
               activeTab === "teamClassrooms"
-                ? "bg-purple-200 text-white shadow "
-                : "text-gray-700 hover:bg-gray-200"
-            } flex-1 text-center py-2 px-4 rounded-md transition-colors duration-200 font-medium text-sm`}
+                ? "text-purple-900 border-b-4 border-purple-900"
+                : "text-gray-900 "
+            } flex-1 text-center py-2 px-5  transition-colors duration-200 font-medium text-sm`}
             onClick={() => setActiveTab("teamClassrooms")}
           >
             Team Classrooms
           </button>
           <button
-            className={`rounded-r-full ${
+            className={` font-bold text-[19px] ${
               activeTab === "teamMembers"
-                ? "bg-purple-200 text-white shadow"
-                : "text-gray-700 hover:bg-gray-200"
-            } flex-1 text-center py-2 px-4 rounded-md transition-colors duration-200 font-medium text-sm`}
+                ? "text-purple-900 border-b-4 border-purple-900"
+                : "text-gray-900"
+            } flex-1 text-center py-2 px-5  transition-colors duration-200 font-medium text-sm`}
             onClick={() => setActiveTab("teamMembers")}
           >
             Team Members
           </button>
-        </nav>
       </div>
       {activeTab === "teamClassrooms" && (
         <>
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center my-4">
+            <div className="flex items-center space-x-2">
+              <span className="text-md font-semibold whitespace-nowrap">
+                Show Classrooms Assigned to me
+              </span>
+              <Switch
+                checked={showTeacherAssigned}
+                onCheckedChange={(checked) => setShowTeacherAssigned(checked)}
+              />
+            </div>
             <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-              <DialogTrigger className="bg-primary text-white px-4 py-2 rounded-full mb-4 sm:mb-0">
+              <DialogTrigger className="bg-primary text-white px-4 py-2 rounded-md mb-4 sm:mb-0">
                 Assign Classroom
               </DialogTrigger>
 
@@ -239,7 +279,7 @@ const TeamClassroomPage: React.FC = () => {
                     <select
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full p-2 border rounded"
+                      className="w-full p-2 border rounded-full"
                       required
                     >
                       <option value="">Select a Team Member</option>
@@ -284,7 +324,7 @@ const TeamClassroomPage: React.FC = () => {
                     <select
                       value={selectedItemId}
                       onChange={(e) => setSelectedItemId(e.target.value)}
-                      className="w-full p-2 border rounded"
+                      className="w-full p-2 border rounded-full"
                       required
                     >
                       <option value="">
@@ -321,21 +361,13 @@ const TeamClassroomPage: React.FC = () => {
               </DialogContent>
             </Dialog>
 
-            <div className="flex items-center space-x-2">
-              <span className="text-md font-semibold whitespace-nowrap">
-                Show Classrooms Assigned to me
-              </span>
-              <Switch
-                checked={showTeacherAssigned}
-                onCheckedChange={(checked) => setShowTeacherAssigned(checked)}
-              />
-            </div>
+            
           </div>
 
-          <h3 className="text-xl font-semibold mt-6 mb-2">
+          <h3 className="text-xl font-medium mt-6 mb-2">
             {showTeacherAssigned
-              ? "Classrooms Assigned to Me"
-              : "Classrooms Assigned by me"}
+              ? "Below are classrooms Assigned to Me"
+              : "Below are classrooms Assigned by me"}
           </h3>
           {loading ? (
             <p>Loading...</p>
@@ -343,18 +375,89 @@ const TeamClassroomPage: React.FC = () => {
             <p className="text-red-500">{error}</p>
           ) : showTeacherAssigned ? (
             teacherAssignedClassroomsList.length > 0 ? (
+              <div className="bg-white p-4 rounded-3xl">
+                <div className="py-2 flex justify-between mb-5 items-center">
+          {/* search Teamates */}
+          <div>
+            <Input
+              type="text"
+              placeholder="Search team by name"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="py-3 max-w-full w-[300px] bg-gray-100"
+            />
+
+          </div>
+          {/* sample and upload csv */}
+          <div className="flex justify-end">
+            <Button
+              onClick={handleDownloadTemplate}
+            >
+              Sample Template
+            </Button>
+            <Button
+              onClick={handleAddStudentsClick}
+              variant={"gradient"}
+              className="rounded-md"
+            >
+              Upload CSV
+            </Button>
+          </div>
+        </div>
+
               <BaseTable
-                data={teacherAssignedClassroomsList}
+                // data={teacherAssignedClassroomsList}
+                data={teacherAssignedClassroomsList.filter((item) =>
+                  item.classroom_name
+                    ?.toLowerCase()
+                    .includes(searchTerm.toLowerCase())
+                )}
                 columns={teamClassroomColumns}
               />
+              </div>
             ) : (
               <p>No Classrooms assigned to you.</p>
             )
           ) : assignedClassroomsList.length > 0 ? (
+            <div className="bg-white p-4 rounded-3xl">
+              <div className="py-2 flex justify-between mb-5 items-center">
+          {/* search Teamates */}
+          <div>
+            <Input
+              type="text"
+              placeholder="Search team by name"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="py-3 max-w-full w-[300px] bg-gray-100"
+            />
+
+          </div>
+          {/* sample and upload csv */}
+          <div className="flex justify-end">
+            <Button
+              onClick={handleDownloadTemplate}
+            >
+              Sample Template
+            </Button>
+            <Button
+              onClick={handleAddStudentsClick}
+              variant={"gradient"}
+              className="rounded-md"
+            >
+              Upload CSV
+            </Button>
+          </div>
+        </div>
             <BaseTable
-              data={assignedClassroomsList}
+              // data={assignedClassroomsList}
+              data={assignedClassroomsList.filter((item) =>
+                item.classroom_name
+                  ?.toLowerCase()
+                  .includes(searchTerm.toLowerCase())
+              )}
               columns={teamClassroomColumns}
             />
+            </div>
           ) : (
             <p>No assigned classrooms found.</p>
           )}

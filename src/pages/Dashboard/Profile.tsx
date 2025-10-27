@@ -216,7 +216,7 @@ const Profile: React.FC = () => {
 
   return (
     <ToastProvider>
-      <div className="container mx-auto mt-3 bg-white p-3 shadow-sm rounded-md">
+      <div className="container mx-auto mt-3  p-3 ">
         {loading ? (
           <p>Loading...</p>
         ) : error ? (
@@ -278,7 +278,7 @@ const Profile: React.FC = () => {
                   </div>
                 )}
                 <div className="flex flex-col lg:flex-row gap-6">
-                  <div className="flex-1 p-3 rounded-md border border-gray-200">
+                  <div className="flex-1 p-3 rounded-md border bg-white border-gray-200">
                     <h3 className="text-lg font-semibold mb-4">
                       Profile Information
                     </h3>
@@ -295,7 +295,7 @@ const Profile: React.FC = () => {
                           value={firstName}
                           onChange={(e) => setFirstName(e.target.value)}
                           placeholder="Enter your first name"
-                          className="w-full"
+                          className="w-full rounded-full"
                           readOnly={!editMode}
                         />
                       </div>
@@ -312,7 +312,7 @@ const Profile: React.FC = () => {
                           value={lastName}
                           onChange={(e) => setLastName(e.target.value)}
                           placeholder="Enter your last name"
-                          className="w-full"
+                          className="w-full rounded-full"
                           readOnly={!editMode}
                         />
                       </div>
@@ -328,7 +328,7 @@ const Profile: React.FC = () => {
                           value={phone}
                           onChange={(e) => setPhone(e.target.value)}
                           placeholder="Enter your Phone Number"
-                          className="w-full"
+                          className="w-full rounded-full"
                           readOnly={!editMode}
                         />
                       </div>
@@ -344,7 +344,7 @@ const Profile: React.FC = () => {
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           placeholder="Enter your email"
-                          className="w-full"
+                          className="w-full rounded-full"
                           readOnly
                         />
                       </div>
@@ -365,7 +365,7 @@ const Profile: React.FC = () => {
                               setSelectedStateCode("");
                               setSelectedCityName("");
                             }}
-                            className="w-full border p-2 rounded-md border-gray-300"
+                            className="w-full border p-2 rounded-full border-gray-300"
                           >
                             <option value="">Select Country</option>
                             {allCountries.map((country) => (
@@ -382,7 +382,7 @@ const Profile: React.FC = () => {
                             id="country"
                             value={getCountryDisplayName(selectedCountryCode)}
                             readOnly
-                            className="w-full"
+                            className="w-full rounded-full"
                           />
                         )}
                       </div>
@@ -402,7 +402,7 @@ const Profile: React.FC = () => {
                               setSelectedStateCode(e.target.value);
                               setSelectedCityName("");
                             }}
-                            className="w-full border p-2 rounded-md border-gray-300"
+                            className="w-full border p-2 rounded-full border-gray-300"
                             disabled={!selectedCountryCode}
                           >
                             <option value="">Select State</option>
@@ -420,7 +420,7 @@ const Profile: React.FC = () => {
                               selectedCountryCode
                             )}
                             readOnly
-                            className="w-full"
+                            className="w-full rounded-full"
                           />
                         )}
                       </div>
@@ -439,7 +439,7 @@ const Profile: React.FC = () => {
                             onChange={(e) =>
                               setSelectedCityName(e.target.value)
                             }
-                            className="w-full border p-2 rounded-md border-gray-300"
+                            className="w-full rounded-full border p-2  border-gray-300"
                             disabled={!selectedStateCode}
                           >
                             <option value="">Select City</option>
@@ -454,7 +454,7 @@ const Profile: React.FC = () => {
                             id="city"
                             value={selectedCityName || "N/A"}
                             readOnly
-                            className="w-full"
+                            className="w-full rounded-full"
                           />
                         )}
                       </div>
@@ -471,7 +471,7 @@ const Profile: React.FC = () => {
                             id="gender"
                             value={gender}
                             onChange={(e) => setGender(e.target.value)}
-                            className="w-full border p-2 rounded-md border-gray-300"
+                            className="w-full border p-2 rounded-full border-gray-300"
                           >
                             <option value="">Select Gender</option>
                             <option value="Male">Male</option>
@@ -483,7 +483,7 @@ const Profile: React.FC = () => {
                             id="gender"
                             value={gender || "N/A"}
                             readOnly
-                            className="w-full"
+                            className="w-full rounded-full"
                           />
                         )}
                       </div>
@@ -496,7 +496,7 @@ const Profile: React.FC = () => {
                       >
                         Role
                       </label>
-                      <p className="w-full border p-2 rounded-md border-gray-300 bg-gray-100">
+                      <p className="w-full border p-2 rounded-full border-gray-300 bg-gray-100">
                         {role === 3
                           ? "Student"
                           : role === 2
@@ -517,12 +517,12 @@ const Profile: React.FC = () => {
                       </label>
                       {referral_code ? (
                         <div className="flex flex-col gap-2">
-                          <p className="w-full border p-2 rounded-md border-gray-300 bg-gray-100">
+                          <p className="w-full border p-2 rounded-full border-gray-300 bg-gray-100">
                             {referral_code}
                           </p>
                           <button
                             onClick={handleCopyReferralLink}
-                            className="w-full bg-primary text-white p-2 rounded-md"
+                            className="w-full bg-primary text-white p-2 rounded-full"
                           >
                             {copied ? "Copied!" : "Copy Referral Link"}
                           </button>
@@ -568,11 +568,10 @@ const Profile: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="w-full h-72 lg:w-1/3 bg-gray-200 p-6 rounded-md shadow-sm">
-                    <h3 className="text-lg text-center font-semibold mb-4">
-                      Profile Picture
-                    </h3>
+                  <div className="w-full h-72 flex items-center justify-center flex-col gap-4 lg:w-1/3 bg-white p-6 rounded-md shadow-sm">
+                    
                     {!editMode ? (
+                      <>
                       <img
                         src={
                           user?.imageurl?.startsWith("http")
@@ -587,26 +586,55 @@ const Profile: React.FC = () => {
                             "https://img.freepik.com/premium-photo/cool-asian-head-logo_925613-50527.jpg?w=360";
                         }}
                       />
+
+                        <h3 className="text-lg text-center font-semibold mb-4">
+                      Profile Picture
+                    </h3>
+                    </>
                     ) : (
-                      <>
+                      <div className="flex flex-col items-center">
+                      <img
+                        src={
+                          user?.imageurl?.startsWith("http")
+                            ? user?.imageurl
+                            : `https://${user?.imageurl}`
+                        }
+                        loading="lazy"
+                        alt="Profile"
+                        className="w-32 h-32 rounded-full mx-auto"
+                        onError={(e) => {
+                          e.currentTarget.src =
+                            "https://img.freepik.com/premium-photo/cool-asian-head-logo_925613-50527.jpg?w=360";
+                        }}
+                      />
+
+                        
+                        <h3 className="text-lg text-center font-semibold mb-4">
+                      Profile Picture
+                    </h3>
+                      <div className="">
+
                         <UploadPicture
                           onFileChange={handleProfilePictureChange}
-                        />
+                          />
                         {profilePicture && (
                           <div className="flex justify-center items-center mx-auto">
                             <Button
                               onClick={handleUpdatePhoto}
-                              variant={"gradient"}
-                              className="mt-3  text-white py-2 px-6 rounded-full"
-                            >
+                              className="mt-3  text-white py-2 px-6 "
+                              >
                               {updatePhotoLoading
                                 ? "Updating..."
                                 : "Update Photo"}
                             </Button>
                           </div>
                         )}
-                      </>
+                        </div>
+                      </div>
                     )}
+
+                  
+
                   </div>
                 </div>
               </>

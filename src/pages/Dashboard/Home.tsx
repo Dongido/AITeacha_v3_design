@@ -34,6 +34,9 @@ import "swiper/swiper-bundle.css";
 import SwiperCore from "swiper";
 import { Navigation, Pagination, Autoplay, A11y } from "swiper/modules";
 import { getNotification } from "../../store/slices/notificationsSlice";
+import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
+import { checkProfileCompletion, checkInterestCompletion } from "../../api/checkCompletion";
 
 SwiperCore.use([Navigation, Pagination, Autoplay, A11y]);
 
@@ -77,6 +80,71 @@ const Home = () => {
       dispatch(loadToolsCategory());
     }
   }, [dispatch, tools.length]);
+
+
+  //  const profileComplete = true;   // ⬅️ set true or false
+  // const interestComplete = true;   // ⬅️ set true or false
+
+  // useEffect(() => {
+  //   const checkCompletion = () => {
+  //     if (!profileComplete) {
+  //       console.log("🧭 Redirecting to /complete-profile");
+  //       navigate("/complete-profile");
+  //       return;
+  //     }
+
+  //     if (!interestComplete) {
+  //       console.log("🧭 Redirecting to /interest");
+  //       navigate("/interest");
+  //       return;
+  //     }
+
+  //     console.log("✅ All checks passed — stay on dashboard");
+  //   };
+
+  //   checkCompletion();
+  // }, [navigate, profileComplete, interestComplete]);
+
+  
+    // 🧭 Check profile + interest completion after entering dashboard
+  useEffect(() => {
+    const checkCompletion = async () => {
+      try {
+        const token = Cookies.get("at-accessToken");
+        if (!token) return;
+
+        const decoded: any = jwtDecode(token);
+        const userId = String(decoded.id);
+
+        const profileComplete = await checkProfileCompletion(userId);
+        const interestComplete = await checkInterestCompletion(userId);
+
+        
+
+        if (!profileComplete) {
+          console.log("🧭 Redirecting to /auth/complete-profile");
+          navigate("/complete-profile");
+          return;
+        }
+
+         const interestSkipped = sessionStorage.getItem("interestSkipped");
+
+
+      console.log(interestSkipped)
+      if (!interestComplete && !interestSkipped) {
+        console.log("🧭 Redirecting to /interest");
+        navigate("/interest");
+        return;
+      }
+
+      } catch (err) {
+        console.error("Error checking completion:", err);
+      }
+    };
+
+    checkCompletion();
+  }, [navigate]);
+
 
   useEffect(() => {
     const userDetailsFromStorage = localStorage.getItem("ai-teacha-user");

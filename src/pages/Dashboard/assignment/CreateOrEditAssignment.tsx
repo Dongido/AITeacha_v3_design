@@ -34,6 +34,9 @@ import {
   Toast,
   ToastViewport,
 } from "../../../components/ui/Toast";
+import { UploadCloud } from "lucide-react";
+import { IoCloseOutline } from "react-icons/io5";
+import { IoChevronBackOutline } from "react-icons/io5";
 
 const containsUrl = (text: string): boolean => {
   if (!text) return false;
@@ -62,6 +65,7 @@ const formSchema = z.object({
         }),
     })
   ),
+  resources: z.array(z.any()).optional(), 
 });
 
 const CreateOrEditAssignment: React.FC = () => {
@@ -88,10 +92,24 @@ const CreateOrEditAssignment: React.FC = () => {
       grade: "",
       description: "",
       questions: [{ assignment_question: "" }],
+      resources: [],
     },
   });
 
-  const { handleSubmit, control, setValue, watch, getValues } = formMethods;
+  const { handleSubmit,trigger, control, setValue, watch, getValues } = formMethods;
+
+  const handleNextStep = async () => {
+  // validate only Step 1 fields
+  const isValid = await trigger(["classroom_id", "description"]);
+
+  if (isValid) {
+    setStep(2);
+  } else {
+    // Focus on the first invalid field
+    await trigger(["classroom_id", "description"], { shouldFocus: true });
+  }
+};
+
 
   const selectedClassroomId = watch("classroom_id");
   const selectedClassroom = classrooms.find(
@@ -113,13 +131,18 @@ const CreateOrEditAssignment: React.FC = () => {
     setValue("classroom_id", Number(classroomId));
   };
 
-  const handleNextStep = () => {
-    const values = getValues();
-    if (values.classroom_id && values.description) {
-      setStep(2);
-    }
-  };
+  // const handleNextStep = () => {
+  //   const values = getValues();
+  //   if (values.classroom_id && values.description) {
+  //     setStep(2);
+  //   }
+  // };
 
+
+  
+
+
+  
   const handleAddQuestions = (count: number) => {
     const existingQuestions = getValues("questions");
     const newQuestions = Array.from(
@@ -155,23 +178,68 @@ const CreateOrEditAssignment: React.FC = () => {
     }
   };
 
+  
+
   return (
     <ToastProvider>
-      <div className="mt-12">
-        <h1 className="text-2xl font-bold text-gray-900">
-          {step === 1 ? "Step 1: Classroom & Description" : "Step 2: Questions"}
-        </h1>
+      <div className="p-[30px] fixed inset-0 w-full min-h-screen overflow-y-auto bg-gray-100 z-[50]">
+
+
+        <button className="absolute top-[40px] left[20px] md:top-[80px] md:left-[100px]" onClick={() => navigate(-1)}>
+                      <IoCloseOutline size={25} />
+                </button>
+        
+
+    <h3 className="font-semibold text-center">Create New Assignments</h3>
+        {/* Step Indicator */}
+<div className="flex items-center justify-center mb-8">
+  {/* Step 1 */}
+  <div className="flex flex-col items-center">
+    <div
+      className={`w-10 h-10 flex items-center justify-center rounded-full text-white font-bold ${
+        step >= 1 ? "bg-[#5900D9]" : "bg-gray-300"
+      }`}
+    >
+      1
+    </div>
+  </div>
+
+  {/* Line between steps */}
+  <div
+    className={`h-[2px] mx-4 transition-all duration-300 ${
+      step >= 2 ? "bg-[#5900D9]" : "bg-gray-300"
+    }`}
+    style={{ width: "90px" }}
+  />
+
+  {/* Step 2 */}
+  <div className="flex flex-col items-center">
+    <div
+      className={`w-10 h-10 flex items-center justify-center rounded-full text-white font-bold ${
+        step === 2 ? "bg-[#5900D9]" : "bg-gray-300"
+      }`}
+    >
+      2
+    </div>
+  </div>
+</div>
+
+
+
+        <div className="bg-white p-4 md:p-[30px] mt-[30px] max-w-5xl mx-auto  rounded-3xl">
+          
 
         <FormProvider {...formMethods}>
           <form onSubmit={handleSubmit(onSubmit)}>
             {step === 1 && (
-              <div className="space-y-4">
+              <div className="space-y-4 bg-white p-[40px] rounded-3xl">
+                <h3 className="font-semibold">Assignments</h3>
                 <FormField
                   control={control}
                   name="classroom_id"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Classroom</FormLabel>
+                      <FormLabel className="font-semibold">Classroom Name</FormLabel>
                       <FormControl>
                         <Select
                           onValueChange={(value) => {
@@ -180,7 +248,7 @@ const CreateOrEditAssignment: React.FC = () => {
                           }}
                           value={field.value?.toString()}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger className="rounded-full">
                             <SelectValue placeholder="Select a classroom" />
                           </SelectTrigger>
                           <SelectContent>
@@ -204,18 +272,65 @@ const CreateOrEditAssignment: React.FC = () => {
                   name="description"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Description</FormLabel>
+                      <FormLabel className="font-semibold">Description</FormLabel>
                       <FormControl>
                         <TextArea
                           placeholder="Enter assignment description"
                           {...field}
+
                         />
                       </FormControl>
                       <FormMessage className="text-red-500" />
                     </FormItem>
                   )}
                 />
-                <div className="flex justify-end mt-6">
+
+
+                {/* Resources Upload */}
+    <div className="flex flex-col space-y-2">
+      <label className="font-semibold text-gray-700">Resources</label>
+
+      <div
+        className="border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center hover:border-purple-500 transition-all cursor-pointer bg-gray-50"
+        onClick={() => document.getElementById("resource-upload")?.click()}
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={(e) => {
+          e.preventDefault();
+          const files = Array.from(e.dataTransfer.files);
+          setValue("resources", files);
+        }}
+      >
+        <p className="text-gray-500 mb-2">Upload your teaching materials or resources (eg. lesson plan, syllables, curriculum)</p>
+        <p className="w-fit mx-auto flex items-center justify-center gap-3 text-sm border-2 p-2 px-5 rounded-full border-gray-300">
+          <UploadCloud className="w-5 h-5 text-muted-foreground" />
+          <span>Choose file</span>
+        </p>
+      </div>
+
+      <input
+        id="resource-upload"
+        type="file"
+        multiple
+        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.mp4"
+        className="hidden"
+        onChange={(e) => setValue("resources", Array.from(e.target.files || []))}
+      />
+
+      {/* Show selected files */}
+      {(getValues("resources")?.length ?? 0) > 0 && (
+        <ul className="mt-2 text-sm text-gray-600 bg-gray-100 rounded-lg p-3 max-h-32 overflow-auto">
+          {(getValues("resources") || []).map((file: File, index: number) => (
+            <li key={index} className="truncate">
+              📎 {file.name}
+            </li>
+          ))}
+        </ul>
+      )}
+
+    </div>
+
+
+                {/* <div className="flex justify-end mt-6">
                   <Button
                     variant="gradient"
                     className="rounded-md"
@@ -223,29 +338,40 @@ const CreateOrEditAssignment: React.FC = () => {
                   >
                     Next
                   </Button>
-                </div>
+                </div> */}
               </div>
             )}
 
+
+
+
             {step === 2 && (
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
+              <div className="space-y-4 p-[40px] bg-white rounded-3xl">
+                <h3 className="font-semibold">Questions</h3>
+                <div className="flex items-end gap-4 justify-between">
+
+                  <div className="flex-1">
                   <FormLabel>Number of Questions</FormLabel>
                   <Input
                     type="number"
                     min={1}
                     value={questionsCount}
+                    className="rounded-full"
                     onChange={(e) => handleAddQuestions(Number(e.target.value))}
                   />
+
+                  </div>
+                  <GenerateQuestionsDialog
+                    classroomId={selectedClassroom?.classroom_id || ""}
+                    grade={selectedClassroom?.grade || ""}
+                    description={getValues("description")}
+                    onQuestionsGenerated={handleQuestionsGenerated}
+                    questionCount={questionsCount}
+                  
+                  />
+
                 </div>
 
-                <GenerateQuestionsDialog
-                  classroomId={selectedClassroom?.classroom_id || ""}
-                  grade={selectedClassroom?.grade || ""}
-                  description={getValues("description")}
-                  onQuestionsGenerated={handleQuestionsGenerated}
-                  questionCount={questionsCount}
-                />
 
                 {Array.from({ length: questionsCount }, (_, index) => (
                   <FormField
@@ -266,23 +392,59 @@ const CreateOrEditAssignment: React.FC = () => {
                     )}
                   />
                 ))}
-                <div className="flex justify-between mt-6">
-                  <Button variant="default" onClick={() => setStep(1)}>
-                    Back
-                  </Button>
-                  <Button
-                    variant="gradient"
-                    type="submit"
-                    className="rounded-md"
-                    disabled={loading}
-                  >
-                    {loading ? "Submitting..." : "Submit Assignment"}
-                  </Button>
-                </div>
               </div>
             )}
           </form>
         </FormProvider>
+        </div>
+
+
+            {/* Step Navigation Buttons (outside white area) */}
+<div className="flex justify-between max-w-5xl mx-auto mt-6">
+  {step === 1 && (
+    <button
+      className="flex items-center gap-2"
+      onClick={() => navigate(-1)}
+    >
+      <IoChevronBackOutline />
+      Back
+    </button>
+  )}
+
+  {step === 2 && (
+    <button
+      className="flex items-center gap-2"
+      onClick={() => setStep(1)}
+    >
+      <IoChevronBackOutline />
+      Back
+    </button>
+  )}
+
+  {step === 1 && (
+    <Button
+      variant="gradient"
+      className="rounded-md"
+      onClick={handleNextStep}
+    >
+      Next
+    </Button>
+  )}
+
+  {step === 2 && (
+    <Button
+      variant="gradient"
+      type="submit"
+      className="rounded-md"
+      disabled={loading}
+      onClick={handleSubmit(onSubmit)}
+    >
+      {loading ? "Submitting..." : "Submit Assignment"}
+    </Button>
+  )}
+</div>
+
+
       </div>
       <Toast
         open={!!toastMessage}
