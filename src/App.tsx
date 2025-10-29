@@ -51,6 +51,7 @@ import CompleteProfile from "./pages/Auth/CompleteProfile";
 import CompleteProfileStudent from "./pages/Auth/CompleteProfileStudent";
 import StudentInterest from "./pages/Auth/StudentInterest";
 import Outline from "./pages/Dashboard/student/Outline";
+import ResultDetails from "./pages/Dashboard/result/ResultDetails";
 
 function App() {
   const location = useLocation();
@@ -140,6 +141,7 @@ function App() {
           <Route path="/student/*" element={<StudentDashboard />} />
           <Route path="/class/*" element={<PaidLayout />} />
           <Route path="/student/classrooms/outlines" element={<Outline />} />
+          <Route path="/dashboard/result/resultdetails" element={<ResultDetails />} />
           {/* <Route
             path="/class/class-details/:classId/tools/:toolName"
             element={<ToolchatPage />}

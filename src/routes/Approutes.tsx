@@ -22,6 +22,7 @@ import {
   ShieldCheckIcon,
   BanknotesIcon,
 } from "@heroicons/react/24/solid";
+import { IoSparklesSharp } from "react-icons/io5";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import Dashboard from "../pages/Dashboard/Home";
 import Team from "../pages/Dashboard/Team";
@@ -133,6 +134,7 @@ import JuniorSecondaryPage from "../pages/Dashboard/result/juniorSchool_result";
 import { SeniorTemplateDisplay } from "../pages/Dashboard/result/components/savedTemplate/SeniorTemplateDisplay";
 import { JuniorTemplateDisplay } from "../pages/Dashboard/result/components/savedTemplate/DisplayJuniorResultTemplate";
 import ViewEditedPrimaryTemplate from "../pages/Dashboard/result/components/savedTemplate/DisplayPrimaryResultTemplate";
+import TeachersResult from "../pages/Dashboard/TeachersResult";
 
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -162,10 +164,16 @@ export const routes = [
       },
 
       {
-        icon: <WrenchIcon {...icon} />,
-        name: "My Tools",
+        icon: <IoSparklesSharp {...icon} />,
+        name: "AI Tools",
         path: "/tools",
         element: <Tools />,
+      },
+      {
+        icon: <BookOpenIcon {...icon} />,
+        name: "Result",
+        path: "/result",
+        element: <TeachersResult />,
       },
       {
         icon: <ChatBubbleLeftIcon {...icon} />,
