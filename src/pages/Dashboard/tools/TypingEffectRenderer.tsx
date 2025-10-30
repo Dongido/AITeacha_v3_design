@@ -10,7 +10,7 @@ interface TypingEffectRendererProps {
 
 const TypingEffectRenderer: React.FC<TypingEffectRendererProps> = ({
   content,
-  typingSpeed = 30,
+  typingSpeed = 50,
   className,
   style,
 }) => {
@@ -19,7 +19,7 @@ const TypingEffectRenderer: React.FC<TypingEffectRendererProps> = ({
   useEffect(() => {
     setDisplayedContent("");
     let index = 0;
-    const maxDuration = 1000;
+    const maxDuration = 2000;
     const maxCharacters = Math.floor(maxDuration / typingSpeed);
 
     const interval = setInterval(() => {

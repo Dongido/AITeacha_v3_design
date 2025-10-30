@@ -112,7 +112,7 @@ const StudentToolboxPage: React.FC = () => {
                 />
               </div>
               <div className="text-left">
-                <h3 className="text-base capitalize text-xl font-semibold text-black">
+                <h3 className="text-base capitalize font-semibold text-black">
                   {item.name}
                 </h3>
                 <p className="text-gray-800 text-lg">{item.description}</p>
