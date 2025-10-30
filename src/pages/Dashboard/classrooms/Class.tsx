@@ -393,56 +393,7 @@ const Classrooms = () => {
             onRowClick={handleRowClick}
           />
         </div>
-
-        {/* Floating Edubot Card */}
-        {/* <div className="fixed bottom-6 right-8 bg-[#F4EDFF] border border-[#D6C4FF] rounded-lg shadow-md flex items-center justify-between px-4 py-3 w-[220px]">
-          <div className="flex items-center gap-2">
-            <img
-              src="https://cdn-icons-png.flaticon.com/512/4712/4712027.png"
-              alt="bot"
-              className="w-8 h-8 rounded-full"
-            />
-            <div>
-              <p className="text-sm font-semibold text-gray-800">Zyra</p>
-              <p className="text-xs text-gray-500">Your Edubot</p>
-            </div>
-          </div>
-          <button className="text-[#6200EE] hover:text-[#4B00C9] text-lg font-bold">
-            ⤢
-          </button>
-        </div> */}
       </div>
-
-      {/* <BaseTable
-        data={displayedClassrooms}
-        columns={classroomColumns}
-        onRowClick={handleRowClick}
-      /> */}
-
-      {/* <div className="bg-white rounded-md shadow-md p-4 mb-4 mt-12">
-        <h2 className="text-lg font-semibold mb-2">
-          Quick videos to get started
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {videoUrls.map((url, index) => {
-            const videoId = url.split("/").pop();
-            const embedUrl = `https://www.youtube.com/embed/${videoId}`;
-
-            return (
-              <div key={index} className="aspect-w-16 aspect-h-9">
-                <iframe
-                  className="w-full h-full rounded-md"
-                  src={embedUrl}
-                  title={`Quick Start Video ${index + 1}`}
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowFullScreen
-                ></iframe>
-              </div>
-            );
-          })}
-        </div>
-      </div> */}
     </div>
   );
 };
