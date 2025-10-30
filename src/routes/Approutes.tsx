@@ -135,6 +135,7 @@ import { SeniorTemplateDisplay } from "../pages/Dashboard/result/components/save
 import { JuniorTemplateDisplay } from "../pages/Dashboard/result/components/savedTemplate/DisplayJuniorResultTemplate";
 import ViewEditedPrimaryTemplate from "../pages/Dashboard/result/components/savedTemplate/DisplayPrimaryResultTemplate";
 import TeachersResult from "../pages/Dashboard/TeachersResult";
+import ResultDetails from "../pages/Dashboard/result/ResultDetails";
 
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -169,12 +170,12 @@ export const routes = [
         path: "/tools",
         element: <Tools />,
       },
-      {
-        icon: <BookOpenIcon {...icon} />,
-        name: "Result",
-        path: "/result",
-        element: <TeachersResult />,
-      },
+      // {
+      //   icon: <BookOpenIcon {...icon} />,
+      //   name: "Result",
+      //   path: "/result",
+      //   element: <TeachersResult />,
+      // },
       {
         icon: <ChatBubbleLeftIcon {...icon} />,
         name: "Zyra (Edubot)",
