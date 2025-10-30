@@ -62,6 +62,8 @@ import { Loader2 } from "lucide-react";
 import TypingEffectRenderer from "./TypingEffectRenderer";
 
 import { sampleToolData } from "../../../Data/ToolData";
+import { MdChevronLeft } from "react-icons/md";
+import { FaHeart } from "react-icons/fa";
 
 const gradeOptions = [
   "Pre School",
@@ -72,10 +74,7 @@ const gradeOptions = [
   ...Array.from({ length: 5 }, (_, i) => `Higher Institution Year ${i + 1}`),
 ];
 
-const lowergGrade = [
-  "Nursery",
-  "Lower Primary"
-]
+const lowergGrade = ["Nursery", "Lower Primary"];
 
 interface FormField {
   name: string;
@@ -103,8 +102,8 @@ const ToolDetail = () => {
   const [loadingTool, setLoadingTool] = useState(true);
   const [formData, setFormData] = useState<{ [key: string]: any }>({
     grade: "Grade 1",
-    curriculum_type: "American Nigeria Blended",
-    subject: "english"
+    curriculum_type: "NERDC",
+    subject: "english",
   });
   const responseRef = useRef<HTMLDivElement>(null);
 
@@ -129,7 +128,7 @@ const ToolDetail = () => {
   >([]);
 
   const submitRef = useRef<HTMLDivElement>(null);
-  const [showSubmitModal, setShowSubmitModal] = useState(false)
+  const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -141,9 +140,12 @@ const ToolDetail = () => {
   const [curriculums, setCurriculums] = useState<any[]>([]);
   const [isCurriculumLoading, setIsCurriculumLoading] =
     useState<boolean>(false);
-  const [responseModal, setResponseModal] = useState(false)
+  const [responseModal, setResponseModal] = useState(false);
   const [selectedImageType, setSelectedImageType] = useState("");
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
+  const [showResponse, setShowResponse] = useState(false);
+  const [selectedTool, setSelectedTool] = useState("Lesson Note");
+
   interface Field {
     req_param: string;
     label: string;
@@ -151,8 +153,6 @@ const ToolDetail = () => {
     placeholder: string;
   }
   const [fields, setFields] = useState<Field[]>([]);
-
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -191,7 +191,10 @@ const ToolDetail = () => {
   useEffect(() => {
     const today = new Date().toLocaleDateString();
     const storedDate = localStorage.getItem("userguide-date");
-    const storedCount = parseInt(localStorage.getItem("modal-count") || "0", 10);
+    const storedCount = parseInt(
+      localStorage.getItem("modal-count") || "0",
+      10
+    );
     const usedTools = JSON.parse(localStorage.getItem("used-tools") || "[]");
     if (storedDate !== today) {
       localStorage.setItem("userguide-date", today);
@@ -213,8 +216,6 @@ const ToolDetail = () => {
       setShowModal(false);
     }
   }, [tool?.service_id]);
-
-
 
   useEffect(() => {
     if (!loadingTool) {
@@ -270,10 +271,10 @@ const ToolDetail = () => {
   };
 
   const handleNext = () => {
-    setResponseShowModal(true)
-    setShowSubmitModal(false)
+    setResponseShowModal(true);
+    setShowSubmitModal(false);
     setTimeout(() => {
-      responseRef.current?.scrollIntoView({ behavior: "smooth", });
+      responseRef.current?.scrollIntoView({ behavior: "smooth" });
       // ({ behavior: "smooth", block: "center" });
     }, 300);
   };
@@ -292,7 +293,6 @@ const ToolDetail = () => {
     }));
   };
 
-
   const handleCountryChange = async (countryName: any) => {
     setSelectedCountry(countryName);
     setFormData((prevData) => ({
@@ -309,16 +309,20 @@ const ToolDetail = () => {
         const fetchedCurriculums = await fetchCurriculumByCountry(countryCode);
 
         if (countryName === "Nigeria") {
-          console.log("contryname niger", countryName)
+          console.log("contryname niger", countryName);
           const blendedCurriculums = [
+            "NERDC",
             "American Nigeria Blended",
             "British Nigeria Blended",
             "Blended Curriculum",
             "IGSCE Curriculum",
             "Cambridge Curriculum",
           ];
-          const fetchedCurriculum = [...fetchedCurriculums, ...blendedCurriculums]
-          setCurriculums(fetchedCurriculum)
+          const fetchedCurriculum = [
+            ...blendedCurriculums,
+            ...fetchedCurriculums,
+          ];
+          setCurriculums(fetchedCurriculum);
           //    console.log(
           //   `Final Curriculums for ${countryName} (${countryCode}):`,
           //   fetchedCurriculum
@@ -330,8 +334,6 @@ const ToolDetail = () => {
           //   fetchedCurriculums
           // );
         }
-
-
       } catch (error) {
         console.error("Error fetching curriculum:", error);
         setCurriculums([]);
@@ -346,60 +348,83 @@ const ToolDetail = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     const user = JSON.parse(localStorage.getItem("ai-teacha-user") || "{}");
     const user_Id = user?.id;
 
     if (!user_Id || !tool?.service_id) {
-      setToastMessage("Service_id is missing from tool");
+      setToastMessage("Service ID is missing or user not found.");
       setToastVariant("destructive");
       setShowToast(true);
       return;
     }
+
     const formDataToSubmit = new FormData();
 
+    // Prepare payload
     const data: SubmitToolData = {
       user_id: user_Id,
       serviceId: tool.service_id,
       ...formData,
     };
 
+    // Append all form fields
     formDataToSubmit.append("user_id", user_Id.toString());
     formDataToSubmit.append("serviceId", tool.service_id);
 
     for (const key in formData) {
       if (formData.hasOwnProperty(key)) {
-        if (key === "file" && formData[key]) {
-          formDataToSubmit.append(key, formData[key]);
-        } else {
-          formDataToSubmit.append(key, formData[key]);
+        const value = formData[key];
+        if (key === "file" && value) {
+          formDataToSubmit.append(key, value);
+        } else if (value !== undefined && value !== null) {
+          formDataToSubmit.append(key, value);
         }
       }
     }
 
+    // Start loading
     setIsSubmitting(true);
-    try {
+    setShowToast(false);
 
+    try {
+      // API submission
       const response = await submitToolData(formDataToSubmit);
+
+      // Handle success
       const plainTextResponse = await markdownToPlainText(response.data.data);
       const markedResponse = marked(response.data.data);
+
       setResponseMessage(markedResponse);
       setPowerUrl(response.data.data);
       setCsvUrl(response.data.file);
       setTunedResponseMessage(plainTextResponse);
+
       const imageUrl = plainTextResponse;
       const quotedImageUrl = `${imageUrl}`;
       setImageUrl(quotedImageUrl);
+
+      // ✅ Show response view only after success
+      setShowResponse(true);
+
+      setToastMessage("Request completed successfully.");
+      setToastVariant("default");
     } catch (error: any) {
-      const errorMessage = error.message || "Failed to submit tool data.";
-      console.log(`error : ${errorMessage}`)
-      if (errorMessage.includes("Limit")) {  
+      // Handle error properly
+      const errorMessage = error?.message || "Failed to submit tool data.";
+      console.error("Submission error:", errorMessage);
+
+      setResponseMessage(errorMessage);
+      setToastMessage(errorMessage);
+      setToastVariant("destructive");
+      setShowToast(true);
+
+      // Keep form visible if error occurs
+      setShowResponse(false);
+
+      if (errorMessage.includes("Limit")) {
         setPropsDialogContent(errorMessage);
         setShowPropsDialog(true);
-      } else {
-        setResponseMessage(errorMessage);
-        setToastMessage(errorMessage);
-        setToastVariant("destructive");
-        setShowToast(true);
       }
     } finally {
       setIsSubmitting(false);
@@ -533,17 +558,13 @@ const ToolDetail = () => {
   };
 
   useEffect(() => {
-    if (
-      formData.country === "Nigeria" &&
-      curriculums.includes("American Nigeria Blended")
-    ) {
+    if (formData.country === "Nigeria" && curriculums.includes("NERDC")) {
       setFormData((prev) => ({
         ...prev,
-        curriculum_type: "American Nigeria Blended",
+        curriculum_type: "NERDC",
       }));
     }
   }, [curriculums, formData.country]);
-
 
   const handleSampleData = () => {
     const sample = sampleToolData?.[tool?.name || ""];
@@ -555,20 +576,17 @@ const ToolDetail = () => {
           ...sample,
         };
 
-        if (sample.hasOwnProperty('curriculum_type')) {
+        if (sample.hasOwnProperty("curriculum_type")) {
           handleCountryChange("Nigeria");
           setIsCurriculumLoading(false);
           setFormData((prev) => ({
             ...prev,
-            curriculum_type: "American Nigeria Blended"
-          }))
+            curriculum_type: "NERDC",
+          }));
           updatedData.country = "Nigeria";
           if (curriculums.length === 0) {
-            const finalCurriculums = [
-              "American Nigeria Blended",
-            ]
-            setCurriculums(finalCurriculums)
-
+            const finalCurriculums = ["NERDC"];
+            setCurriculums(finalCurriculums);
           }
         }
         return updatedData;
@@ -595,1332 +613,1475 @@ const ToolDetail = () => {
   }
 
   return (
-    <ToastProvider>
-      <div className="mt-12 px-4">
-        <div className="flex gap-4">
-          {/* Back Button */}
-          <Button
-            className="flex items-center bg-white rounded-md text-black w-fit h-full gap-3 py-2 mb-4"
-            onClick={() => navigate(-1)}
-          >
-            <Undo2 size={"1.1rem"} color="black" />
-            Back
-          </Button>
+    <div className="bg-gradient-to-b from-[#EFE6FD] to-[#ebdcea] w-full overflow-hidden">
+      <ToastProvider>
+        <div>
+          <div className="flex justify-center gap-2 pt-10 pb-5">
+            <div>
+              {tool.thumbnail ? (
+                <img
+                  src={
+                    tool.thumbnail.startsWith("http")
+                      ? tool.thumbnail
+                      : `https://${tool.thumbnail}`
+                  }
+                  alt={tool.name || "Tool Thumbnail"}
+                  className="w-12 h-12 object-cover rounded-full border-4 border-white"
+                />
+              ) : (
+                <FaHeart className="text-[#6200EE] w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center" />
+              )}
+            </div>
 
-          <div className=" flex flex-col items-center">
-            <Button
-              variant="gradient"
-              className="flex items-center text-white  rounded-md w-fit h-full gap-3 py-2 mb-2 shadow-md"
-              onClick={handleSampleData}
-            >
-              Auto Fill Form
-            </Button>
-            {showModal && (
-              <div className="fixed top-48  bg-gradient-to-br from-[#85F4FF] via-[#85F4FF] to-[#B8FFF9]
-          text-white text-sm px-5 py-4 rounded-2xl mt-2 rounded-br-none shadow-lg max-w-sm
-          lg:translate-x-24 md:translate-x-24 border-2 border-white border-dashed mb-6 ">
-                <button
-                  className="absolute top-2 right-2 text-[#4b2aad] text-3xl pl-2 leading-none  "
-                  onClick={() => setShowModal(false)}
-                >
-                  &times;
-                </button>
-                <span className="block lg:text-left text-start font-medium leading-snug px-2 text-lg md:text-2xl  text-[#4b2aad] ">
-                  Click <span className="font-semibold"> "Auto Fill Form" </span> button to see  a sample 
-                </span>
-
-                <div className="mt-4 flex justify-between gap-2">
-                  <button
-                    className="bg-white text-[#4b2aad] font-semibold py-1 px-4 rounded hover:bg-[#e0eaff] transition"
-                    onClick={() => setShowModal(false)}
-                  >
-                    Close
-                  </button>
-                  <button
-                    className="bg-[#4b2aad] text-white font-semibold py-1 px-4 rounded hover:bg-[#3a2285] transition"
-                    onClick={() => {
-                      setShowModal(false);
-                      setShowSubmitModal(true);
-                      setTimeout(() => {
-                        submitRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-                      }, 200);
-                    }}
-
-                  >
-                    Next
-                  </button>
-                </div>
-                <div className="absolute -top-1 left-10 w-6 h-6 rotate-45 bg-[#85F4FF] "></div>
-              </div>
-            )}
-          </div>
-        </div>
-        <div className="flex flex-col lg:flex-row lg:space-x-8 ">
-          <div className="lg:w-1/2">
-            <div className="flex gap-3 mb-4">
-              <h2 className="text-2xl font-bold capitalize">
+            <div className="flex flex-col mt-2">
+              <h2 className="text-[16px] font-semibold capitalize">
                 {tool.name === "math calculator" ? "Solver" : tool.name}
               </h2>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                className="h-6 w-6 text-yellow-500"
-              >
-                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-              </svg>
-            </div>
-            <p className="mb-6">{tool.description}</p>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {tool.service_id === "markingscheme generator" && (
-                <>
-                  <div className="flex gap-4 mb-4">
-                    <div className="w-full">
-                      <Label className="capitalize">Description</Label>
-                      <TextArea
-                        name="description"
-                        placeholder="Enter Specific Details "
-                        value={formData.description || ""}
-                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            description: e.target.value,
-                          }))
-                        }
-                        rows={4}
-                        className="input-field w-full"
-                      />
-                    </div>
-                  </div>
-                  {fieldPairs.slice(0, visibleFieldPairs).map((pair, index) => (
-                    <div
-                      key={index}
-                      className="flex gap-4 mb-4 border p-4 rounded-md border-gray-400"
-                    >
-                      <div className="w-1/2">
-                        <Label className="capitalize">{pair.criteria}</Label>
-                        <Input
-                          type="text"
-                          name={pair.criteria}
-                          placeholder={`Enter ${pair.criteria}`}
-                          value={formData[pair.criteria] || ""}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                            setFormData((prev) => ({
-                              ...prev,
-                              [pair.criteria]: e.target.value,
-                            }))
-                          }
-                          className="input-field w-full"
-                        />
-                      </div>
-                      <div className="w-1/2">
-                        <Label>{pair.weightage}</Label>
-                        <Input
-                          type="text"
-                          name={pair.weightage}
-                          placeholder={`Enter ${pair.weightage}`}
-                          value={formData[pair.weightage] || ""}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                            setFormData((prev) => ({
-                              ...prev,
-                              [pair.weightage]: e.target.value,
-                            }))
-                          }
-                          className="input-field w-full"
-                        />
-                      </div>
-                    </div>
-                  ))}
-                  <div className="mt-4 flex gap-4">
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        if (visibleFieldPairs < fieldPairs.length) {
-                          setVisibleFieldPairs((prev) => prev + 1);
-                        }
-                      }}
-                      className={`bg-gray-900 p-2 px-6 text-white rounded-full ${visibleFieldPairs >= fieldPairs.length
-                          ? "cursor-not-allowed opacity-50"
-                          : "hover:bg-gray-500"
-                        }`}
-                      disabled={visibleFieldPairs >= fieldPairs.length}
-                    >
-                      Add
-                    </button>
 
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        if (visibleFieldPairs > 1) {
-                          setVisibleFieldPairs((prev) => prev - 1);
-                        }
-                      }}
-                      className={`bg-red-900 p-2 px-6 text-white rounded-full ${visibleFieldPairs <= 1
-                          ? "cursor-not-allowed opacity-50"
-                          : "hover:bg-red-700"
-                        }`}
-                      disabled={visibleFieldPairs <= 1}
-                    >
-                      Remove
-                    </button>
-                  </div>
-
-                  <div className="flex gap-4 mb-4">
-                    <div className="w-1/2">
-                      <Label>Scoring Scale</Label>
-                      <Input
-                        type="text"
-                        name="scoringScale"
-                        placeholder="Enter Scoring Scale (e.g., 0-5, 1-10)"
-                        value={formData.scoringScale || ""}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            scoringScale: e.target.value,
-                          }))
-                        }
-                        className="input-field w-full"
-                      />
-                    </div>
-                    <div className="w-1/2">
-                      <Label>Comments</Label>
-                      <Input
-                        type="text"
-                        name="comments"
-                        placeholder="Indicate if you want space for comments for each criterion"
-                        value={formData.comments || ""}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            comments: e.target.value,
-                          }))
-                        }
-                        className="input-field w-full"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="flex gap-4 mb-4 border">
-                    <div className="w-full">
-                      <Label>Additional Notes</Label>
-                      <Input
-                        type="text"
-                        name="additionalNotes"
-                        placeholder="Enter any additional guidelines or notes for the markers"
-                        value={formData.additionalNotes || ""}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            additionalNotes: e.target.value,
-                          }))
-                        }
-                        className="input-field w-full"
-                      />
-                    </div>
-                  </div>
-                </>
+              {selectedTool && (
+                <p className="text-sm text-[#6200EE] -mt-3 transition-all duration-300 ease-in-out">
+                  Generate {tool.name}
+                </p>
               )}
+            </div>
+          </div>
 
-              {formFields.map((field) => (
-                <div key={field.name}>
-                  {field.name === "grade" &&
-                    tool.req_param?.includes("grade") && (
-                      <div>
-                        <Label>{field.label}</Label>
-                        <Select
-                          onValueChange={handleGradeChange}
-                          value={formData.grade}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select grade" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {gradeOptions.map((grade) => (
-                              <SelectItem key={grade} value={grade}>
-                                {grade}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    )}
+          {/* Tool Dropdown */}
+          <div className="flex justify-center pt-6 pb-4">
+            <div className="bg-gray-100 px-10 py-1 rounded-full shadow-sm border-2 border-white flex items-center gap-2">
+              <span className="font-semibold text-black">Tool:</span>
+              <Select
+                value={selectedTool}
+                onValueChange={(value) => {
+                  setSelectedTool(value);
+                  navigate(
+                    `/dashboard/tools/${
+                      tools.find((t) => t.name === value)?.slug
+                    }`
+                  );
+                }}
+              >
+                <SelectTrigger className="border-none outline-none w-full bg-transparent text-sm font-medium">
+                  <SelectValue placeholder="Select Tool" />
+                </SelectTrigger>
+                <SelectContent>
+                  {tools.map((t) => (
+                    <SelectItem key={t.service_id} value={t.name}>
+                      {t.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
 
-                  {field.name === "lower_grade" &&
-                    tool.req_param?.includes("lower_grade") && (
-                      <div>
-                        <Label>{field.label}</Label>
-                        <Select
-                          onValueChange={handleLowerGradeChange}
-                          value={formData.grade}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select grade" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {["Nursery", "Lower Primary"].map(
-                              (grade) => (
-                                <SelectItem key={grade} value={grade}>
-                                  {grade}
-                                </SelectItem>
-                              )
-                            )}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    )}
+          <p className="text-black text-center text-sm">
+            {tool.description.charAt(0).toUpperCase() +
+              tool.description.slice(1)}
+          </p>
+          <div className="flex gap-4 items-center justify-center">
+            {/* Go Back to Previous Page Button */}
+            <button
+              className="flex items-center bg-[#6200EE] rounded-full px-6 py-2 text-white w-fit h-full gap-3 mb-4"
+              onClick={() => navigate(-1)}
+            >
+              Go Back
+            </button>
 
-                  {field.name === "country" &&
-                    tool.req_param?.includes("country") && (
-                      <div>
-                        <Label>{field.label}</Label>
-                        <Select
-                          onValueChange={handleCountryChange}
-                          value={formData.country}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select Country" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {countries.map(
-                              (country: { name: string; isoCode: string }) => (
-                                <SelectItem
-                                  key={country.isoCode}
-                                  value={country.name}
-                                >
-                                  {country.name}
-                                </SelectItem>
-                              )
-                            )}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    )}
-                  {field.name === "curriculum_type" &&
-                    tool.req_param?.includes("curriculum_type") && (
-                      <div>
-                        <Label htmlFor={field.name}>{field.label}</Label>
-                        <Select
-                          onValueChange={handleCurriculumTypeChange}
-                          disabled={
-                            isCurriculumLoading ||
-                            !formData.country ||
-                            curriculums.length === 0
-
-                          }
-                          value={formData.curriculum_type}
-
-                        >
-                          <SelectTrigger>
-                            {isCurriculumLoading ? (
-                              <div className="flex items-center gap-2 text-gray-500">
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />{" "}
-                                Loading Curriculums...
-                              </div>
-                            ) : (
-                              <SelectValue
-                                placeholder={
-                                  formData.country
-                                    ? "Select Curriculum Type"
-                                    : "Select a Country First"
-                                }
-                              />
-                            )}
-                          </SelectTrigger>
-                          <SelectContent>
-                            {curriculums.length === 0 &&
-                              !isCurriculumLoading ? (
-                              <SelectItem value="no-curriculum" disabled>
-                                {formData.country
-                                  ? "No curriculums found"
-                                  : "Select a country first"}
-                              </SelectItem>
-                            ) : null}
-                            {curriculums.length > 0
-                              ? curriculums.map((curriculumName: string) => (
-                                <SelectItem
-                                  key={curriculumName}
-                                  value={curriculumName}
-                                >
-                                  {curriculumName}
-                                </SelectItem>
-                              ))
-                              : null}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    )}
-                  {field.name === "image_type" &&
-                    tool.req_param?.includes("image_type") && (
-                      <div>
-                        <Label>Image Type</Label>
-                        <Select
-                          onValueChange={handleImageSelectionChange}
-                          value={formData.image_type || ""}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select Image Type" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="labelled diagram">
-                              Labelled Diagram
-                            </SelectItem>
-                            <SelectItem value="non labelled diagram">
-                              Non-Labelled Diagram
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    )}
-                  {field.name === "file" &&
-                    tool.req_param?.includes("file") && (
-                      <div>
-                        <Label>
-                          {tool.service_id === "transcribe"
-                            ? "Upload Audio"
-                            : "Upload File (Optional)"}
-                        </Label>
-                        <input
-                          type="file"
-                          onChange={(e) => handleFileChange(e)}
-                          className="file-input bg-white"
-                          accept={
-                            tool.service_id === "transcribe"
-                              ? "audio/*,audio/mpeg,audio/wav"
-                              : "application/pdf, image/png, image/jpeg, image/jpg"
-                          }
-                          required={tool.service_id === "transcribe"}
-                        />
-                      </div>
-                    )}
-
-                  {field.name === "audio" &&
-                    tool.req_param?.includes("audio") && (
-                      <div>
-                        <Label>{field.label}</Label>
-                        <input
-                          type="file"
-                          onChange={(e) => handleFileChange(e)}
-                          className="file-input bg-white "
-                          accept=" video/mp4, video/quicktime,audio/*,audio/mpeg,audio/wav"
-                        />
-                      </div>
-                    )}
-
-                  {field.name === "subject" && (
-                    <div>
-                      <Label>{field.label}</Label>
-                      {tool.service_id === "solver" ? (
-                        <Select
-                          onValueChange={(value) =>
-                            setFormData((prevData) => ({
-                              ...prevData,
-                              subject: value,
-                            }))
-                          }
-                          value={formData.subject}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select subject" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {["Maths", "Physics", "Chemistry"].map(
-                              (subject) => (
-                                <SelectItem key={subject} value={subject}>
-                                  {subject}
-                                </SelectItem>
-                              )
-                            )}
-                          </SelectContent>
-                        </Select>
-                      ) : (
-                        <Input
-                          type="text"
-                          name="subject"
-                          placeholder={
-                            field.placeholder || `Enter ${field.name}`
-                          }
-                          value={formData.subject || ""}
-                          onChange={handleInputChange}
-                        />
-                      )}
-                    </div>
-                  )}
-                  {field.name === "subtopic" &&
-                    tool.req_param?.includes("subtopic") && (
-                      <div>
-                        <Label>{field.label}</Label>
-
-                        {/* Render the first (default) subtopic field */}
-                        <div className="flex gap-4 mb-4">
-                          <div className="w-full">
-                            <Input
-                              type="text"
-                              placeholder="Enter sub topic"
-                              value={subTopicInputList[0]}
-                              onChange={(
-                                e: React.ChangeEvent<HTMLInputElement>
-                              ) => handleSubTopicChange(0, e.target.value)}
-                              className="input-field w-full"
-                            />
-                          </div>
-                        </div>
-
-                        {/* Render dynamically created input fields (excluding the first one) */}
-                        {subTopicInputList.slice(1).map((subTopic, index) => (
-                          <div key={index + 1} className="flex gap-4 mb-4">
-                            <div className="w-full">
-                              <Input
-                                type="text"
-                                placeholder="Enter sub topic"
-                                value={subTopic}
-                                onChange={(
-                                  e: React.ChangeEvent<HTMLInputElement>
-                                ) =>
-                                  handleSubTopicChange(
-                                    index + 1,
-                                    e.target.value
-                                  )
-                                }
-                                className="input-field w-full"
-                              />
-                            </div>
-                            <Button
-                              type="button"
-                              onClick={() => handleRemoveSubTopic(index + 1)}
-                              className="text-red-500"
-                            >
-                              Remove
-                            </Button>
-                          </div>
-                        ))}
-
-                        <div className="flex gap-4">
-                          <div className="mt-4">
-                            <Button
-                              type="button"
-                              onClick={handleAddSubTopic}
-                              className="rounded-md bg-white border border-gray-300"
-                            >
-                              Add SubTopic
-                            </Button>
-                          </div>
-
-                          <div className="mt-4">
-                            <Button
-                              type="button"
-                              onClick={handleSaveSubTopics}
-                              variant={"gray"}
-                              className=" rounded-md text-white"
-                            >
-                              Save SubTopics
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  {field.name === "sdg" && tool.req_param?.includes("sdg") && (
-                    <div>
-                      <Label>{field.label}</Label>
-                      <MultiSelect
-                        value={formData.sdg || []}
-                        onChange={(e) => {
-                          setFormData((prevData) => ({
-                            ...prevData,
-                            sdg: e.value,
-                          }));
-                        }}
-                        options={sdgOptions.map((option) => ({
-                          label: option.label,
-                          value: option.value,
-                        }))}
-                        optionLabel="label"
-                        placeholder="Select SDG Goals"
-                        display="chip"
-                        className="w-full rounded-md"
-                        maxSelectedLabels={3}
-                      />
-                    </div>
-                  )}
-
-                  {field.name === "activitytype" && (
-                    <div>
-                      <Label>{field.label}</Label>
-                      <Select
-                        onValueChange={(value) =>
-                          setFormData((prevData) => ({
-                            ...prevData,
-                            activityType: value,
-                          }))
-                        }
-                        value={formData.activityType || ""}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select activity type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {activityList.map((activity) => (
-                            <SelectItem
-                              key={activity.value}
-                              value={activity.value}
-                            >
-                              {activity.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  )}
-                  {field.name === "voiceType" && (
-                    <div>
-                      <Label>{field.label}</Label>
-                      <Select
-                        onValueChange={(value) =>
-                          setFormData((prevData) => ({
-                            ...prevData,
-                            voiceType: value,
-                          }))
-                        }
-                        value={formData.voiceType || "Female Voice"}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select Voice Type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {voiceTypelist.map((voiceType) => (
-                            <SelectItem
-                              key={voiceType.value}
-                              value={voiceType.value}
-                            >
-                              {voiceType.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  )}
-                  {field.name === "examType" && (
-                    <div>
-                      <Label>{field.label}</Label>
-                      <Select
-                        onValueChange={(value) =>
-                          setFormData((prevData) => ({
-                            ...prevData,
-                            examType: value,
-                          }))
-                        }
-                        value={formData.examType || ""}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select Exam Type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {examTypeList.map((examType) => (
-                            <SelectItem
-                              key={examType.value}
-                              value={examType.value}
-                            >
-                              {examType.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  )}
-
-                  {field.name === "supportResources" && (
-                    <div>
-                      <Label>{field.label}</Label>
-                      <Select
-                        onValueChange={(value) =>
-                          setFormData((prevData) => ({
-                            ...prevData,
-                            supportResources: value,
-                          }))
-                        }
-                        defaultValue={formData.supportResources || ""}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select Support Resources " />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {supportResourcesList.map((supportResources) => (
-                            <SelectItem
-                              key={supportResources.value}
-                              value={supportResources.value}
-                            >
-                              {supportResources.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  )}
-                  {field.name === "difficultyLevel" && (
-                    <div>
-                      <Label>{field.label}</Label>
-                      <Select
-                        onValueChange={(value) =>
-                          setFormData((prevData) => ({
-                            ...prevData,
-                            difficultyLevel: value,
-                          }))
-                        }
-                        defaultValue={formData.difficultyLevel || ""}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select Difficulty Level" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {difficultyList.map((difficultyLevel) => (
-                            <SelectItem
-                              key={difficultyLevel.value}
-                              value={difficultyLevel.value}
-                            >
-                              {difficultyLevel.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  )}
-                  {field.name === "ageGroup" && (
-                    <div>
-                      <Label>{field.label}</Label>
-                      <Select
-                        onValueChange={(value) =>
-                          setFormData((prevData) => ({
-                            ...prevData,
-                            ageGroup: value,
-                          }))
-                        }
-                        value={formData.ageGroup || ""}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select Age Group" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {ageGroupList.map((ageGroup) => (
-                            <SelectItem
-                              key={ageGroup.value}
-                              value={ageGroup.value}
-                            >
-                              {ageGroup.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  )}
-                  {field.name === "wordType" && (
-                    <div>
-                      <Label>{field.label}</Label>
-                      <Select
-                        onValueChange={(value) =>
-                          setFormData((prevData) => ({
-                            ...prevData,
-                            wordType: value,
-                          }))
-                        }
-                        value={formData.wordType || ""}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select Word Type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {wordTypeList.map((wordType) => (
-                            <SelectItem
-                              key={wordType.value}
-                              value={wordType.value}
-                            >
-                              {wordType.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  )}
-                  {field.name === "questionFormat" && (
-                    <div>
-                      <Label>{field.label}</Label>
-                      <Select
-                        onValueChange={(value) =>
-                          setFormData((prevData) => ({
-                            ...prevData,
-                            questionFormat: value,
-                          }))
-                        }
-                        value={formData.questionFormat || ""}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select Question Format" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {questionTypelist.map((questionFormat) => (
-                            <SelectItem
-                              key={questionFormat.value}
-                              value={questionFormat.value}
-                            >
-                              {questionFormat.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  )}
-                  {field.name === "feedbackType" && (
-                    <div>
-                      <Label>{field.label}</Label>
-                      <Select
-                        onValueChange={(value) =>
-                          setFormData((prevData) => ({
-                            ...prevData,
-                            feedbackType: value,
-                          }))
-                        }
-                        value={formData.type || ""}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select  Feedback Type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {appraisalTypeList.map((feedbackType) => (
-                            <SelectItem
-                              key={feedbackType.value}
-                              value={feedbackType.value}
-                            >
-                              {feedbackType.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  )}
-                  {field.name === "assessmentType" && (
-                    <div>
-                      <Label>{field.label}</Label>
-                      <Select
-                        onValueChange={(value) =>
-                          setFormData((prevData) => ({
-                            ...prevData,
-                            assessmentType: value,
-                          }))
-                        }
-                        value={formData.assessmentType || ""}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select Assessment Type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {questionTypelist.map((assessmentType) => (
-                            <SelectItem
-                              key={assessmentType.value}
-                              value={assessmentType.value}
-                            >
-                              {assessmentType.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  )}
-
-                  {field.name === "curriculum_focus" && (
-                    <div>
-                      <Label>{field.label}</Label>
-                      <Select
-                        onValueChange={(value) =>
-                          setFormData((prevData) => ({
-                            ...prevData,
-                            curriculum_focus: value,
-                          }))
-                        }
-                        value={formData.curriculum_focus || ""}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select Curriculum Focus" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {curriculumFocus.map((curriculum) => (
-                            <SelectItem
-                              key={curriculum.value}
-                              value={curriculum.value}
-                            >
-                              {curriculum.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  )}
-                  {field.name === "type" && (
-                    <div>
-                      <Label>{field.label}</Label>
-                      <Select
-                        onValueChange={(value) =>
-                          setFormData((prevData) => ({
-                            ...prevData,
-                            type: value,
-                          }))
-                        }
-                        value={formData.type || ""}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select Question Type Focus" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {questionTypelist.map((question) => (
-                            <SelectItem
-                              key={question.value}
-                              value={question.value}
-                            >
-                              {question.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  )}
-                  {field.name === "mediaType" && (
-                    <div>
-                      <Label>{field.label}</Label>
-                      <Select
-                        onValueChange={(value) =>
-                          setFormData((prevData) => ({
-                            ...prevData,
-                            mediaType: value,
-                          }))
-                        }
-                        value={formData.mediaType || ""}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select Media Type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {mediaTypelist.map((media) => (
-                            <SelectItem key={media.value} value={media.value}>
-                              {media.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  )}
-
-                  {field.name !== "grade" &&
-                    field.name !== "country" &&
-                    field.name != "sdg" &&
-                    field.name != "file" &&
-                    field.name != "type" &&
-                    field.name != "difficultyLevel" &&
-                    field.name != "wordType" &&
-                    field.name != "examType" &&
-                    field.name != "assessmentType" &&
-                    field.name != "ageGroup" &&
-                    field.name != "voiceType" &&
-                    field.name != "lower_grade" &&
-                    field.name != "image_type" &&
-                    field.name != "supportResources" &&
-                    field.name != "questionFormat" &&
-                    field.name != "curriculum_type" &&
-                    field.name != "audio" &&
-                    field.name != "mediaType" &&
-                    field.name != "subtopic" &&
-                    field.name != "feedbackType" &&
-                    field.name != "curriculum_focus" &&
-                    field.name !== "activitytype" &&
-                    tool.service_id !== "markingscheme generator" &&
-                    field.name !== "subject" && (
-                      <div>
-                        <label className="capitalize">{field.label}</label>
-                        {field.name === "description" ? (
-                          <TextArea
-                            name={field.name}
-                            required={
-                              tool.service_id === "transcribe"
-                                ? false
-                                : tool.is_description_optional === 0
-                            }
-                            placeholder={
-                              field.placeholder || `Enter ${field.label}`
-                            }
-                            value={formData[field.name] || ""}
-                            onChange={handleInputChange}
-                            className="input-field w-full"
-                            rows={4}
-                          />
-                        ) : (
-                          <Input
-                            type={
-                              field.name === "numberOfSlides" ||
-                                field.name === "numberOfQuestion" ||
-                                field.name === "numberOfVerse"
-                                ? "number"
-                                : "text"
-                            }
-                            name={field.name}
-                            required={
-                              field.name === "previous_kownledge"
-                                ? false
-                                : field.name === "previous_knowledge"
-                                  ? false
-                                  : field.name === "theme"
-                                    ? false
-                                    : field.name === "description"
-                                      ? tool.service_id === "transcribe"
-                                        ? false
-                                        : tool.is_description_optional === 0
-                                      : field.name !== "additionalNotes" &&
-                                      field.name !== "recommendations"
-                            }
-                            placeholder={
-                              field.placeholder || `Enter ${field.label}`
-                            }
-                            value={formData[field.name] || ""}
-                            onChange={handleInputChange}
-                          />
-                        )}
-                      </div>
-                    )}
-                </div>
-              ))}
-              <div
-                ref={submitRef}
-                className="relative w-full flex justify-center items-center mt-10">
-                {/* Modal Positioned Relative to the Button */}
-                {showSubmitModal && (
-                  <div className="absolute bottom-full mb-4 bg-gradient-to-br border-2 from-[#85F4FF] via-[#85F4FF] to-[#B8FFF9] 
-                text-white text-sm px-4 py-3 rounded-2xl shadow-lg max-w-sm 
-                border-white border-dashed z-50 animate-[bounce_0.6s_ease-out]">
+            {/* Conditional Button: Auto Fill Form (when form is showing) or Back to Form (when response is showing) */}
+            {!showResponse ? (
+              <div className="flex flex-col items-center -mt-5">
+                <button
+                  className="flex items-center text-[#6200EE]"
+                  onClick={handleSampleData}
+                >
+                  Auto Fill Form
+                </button>
+                {showModal && (
+                  <div
+                    className="fixed top-48 bg-gradient-to-br from-[#85F4FF] via-[#85F4FF] to-[#B8FFF9]
+          text-white text-sm px-5 py-4 rounded-2xl mt-2 rounded-br-none shadow-lg max-w-sm
+          lg:translate-x-24 md:translate-x-24 border-2 border-white border-dashed mb-6"
+                  >
                     <button
-                      className="absolute top-1 right-2 text-[#4b2aad] text-2xl"
-                      onClick={() => setShowSubmitModal(false)}
+                      className="absolute top-2 right-2 text-[#4b2aad] text-3xl pl-2 leading-none"
+                      onClick={() => setShowModal(false)}
                     >
                       &times;
                     </button>
-
-                    <span className="block text-center text-[#4b2aad] font-medium leading-snug text-2xl">
-                      You're almost done!
+                    <span className="block lg:text-left text-start font-medium leading-snug px-2 text-lg md:text-2xl text-[#4b2aad]">
+                      Click{" "}
+                      <span className="font-semibold">"Auto Fill Form"</span>{" "}
+                      button to see a sample
                     </span>
-                    <p className="block text-center text-[#4b2aad] font-medium leading-snug text-2xl">
-                      After filling the form, Click <span className="font-bold">"Submit"</span> to complete the process.
-                    </p>
-                    <div className="flex justify-between gap-4 mt-4">
+
+                    <div className="mt-4 flex justify-between gap-2">
                       <button
-                        className="bg-white text-[#4b2aad] font-semibold px-4 py-1 rounded-md shadow"
-                        onClick={() => setShowSubmitModal(false)}
+                        className="bg-white text-[#4b2aad] font-semibold py-1 px-4 rounded hover:bg-[#e0eaff] transition"
+                        onClick={() => setShowModal(false)}
                       >
                         Close
                       </button>
                       <button
-                        className="bg-[#4b2aad] text-white font-semibold px-4 py-1 rounded-md shadow"
-                        onClick={handleNext}
+                        className="bg-[#4b2aad] text-white font-semibold py-1 px-4 rounded hover:bg-[#3a2285] transition"
+                        onClick={() => {
+                          setShowModal(false);
+                          setShowSubmitModal(true);
+                          setTimeout(() => {
+                            submitRef.current?.scrollIntoView({
+                              behavior: "smooth",
+                              block: "center",
+                            });
+                          }, 200);
+                        }}
                       >
                         Next
                       </button>
                     </div>
-                    {/* Pointer triangle */}
-                    <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 rotate-45 w-4 h-4 bg-gradient-to-br from-[#85F4FF] via-[#85F4FF] to-[#B8FFF9] border-l border-t border-white border-dashed"></div>
+                    <div className="absolute -top-1 left-10 w-6 h-6 rotate-45 bg-[#85F4FF]" />
                   </div>
                 )}
-
-                {/* Submit Button */}
-                <Button
-                  type="submit"
-                  variant={"gradient"}
-                  className="text-white py-2 px-4 rounded-md w-full"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? "AiTeacha is Typing..." : "Submit"}
-                </Button>
-              </div>
-
-
-              {/* <Button
-                type="submit"
-                variant={"gradient"}
-                className="text-white py-2 px-4 rounded-md w-full"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? "AiTeacha is Typing..." : "Submit"}
-              </Button> */}
-              {/* selectedImageType */}
-            </form>
-          </div>
-
-          <div ref={responseRef} className="lg:w-1/2 mt-8 lg:mt-0 relative ">
-            {showResponseModal && (
-              <div className="absolute border-white border-dashed
-          -top-20 left-1/2 transform -translate-x-1/2  bg-gradient-to-br from-[#85F4FF] via-[#85F4FF] to-[#B8FFF9]
-           text-white border-2 text-sm px-4 py-3 rounded-2xl shadow-lg max-w-sm w-full z-[9999]">
-                <button
-                  className="absolute top-1 right-2 text-[#4b2aad] text-2xl"
-                  onClick={() => setResponseShowModal(false)}
-                >
-                  &times;
-                </button>
-                <span className="block text-center text-[#4b2aad] font-semibold leading-snug mb-2 text-2xl">
-                  ✅ You’re All Set!
-                </span>
-                <p className="text-center text-[#4b2aad] text-2xl">
-                  The preview section displays the generated result
-                </p>
-                <div className="flex justify-end gap-4 mt-4">
-                  <button
-                    className="bg-white text-[#4b2aad] font-semibold px-4 py-1 rounded-md shadow"
-                    onClick={() => setResponseShowModal(false)}
-                  >
-                    Close
-                  </button>
-                </div>
-                <div
-                  className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 rotate-45 w-4 h-4 
-              bg-gradient-to-br from-[#85F4FF] via-[#85F4FF] to-[#B8FFF9] shadow-md"
-                ></div>
-              </div>
-            )}
-
-            <h3 className="text-xl font-bold mb-4">Submission Response</h3>
-            {(tool.service_id === "image creator" ||
-              tool.service_id === "worksheeteid generator" ||
-              tool.service_id === "colouring image") &&
-              responseMessage ? (
-              <>
-                <div className="p-2 bg-white border border-gray-300 rounded-md">
-                  <img
-                    src={powerUrl}
-                    alt="Generated Content"
-                    className="max-w-full h-auto border border-gray-300 rounded-md"
-                    onError={(e) => {
-                      e.currentTarget.src =
-                        "https://eagle-sensors.com/wp-content/uploads/unavailable-image.jpg";
-                    }}
-                  />
-                </div>
-                <div className="mt-4">
-                  <button
-                    onClick={() => {
-                      const link = document.createElement("a");
-                      link.href = powerUrl;
-                      link.download = "generated_image.png";
-                      link.click();
-                    }}
-                    className="bg-blue-500 text-white py-2 px-4 rounded-md mr-4"
-                  >
-                    Download Image
-                  </button>
-                </div>
-              </>
-            ) : tool.service_id === "power point slide" && responseMessage ? (
-              <div className="mt-4">
-                <button
-                  onClick={() => {
-                    const link = document.createElement("a");
-                    link.href = powerUrl;
-                    link.download = "generated_slide.pptx";
-                    link.click();
-                  }}
-                  className="bg-black text-white py-2 px-4 rounded-md"
-                >
-                  Download Slide
-                </button>
-              </div>
-            ) : tool.service_id === "school timetable generator" &&
-              responseMessage ? (
-              <>
-                <div className="mt-4 p-4 border rounded-md bg-white">
-                  {(() => {
-                    try {
-                      const timetableData: {
-                        schoolName: string;
-                        timetable: {
-                          weekDays: {
-                            day: string;
-                            classes: Record<
-                              string,
-                              { time: string; subject: string }[]
-                            >;
-                          }[];
-                        };
-                      } = JSON.parse(powerUrl);
-
-                      return (
-                        <>
-                          <h3 className="text-lg font-semibold mb-4">
-                            {timetableData.schoolName} Timetable
-                          </h3>
-                          <div className="max-h-72 overflow-y-auto">
-                            {timetableData.timetable.weekDays.map((day) => (
-                              <div key={day.day} className="mt-4">
-                                <h4 className="font-medium text-lg mb-2">
-                                  {day.day}
-                                </h4>
-                                <div className="overflow-x-auto">
-                                  <table className="min-w-full border border-gray-300">
-                                    <thead>
-                                      <tr className="bg-gray-200 text-gray-700">
-                                        <th className="border px-4 py-2 text-left">
-                                          Class
-                                        </th>
-                                        <th className="border px-4 py-2 text-left">
-                                          Time
-                                        </th>
-                                        <th className="border px-4 py-2 text-left">
-                                          Subject
-                                        </th>
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                                      {Object.keys(day.classes).map(
-                                        (className) =>
-                                          day.classes[className].map(
-                                            (cls, index) => (
-                                              <tr
-                                                key={index}
-                                                className="odd:bg-gray-100"
-                                              >
-                                                <td className="border px-4 py-2">
-                                                  {className.toUpperCase()}
-                                                </td>
-                                                <td className="border px-4 py-2">
-                                                  {cls.time}
-                                                </td>
-                                                <td className="border px-4 py-2">
-                                                  {cls.subject}
-                                                </td>
-                                              </tr>
-                                            )
-                                          )
-                                      )}
-                                    </tbody>
-                                  </table>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </>
-                      );
-                    } catch (error) {
-                      console.error("Error parsing timetable data:", error);
-                      return (
-                        <p className="text-red-500">Error loading timetable.</p>
-                      );
-                    }
-                  })()}
-                </div>
-
-                <div className="mt-4">
-                  <a
-                    href={`https://${csvUrl}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="bg-black text-white py-2 px-4 rounded-md"
-                  >
-                    Download CSV
-                  </a>
-                </div>
-              </>
-            ) : tool.service_id == "text to speech" && responseMessage ? (
-              <div className="mt-4">
-                {timeLeft !== null && (
-                  <div className="text-gray-900 mb-2">
-                    Time left to download: {formatTime(timeLeft)}
-                  </div>
-                )}
-                <button
-                  onClick={() => {
-                    if (timeLeft && timeLeft > 0) {
-                      const link = document.createElement("a");
-                      link.href = powerUrl;
-                      link.target = "_blank";
-                      link.download = "generated_audio.mp3";
-                      link.click();
-                    } else {
-                      alert("The download link has expired!");
-                    }
-                  }}
-                  // onClick={() => {
-                  //   console.log(powerUrl);
-                  //   window.open(powerUrl, "_blank");
-                  // }}
-                  className={`py-2 px-4 rounded-md ${timeLeft && timeLeft > 0
-                      ? "bg-green-500 text-white"
-                      : "bg-gray-300 text-gray-500"
-                    }`}
-                  disabled={!timeLeft || timeLeft <= 0}
-                >
-                  {timeLeft && timeLeft > 0 ? "Download Audio" : "Link Expired"}
-                </button>
               </div>
             ) : (
-              <>
-                <div className="w-full p-3 border border-gray-300 bg-white rounded-md resize-none markdown overflow-auto max-h-[700px]">
-                  {isSubmitting ? (
-                    "AiTeacha is Typing..."
-                  ) : (
-                    <div>
-                      <TypingEffectRenderer
-                        content={responseMessage || "No response available."}
-                        typingSpeed={30}
-                      />
+              <div className="flex justify-start -mt-5">
+                <button
+                  onClick={() => setShowResponse(false)}
+                  className="text-[#6200EE] rounded-full border border-[#6200EE] px-6 py-2"
+                >
+                  Generate Again
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div className="flex flex-col lg:flex-row items-center justify-center rounded-2xl lg:space-x-8 mt-4 lg:ml-[16%] relative overflow-hidden w-full">
+            <div
+              className={`transform transition-all duration-500 w-full ${
+                showResponse
+                  ? "translate-y-[100%] opacity-0 h-0 overflow-hidden"
+                  : "translate-y-0 opacity-100"
+              }`}
+            >
+              <form
+                id="toolForm"
+                onSubmit={handleSubmit}
+                className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white p-6 rounded-2xl w-full lg:ml-28"
+              >
+                {tool.service_id === "markingscheme generator" && (
+                  <>
+                    <div className="flex gap-4 mb-4">
+                      <div className="w-full">
+                        <Label className="capitalize">Description</Label>
+                        <TextArea
+                          name="description"
+                          placeholder="Enter Specific Details "
+                          value={formData.description || ""}
+                          onChange={(
+                            e: React.ChangeEvent<HTMLTextAreaElement>
+                          ) =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              description: e.target.value,
+                            }))
+                          }
+                          rows={4}
+                          className="input-field w-full"
+                        />
+                      </div>
+                    </div>
+                    {fieldPairs
+                      .slice(0, visibleFieldPairs)
+                      .map((pair, index) => (
+                        <div
+                          key={index}
+                          className="flex gap-4 mb-4 border p-4 rounded-md border-gray-400"
+                        >
+                          <div className="w-1/2">
+                            <Label className="capitalize">
+                              {pair.criteria}
+                            </Label>
+                            <Input
+                              type="text"
+                              name={pair.criteria}
+                              placeholder={`Enter ${pair.criteria}`}
+                              value={formData[pair.criteria] || ""}
+                              onChange={(
+                                e: React.ChangeEvent<HTMLInputElement>
+                              ) =>
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  [pair.criteria]: e.target.value,
+                                }))
+                              }
+                              className="input-field w-full"
+                            />
+                          </div>
+                          <div className="w-1/2">
+                            <Label>{pair.weightage}</Label>
+                            <Input
+                              type="text"
+                              name={pair.weightage}
+                              placeholder={`Enter ${pair.weightage}`}
+                              value={formData[pair.weightage] || ""}
+                              onChange={(
+                                e: React.ChangeEvent<HTMLInputElement>
+                              ) =>
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  [pair.weightage]: e.target.value,
+                                }))
+                              }
+                              className="input-field w-full"
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    <div className="mt-4 flex gap-4">
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (visibleFieldPairs < fieldPairs.length) {
+                            setVisibleFieldPairs((prev) => prev + 1);
+                          }
+                        }}
+                        className={`bg-[#6200EE] p-2 px-6 text-white rounded-full ${
+                          visibleFieldPairs >= fieldPairs.length
+                            ? "cursor-not-allowed opacity-50"
+                            : ""
+                        }`}
+                        disabled={visibleFieldPairs >= fieldPairs.length}
+                      >
+                        + Add
+                      </button>
+
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (visibleFieldPairs > 1) {
+                            setVisibleFieldPairs((prev) => prev - 1);
+                          }
+                        }}
+                        className={`border border-[#6200EE] p-2 px-6 text-[#6200EE] rounded-full ${
+                          visibleFieldPairs <= 1
+                            ? "cursor-not-allowed opacity-50"
+                            : "hover:bg-[#6200EE] hover:text-white"
+                        }`}
+                        disabled={visibleFieldPairs <= 1}
+                      >
+                        Remove
+                      </button>
+                    </div>
+
+                    <div className="flex gap-4 mb-4">
+                      <div className="w-1/2">
+                        <Label>Scoring Scale</Label>
+                        <Input
+                          type="text"
+                          name="scoringScale"
+                          placeholder="Enter Scoring Scale (e.g., 0-5, 1-10)"
+                          value={formData.scoringScale || ""}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              scoringScale: e.target.value,
+                            }))
+                          }
+                          className="input-field w-full"
+                        />
+                      </div>
+                      <div className="w-1/2">
+                        <Label>Comments</Label>
+                        <Input
+                          type="text"
+                          name="comments"
+                          placeholder="Indicate if you want space for comments for each criterion"
+                          value={formData.comments || ""}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              comments: e.target.value,
+                            }))
+                          }
+                          className="input-field w-full"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex gap-4 mb-4 border">
+                      <div className="w-full">
+                        <Label>Additional Notes</Label>
+                        <Input
+                          type="text"
+                          name="additionalNotes"
+                          placeholder="Enter any additional guidelines or notes for the markers"
+                          value={formData.additionalNotes || ""}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              additionalNotes: e.target.value,
+                            }))
+                          }
+                          className="input-field w-full rounded-full"
+                        />
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {formFields
+                  .filter((field) => field.name !== "description")
+                  .map((field) => (
+                    <div key={field.name}>
+                      {field.name === "grade" &&
+                        tool.req_param?.includes("grade") && (
+                          <div>
+                            <Label>{field.label}</Label>
+                            <Select
+                              onValueChange={handleGradeChange}
+                              value={formData.grade}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select grade" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {gradeOptions.map((grade) => (
+                                  <SelectItem key={grade} value={grade}>
+                                    {grade}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        )}
+
+                      {field.name === "lower_grade" &&
+                        tool.req_param?.includes("lower_grade") && (
+                          <div>
+                            <Label>{field.label}</Label>
+                            <Select
+                              onValueChange={handleLowerGradeChange}
+                              value={formData.grade}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select grade" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {["Nursery", "Lower Primary"].map((grade) => (
+                                  <SelectItem key={grade} value={grade}>
+                                    {grade}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        )}
+
+                      {field.name === "country" &&
+                        tool.req_param?.includes("country") && (
+                          <div>
+                            <Label>{field.label}</Label>
+                            <Select
+                              onValueChange={handleCountryChange}
+                              value={formData.country}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select Country" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {countries.map(
+                                  (country: {
+                                    name: string;
+                                    isoCode: string;
+                                  }) => (
+                                    <SelectItem
+                                      key={country.isoCode}
+                                      value={country.name}
+                                    >
+                                      {country.name}
+                                    </SelectItem>
+                                  )
+                                )}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        )}
+                      {field.name === "curriculum_type" &&
+                        tool.req_param?.includes("curriculum_type") && (
+                          <div>
+                            <Label htmlFor={field.name}>{field.label}</Label>
+                            <Select
+                              onValueChange={handleCurriculumTypeChange}
+                              disabled={
+                                isCurriculumLoading ||
+                                !formData.country ||
+                                curriculums.length === 0
+                              }
+                              value={formData.curriculum_type}
+                            >
+                              <SelectTrigger>
+                                {isCurriculumLoading ? (
+                                  <div className="flex items-center gap-2 text-gray-500">
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />{" "}
+                                    Loading Curriculums...
+                                  </div>
+                                ) : (
+                                  <SelectValue
+                                    placeholder={
+                                      formData.country
+                                        ? "Select Curriculum Type"
+                                        : "Select a Country First"
+                                    }
+                                  />
+                                )}
+                              </SelectTrigger>
+                              <SelectContent>
+                                {curriculums.length === 0 &&
+                                !isCurriculumLoading ? (
+                                  <SelectItem value="no-curriculum" disabled>
+                                    {formData.country
+                                      ? "No curriculums found"
+                                      : "Select a country first"}
+                                  </SelectItem>
+                                ) : null}
+                                {curriculums.length > 0
+                                  ? curriculums.map(
+                                      (curriculumName: string) => (
+                                        <SelectItem
+                                          key={curriculumName}
+                                          value={curriculumName}
+                                        >
+                                          {curriculumName}
+                                        </SelectItem>
+                                      )
+                                    )
+                                  : null}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        )}
+                      {field.name === "image_type" &&
+                        tool.req_param?.includes("image_type") && (
+                          <div>
+                            <Label>Image Type</Label>
+                            <Select
+                              onValueChange={handleImageSelectionChange}
+                              value={formData.image_type || ""}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select Image Type" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="labelled diagram">
+                                  Labelled Diagram
+                                </SelectItem>
+                                <SelectItem value="non labelled diagram">
+                                  Non-Labelled Diagram
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        )}
+                      {field.name === "file" &&
+                        tool.req_param?.includes("file") && (
+                          <div>
+                            <Label>
+                              {tool.service_id === "transcribe"
+                                ? "Upload Audio"
+                                : "Upload File (Optional)"}
+                            </Label>
+                            <input
+                              type="file"
+                              onChange={(e) => handleFileChange(e)}
+                              className="file-input bg-white"
+                              accept={
+                                tool.service_id === "transcribe"
+                                  ? "audio/*,audio/mpeg,audio/wav"
+                                  : "application/pdf, image/png, image/jpeg, image/jpg"
+                              }
+                              required={tool.service_id === "transcribe"}
+                            />
+                          </div>
+                        )}
+
+                      {field.name === "audio" &&
+                        tool.req_param?.includes("audio") && (
+                          <div>
+                            <Label>{field.label}</Label>
+                            <input
+                              type="file"
+                              onChange={(e) => handleFileChange(e)}
+                              className="file-input bg-white "
+                              accept=" video/mp4, video/quicktime,audio/*,audio/mpeg,audio/wav"
+                            />
+                          </div>
+                        )}
+
+                      {field.name === "subject" && (
+                        <div>
+                          <Label>{field.label}</Label>
+                          {tool.service_id === "solver" ? (
+                            <Select
+                              onValueChange={(value) =>
+                                setFormData((prevData) => ({
+                                  ...prevData,
+                                  subject: value,
+                                }))
+                              }
+                              value={formData.subject}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select subject" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {["Maths", "Physics", "Chemistry"].map(
+                                  (subject) => (
+                                    <SelectItem key={subject} value={subject}>
+                                      {subject}
+                                    </SelectItem>
+                                  )
+                                )}
+                              </SelectContent>
+                            </Select>
+                          ) : (
+                            <Input
+                              type="text"
+                              name="subject"
+                              placeholder={
+                                field.placeholder || `Enter ${field.name}`
+                              }
+                              value={formData.subject || ""}
+                              onChange={handleInputChange}
+                            />
+                          )}
+                        </div>
+                      )}
+                      {field.name === "subtopic" &&
+                        tool.req_param?.includes("subtopic") && (
+                          <div>
+                            <Label>{field.label}</Label>
+
+                            {/* Render the first (default) subtopic field */}
+                            <div className="flex gap-4 mb-4">
+                              <div className="w-full">
+                                <Input
+                                  type="text"
+                                  placeholder="Enter sub topic"
+                                  value={subTopicInputList[0]}
+                                  onChange={(
+                                    e: React.ChangeEvent<HTMLInputElement>
+                                  ) => handleSubTopicChange(0, e.target.value)}
+                                  className="input-field w-full"
+                                />
+                              </div>
+                            </div>
+
+                            {/* Render dynamically created input fields (excluding the first one) */}
+                            {subTopicInputList
+                              .slice(1)
+                              .map((subTopic, index) => (
+                                <div
+                                  key={index + 1}
+                                  className="flex gap-4 mb-4"
+                                >
+                                  <div className="w-full">
+                                    <Input
+                                      type="text"
+                                      placeholder="Enter sub topic"
+                                      value={subTopic}
+                                      onChange={(
+                                        e: React.ChangeEvent<HTMLInputElement>
+                                      ) =>
+                                        handleSubTopicChange(
+                                          index + 1,
+                                          e.target.value
+                                        )
+                                      }
+                                      className="input-field w-full"
+                                    />
+                                  </div>
+                                  <Button
+                                    type="button"
+                                    onClick={() =>
+                                      handleRemoveSubTopic(index + 1)
+                                    }
+                                    className="text-red-500"
+                                  >
+                                    Remove
+                                  </Button>
+                                </div>
+                              ))}
+
+                            <div className="flex gap-4">
+                              <div className="mt-4">
+                                <Button
+                                  type="button"
+                                  onClick={handleAddSubTopic}
+                                  className="rounded-md bg-white border border-gray-300"
+                                >
+                                  Add SubTopic
+                                </Button>
+                              </div>
+
+                              <div className="mt-4">
+                                <Button
+                                  type="button"
+                                  onClick={handleSaveSubTopics}
+                                  variant={"gray"}
+                                  className=" rounded-md text-white"
+                                >
+                                  Save SubTopics
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      {field.name === "sdg" &&
+                        tool.req_param?.includes("sdg") && (
+                          <div>
+                            <Label>{field.label}</Label>
+                            <MultiSelect
+                              value={formData.sdg || []}
+                              onChange={(e) => {
+                                setFormData((prevData) => ({
+                                  ...prevData,
+                                  sdg: e.value,
+                                }));
+                              }}
+                              options={sdgOptions.map((option) => ({
+                                label: option.label,
+                                value: option.value,
+                              }))}
+                              optionLabel="label"
+                              placeholder="Select SDG Goals"
+                              display="chip"
+                              className="w-full rounded-md"
+                              maxSelectedLabels={3}
+                            />
+                          </div>
+                        )}
+
+                      {field.name === "activitytype" && (
+                        <div>
+                          <Label>{field.label}</Label>
+                          <Select
+                            onValueChange={(value) =>
+                              setFormData((prevData) => ({
+                                ...prevData,
+                                activityType: value,
+                              }))
+                            }
+                            value={formData.activityType || ""}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select activity type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {activityList.map((activity) => (
+                                <SelectItem
+                                  key={activity.value}
+                                  value={activity.value}
+                                >
+                                  {activity.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+                      {field.name === "voiceType" && (
+                        <div>
+                          <Label>{field.label}</Label>
+                          <Select
+                            onValueChange={(value) =>
+                              setFormData((prevData) => ({
+                                ...prevData,
+                                voiceType: value,
+                              }))
+                            }
+                            value={formData.voiceType || "Female Voice"}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select Voice Type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {voiceTypelist.map((voiceType) => (
+                                <SelectItem
+                                  key={voiceType.value}
+                                  value={voiceType.value}
+                                >
+                                  {voiceType.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+                      {field.name === "examType" && (
+                        <div>
+                          <Label>{field.label}</Label>
+                          <Select
+                            onValueChange={(value) =>
+                              setFormData((prevData) => ({
+                                ...prevData,
+                                examType: value,
+                              }))
+                            }
+                            value={formData.examType || ""}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select Exam Type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {examTypeList.map((examType) => (
+                                <SelectItem
+                                  key={examType.value}
+                                  value={examType.value}
+                                >
+                                  {examType.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+
+                      {field.name === "supportResources" && (
+                        <div>
+                          <Label>{field.label}</Label>
+                          <Select
+                            onValueChange={(value) =>
+                              setFormData((prevData) => ({
+                                ...prevData,
+                                supportResources: value,
+                              }))
+                            }
+                            defaultValue={formData.supportResources || ""}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select Support Resources " />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {supportResourcesList.map((supportResources) => (
+                                <SelectItem
+                                  key={supportResources.value}
+                                  value={supportResources.value}
+                                >
+                                  {supportResources.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+                      {field.name === "difficultyLevel" && (
+                        <div>
+                          <Label>{field.label}</Label>
+                          <Select
+                            onValueChange={(value) =>
+                              setFormData((prevData) => ({
+                                ...prevData,
+                                difficultyLevel: value,
+                              }))
+                            }
+                            defaultValue={formData.difficultyLevel || ""}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select Difficulty Level" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {difficultyList.map((difficultyLevel) => (
+                                <SelectItem
+                                  key={difficultyLevel.value}
+                                  value={difficultyLevel.value}
+                                >
+                                  {difficultyLevel.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+                      {field.name === "ageGroup" && (
+                        <div>
+                          <Label>{field.label}</Label>
+                          <Select
+                            onValueChange={(value) =>
+                              setFormData((prevData) => ({
+                                ...prevData,
+                                ageGroup: value,
+                              }))
+                            }
+                            value={formData.ageGroup || ""}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select Age Group" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {ageGroupList.map((ageGroup) => (
+                                <SelectItem
+                                  key={ageGroup.value}
+                                  value={ageGroup.value}
+                                >
+                                  {ageGroup.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+                      {field.name === "wordType" && (
+                        <div>
+                          <Label>{field.label}</Label>
+                          <Select
+                            onValueChange={(value) =>
+                              setFormData((prevData) => ({
+                                ...prevData,
+                                wordType: value,
+                              }))
+                            }
+                            value={formData.wordType || ""}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select Word Type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {wordTypeList.map((wordType) => (
+                                <SelectItem
+                                  key={wordType.value}
+                                  value={wordType.value}
+                                >
+                                  {wordType.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+                      {field.name === "questionFormat" && (
+                        <div>
+                          <Label>{field.label}</Label>
+                          <Select
+                            onValueChange={(value) =>
+                              setFormData((prevData) => ({
+                                ...prevData,
+                                questionFormat: value,
+                              }))
+                            }
+                            value={formData.questionFormat || ""}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select Question Format" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {questionTypelist.map((questionFormat) => (
+                                <SelectItem
+                                  key={questionFormat.value}
+                                  value={questionFormat.value}
+                                >
+                                  {questionFormat.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+                      {field.name === "feedbackType" && (
+                        <div>
+                          <Label>{field.label}</Label>
+                          <Select
+                            onValueChange={(value) =>
+                              setFormData((prevData) => ({
+                                ...prevData,
+                                feedbackType: value,
+                              }))
+                            }
+                            value={formData.type || ""}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select  Feedback Type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {appraisalTypeList.map((feedbackType) => (
+                                <SelectItem
+                                  key={feedbackType.value}
+                                  value={feedbackType.value}
+                                >
+                                  {feedbackType.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+                      {field.name === "assessmentType" && (
+                        <div>
+                          <Label>{field.label}</Label>
+                          <Select
+                            onValueChange={(value) =>
+                              setFormData((prevData) => ({
+                                ...prevData,
+                                assessmentType: value,
+                              }))
+                            }
+                            value={formData.assessmentType || ""}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select Assessment Type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {questionTypelist.map((assessmentType) => (
+                                <SelectItem
+                                  key={assessmentType.value}
+                                  value={assessmentType.value}
+                                >
+                                  {assessmentType.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+
+                      {field.name === "curriculum_focus" && (
+                        <div>
+                          <Label>{field.label}</Label>
+                          <Select
+                            onValueChange={(value) =>
+                              setFormData((prevData) => ({
+                                ...prevData,
+                                curriculum_focus: value,
+                              }))
+                            }
+                            value={formData.curriculum_focus || ""}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select Curriculum Focus" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {curriculumFocus.map((curriculum) => (
+                                <SelectItem
+                                  key={curriculum.value}
+                                  value={curriculum.value}
+                                >
+                                  {curriculum.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+                      {field.name === "type" && (
+                        <div>
+                          <Label>{field.label}</Label>
+                          <Select
+                            onValueChange={(value) =>
+                              setFormData((prevData) => ({
+                                ...prevData,
+                                type: value,
+                              }))
+                            }
+                            value={formData.type || ""}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select Question Type Focus" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {questionTypelist.map((question) => (
+                                <SelectItem
+                                  key={question.value}
+                                  value={question.value}
+                                >
+                                  {question.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+                      {field.name === "mediaType" && (
+                        <div>
+                          <Label>{field.label}</Label>
+                          <Select
+                            onValueChange={(value) =>
+                              setFormData((prevData) => ({
+                                ...prevData,
+                                mediaType: value,
+                              }))
+                            }
+                            value={formData.mediaType || ""}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select Media Type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {mediaTypelist.map((media) => (
+                                <SelectItem
+                                  key={media.value}
+                                  value={media.value}
+                                >
+                                  {media.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+
+                      {field.name !== "grade" &&
+                        field.name !== "country" &&
+                        field.name != "sdg" &&
+                        field.name != "file" &&
+                        field.name != "type" &&
+                        field.name != "difficultyLevel" &&
+                        field.name != "wordType" &&
+                        field.name != "examType" &&
+                        field.name != "assessmentType" &&
+                        field.name != "ageGroup" &&
+                        field.name != "voiceType" &&
+                        field.name != "lower_grade" &&
+                        field.name != "image_type" &&
+                        field.name != "supportResources" &&
+                        field.name != "questionFormat" &&
+                        field.name != "curriculum_type" &&
+                        field.name != "audio" &&
+                        field.name != "mediaType" &&
+                        field.name != "subtopic" &&
+                        field.name != "feedbackType" &&
+                        field.name != "curriculum_focus" &&
+                        field.name !== "activitytype" &&
+                        tool.service_id !== "markingscheme generator" &&
+                        field.name !== "subject" && (
+                          <div>
+                            <label className="capitalize">{field.label}</label>
+                            {field.name === "description" ? (
+                              <TextArea
+                                name={field.name}
+                                required={
+                                  tool.service_id === "transcribe"
+                                    ? false
+                                    : tool.is_description_optional === 0
+                                }
+                                placeholder={
+                                  field.placeholder || `Enter ${field.label}`
+                                }
+                                value={formData[field.name] || ""}
+                                onChange={handleInputChange}
+                                className="input-field w-full"
+                                rows={4}
+                              />
+                            ) : (
+                              <Input
+                                type={
+                                  field.name === "numberOfSlides" ||
+                                  field.name === "numberOfQuestion" ||
+                                  field.name === "numberOfVerse"
+                                    ? "number"
+                                    : "text"
+                                }
+                                name={field.name}
+                                required={
+                                  field.name === "previous_kownledge"
+                                    ? false
+                                    : field.name === "previous_knowledge"
+                                    ? false
+                                    : field.name === "theme"
+                                    ? false
+                                    : field.name === "description"
+                                    ? tool.service_id === "transcribe"
+                                      ? false
+                                      : tool.is_description_optional === 0
+                                    : field.name !== "additionalNotes" &&
+                                      field.name !== "recommendations"
+                                }
+                                placeholder={
+                                  field.placeholder || `Enter ${field.label}`
+                                }
+                                value={formData[field.name] || ""}
+                                onChange={handleInputChange}
+                              />
+                            )}
+                          </div>
+                        )}
+                    </div>
+                  ))}
+                <div
+                  ref={submitRef}
+                  className="relative w-full flex justify-center items-center mt-10"
+                >
+                  {/* Modal Positioned Relative to the Button */}
+                  {showSubmitModal && (
+                    <div
+                      className="absolute bottom-full mb-4 bg-gradient-to-br border-2 from-[#85F4FF] via-[#85F4FF] to-[#B8FFF9] 
+                text-white text-sm px-4 py-3 rounded-2xl shadow-lg max-w-sm 
+                border-white border-dashed z-50 animate-[bounce_0.6s_ease-out]"
+                    >
+                      <button
+                        className="absolute top-1 right-2 text-[#4b2aad] text-2xl"
+                        onClick={() => setShowSubmitModal(false)}
+                      >
+                        &times;
+                      </button>
+
+                      <span className="block text-center text-[#4b2aad] font-medium leading-snug text-2xl">
+                        You're almost done!
+                      </span>
+                      <p className="block text-center text-[#4b2aad] font-medium leading-snug text-2xl">
+                        After filling the form, Click{" "}
+                        <span className="font-bold">"Submit"</span> to complete
+                        the process.
+                      </p>
+                      <div className="flex justify-between gap-4 mt-4">
+                        <button
+                          className="bg-white text-[#4b2aad] font-semibold px-4 py-1 rounded-md shadow"
+                          onClick={() => setShowSubmitModal(false)}
+                        >
+                          Close
+                        </button>
+                        <button
+                          className="bg-[#4b2aad] text-white font-semibold px-4 py-1 rounded-md shadow"
+                          onClick={handleNext}
+                        >
+                          Next
+                        </button>
+                      </div>
+                      {/* Pointer triangle */}
+                      <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 rotate-45 w-4 h-4 bg-gradient-to-br from-[#85F4FF] via-[#85F4FF] to-[#B8FFF9] border-l border-t border-white border-dashed"></div>
                     </div>
                   )}
                 </div>
-                {responseMessage && (
-                  <div className="flex gap-4 mt-4">
-                    <button
-                      onClick={handleDownload}
-                      className="bg-black text-white py-2 px-4 rounded-md"
-                    >
-                      Download as PDF
-                    </button>
-                    <Button
-                      onClick={handleSave}
-                      variant={"gradient"}
-                      disabled={saving}
-                      className="px-4 rounded-md"
-                    >
-                      {saving ? "Saving..." : "Save to history"}
-                    </Button>
-                    {responseMessage && tool.editable === "YES" && (
-                      <Button
-                        onClick={handleEditWithZyra}
-                        variant={"gray"}
-                        className="bg-white border border-[#5c3cbb] py-2 px-4 rounded-md"
-                      >
-                        Edit with Zyra
-                      </Button>
-                    )}
+                
+                {formFields.find((f) => f.name === "description") && (
+                  <div className="lg:col-span-2 -mt-[70px]">
+                    <Label>Description</Label>
+                    <TextArea
+                      name="description"
+                      placeholder="Enter description here..."
+                      value={formData.description || ""}
+                      onChange={handleInputChange}
+                      rows={5}
+                      className="input-field w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#6200EE]"
+                    />
                   </div>
                 )}
-              </>
-            )}
+              </form>
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                form="toolForm"
+                className={`text-white bg-[#6200EE] py-3 px-4 rounded-full w-full mt-10 mb-20 lg:ml-28 flex justify-center items-center gap-2 transition ${
+                  isSubmitting ? "opacity-80 cursor-not-allowed" : ""
+                }`}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin text-white" />
+                    AiTeacha is Typing...
+                  </>
+                ) : (
+                  "Submit"
+                )}
+              </button>
+            </div>
+
+            <div
+              ref={responseRef}
+              className={`w-full lg:mt-0  relative transform transition-all duration-500 ${
+                showResponse
+                  ? "translate-y-0 opacity-100"
+                  : "translate-y-[100%] opacity-0 h-0 overflow-hidden"
+              }`}
+            >
+              {showResponseModal && (
+                <div
+                  className="absolute border-white border-dashed
+          -top-20 left-1/2 transform -translate-x-1/2  bg-gradient-to-br from-[#85F4FF] via-[#85F4FF] to-[#B8FFF9]
+           text-white border-2 text-sm px-4 py-3 rounded-2xl shadow-lg max-w-sm w-full z-[9999]"
+                >
+                  <button
+                    className="absolute top-1 right-2 text-[#4b2aad] text-2xl"
+                    onClick={() => setResponseShowModal(false)}
+                  >
+                    &times;
+                  </button>
+                  <span className="block text-center text-[#4b2aad] font-semibold leading-snug mb-2 text-2xl">
+                    ✅ You’re All Set!
+                  </span>
+                  <p className="text-center text-[#4b2aad] text-2xl">
+                    The preview section displays the generated result
+                  </p>
+                  <div className="flex justify-end gap-4 mt-4">
+                    <button
+                      className="bg-white text-[#4b2aad] font-semibold px-4 py-1 rounded-md shadow"
+                      onClick={() => setResponseShowModal(false)}
+                    >
+                      Close
+                    </button>
+                  </div>
+                  <div
+                    className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 rotate-45 w-4 h-4 
+              bg-gradient-to-br from-[#85F4FF] via-[#85F4FF] to-[#B8FFF9] shadow-md"
+                  ></div>
+                </div>
+              )}
+
+              {/* AI Response */}
+              <div className="lg:-ml-[100%] ml-[25%] w-full mb-20">
+                <h3 className="hidden md:block text-xl mb-4 text-left text-[#6200EE]">
+                  Submission Response
+                </h3>
+
+                {(tool.service_id === "image creator" ||
+                  tool.service_id === "worksheeteid generator" ||
+                  tool.service_id === "colouring image") &&
+                responseMessage ? (
+                  <>
+                    <div className="p-2 bg-white border border-gray-300 rounded-md">
+                      <img
+                        src={powerUrl}
+                        alt="Generated Content"
+                        className="max-w-full h-auto border border-gray-300 rounded-md"
+                        onError={(e) => {
+                          e.currentTarget.src =
+                            "https://eagle-sensors.com/wp-content/uploads/unavailable-image.jpg";
+                        }}
+                      />
+                    </div>
+                    <div className="mt-4">
+                      <button
+                        onClick={() => {
+                          const link = document.createElement("a");
+                          link.href = powerUrl;
+                          link.download = "generated_image.png";
+                          link.click();
+                        }}
+                        className="bg-[#6200EE] text-white py-2 px-6 rounded-md mr-4"
+                      >
+                        Download Image
+                      </button>
+                    </div>
+                  </>
+                ) : tool.service_id === "power point slide" &&
+                  responseMessage ? (
+                  <div className="mt-4">
+                    <button
+                      onClick={() => {
+                        const link = document.createElement("a");
+                        link.href = powerUrl;
+                        link.download = "generated_slide.pptx";
+                        link.click();
+                      }}
+                      className="bg-black text-white py-2 px-4 rounded-md"
+                    >
+                      Download Slide
+                    </button>
+                  </div>
+                ) : tool.service_id === "school timetable generator" &&
+                  responseMessage ? (
+                  <>
+                    <div className="mt-4 p-4 border rounded-md bg-white">
+                      {(() => {
+                        try {
+                          const timetableData: {
+                            schoolName: string;
+                            timetable: {
+                              weekDays: {
+                                day: string;
+                                classes: Record<
+                                  string,
+                                  { time: string; subject: string }[]
+                                >;
+                              }[];
+                            };
+                          } = JSON.parse(powerUrl);
+
+                          return (
+                            <>
+                              <h3 className="text-lg font-semibold mb-4">
+                                {timetableData.schoolName} Timetable
+                              </h3>
+                              <div className="max-h-72 overflow-y-auto">
+                                {timetableData.timetable.weekDays.map((day) => (
+                                  <div key={day.day} className="mt-4">
+                                    <h4 className="font-medium text-lg mb-2">
+                                      {day.day}
+                                    </h4>
+                                    <div className="overflow-x-auto">
+                                      <table className="min-w-full border border-gray-300">
+                                        <thead>
+                                          <tr className="bg-gray-200 text-gray-700">
+                                            <th className="border px-4 py-2 text-left">
+                                              Class
+                                            </th>
+                                            <th className="border px-4 py-2 text-left">
+                                              Time
+                                            </th>
+                                            <th className="border px-4 py-2 text-left">
+                                              Subject
+                                            </th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                          {Object.keys(day.classes).map(
+                                            (className) =>
+                                              day.classes[className].map(
+                                                (cls, index) => (
+                                                  <tr
+                                                    key={index}
+                                                    className="odd:bg-gray-100"
+                                                  >
+                                                    <td className="border px-4 py-2">
+                                                      {className.toUpperCase()}
+                                                    </td>
+                                                    <td className="border px-4 py-2">
+                                                      {cls.time}
+                                                    </td>
+                                                    <td className="border px-4 py-2">
+                                                      {cls.subject}
+                                                    </td>
+                                                  </tr>
+                                                )
+                                              )
+                                          )}
+                                        </tbody>
+                                      </table>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </>
+                          );
+                        } catch (error) {
+                          console.error("Error parsing timetable data:", error);
+                          return (
+                            <p className="text-red-500">
+                              Error loading timetable.
+                            </p>
+                          );
+                        }
+                      })()}
+                    </div>
+
+                    <div className="mt-6">
+                      <a
+                        href={`https://${csvUrl}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-[#6200EE] text-white py-3 px-6 rounded-full"
+                      >
+                        Download CSV
+                      </a>
+                    </div>
+                  </>
+                ) : tool.service_id == "text to speech" && responseMessage ? (
+                  <div className="mt-4">
+                    {timeLeft !== null && (
+                      <div className="text-gray-900 mb-2">
+                        Time left to download: {formatTime(timeLeft)}
+                      </div>
+                    )}
+                    <button
+                      onClick={() => {
+                        if (timeLeft && timeLeft > 0) {
+                          const link = document.createElement("a");
+                          link.href = powerUrl;
+                          link.target = "_blank";
+                          link.download = "generated_audio.mp3";
+                          link.click();
+                        } else {
+                          alert("The download link has expired!");
+                        }
+                      }}
+                      // onClick={() => {
+                      //   console.log(powerUrl);
+                      //   window.open(powerUrl, "_blank");
+                      // }}
+                      className={`py-2 px-6 rounded-full ${
+                        timeLeft && timeLeft > 0
+                          ? "bg-[#6200EE] text-white"
+                          : "bg-gray-300 text-gray-500"
+                      }`}
+                      disabled={!timeLeft || timeLeft <= 0}
+                    >
+                      {timeLeft && timeLeft > 0
+                        ? "Download Audio"
+                        : "Link Expired"}
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <div className="lg:w-[140%] lg:-ml-[30px] -ml-[30%] lg:h-[80vh] h-[60vh] p-6 border border-gray-300 bg-white rounded-2xl overflow-x-hidden">
+                      {isSubmitting ? (
+                        "AiTeacha is Typing..."
+                      ) : (
+                        <div>
+                          <TypingEffectRenderer
+                            content={
+                              responseMessage || "No response available."
+                            }
+                            typingSpeed={50}
+                          />
+                        </div>
+                      )}
+                    </div>
+                    {responseMessage && (
+                      <div className="flex gap-4 mt-4 lg:ml-0 -ml-[25%]">
+                        <button
+                          onClick={handleDownload}
+                          className="bg-[#6200EE] text-white py-2 px-4 rounded-full text-sm"
+                        >
+                          Download as PDF
+                        </button>
+                        <button
+                          onClick={handleSave}
+                          // variant={"gradient"}
+                          disabled={saving}
+                          className="px-4 rounded-full text-[#6200EE] border border-[#6200EE] text-sm"
+                        >
+                          {saving ? "Saving..." : "Save to history"}
+                        </button>
+                        {responseMessage && tool.editable === "YES" && (
+                          <button
+                            onClick={handleEditWithZyra}
+                            // variant={"gray"}
+                            className="border border-[#6200EE] text-[#6200EE] text-sm py-2 px-4 rounded-full"
+                          >
+                            Edit with Zyra
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
           </div>
 
+          {showToast && (
+            <Toast variant={toastVariant} onOpenChange={setShowToast}>
+              <ToastTitle>
+                {toastVariant === "destructive" ? "Error" : "Success"}
+              </ToastTitle>
+              <ToastDescription>{toastMessage}</ToastDescription>
+              <ToastClose />
+            </Toast>
+          )}
+
+          {showPropsDialog && (
+            <PropsDialog
+              isOpen={showPropsDialog}
+              onClose={() => setShowPropsDialog(false)}
+              title="Error"
+              description="An error occurred while submitting the tool data."
+              content={propsDialogContent}
+            />
+          )}
+
+          <ToastViewport />
         </div>
-
-        {showToast && (
-          <Toast variant={toastVariant} onOpenChange={setShowToast}>
-            <ToastTitle>
-              {toastVariant === "destructive" ? "Error" : "Success"}
-            </ToastTitle>
-            <ToastDescription>{toastMessage}</ToastDescription>
-            <ToastClose />
-          </Toast>
-        )}
-
-        {showPropsDialog && (
-          <PropsDialog
-            isOpen={showPropsDialog}
-            onClose={() => setShowPropsDialog(false)}
-            title="Error"
-            description="An error occurred while submitting the tool data."
-            content={propsDialogContent}
-          />
-        )}
-
-        <ToastViewport />
-      </div>
-    </ToastProvider>
+      </ToastProvider>
+    </div>
   );
 };
 

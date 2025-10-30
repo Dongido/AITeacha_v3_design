@@ -4,6 +4,7 @@ import { RootState, AppDispatch } from "../../store";
 import { loadTools, loadToolsCategory } from "../../store/slices/toolsSlice";
 import { Skeleton } from "../../components/ui/Skeleton";
 import { ArrowRightIcon } from "@heroicons/react/24/solid";
+import { IoSparklesSharp } from "react-icons/io5";
 import dashImg from "../../assets/img/0e846ab4-992d-48b3-a818-d62a7803bd8e 1.png";
 import { FaDraftingCompass, FaMagic, FaHeart } from "react-icons/fa";
 import { Link } from "react-router-dom";
@@ -36,7 +37,10 @@ import { Navigation, Pagination, Autoplay, A11y } from "swiper/modules";
 import { getNotification } from "../../store/slices/notificationsSlice";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
-import { checkProfileCompletion, checkInterestCompletion } from "../../api/checkCompletion";
+import {
+  checkProfileCompletion,
+  checkInterestCompletion,
+} from "../../api/checkCompletion";
 
 SwiperCore.use([Navigation, Pagination, Autoplay, A11y]);
 
@@ -81,32 +85,6 @@ const Home = () => {
     }
   }, [dispatch, tools.length]);
 
-
-  //  const profileComplete = true;   // ⬅️ set true or false
-  // const interestComplete = true;   // ⬅️ set true or false
-
-  // useEffect(() => {
-  //   const checkCompletion = () => {
-  //     if (!profileComplete) {
-  //       console.log("🧭 Redirecting to /complete-profile");
-  //       navigate("/complete-profile");
-  //       return;
-  //     }
-
-  //     if (!interestComplete) {
-  //       console.log("🧭 Redirecting to /interest");
-  //       navigate("/interest");
-  //       return;
-  //     }
-
-  //     console.log("✅ All checks passed — stay on dashboard");
-  //   };
-
-  //   checkCompletion();
-  // }, [navigate, profileComplete, interestComplete]);
-
-  
-    // 🧭 Check profile + interest completion after entering dashboard
   useEffect(() => {
     const checkCompletion = async () => {
       try {
@@ -119,24 +97,20 @@ const Home = () => {
         const profileComplete = await checkProfileCompletion(userId);
         const interestComplete = await checkInterestCompletion(userId);
 
-        
+        // if (!profileComplete) {
+        //   console.log("🧭 Redirecting to /auth/complete-profile");
+        //   navigate("/complete-profile");
+        //   return;
+        // }
 
-        if (!profileComplete) {
-          console.log("🧭 Redirecting to /auth/complete-profile");
-          navigate("/complete-profile");
+        const interestSkipped = sessionStorage.getItem("interestSkipped");
+
+        console.log(interestSkipped);
+        if (!interestComplete && !interestSkipped) {
+          console.log("🧭 Redirecting to /interest");
+          navigate("/interest");
           return;
         }
-
-         const interestSkipped = sessionStorage.getItem("interestSkipped");
-
-
-      console.log(interestSkipped)
-      if (!interestComplete && !interestSkipped) {
-        console.log("🧭 Redirecting to /interest");
-        navigate("/interest");
-        return;
-      }
-
       } catch (err) {
         console.error("Error checking completion:", err);
       }
@@ -144,7 +118,6 @@ const Home = () => {
 
     checkCompletion();
   }, [navigate]);
-
 
   useEffect(() => {
     const userDetailsFromStorage = localStorage.getItem("ai-teacha-user");
@@ -282,19 +255,6 @@ const Home = () => {
         </div>
       )}
 
-      {/* {userDetails && isEmailVerified === 1 && (
-        <div
-          className="bg-[#e5dbff] mt-3 mb-4 text-black p-4 rounded-md flex justify-center items-center"
-          style={{
-            background:
-              "linear-gradient(143.6deg, rgba(192, 132, 252, 0) 20.79%, rgba(232, 121, 249, 0.26) 40.92%, rgba(204, 171, 238, 0) 70.35%)",
-          }}
-        >
-          <span className="text-center text-xl font-bold">
-            Teachers Are 
-          </span>
-        </div>
-      )} */}
       {loading ? (
         <div className="space-y-4">
           <Skeleton className="h-64 w-full mx-auto rounded-lg" />
@@ -327,16 +287,8 @@ const Home = () => {
                 <Link to={"/dashboard/tools"}>
                   <button className="flex items-center bg-[#6200EE] text-white py-2 px-4 rounded-full text-sm">
                     View All tools
-                    {/* <ArrowRightIcon className="h-5 w-5 ml-2" /> */}
                   </button>
                 </Link>
-                {/* {showUpgradeLink && upgradeText && (
-                  <Link to={upgradeLink}>
-                    <button className="flex hover:bg-pink-200 items-center bg-purple-100 text-black font-semibold py-2 px-4 rounded-full text-sm">
-                      {upgradeText}
-                    </button>
-                  </Link>
-                )} */}
               </div>
             </div>
 
@@ -353,55 +305,52 @@ const Home = () => {
             />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-10">
-            {stats.map((s, i) => (
-              <div
-                key={i}
-                className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm text-left flex justify-between relative"
-              >
-                <div>
-                  <h3 className="text-3xl font-semibold text-[#C2C2C2] mb-1 text-left">
-                    {String(s.value).padStart(2, "0")}
-                  </h3>
-                  <p className="text-sm text-primary font-medium">{s.status}</p>
-                  <p className="text-black text-sm">{s.label}</p>
-                </div>
+          <section className="relative text-center mt-10 mb-10">
+            {/* Decorative background glow */}
+            <motion.h2 className="relative text-3xl md:text-4xl font-semibold text-[#6200EE] mb-4 inline-block bg-clip-text text-transparent bg-gradient-to-r from-[#6200EE] to-[#6200EE]">
+              <motion.span
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-[#EFE6FD] to-transparent"
+                animate={{ x: ["-100%", "100%"] }}
+                transition={{
+                  duration: 2.5,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+                style={{
+                  WebkitMaskImage:
+                    "linear-gradient(to right, transparent, black, transparent)",
+                  maskImage:
+                    "linear-gradient(to right, transparent, black, transparent)",
+                }}
+              />
+              Zyra is here to Assist you!
+            </motion.h2>
 
-                <div className="">
-                  <a
-                    href={s.link}
-                    className="bg-[#6200EE] rounded-full px-5 py-2 text-white absolute bottom-5 right-5 text-sm"
-                  >
-                    Click here
-                  </a>
-                </div>
-              </div>
-            ))}
-          </div>
+            {/* <p className="text-[#3B3A3A] max-w-xl mx-auto mb-8">
+              Zyra is here to assist you with educational tasks, provide
+              resources, and answer your questions.
+            </p> */}
 
-          {/* <div className="mt-8 flex justify-center">
-            <div className="flex gap-4 overflow-x-auto">
-              <Link to={"/dashboard/history"}>
-                <button className="flex items-center gap-2 bg-purple-200 text-purple-800 rounded-full py-2 px-4 whitespace-nowrap">
-                  <FaMagic className="h-5 w-5" />
-                  History
-                </button>
-              </Link>
-              <Link to={"/dashboard/chats"}>
-                <button className="flex items-center gap-2 bg-blue-200 text-blue-800 rounded-full py-2 px-4 whitespace-nowrap">
-                  <FaDraftingCompass className="h-5 w-5" />
-                  Chatbot
-                </button>
-              </Link>
-              <Link to={"/dashboard/classrooms"}>
-                <button className="flex items-center gap-2 bg-primary text-white rounded-full py-2 px-4 whitespace-nowrap">
-                  {" "}
-                  <BiImageAdd className="h-5 w-5" />
-                  Classrooms
-                </button>
-              </Link>
-            </div>
-          </div> */}
+            {/* CTA Button with Subtle Pulse */}
+            <motion.button
+              className="relative bg-[#6200EE] hover:bg-[#5200cc] text-white px-8 py-4 rounded-full flex items-center justify-center gap-2 mx-auto shadow-lg hover:shadow-xl transition-all"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => navigate("/dashboard/chats")}
+            >
+              <motion.span
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent rounded-full"
+                animate={{ x: ["-100%", "100%"] }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              />
+              ✨ Chat with Zyra
+            </motion.button>
+          </section>
+
           <div className="mt-8 overflow-x-auto">
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-bold text-gray-900 mb-4 px-2">
@@ -416,30 +365,6 @@ const Home = () => {
                   View all tools
                 </Link>
               </div>
-              {/* <div className="mb-4">
-                <Select
-                  value={selectedCategory || "all"}
-                  onValueChange={handleCategoryChange}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="All Categories" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Categories</SelectItem>
-                    {categoryLoading ? (
-                      <SelectItem value="loading" disabled>
-                        Loading...
-                      </SelectItem>
-                    ) : (
-                      categories.map((category) => (
-                        <SelectItem key={category.id} value={category.id}>
-                          {category.title}
-                        </SelectItem>
-                      ))
-                    )}
-                  </SelectContent>
-                </Select>
-              </div> */}
             </div>
             {popularTools.length > 0 && (
               <div className="mb-8 bg-white p-6 rounded-xl">
@@ -449,10 +374,6 @@ const Home = () => {
                       onClick={() => handleExternalNavigation(tool)}
                       key={tool.id}
                       className="flex flex-col justify-left items-left border border-gray-300 pl-4 py-3 rounded-xl bg-[#EFE6FD] hover:bg-gray-50 cursor-pointer transition duration-500 ease-in-out transform hover:scale-105"
-                      // style={{
-                      //   background: "rgba(232, 121, 249, 0.15)",
-                      //   transition: "background 0.3s ease",
-                      // }}
                     >
                       <div className="text-primary text-2xl mr-4">
                         {tool.thumbnail ? (
@@ -466,7 +387,7 @@ const Home = () => {
                             className="w-full h-32 object-cover rounded-lg"
                           />
                         ) : (
-                          <FaHeart className="text-purple-500 w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center" />
+                          <FaHeart className="text-[#6200EE] w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center" />
                         )}
                       </div>
 
@@ -491,60 +412,6 @@ const Home = () => {
                 </div>
               </div>
             )}
-            {/* <div className="flex justify-between items-center mb-4 px-2">
-              <h2 className="text-xl font-bold text-gray-900">All Tools</h2>
-              <Link
-                to="/dashboard/tools"
-                className="text-sm text-blue-600 hover:underline"
-              >
-                <button className="text-sm flex text-[#6200EE] font-semibold">
-                  See All Tools
-                  <ArrowRightIcon className="h-5 w-4 ml-2" />
-                </button>
-              </Link>
-            </div> */}
-
-            {/* <motion.div
-              className="flex gap-4"
-              whileTap={{ cursor: "grabbing" }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            >
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 text-center mx-auto">
-                {otherTools.slice(0, 15).map((tool) => (
-                  <div
-                    onClick={() => handleExternalNavigation(tool)}
-                    key={tool.id}
-                    className="flex flex-col items-left border border-gray-300 px-4 py-3 rounded-3xl bg-white hover:bg-gray-50 cursor-pointer transition duration-500 ease-in-out transform hover:scale-105"
-                  >
-                    <div className="text-primary text-2xl mr-4">
-                      {tool.thumbnail ? (
-                        <img
-                          src={
-                            tool.thumbnail.startsWith("http")
-                              ? tool.thumbnail
-                              : `https://${tool.thumbnail}`
-                          }
-                          alt={tool.name || "Tool Thumbnail"}
-                          className="w-16 h-16 object-cover rounded-lg"
-                        />
-                      ) : (
-                        <FaHeart className="text-purple-500 w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center" />
-                      )}
-                    </div>
-
-                    <div className="text-left mt-2">
-                      <h3 className="text-base capitalize font-semibold text-black">
-                        {tool.name === "math calculator" ? "Solver" : tool.name}
-                      </h3>
-                      <p className="text-[#7C7B7B] text-sm">
-                        {tool.description.charAt(0).toUpperCase() +
-                          tool.description.slice(1)}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </motion.div> */}
           </div>
         </div>
       )}
