@@ -46,7 +46,6 @@ import AuthCallback from "./pages/Dashboard/live-class/AuthCallback";
 import CreateLiveClass from "./pages/Dashboard/live-class/CreateLiveClass";
 import ExamPage from "./pages/Dashboard/test/TestPage";
 import Interest from "./pages/Auth/Interes";
-// import { CompleteProfileForm } from "./pages/Auth/components/complete-profile-form";
 import CompleteProfile from "./pages/Auth/CompleteProfile";
 import CompleteProfileStudent from "./pages/Auth/CompleteProfileStudent";
 import StudentInterest from "./pages/Auth/StudentInterest";
@@ -142,14 +141,7 @@ function App() {
           <Route path="/class/*" element={<PaidLayout />} />
           <Route path="/student/classrooms/outlines" element={<Outline />} />
           <Route path="/dashboard/result/resultdetails" element={<ResultDetails />} />
-          {/* <Route
-            path="/class/class-details/:classId/tools/:toolName"
-            element={<ToolchatPage />}
-          /> */}
         </Route>
-
-  
-       
 
         <Route element={<PublicRoute />}>
           <Route path="/auth/*" element={<Auth />} />

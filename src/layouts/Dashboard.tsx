@@ -82,7 +82,11 @@ export function Dashboard() {
 
       {/* --- MAIN CONTENT --- */}
       <div
-        className={`flex-1 overflow-hidden p-4  transition-all duration-300 ease-in-out
+
+        // className={`flex-1 overflow-hidden p-4  transition-all duration-300 ease-in-out
+
+        className={`flex-1 pl-4 pr-4 pt-4 transition-all duration-300 ease-in-out
+
           ${
             openSidenav
               ? collapsed

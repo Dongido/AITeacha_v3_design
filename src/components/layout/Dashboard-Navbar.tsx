@@ -31,6 +31,7 @@ import {
   loadProfileImage,
   resetProfileState,
 } from "../../store/slices/profileSlice";
+import { AiOutlineMessage } from "react-icons/ai";
 import { FiMessageCircle } from "react-icons/fi";
 import { useAppSelector } from "../../store/hooks";
 import { getCount } from "../../store/slices/staffchats";
@@ -112,7 +113,7 @@ export function DashboardNavbar() {
                   to="/dashboard/participant/chat"
                   className="hidden lg:flex relative items-center gap-2 rounded-full px-3 py-1 transition cursor-pointer"
                 >
-                  <FaRocketchat className="font-medium text-purple-400 text-lg" />
+                  <AiOutlineMessage className="font-medium text-lg" />
                   {messageCount.length > 0 && (
                     <span
                       className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px]
@@ -176,26 +177,6 @@ export function DashboardNavbar() {
                 </TooltipContent>
               </Tooltip>
 
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Link
-                    to="/dashboard/profile"
-                    className="flex relative items-center gap-[1px] px-1 py-1 transition cursor-pointer"
-                  >
-                    <img
-                      src={imageURL}
-                      alt="Profile"
-                      className="h-8 w-8 rounded-full object-cover border border-gray-300"
-                    />
-                  </Link>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p className="font-extrabold text-md capitalize">
-                    View profile
-                  </p>
-                </TooltipContent>
-              </Tooltip>
-
               <Dialog>
                 <DialogTrigger asChild>
                   <span className="flex items-center">
@@ -233,6 +214,26 @@ export function DashboardNavbar() {
                 <TooltipContent>
                   <p className="font-extrabold text-md capitalize">
                     Open settings
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
+                    to="/dashboard/profile"
+                    className="flex relative items-center gap-[1px] px-1 py-1 transition cursor-pointer"
+                  >
+                    <img
+                      src={imageURL}
+                      alt="Profile"
+                      className="h-8 w-8 rounded-full object-cover border border-gray-300"
+                    />
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="font-extrabold text-md capitalize">
+                    View profile
                   </p>
                 </TooltipContent>
               </Tooltip>
