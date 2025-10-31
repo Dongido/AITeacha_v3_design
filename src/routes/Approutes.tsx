@@ -195,12 +195,12 @@ export const routes = [
         path: "/test",
         element: <TestPage />,
       },
-      {
-        icon: <BellIcon {...icon} />,
-        name: "notifications",
-        path: "/notifications",
-        element: <Notifications />,
-      },
+      // {
+      //   icon: <BellIcon {...icon} />,
+      //   name: "notifications",
+      //   path: "/notifications",
+      //   element: <Notifications />,
+      // },
 
       {
         icon: <GlobeAltIcon {...icon} />,
@@ -370,12 +370,12 @@ export const routes = [
         element: <HeroesWallAdmin />,
         adminOnly: true,
       },
-      {
-        icon: <FaRocketchat {...icon} />,
-        name: "Messages",
-        path: "/participant/chat",
-        element: <ChatListPage />,
-      },
+      // {
+      //   icon: <FaRocketchat {...icon} />,
+      //   name: "Messages",
+      //   path: "/participant/chat",
+      //   element: <ChatListPage />,
+      // },
     ],
   },
 ];
