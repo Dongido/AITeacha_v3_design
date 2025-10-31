@@ -104,11 +104,11 @@ const Home = () => {
         // }
 
 
-        if (!profileComplete) {
-          console.log("🧭 Redirecting to /auth/complete-profile");
-          navigate("/complete-profile");
-          return;
-        }
+        // if (!profileComplete) {
+        //   console.log("🧭 Redirecting to /auth/complete-profile");
+        //   navigate("/complete-profile");
+        //   return;
+        // }
 
         //  const interestSkipped = sessionStorage.getItem("interestSkipped");
 
