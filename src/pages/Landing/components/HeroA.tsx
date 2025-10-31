@@ -298,7 +298,7 @@ export default () => {
 
               {/* CTA Button */}
               <a
-                href="#"
+                href="/auth/login"
                 className="w-full border border-white py-3 rounded-full hover:bg-white hover:text-[#3D007A] 
                          transition-colors duration-300 font-medium px-8 text-center inline-block mt-auto"
               >

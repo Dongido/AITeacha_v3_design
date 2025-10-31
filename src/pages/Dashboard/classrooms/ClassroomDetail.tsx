@@ -105,7 +105,7 @@ const ClassroomDetail = () => {
           <button
             // variant={"danger"}
             onClick={openDeleteDialog}
-            className="flex items-center gap-2 rounded-full px-6 py-2 border text-black"
+            className="flex items-center gap-2 rounded-full px-6 py-2 border border-black text-black"
           >
             Delete Classroom
           </button>
@@ -127,10 +127,10 @@ const ClassroomDetail = () => {
         <div className="border rounded-lg">
           {/* Top Card */}
           <div className="bg-[#EFE6FD] text-black p-4 lg:p-8 rounded-lg overflow-hidden">
-            <h2 className="text-2xl font-bold mt-2">
+            <h2 className="text-2xl font-semibold mt-2 capitalize">
               {classroom?.classroom_name}
             </h2>
-            <p className="text-sm mt-1">
+            <p className="text-sm mt-1 capitalize">
               {classroom?.classroom_description
                 ? classroom.classroom_description.length > 270
                   ? `${classroom.classroom_description.slice(0, 270)}...`
@@ -150,18 +150,6 @@ const ClassroomDetail = () => {
                   Go to Live Class
                   <ArrowRightIcon className="ml-2 w-3 h-3" />
                 </button>
-
-                {/* <button
-                  onClick={() =>
-                    navigate(
-                      `/dashboard/classrooms/${classroom?.classroom_id}/students`
-                    )
-                  }
-                  className="w-full sm:w-auto flex items-center justify-center border border-[#6200EE] text-[#6200EE] font-medium py-2 px-4 rounded-full text-sm"
-                >
-                  View Students
-                  <ArrowRightIcon className="ml-2 w-3 h-3" />
-                </button> */}
 
                 <button
                   onClick={() =>
@@ -199,16 +187,25 @@ const ClassroomDetail = () => {
           </div>
 
           {/* Tools Section */}
-          <div className="flex justify-between items-center mt-10 mb-3 px-2">
-            <h3 className="font-semibold text-lg">Tools</h3>
-            <button
-              // variant={"gray"}
-              onClick={handleEditTools}
-              className="flex items-center gap-2 rounded-full bg-black text-white px-6 py-2"
-            >
-              <Edit />
-              Edit
-            </button>
+          <div className="flex justify-between items-center mt-10 mb-3 p-4 bg-white rounded-2xl">
+            <div>
+              <h3 className="font-semibold text-lg">Course Introduction</h3>
+              <p className="text-sm">
+                Manage and add extra details such as polls, quiz, videos and
+                more
+              </p>
+            </div>
+
+            <div>
+              <button
+                // variant={"gray"}
+                onClick={handleEditTools}
+                className="flex items-center gap-2 rounded-full bg-black text-white px-6 py-2"
+              >
+                <Edit />
+                Edit
+              </button>
+            </div>
           </div>
 
           {classroom?.tools && classroom.tools.length > 0 ? (
