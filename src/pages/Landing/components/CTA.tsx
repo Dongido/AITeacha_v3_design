@@ -137,7 +137,7 @@ const FooterCard = () => {
 
       <div className="flex-shrink-0 flex justify-center md:justify-end md:ml-8 mt-4 md:mt-0">
         <a
-          href="/auth/onboarding"
+          href="/auth/login"
           aria-label="Get started for free"
           className="inline-block bg-white text-black px-6 py-3 sm:px-8 sm:py-4 rounded-full text-lg sm:text-xl shadow-sm"
         >
