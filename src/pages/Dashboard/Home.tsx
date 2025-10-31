@@ -103,6 +103,24 @@ const Home = () => {
         //   return;
         // }
 
+
+        if (!profileComplete) {
+          console.log("🧭 Redirecting to /auth/complete-profile");
+          navigate("/complete-profile");
+          return;
+        }
+
+        //  const interestSkipped = sessionStorage.getItem("interestSkipped");
+
+
+      // console.log(interestSkipped)
+      // if (!interestComplete && !interestSkipped) {
+      //   console.log("🧭 Redirecting to /interest");
+      //   navigate("/interest");
+      //   return;
+      // }
+
+
         const interestSkipped = sessionStorage.getItem("interestSkipped");
 
         console.log(interestSkipped);

@@ -196,7 +196,7 @@ const Team = () => {
 
   return (
     <ToastProvider>
-      <div className="p-3 md:p-[30px]">
+      <div className="p-0 md:p-[30px]  lg:w-[80vw] w-[90vw]">
         {/* {userDetails && isEmailVerified === 1 && (
           <div
             className="bg-[#e5dbff] mt-3 mb-4 text-black p-4 rounded-md flex justify-center items-center"

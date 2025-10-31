@@ -14,6 +14,7 @@ import {
   DialogDescription,
   DialogClose,
 } from "../../components/ui/Dialogue";
+import { AiOutlinePlus } from "react-icons/ai";
 import { Skeleton } from "../../components/ui/Skeleton";
 import { Input } from "../../components/ui/Input";
 import { Button } from "../../components/ui/Button";
@@ -253,265 +254,270 @@ const BankAccountsPage = () => {
 
   return (
     <ToastProvider>
-      <div>
-        <h1>Bank Accounts</h1>
+      <div className="p-0 md:p-[30px]">
+        <div className="flex items-center justify-between mb-[20px] gap-5">
+          <h1 className="text-xl font-semibold m-0">Bank Accounts</h1>
 
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button
-              className="rounded-full"
-              variant={"gradient"}
-              onClick={handleOpenAddAccountDialog}
-            >
-              Add New Bank Account
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogTitle>
-              {selectedAccountId ? "Update" : "Add"} Bank Account
-            </DialogTitle>
-            <DialogDescription>
-              {selectedAccountId
-                ? "Update your bank account details."
-                : "Enter new bank account details."}
-            </DialogDescription>
-
-            <Select
-              value={newAccount.countryCode}
-              onValueChange={(value) => {
-                setNewAccount({
-                  ...newAccount,
-                  countryCode: value,
-                  bankCode: "",
-                  bankId: "",
-                  bankName: "",
-                  accountName: "",
-                  accountNumber: "",
-                });
-                setVerifiedAccountName(null);
-                setVerificationError(null);
-              }}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select Country" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="placeholder-country" disabled>
-                  Select Country
-                </SelectItem>
-                {countries.map((country) => (
-                  <SelectItem key={country.isoCode} value={country.isoCode}>
-                    {country.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Select
-              value={newAccount.bankCode}
-              onValueChange={(value) => {
-                const selectedBank = availableBanks.find(
-                  (bank) => bank.code === value
-                );
-                setNewAccount({
-                  ...newAccount,
-                  bankCode: value,
-                  bankId: selectedBank ? selectedBank.id : "",
-                  bankName: selectedBank ? selectedBank.name : "",
-                  accountName: "",
-                  accountNumber: "",
-                });
-                setVerifiedAccountName(null);
-                setVerificationError(null);
-              }}
-              disabled={!newAccount.countryCode || isFetchingBanks}
-            >
-              <SelectTrigger disabled={isFetchingBanks}>
-                {isFetchingBanks ? (
-                  <div className="flex items-center">
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading
-                    banks...
-                  </div>
-                ) : (
-                  <SelectValue placeholder="Select Bank" />
-                )}
-              </SelectTrigger>
-              <SelectContent>
-                {isFetchingBanks ? (
-                  <SelectItem value="loading-banks" disabled>
-                    <div className="flex items-center">
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading
-                      banks...
-                    </div>
-                  </SelectItem>
-                ) : availableBanks.length > 0 ? (
-                  <>
-                    <SelectItem value="placeholder-bank" disabled>
-                      Select Bank
-                    </SelectItem>
-                    {availableBanks.map((bank) => (
-                      <SelectItem key={bank.code} value={bank.code}>
-                        {bank.name}
-                      </SelectItem>
-                    ))}
-                  </>
-                ) : (
-                  <SelectItem value="no-banks" disabled>
-                    No banks available for selected country
-                  </SelectItem>
-                )}
-              </SelectContent>
-            </Select>
-            <Input
-              type="text"
-              placeholder="Account Number"
-              value={newAccount.accountNumber}
-              onChange={(e) => {
-                setNewAccount({ ...newAccount, accountNumber: e.target.value });
-                setVerifiedAccountName(null);
-                setVerificationError(null);
-              }}
-              disabled={!newAccount.bankCode || isFetchingBanks}
-            />
-            {isVerifyingAccount && (
-              <p className="text-sm text-gray-500 flex items-center">
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Verifying
-                account...
-              </p>
-            )}
-            {verificationError && (
-              <p className="text-sm text-red-500">{verificationError}</p>
-            )}
-            {/* {verifiedAccountName && (
-              <Input
-                type="text"
-                placeholder="Verified Account Name"
-                value={verifiedAccountName}
-                readOnly
-                className="mt-2 bg-gray-100"
-              />
-            )} */}
-
-            <Input
-              type="text"
-              placeholder="Account Name (Auto-filled)"
-              value={newAccount.accountName}
-              readOnly
-              className="bg-gray-100"
-            />
-
-            <Input
-              type="text"
-              placeholder="Bank Branch"
-              value={newAccount.bankBranch}
-              onChange={(e) =>
-                setNewAccount({ ...newAccount, bankBranch: e.target.value })
-              }
-            />
-
-            <Select
-              value={newAccount.currency}
-              onValueChange={(value) =>
-                setNewAccount({ ...newAccount, currency: value })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select Currency" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="placeholder-currency" disabled>
-                  Select Currency
-                </SelectItem>
-                <SelectItem value="NGN">NGN - Nigerian Naira</SelectItem>
-                <SelectItem value="USD">USD - United States Dollar</SelectItem>
-                <SelectItem value="GBP">
-                  GBP - British Pound Sterling
-                </SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Button
-              onClick={handleSaveAccount}
-              className="rounded-md"
-              variant={"gradient"}
-              disabled={
-                isSaving ||
-                isVerifyingAccount ||
-                isFetchingBanks ||
-                !newAccount.accountName ||
-                !newAccount.currency ||
-                !newAccount.bankCode ||
-                !newAccount.accountNumber
-              }
-            >
-              {isSaving ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Saving...
-                </>
-              ) : selectedAccountId ? (
-                "Update Account"
-              ) : (
-                "Add Account"
-              )}
-            </Button>
-            <DialogClose asChild>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
               <Button
-                variant={"destructive"}
-                className="rounded-md w-full"
-                onClick={() => {
-                  setIsDialogOpen(false);
-                  setSelectedAccountId(null);
+                className="rounded-full flex gap-2 items-center"
+                variant={"gradient"}
+                onClick={handleOpenAddAccountDialog}
+              >
+                <AiOutlinePlus size={20}/>
+                Add New Bank Account
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogTitle>
+                {selectedAccountId ? "Update" : "Add"} Bank Account
+              </DialogTitle>
+              <DialogDescription>
+                {selectedAccountId
+                  ? "Update your bank account details."
+                  : "Enter new bank account details."}
+              </DialogDescription>
+
+              <Select
+                value={newAccount.countryCode}
+                onValueChange={(value) => {
                   setNewAccount({
-                    accountNumber: "",
-                    bankName: "",
-                    accountName: "",
-                    bankBranch: "",
-                    countryCode: "",
+                    ...newAccount,
+                    countryCode: value,
                     bankCode: "",
                     bankId: "",
-                    currency: "",
+                    bankName: "",
+                    accountName: "",
+                    accountNumber: "",
                   });
                   setVerifiedAccountName(null);
                   setVerificationError(null);
                 }}
               >
-                Close
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Country" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="placeholder-country" disabled>
+                    Select Country
+                  </SelectItem>
+                  {countries.map((country) => (
+                    <SelectItem key={country.isoCode} value={country.isoCode}>
+                      {country.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Select
+                value={newAccount.bankCode}
+                onValueChange={(value) => {
+                  const selectedBank = availableBanks.find(
+                    (bank) => bank.code === value
+                  );
+                  setNewAccount({
+                    ...newAccount,
+                    bankCode: value,
+                    bankId: selectedBank ? selectedBank.id : "",
+                    bankName: selectedBank ? selectedBank.name : "",
+                    accountName: "",
+                    accountNumber: "",
+                  });
+                  setVerifiedAccountName(null);
+                  setVerificationError(null);
+                }}
+                disabled={!newAccount.countryCode || isFetchingBanks}
+              >
+                <SelectTrigger disabled={isFetchingBanks}>
+                  {isFetchingBanks ? (
+                    <div className="flex items-center">
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading
+                      banks...
+                    </div>
+                  ) : (
+                    <SelectValue placeholder="Select Bank" />
+                  )}
+                </SelectTrigger>
+                <SelectContent>
+                  {isFetchingBanks ? (
+                    <SelectItem value="loading-banks" disabled>
+                      <div className="flex items-center">
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading
+                        banks...
+                      </div>
+                    </SelectItem>
+                  ) : availableBanks.length > 0 ? (
+                    <>
+                      <SelectItem value="placeholder-bank" disabled>
+                        Select Bank
+                      </SelectItem>
+                      {availableBanks.map((bank) => (
+                        <SelectItem key={bank.code} value={bank.code}>
+                          {bank.name}
+                        </SelectItem>
+                      ))}
+                    </>
+                  ) : (
+                    <SelectItem value="no-banks" disabled>
+                      No banks available for selected country
+                    </SelectItem>
+                  )}
+                </SelectContent>
+              </Select>
+              <Input
+                type="text"
+                className="rounded-full"
+                placeholder="Account Number"
+                value={newAccount.accountNumber}
+                onChange={(e) => {
+                  setNewAccount({ ...newAccount, accountNumber: e.target.value });
+                  setVerifiedAccountName(null);
+                  setVerificationError(null);
+                }}
+                disabled={!newAccount.bankCode || isFetchingBanks}
+              />
+              {isVerifyingAccount && (
+                <p className="text-sm text-gray-500 flex items-center">
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Verifying
+                  account...
+                </p>
+              )}
+              {verificationError && (
+                <p className="text-sm text-red-500">{verificationError}</p>
+              )}
+              {/* {verifiedAccountName && (
+                <Input
+                  type="text"
+                  placeholder="Verified Account Name"
+                  value={verifiedAccountName}
+                  readOnly
+                  className="mt-2 bg-gray-100"
+                />
+              )} */}
+
+              <Input
+                type="text"
+                placeholder="Account Name (Auto-filled)"
+                value={newAccount.accountName}
+                readOnly
+                className="bg-gray-100 rounded-full"
+              />
+
+              <Input
+                type="text"
+                placeholder="Bank Branch"
+                className="rounded-full"
+                value={newAccount.bankBranch}
+                onChange={(e) =>
+                  setNewAccount({ ...newAccount, bankBranch: e.target.value })
+                }
+              />
+
+              <Select
+                value={newAccount.currency}
+                onValueChange={(value) =>
+                  setNewAccount({ ...newAccount, currency: value })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Currency" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="placeholder-currency" disabled>
+                    Select Currency
+                  </SelectItem>
+                  <SelectItem value="NGN">NGN - Nigerian Naira</SelectItem>
+                  <SelectItem value="USD">USD - United States Dollar</SelectItem>
+                  <SelectItem value="GBP">
+                    GBP - British Pound Sterling
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Button
+                onClick={handleSaveAccount}
+                className="rounded-full"
+                variant={"gradient"}
+                disabled={
+                  isSaving ||
+                  isVerifyingAccount ||
+                  isFetchingBanks ||
+                  !newAccount.accountName ||
+                  !newAccount.currency ||
+                  !newAccount.bankCode ||
+                  !newAccount.accountNumber
+                }
+              >
+                {isSaving ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Saving...
+                  </>
+                ) : selectedAccountId ? (
+                  "Update Account"
+                ) : (
+                  "Add Account"
+                )}
               </Button>
-            </DialogClose>
-          </DialogContent>
-        </Dialog>
-        <div className="overflow-x-auto my-4">
-          <table className="min-w-full border border-gray-300 shadow-md py-6 rounded-full">
-            <thead className="bg-gray-100">
+              <DialogClose asChild>
+                <Button
+                  variant={"destructive"}
+                  className="rounded-full w-full"
+                  onClick={() => {
+                    setIsDialogOpen(false);
+                    setSelectedAccountId(null);
+                    setNewAccount({
+                      accountNumber: "",
+                      bankName: "",
+                      accountName: "",
+                      bankBranch: "",
+                      countryCode: "",
+                      bankCode: "",
+                      bankId: "",
+                      currency: "",
+                    });
+                    setVerifiedAccountName(null);
+                    setVerificationError(null);
+                  }}
+                >
+                  Close
+                </Button>
+              </DialogClose>
+            </DialogContent>
+          </Dialog>
+        </div>
+        <div className="overflow-x-auto my-4 mt-[30px]">
+          <table className="min-w-full rounded-3xl border bg-white border-gray-300 shadow-md py-6">
+            <thead className="border-b">
               <tr>
-                <th className="border px-4 py-2">Bank Name</th>
-                <th className="border px-4 py-2">Account Number</th>
-                <th className="border px-4 py-2">Account Name</th>
-                <th className="border px-4 py-2">Bank Branch</th>
-                <th className="border px-4 py-2">Country</th>
-                <th className="border px-4 py-2">Currency</th>
-                <th className="border px-4 py-2">Actions</th>
+                <th className=" px-4 py-2">Bank Name</th>
+                <th className=" px-4 py-2">Account Number</th>
+                <th className=" px-4 py-2">Account Name</th>
+                <th className=" px-4 py-2">Bank Branch</th>
+                <th className=" px-4 py-2">Country</th>
+                <th className=" px-4 py-2">Currency</th>
+                <th className=" px-4 py-2">Actions</th>
               </tr>
             </thead>
 
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y">
               {accounts.map((account, index) => (
                 <tr
                   key={account.id}
-                  className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
+                  className={index % 2 === 0 ? "bg-white" : "bg-white"}
                 >
-                  <td className="border px-4 py-2">{account.bank_name}</td>
-                  <td className="border px-4 py-2">{account.account_number}</td>
-                  <td className="border px-4 py-2">{account.account_name}</td>
-                  <td className="border px-4 py-2">{account.bank_branch}</td>
-                  <td className="border px-4 py-2">
+                  <td className=" px-4 py-2">{account.bank_name}</td>
+                  <td className=" px-4 py-2">{account.account_number}</td>
+                  <td className=" px-4 py-2">{account.account_name}</td>
+                  <td className=" px-4 py-2">{account.bank_branch}</td>
+                  <td className=" px-4 py-2">
                     {account.country_code || "N/A"}
                   </td>
-                  <td className="border px-4 py-2">
+                  <td className=" px-4 py-2">
                     {account.currency || "N/A"}
                   </td>
-                  <td className="border px-4 py-2">
+                  <td className=" px-4 py-2">
                     <Dialog
                       open={selectedAccountId === account.id}
                       onOpenChange={(open) => {
@@ -539,7 +545,7 @@ const BankAccountsPage = () => {
                       >
                         <Button
                           variant={"outlined"}
-                          className="bg-gray-200 border border-gray-500 rounded-full"
+                          className=" border border-gray-500 rounded-full"
                         >
                           Update
                         </Button>

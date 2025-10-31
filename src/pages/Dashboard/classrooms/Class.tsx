@@ -213,7 +213,7 @@ const Classrooms = () => {
   }
 
   return (
-    <div className="mt-4 routes-scroll-area lg:w-[80vw] w-[90vw]">
+    <div className="mt-4 routes-scroll-area ">
       {/* {userDetails && isEmailVerified === 1 && (
         <div
           className="bg-[#e5dbff] mt-3 mb-4 text-black p-4 rounded-md flex justify-center items-center"

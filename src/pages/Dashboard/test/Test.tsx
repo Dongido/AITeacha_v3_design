@@ -11,8 +11,11 @@ import {
   selectSelectedTestType,
   SelectedTestType,
 } from "../../../store/slices/uiSlice";
+
+import JoinTestDialog from "./components/JoinTestDialog";
 import { AppDispatch } from "../../../store";
 import { testColumns } from "./components/column.test";
+import { testColumns as studentColumn } from "./student/_components/column.test";
 import BaseTable from "../../../components/table/BaseTable";
 import { Skeleton } from "../../../components/ui/Skeleton";
 import { Button } from "../../../components/ui/Button";
@@ -21,14 +24,18 @@ import { Plus, ClipboardList, PenBox } from "lucide-react";
 import clsx from "clsx";
 import RestrictedPage from "./RestrictedPage";
 import { Input } from "../../../components/ui/Input";
-import { fetchStudentExaminations, selectStudentExaminations } from "../../../store/slices/studentTestsSlice";
+import {
+  fetchStudentExaminations,
+  selectStudentExaminations,
+} from "../../../store/slices/studentTestsSlice";
 const TestPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
 
+  const joinTestDialogRef = useRef<{ openDialog: () => void }>(null);
   const selectedType = useSelector(selectSelectedTestType);
-  
+
   const examinations = useSelector(selectStudentExaminations);
   const tests = useSelector(selectTests);
   const loading = useSelector(selectTestsLoading);
@@ -38,8 +45,7 @@ const TestPage: React.FC = () => {
   const handleVerifyEmail = () => {
     console.log("Verify email clicked");
   };
-    const fetched = useRef(false);
-
+  const fetched = useRef(false);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -62,42 +68,41 @@ const TestPage: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    if (!fetched.current) {
+      dispatch(fetchStudentExaminations());
+      fetched.current = true;
+    }
+  }, [dispatch]);
 
-   useEffect(() => {
-      if (!fetched.current) {
-        dispatch(fetchStudentExaminations());
-        fetched.current = true;
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      if (selectedType) {
+        localStorage.setItem("selectedTestType", selectedType);
+        dispatch(fetchTests());
       }
-    }, [dispatch]);
-  
-   useEffect(() => {
-       if (typeof window !== "undefined") {
-         if (selectedType) {
-           localStorage.setItem("selectedTestType", selectedType);
-           dispatch(fetchTests());
-         }
-       }
-     }, [dispatch, selectedType]);
+    }
+  }, [dispatch, selectedType]);
 
-  
-    const [activeTab, setActiveTab] = useState<"created" | "joined">("created");
-
+  const [activeTab, setActiveTab] = useState<"created" | "joined">("created");
 
   // Filter data safely
-const filteredTests = React.useMemo(() => {
-  if (!tests) return [];
-  if (!searchTerm.trim()) return tests;
+  const filteredTests = React.useMemo(() => {
+    if (!tests) return [];
+    if (!searchTerm.trim()) return tests;
 
-  const term = searchTerm.toLowerCase();
-  return tests.filter((item: any) => {
-    const values = Object.values(item)
-      .filter((v) => typeof v === "string")
-      .map((v) => v.toLowerCase());
-    return values.some((v) => v.includes(term));
-  });
-}, [tests, searchTerm]);
+    const term = searchTerm.toLowerCase();
+    return tests.filter((item: any) => {
+      const values = Object.values(item)
+        .filter((v) => typeof v === "string")
+        .map((v) => v.toLowerCase());
+      return values.some((v) => v.includes(term));
+    });
+  }, [tests, searchTerm]);
 
-
+  const handleJoinClick = () => {
+    joinTestDialogRef.current?.openDialog();
+  };
 
   if (error === "Permission restricted for unverified email") {
     return (
@@ -193,16 +198,15 @@ const filteredTests = React.useMemo(() => {
   }
 
   return (
-    <div className="p-2 md:p-[30px] animate-fade-in">
-
-
+    <div className="p-0 md:p-[30px]  animate-fade-in">
       <div>
         <h2 className="text-lg font-bold m-0">Test & Exams</h2>
-        <p className="text-sm text-gray-800 m-0">Manage all your tests & exams</p>
+        <p className="text-sm text-gray-800 m-0">
+          Manage all your tests & exams
+        </p>
       </div>
 
-
-       {/* Test / Exam toggle */}
+      {/* Test / Exam toggle */}
       <div className="flex items-center gap-3 mt-[40px]">
         <button
           onClick={() => dispatch(setSelectedTestType("test"))}
@@ -226,35 +230,36 @@ const filteredTests = React.useMemo(() => {
         </button>
       </div>
 
-      
 
 
 
-         <div className="flex border-b-2 my-[30px] border-gray-300">
-        <Button
-          variant="ghost"
-          onClick={() => setActiveTab("created")}
-          className={`flex items-center w-full sm:w-fit h-full gap-3  transition font-semibold ${
-            activeTab === "created"
-              ? "border-b-2 border-purple-900 text-purple-900"
-              : "text-gray-600"
-          }`}
-        >
-          Created 
-        </Button>
-      
-        <Button
-          variant="ghost"
-          onClick={() => setActiveTab("joined")}
-          className={`flex items-center w-full sm:w-fit h-full gap-3  transition font-semibold ${
-            activeTab === "joined"
-              ? "border-b-2 border-purple-900 text-purple-900"
-              : "text-gray-600"
-          }`}
-        >
-          Joined
-        </Button>
-      </div>
+ <div className="flex border-b-2 my-[30px] border-gray-300">
+  <Button
+    variant="ghost"
+    onClick={() => setActiveTab("created")}
+    className={`flex items-center w-full sm:w-fit h-full gap-3  transition font-semibold ${
+      activeTab === "created"
+        ? "border-b-2 border-purple-900 text-purple-900"
+        : "text-gray-600"
+    }`}
+  >
+    Created
+  </Button>
+
+  <Button
+    variant="ghost"
+    onClick={() => setActiveTab("joined")}
+    className={`flex items-center w-full sm:w-fit h-full gap-3  transition font-semibold ${
+      activeTab === "joined"
+        ? "border-b-2 border-purple-900 text-purple-900"
+        : "text-gray-600"
+    }`}
+  >
+    Joined
+  </Button>
+</div>
+
+
 
 
 
@@ -287,9 +292,8 @@ const filteredTests = React.useMemo(() => {
 
       {!loading && !error && (
         <div className="bg-white p-4 rounded-3xl">
-
-          <div className="flex items-center flex-wrap justify-between gap-3 my-5">
-           <Input
+          <div className="flex  items-center flex-wrap justify-between gap-3 my-5">
+            <Input
               type="text"
               placeholder={
                 selectedType === "exam"
@@ -301,40 +305,39 @@ const filteredTests = React.useMemo(() => {
               className="py-3 max-w-full w-[300px] bg-gray-100"
             />
 
-
-            <button
-            className="flex rounded-full items-center justify-center w-full sm:w-fit h-full gap-3  text-purple-900 px-4 p-2 bg-white border-2 border-purple-900 hover:scale-105 transition-transform"
-            onClick={handleLaunchNew}
-          >
-            <Plus size={"1.1rem"} />
-            Create {selectedType === "test" ? "Test" : "Exam"}
-          </button>
-
-
+            {activeTab === "created" ? (
+              <button
+                className="flex rounded-full items-center justify-center w-fit h-full gap-3  text-purple-900 px-4 p-2 bg-white border-2 border-purple-900 hover:scale-105 transition-transform"
+                onClick={handleLaunchNew}
+              >
+                <Plus size={"1.1rem"} />
+                Create {selectedType === "test" ? "Test" : "Exam"}
+              </button>
+            ) : (
+              <button
+                onClick={handleJoinClick}
+                className="flex rounded-full items-center justify-center w-fit h-full gap-3  text-purple-900 px-4 p-2 bg-white border-2 border-purple-900 hover:scale-105 transition-transform"
+              >
+                <Plus size={"1.1rem"} />
+                Join {selectedType === "test" ? "Test" : "Exam"}
+              </button>
+            )}
           </div>
-
-
 
           {activeTab === "created" ? (
-                        <BaseTable
-                          // data={filteredTests}
-                          data={filteredTests || []}
-                          columns={testColumns}
-                          onRowClick={handleRowClick}
-                        />
-                      ) : (
-                        
-                        <BaseTable data={examinations} columns={testColumns} />
-                      )}
-
-        <BaseTable
-          // data={filteredTests}
-          data={filteredTests || []}
-          columns={testColumns}
-          onRowClick={handleRowClick}
-          />
-          </div>
+            <BaseTable
+              // data={filteredTests}
+              data={filteredTests || []}
+              columns={testColumns}
+              onRowClick={handleRowClick}
+            />
+          ) : (
+            <BaseTable data={examinations} columns={studentColumn} />
+          )}
+        </div>
       )}
+
+      <JoinTestDialog ref={joinTestDialogRef} />
     </div>
   );
 };

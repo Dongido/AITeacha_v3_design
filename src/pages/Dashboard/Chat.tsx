@@ -300,8 +300,8 @@ const Chat = () => {
     setSelectedFile(null);
   };
   return (
-    <div className="h-[85vh] overflow-y-auto flex flex-col">
-      <div className="flex-grow overflow-y-auto bg-gray-50 rounded-lg border shadow-inner p-4">
+    <div className="min-h-screen border-2  py-[30px]   bg-[linear-gradient(to_right,#6200EE1A_10%,#F133E11A_90%)] overflow-y-auto flex flex-col">
+      <div className="flex-grow overflow-y-auto  rounded-lg   p-4">
         {messages.length === 0 ? (
           <div className="text-center text-gray-800 italic">
             Hi👋, welcome to <span className="font-bold">Zyra (Edubot)</span>!
@@ -367,7 +367,7 @@ const Chat = () => {
       </div>
 
       {messages.length === 0 && (
-        <div className="bg-white p-4 border-t">
+        <div className="p-4 max-w-2xl mx-auto">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {[
               "📚 Generate lesson plans for teachers",
@@ -378,7 +378,7 @@ const Chat = () => {
               <button
                 key={index}
                 onClick={() => setInputText(prompt.replace(/^\S+\s/, ""))}
-                className="bg-[#c2b1f7] text-black px-3 py-2 rounded-full hover:bg-gray-300"
+                className="bg-white/30 text-start text-base  backdrop-filter border-white backdrop-blur-1 text-black px-3 py-2 rounded-md min-h-[70px] hover:bg-gray-300"
               >
                 {prompt}
               </button>
@@ -387,7 +387,7 @@ const Chat = () => {
         </div>
       )}
 
-      <div className="p-4 border-t bg-white">
+      <div className="p-4 max-w-full md:w-[672px] mx-auto">
         {uploading && (
           <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
             <div
@@ -396,15 +396,15 @@ const Chat = () => {
             ></div>
           </div>
         )}
-        <div className="relative flex items-center border rounded-lg">
+        <div className="w-full  relative flex items-center  rounded-lg">
           <TextArea
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
             placeholder="Type your message..."
-            className="w-full pr-16 px-3 py-2 rounded-lg focus:outline-none"
+            className="w-full bg-white/30 placeholder-black  pr-16 px-3 py-2 rounded-full focus:outline-none"
           />
           {selectedFile && (
-            <div className="absolute left-0 -bottom-8 flex items-center bg-blue-100 text-blue-700 text-sm px-3 py-1 rounded-md shadow-sm">
+            <div className="absolute left-0 -bottom-8 flex items-center bg-blue-100 text-blue-700 text-sm px-3 py-1 m-0 rounded-md shadow-sm">
               📎 {selectedFile.name}
               <button
                 onClick={removeFile}
@@ -417,7 +417,7 @@ const Chat = () => {
 
           <Dialog>
             <DialogTrigger asChild>
-              <button className="absolute right-20 bottom-2 p-2 mr-4 rounded-full bg-gray-200 text-black hover:bg-gray-300 transition-all">
+              <button className="absolute right-20 bottom-3 p-[6px] mr-4 rounded-full bg-gray-200 text-black hover:bg-gray-300 transition-all">
                 <FiMoreVertical className="w-5 h-5" />
               </button>
             </DialogTrigger>
@@ -471,7 +471,7 @@ const Chat = () => {
 
           <button
             onClick={toggleRecording}
-            className={`absolute right-14 bottom-2 p-2 rounded-full ${
+            className={`absolute right-14 bottom-3 p-2 rounded-full ${
               isRecording ? "bg-red-500 text-white" : "bg-gray-200 text-black"
             }`}
           >
@@ -479,7 +479,7 @@ const Chat = () => {
           </button>
           <button
             onClick={handleSend}
-            className="absolute right-2 bottom-2 p-2 bg-primary text-white rounded-full"
+            className="absolute right-2 bottom-3 p-2 bg-primary text-white rounded-full"
           >
             <FiSend />
           </button>

@@ -42,7 +42,7 @@ const TeamClassroomPage: React.FC = () => {
   const [selectionType, setSelectionType] = useState("teamClassroom");
   const [selectedItemId, setSelectedItemId] = useState("");
   const [activeTab, setActiveTab] = useState("teamClassrooms"); // New state for active tab
-const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const { assignedClassrooms, teacherAssignedClassrooms, loading, error } =
     useSelector((state: RootState) => state.teamClassroom);
 
@@ -86,10 +86,10 @@ const [searchTerm, setSearchTerm] = useState("");
 
   const handleAddStudentsClick = () => {
     // addTeachersDialogRef.current?.openDialog();
-    console.log("clicked..")
+    console.log("clicked..");
   };
 
-   const handleDownloadTemplate = () => {
+  const handleDownloadTemplate = () => {
     const csvContent =
       "firstname,lastname,phone,email,country,city,gender,age,disability_details\n" +
       "John,Doe,1234567890,teacher.john@example.com,Nigeria,Lagos,Male,40,Wheelchair user\n" +
@@ -112,7 +112,6 @@ const [searchTerm, setSearchTerm] = useState("");
       );
     }
   };
-
 
   useEffect(() => {
     const userDetailsFromStorage = localStorage.getItem("ai-teacha-user");
@@ -219,40 +218,38 @@ const [searchTerm, setSearchTerm] = useState("");
   }
 
   return (
-    <div className=" p-[30px]">
+    <div className="p-0 md:p-[30px] lg:w-[80vw] w-[90vw] ">
       <div>
         <h2 className="text-lg font-semibold m-0">Class Management</h2>
         <p className="text-sm">Manage classroom</p>
-
       </div>
 
       <div className="mb-4 mt-[50px] border-b-2 ">
-        
-          <button
-            className={` font-bold text-[19px] ${
-              activeTab === "teamClassrooms"
-                ? "text-purple-900 border-b-4 border-purple-900"
-                : "text-gray-900 "
-            } flex-1 text-center py-2 px-5  transition-colors duration-200 font-medium text-sm`}
-            onClick={() => setActiveTab("teamClassrooms")}
-          >
-            Team Classrooms
-          </button>
-          <button
-            className={` font-bold text-[19px] ${
-              activeTab === "teamMembers"
-                ? "text-purple-900 border-b-4 border-purple-900"
-                : "text-gray-900"
-            } flex-1 text-center py-2 px-5  transition-colors duration-200 font-medium text-sm`}
-            onClick={() => setActiveTab("teamMembers")}
-          >
-            Team Members
-          </button>
+        <button
+          className={` font-bold text-[19px] ${
+            activeTab === "teamClassrooms"
+              ? "text-purple-900 border-b-4 border-purple-900"
+              : "text-gray-900 "
+          } flex-1 text-center py-2 px-5  transition-colors duration-200 font-medium text-sm`}
+          onClick={() => setActiveTab("teamClassrooms")}
+        >
+          Team Classrooms
+        </button>
+        <button
+          className={` font-bold text-[19px] ${
+            activeTab === "teamMembers"
+              ? "text-purple-900 border-b-4 border-purple-900"
+              : "text-gray-900"
+          } flex-1 text-center py-2 px-5  transition-colors duration-200 font-medium text-sm`}
+          onClick={() => setActiveTab("teamMembers")}
+        >
+          Team Members
+        </button>
       </div>
       {activeTab === "teamClassrooms" && (
         <>
-          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center my-4">
-            <div className="flex items-center space-x-2">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 my-4">
+            <div className="flex  items-center space-x-2">
               <span className="text-md font-semibold whitespace-nowrap">
                 Show Classrooms Assigned to me
               </span>
@@ -360,8 +357,6 @@ const [searchTerm, setSearchTerm] = useState("");
                 </form>
               </DialogContent>
             </Dialog>
-
-            
           </div>
 
           <h3 className="text-xl font-medium mt-6 mb-2">
@@ -376,87 +371,81 @@ const [searchTerm, setSearchTerm] = useState("");
           ) : showTeacherAssigned ? (
             teacherAssignedClassroomsList.length > 0 ? (
               <div className="bg-white p-4 rounded-3xl">
-                <div className="py-2 flex justify-between mb-5 items-center">
-          {/* search Teamates */}
-          <div>
-            <Input
-              type="text"
-              placeholder="Search team by name"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="py-3 max-w-full w-[300px] bg-gray-100"
-            />
+                <div className="py-2 flex gap-3 flex-col  md:flex-row md:justify-between mb-5 items-center">
+                  {/* search Teamates */}
+                  <div>
+                    <Input
+                      type="text"
+                      placeholder="Search team by name"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="py-3 max-w-full w-[300px] bg-gray-100"
+                    />
+                  </div>
+                  {/* sample and upload csv */}
+                  <div className="flex justify-end">
+                    <Button onClick={handleDownloadTemplate}>
+                      Sample Template
+                    </Button>
+                    <Button
+                      onClick={handleAddStudentsClick}
+                      variant={"gradient"}
+                      className="rounded-md"
+                    >
+                      Upload CSV
+                    </Button>
+                  </div>
+                </div>
 
-          </div>
-          {/* sample and upload csv */}
-          <div className="flex justify-end">
-            <Button
-              onClick={handleDownloadTemplate}
-            >
-              Sample Template
-            </Button>
-            <Button
-              onClick={handleAddStudentsClick}
-              variant={"gradient"}
-              className="rounded-md"
-            >
-              Upload CSV
-            </Button>
-          </div>
-        </div>
-
-              <BaseTable
-                // data={teacherAssignedClassroomsList}
-                data={teacherAssignedClassroomsList.filter((item) =>
-                  item.classroom_name
-                    ?.toLowerCase()
-                    .includes(searchTerm.toLowerCase())
-                )}
-                columns={teamClassroomColumns}
-              />
+                <BaseTable
+                  // data={teacherAssignedClassroomsList}
+                  data={teacherAssignedClassroomsList.filter((item) =>
+                    item.classroom_name
+                      ?.toLowerCase()
+                      .includes(searchTerm.toLowerCase())
+                  )}
+                  columns={teamClassroomColumns}
+                />
               </div>
             ) : (
               <p>No Classrooms assigned to you.</p>
             )
           ) : assignedClassroomsList.length > 0 ? (
             <div className="bg-white p-4 rounded-3xl">
-              <div className="py-2 flex justify-between mb-5 items-center">
-          {/* search Teamates */}
-          <div>
-            <Input
-              type="text"
-              placeholder="Search team by name"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="py-3 max-w-full w-[300px] bg-gray-100"
-            />
-
-          </div>
-          {/* sample and upload csv */}
-          <div className="flex justify-end">
-            <Button
-              onClick={handleDownloadTemplate}
-            >
-              Sample Template
-            </Button>
-            <Button
-              onClick={handleAddStudentsClick}
-              variant={"gradient"}
-              className="rounded-md"
-            >
-              Upload CSV
-            </Button>
-          </div>
-        </div>
-            <BaseTable
-              // data={assignedClassroomsList}
-              data={assignedClassroomsList.filter((item) =>
-                item.classroom_name
-                  ?.toLowerCase()
-                  .includes(searchTerm.toLowerCase())
-              )}
-              columns={teamClassroomColumns}
-            />
+              <div className="py-2 flex gap-3 flex-col  md:flex-row md:justify-between mb-5 items-center">
+                {/* search Teamates */}
+                <div>
+                  <Input
+                    type="text"
+                    placeholder="Search team by name"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="py-3 max-w-full w-[300px] bg-gray-100"
+                  />
+                </div>
+                {/* sample and upload csv */}
+                <div className="flex justify-end">
+                  <Button onClick={handleDownloadTemplate}>
+                    Sample Template
+                  </Button>
+                  <Button
+                    onClick={handleAddStudentsClick}
+                    variant={"gradient"}
+                    className="rounded-md"
+                  >
+                    Upload CSV
+                  </Button>
+                </div>
+              </div>
+              <BaseTable
+                // data={assignedClassroomsList}
+                data={assignedClassroomsList.filter((item) =>
+                  item.classroom_name
+                    ?.toLowerCase()
+                    .includes(searchTerm.toLowerCase())
+                )}
+                columns={teamClassroomColumns}
+              />
             </div>
           ) : (
             <p>No assigned classrooms found.</p>

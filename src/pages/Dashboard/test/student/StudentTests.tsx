@@ -30,7 +30,7 @@ const StudentExaminationsPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const examinations = useSelector(selectStudentExaminations);
   const loading = useSelector(selectStudentExaminationsLoading);
-   const selectedType = useSelector(selectSelectedTestType);
+  const selectedType = useSelector(selectSelectedTestType);
   const error = useSelector(selectStudentExaminationsError);
   const joinTestDialogRef = useRef<{ openDialog: () => void }>(null);
   const fetched = useRef(false);
@@ -44,27 +44,26 @@ const StudentExaminationsPage: React.FC = () => {
     }
   }, [dispatch]);
 
- useEffect(() => {
-     if (typeof window !== "undefined") {
-       if (selectedType) {
-         localStorage.setItem("selectedTestType", selectedType);
-         dispatch(fetchTests());
-       }
-     }
-   }, [dispatch, selectedType]);
- 
-   const handleRowClick = (test: any) => {
-     // navigate(`/dashboard/classrooms/details/${test.id}`);
-   };
- 
-   const handleLaunchNew = () => {
-     if (selectedType === "exam") {
-       navigate("/dashboard/create-exam");
-     } else {
-       navigate("/dashboard/create-test");
-     }
-   };
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      if (selectedType) {
+        localStorage.setItem("selectedTestType", selectedType);
+        dispatch(fetchTests());
+      }
+    }
+  }, [dispatch, selectedType]);
 
+  const handleRowClick = (test: any) => {
+    // navigate(`/dashboard/classrooms/details/${test.id}`);
+  };
+
+  const handleLaunchNew = () => {
+    if (selectedType === "exam") {
+      navigate("/dashboard/create-exam");
+    } else {
+      navigate("/dashboard/create-test");
+    }
+  };
 
   const handleJoinClick = () => {
     joinTestDialogRef.current?.openDialog();
@@ -96,8 +95,6 @@ const StudentExaminationsPage: React.FC = () => {
 
   return (
     <div className="p-3 md:p-[30px]">
-      
-            
       <div>
         <div className="flex justify-between items-center mb-4">
           <div>
@@ -115,53 +112,46 @@ const StudentExaminationsPage: React.FC = () => {
           </Button>
         </div>
 
-
         {loading === "pending" ? (
-                <div className="overflow-x-auto animate-pulse">
-                  <table className="min-w-full border-collapse">
-                    <thead>
-                      <tr>
-                        {[...Array(5)].map((_, index) => (
-                          <th key={index} className="p-4 border-b">
-                            <Skeleton className="h-4 w-16 rounded" />
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {[...Array(6)].map((_, rowIndex) => (
-                        <tr key={rowIndex} className="border-b">
-                          {[...Array(5)].map((_, colIndex) => (
-                            <td key={colIndex} className="p-4">
-                              <Skeleton className="h-4 w-full rounded" />
-                            </td>
-                          ))}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )
-              :
-              (
-                <div className="bg-white rounded-3xl p-4 ">
-            <Input
-                          type="text"
-                          placeholder="Search school by"
-                          value={searchTerm}
-                          onChange={(e) => setSearchTerm(e.target.value)}
-                          className="py-3 my-5 max-w-full w-[300px] bg-gray-100"
-                        />
-          <BaseTable data={examinations} columns={testColumns} />
+          <div className="overflow-x-auto animate-pulse">
+            <table className="min-w-full border-collapse">
+              <thead>
+                <tr>
+                  {[...Array(5)].map((_, index) => (
+                    <th key={index} className="p-4 border-b">
+                      <Skeleton className="h-4 w-16 rounded" />
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {[...Array(6)].map((_, rowIndex) => (
+                  <tr key={rowIndex} className="border-b">
+                    {[...Array(5)].map((_, colIndex) => (
+                      <td key={colIndex} className="p-4">
+                        <Skeleton className="h-4 w-full rounded" />
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-                // <BaseTable data={examinations} columns={testColumns} /> 
+        ) : (
+          <div className="bg-white rounded-3xl p-4 ">
+            <Input
+              type="text"
+              placeholder="Search school by"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="py-3 my-5 max-w-full w-[300px] bg-gray-100"
+            />
+            <BaseTable data={examinations} columns={testColumns} />
+          </div>
+          // <BaseTable data={examinations} columns={testColumns} />
+        )}
 
-              )
-            
-            }
-
-
-              {/* {!loading &&  (
+        {/* {!loading &&  (
                       <BaseTable
                         data={examinations}
                         columns={testColumns}
@@ -177,8 +167,6 @@ const StudentExaminationsPage: React.FC = () => {
 };
 
 export default StudentExaminationsPage;
-
-
 
 // import React, { useEffect, useRef, useState } from "react";
 // import { useDispatch, useSelector } from "react-redux";
@@ -219,7 +207,7 @@ export default StudentExaminationsPage;
 //   const error = useSelector(selectStudentExaminationsError);
 //   const joinTestDialogRef = useRef<{ openDialog: () => void }>(null);
 //   const fetched = useRef(false);
-  
+
 //     const [searchTerm, setSearchTerm] = useState("");
 //   const navigate = useNavigate();
 
@@ -247,7 +235,6 @@ export default StudentExaminationsPage;
 //   localStorage.setItem("selectedTestType", selectedType);
 // }, [dispatch, selectedType]);
 
-
 //   const handleLaunchNew = () => {
 //     if (selectedType === "exam") {
 //       navigate("/dashboard/create-exam");
@@ -255,8 +242,6 @@ export default StudentExaminationsPage;
 //       navigate("/dashboard/create-test");
 //     }
 //   };
-
-  
 
 //   if (error) {
 //     return (
@@ -275,7 +260,6 @@ export default StudentExaminationsPage;
 //   // Pick which dataset to display
 //   const dataToShow = selectedType === "exam" ? examinations : tests;
 
-
 // //   const filteredData = React.useMemo(() => {
 // //   if (!dataToShow) return [];
 // //   if (!searchTerm.trim()) return dataToShow;
@@ -289,7 +273,6 @@ export default StudentExaminationsPage;
 // //     return values.some((v) => v.includes(term));
 // //   });
 // // }, [dataToShow, searchTerm]);
-
 
 //   return (
 //     <div className="p-4 md:p-[30px]">
@@ -372,20 +355,20 @@ export default StudentExaminationsPage;
 //             </table>
 //           </div>
 //         ) : (
-          // <div className="bg-white rounded-3xl p-4 ">
-          //   <Input
-          //                 type="text"
-          //                 placeholder={
-          //                   selectedType === "exam"
-          //                     ? "Search by exam title"
-          //                     : "Search by test title"
-          //                 }
-          //                 value={searchTerm}
-          //                 onChange={(e) => setSearchTerm(e.target.value)}
-          //                 className="py-3 my-5 max-w-full w-[300px] bg-gray-100"
-          //               />
-          // <BaseTable data={examinations} columns={testColumns} />
-          // </div>
+// <div className="bg-white rounded-3xl p-4 ">
+//   <Input
+//                 type="text"
+//                 placeholder={
+//                   selectedType === "exam"
+//                     ? "Search by exam title"
+//                     : "Search by test title"
+//                 }
+//                 value={searchTerm}
+//                 onChange={(e) => setSearchTerm(e.target.value)}
+//                 className="py-3 my-5 max-w-full w-[300px] bg-gray-100"
+//               />
+// <BaseTable data={examinations} columns={testColumns} />
+// </div>
 //         )}
 //       </div>
 

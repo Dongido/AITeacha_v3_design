@@ -24,6 +24,7 @@ import ChangePasswordDialog from "../../components/layout/ChangePasswordDialog";
 import Withdrawals from "./_components/Withdrawals";
 import { fetchBalance } from "../../api/bankaccount";
 import { Skeleton } from "../../components/ui/Skeleton";
+import { GrRefresh } from "react-icons/gr";
 
 import {
   Country,
@@ -223,12 +224,17 @@ const Profile: React.FC = () => {
           <p className="text-red-600">Error: {error}</p>
         ) : (
           <>
-            <div className="mb-4">
+            <div className="mb-4 border-b border-gray-300">
+              <div className="mb-5 md:mb-[30px]">
+                <h2 className="text-xl font-semibold m-0">Profile</h2>
+                <p className="text-sm m-0">Manage, edit profile & wallet details</p>
+              </div>
+
               <button
-                className={`px-4 py-2 rounded-t-lg mr-2 ${
+                className={`px-4 py-2 text-base ${
                   activeTab === "profile"
-                    ? "bg-purple-50"
-                    : "bg-gray-100 hover:bg-gray-200"
+                    ? "text-primary border-b-2 font-medium border-purple-900"
+                    : ""
                 }`}
                 onClick={() => setActiveTab("profile")}
               >
@@ -236,10 +242,10 @@ const Profile: React.FC = () => {
               </button>
               {!isStudent && (
                 <button
-                  className={`px-4 py-2 rounded-t-lg ${
+                  className={`px-4 py-2 text-base ${
                     activeTab === "wallet"
-                      ? "bg-purple-50"
-                      : "bg-gray-100 hover:bg-gray-200"
+                      ? "text-primary border-b-2 font-medium border-purple-900"
+                      : ""
                   }`}
                   onClick={() => setActiveTab("wallet")}
                 >
@@ -642,15 +648,15 @@ const Profile: React.FC = () => {
 
             {activeTab === "wallet" && (
               <div>
-                <div className="bg-white rounded-lg shadow-md p-4">
+                <div className="mt-5 md:mt-[30px]">
                   <div className="flex justify-between items-center mb-4">
                     <h2 className="text-xl font-semibold">Wallet Balances</h2>
                     <button
                       onClick={handleFetchBalance}
                       disabled={isFetchingBalance}
-                      className="px-4 py-2 bg-purple-50 rounded-full text-black font-bold  "
+                      className="px-4 py-2 text-primary border-2 border-purple-900 rounded-full text-black font-bold  "
                     >
-                      {isFetchingBalance ? "Refreshing..." : "Refresh Balance"}
+                      {isFetchingBalance ? "Refreshing..." : (<p className="flex items-center m-0  gap-2"><GrRefresh />Refresh Balance</p>)}
                     </button>
                   </div>
                   {balanceError && (
@@ -666,30 +672,30 @@ const Profile: React.FC = () => {
                     </tr>
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="bg-gray-100 p-4 rounded-lg shadow-sm flex items-center space-x-4">
+                      <div className="bg-white p-3 md:p-[30px] rounded-lg  flex items-center space-x-4">
                         <div>
-                          <p className="font-semibold">USD Balance</p>
-                          <p className="text-lg">
+                          <p className="text-xl m-0 font-bold">
                             ${walletBalances.wallet_balance_usd?.toFixed(2)}
                           </p>
+                          <p className="text-base m-0 mt-5">USD Balance</p>
                         </div>
                       </div>
 
-                      <div className="bg-gray-100 p-4 rounded-lg shadow-sm flex items-center space-x-4">
+                      <div className="bg-white p-3 md:p-[30px] rounded-lg  flex items-center space-x-4">
                         <div>
-                          <p className="font-semibold">NGN Balance</p>
-                          <p className="text-lg">
+                          <p className="text-xl m-0 font-bold">
                             ₦{walletBalances.wallet_balance_ngn?.toFixed(2)}
                           </p>
+                          <p className="text-base m-0 mt-5">NGN Balance</p>
                         </div>
                       </div>
 
-                      <div className="bg-gray-100 p-4 rounded-lg shadow-sm flex items-center space-x-4">
+                      <div className="bg-white p-3 md:p-[30px] rounded-lg  flex items-center space-x-4">
                         <div>
-                          <p className="font-semibold">GBP Balance</p>
-                          <p className="text-lg">
+                          <p className="text-xl m-0 font-bold">
                             £{walletBalances.wallet_balance_gbp?.toFixed(2)}
                           </p>
+                          <p className="text-base m-0 mt-5">GBP Balance</p>
                         </div>
                       </div>
                     </div>

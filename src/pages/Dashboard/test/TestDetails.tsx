@@ -118,8 +118,8 @@ const TestDetailsPage: React.FC = () => {
   const firstTest = testDetails[0];
 
   return (
-    <div className="p-4">
-      <div className="flex w-full mt-12 mb-6 items-center justify-between">
+    <div className="p-0 md:p-4 lg:w-[80vw] w-[90vw]">
+      <div className="flex w-full mt-1 mb-6 items-center justify-between">
         <button
           className="flex items-center  rounded-md text-black w-fit h-full mr-2 gap-3 py-2"
           onClick={() => navigate(-1)}
@@ -130,8 +130,8 @@ const TestDetailsPage: React.FC = () => {
       </div>
         
       <div className="flex w-full mt-12 mb-6 items-center justify-between">
-        <p className="text-sm border-2 rounded-full border-green-600 text-green-600 p-1 px-2 bg-green-50 font-semibold">Status: {firstTest.status}</p>
-        <div className="mt-4 sm:mt-0 flex flex-row gap-4 items-center">
+        <p className="text-sm m-0 border-2 rounded-full border-green-600 text-green-600 p-1 px-2 bg-green-50 font-semibold">Status: {firstTest.status}</p>
+        <div className="sm:mt-0 flex flex-row gap-4 items-center">
               <button
                 className="flex items-center gap-2 bg-white border border-purple-900 text-[#5C3CBB] font-semibold py-2 px-4 rounded-full text-sm"
                 onClick={() => {

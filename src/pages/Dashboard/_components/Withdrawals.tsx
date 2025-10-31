@@ -347,16 +347,9 @@ const Withdrawals = () => {
 
   return (
     <ToastProvider swipeDirection="right">
-      <div className="p-2 md:p-6 lg:p-6 mt-6">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-          <h1 className="text-3xl font-bold mb-4 md:mb-0">Withdrawals</h1>
-          <Button
-            className="rounded-full"
-            variant={"gradient"}
-            onClick={handleOpenDialog}
-          >
-            Request New Withdrawal
-          </Button>
+      <div className="mt-[20px]">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+          <h1 className="text-xl font-bold mb-4 md:mb-0">Withdrawals</h1>
         </div>
 
         <Dialog
@@ -408,6 +401,7 @@ const Withdrawals = () => {
               <Input
                 id="amount-input"
                 type="number"
+                className="rounded-full"
                 placeholder="Enter amount"
                 value={withdrawalDetails.amount || ""}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -421,7 +415,7 @@ const Withdrawals = () => {
 
             <Button
               onClick={handleRequestWithdrawal}
-              className="rounded-md"
+              className="rounded-full"
               variant={"gradient"}
               disabled={
                 requesting ||
@@ -439,7 +433,7 @@ const Withdrawals = () => {
               )}
             </Button>
             <DialogClose asChild>
-              <Button variant={"destructive"} className="rounded-md w-full">
+              <Button variant={"destructive"} className="rounded-full w-full">
                 Cancel
               </Button>
             </DialogClose>
@@ -656,24 +650,7 @@ const Withdrawals = () => {
         </Dialog>
 
         <div className="mt-8">
-          <div className="mb-4 flex items-center gap-4">
-            <Select
-              value={filterStatus}
-              onValueChange={(
-                value: "all" | "processing" | "paid" | "declined"
-              ) => setFilterStatus(value)}
-            >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Filter by Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="processing">Processing</SelectItem>
-                <SelectItem value="paid">Paid</SelectItem>
-                <SelectItem value="declined">Declined</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          
 
           {withdrawalsLoading ? (
             <div className="overflow-x-auto">
@@ -705,7 +682,36 @@ const Withdrawals = () => {
           ) : filteredWithdrawals.length === 0 ? (
             <p>No withdrawal history found for the selected status.</p>
           ) : (
+            <div className="bg-white rounded-2xl p-4">
+              <div className="flex mb-5 flex-wrap items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <Select
+                      value={filterStatus}
+                      onValueChange={(
+                        value: "all" | "processing" | "paid" | "declined"
+                      ) => setFilterStatus(value)}
+                    >
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Filter by Status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All</SelectItem>
+                        <SelectItem value="processing">Processing</SelectItem>
+                        <SelectItem value="paid">Paid</SelectItem>
+                        <SelectItem value="declined">Declined</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <button
+                    className="px-4 py-2 text-primary border-2 border-purple-900 rounded-full text-black font-bold"
+                    onClick={handleOpenDialog}
+                  >
+                    Request New Withdrawal
+                  </button>
+              </div>
+
             <BaseTable data={filteredWithdrawals} columns={withdrawalColumns} />
+            </div>
           )}
         </div>
       </div>

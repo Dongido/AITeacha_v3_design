@@ -78,27 +78,13 @@ const SchoolStudents = () => {
 
 
   return (
-    <div className=" p-[30px]">
+    <div className="p-0 md:p-[30px] lg:w-[80vw] w-[90vw]">
      
-      <div className="mb-[30px] flex flex-col sm:flex-row sm:justify-between gap-2 items-center">
+      <div className="mb-[30px] flex flex-col sm:flex-row sm:justify-between gap-2 md:items-center">
         <div>
           <h1 className="text-xl font-semibold m-0">Students</h1>
           <p className="text-gray-800 text-sm">View all students</p>
         </div>
-        {/* <Button
-          onClick={handleDownloadTemplate}
-          variant={"outline"}
-          className="w-full sm:w-auto rounded-md underline"
-        >
-          Sample Template
-        </Button>
-        <Button
-          onClick={handleUploadCSVClick}
-          variant={"gradient"}
-          className="w-full sm:w-auto rounded-full"
-        >
-          Upload CSV
-        </Button> */}
         <Button
           onClick={handleAddSingleStudentClick}
           variant={"gradient"}
