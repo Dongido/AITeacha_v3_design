@@ -136,7 +136,7 @@ const Forumpage = () => {
   }
 
   return (
-    <div className="min-h-screen p-[30px]">
+    <div className="min-h-screenp p-0 md:p-[30px] ">
       <h2 className="text-lg m-0 font-bold  text-left ">Discussion Forums</h2>
       <p className="text-sm m-0">Manage all forums</p>
       {loading && (
@@ -172,10 +172,10 @@ const Forumpage = () => {
             <>
               <div
                 // key={user.user_id}
-                className="w-full bg-white flex justify-between gap-4 rounded-xl p-6 items-center "
+                className="w-full bg-white flex justify-between gap-4 rounded-xl p-3 md:p-6 items-center "
               >
                 <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 rounded-full bg-purple-50  flex items-center justify-center mx-auto">
+                  <div className="w-14 h-14 rounded-full shrink-0 bg-purple-50  flex items-center justify-center mx-auto">
                     <FaGraduationCap className="text-xl" />
                   </div>
                   <div className="flex flex-col gap-1 text-start">

@@ -582,7 +582,7 @@ const CreateTest: React.FC<CreateOrEditClassroomProps> = ({ isEdit }) => {
 
   return (
     <ToastProvider swipeDirection="left">
-      <div className="p-3 md:p-[30px] fixed inset-0 z-[50] bg-gray-100 border w-full overflow-auto  min-h-screen md:pb-[50px]">
+      <div className="p-3 md:p-[30px] fixed inset-0 z-[50] bg-gray-100 border w-full overflow-auto  min-h-screen md:pb-[150px] py-[70px]">
         <h1 className="text-2xl text-center font-bold text-gray-900 capitalize">
           {isEdit ? `Edit ${storedType}` : `Create ${storedType}`}
         </h1>
@@ -847,32 +847,7 @@ const CreateTest: React.FC<CreateOrEditClassroomProps> = ({ isEdit }) => {
                     )}
                   </div>
 
-                  <FormField
-                    control={control}
-                    name="duration"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-lg font-semibold mt-4">
-                          Duration of{" "}
-                          <span className="capitalize">{storedType}</span>{" "}
-                          (minutes)
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            placeholder="Enter number"
-                            {...field}
-                            onChange={(e) =>
-                              field.onChange(Number(e.target.value) || 0)
-                            }
-                            className="rounded-full"
-                          />
-                        </FormControl>
-                        <FormMessage className="text-red-300" />
-                      </FormItem>
-                    )}
-                  />
-
+                  
                   <FormField
                     control={control}
                     name="grade"
@@ -900,6 +875,35 @@ const CreateTest: React.FC<CreateOrEditClassroomProps> = ({ isEdit }) => {
                       </FormItem>
                     )}
                   />
+
+                  <FormField
+                    control={control}
+                    name="duration"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-lg font-semibold mt-4">
+                          Duration of{" "}
+                          <span className="capitalize">{storedType}</span>{" "}
+                          (minutes)
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            placeholder="Enter number"
+                            {...field}
+                            onChange={(e) =>
+                              field.onChange(Number(e.target.value) || 0)
+                            }
+                            className="rounded-full"
+                          />
+                        </FormControl>
+                        <FormMessage className="text-red-300" />
+                      </FormItem>
+                    )}
+                  />
+
+
+
                 </div>
               )}
               {currentStep === 2 && (

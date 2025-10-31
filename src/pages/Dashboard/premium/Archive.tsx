@@ -210,7 +210,7 @@ const ArchivedAssistants = () => {
   }
 
   return (
-    <div className="mt-6 p-[30px]">
+    <div className="mt-6 p-0 md:p-[30px]">
       <div className="flex items-center justify-between">
       <div>
         <h2 className="text-xl font-semibold m-0 ">Archived Assistants</h2>

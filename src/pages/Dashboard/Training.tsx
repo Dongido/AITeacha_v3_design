@@ -21,12 +21,12 @@ const Training = () => {
     "https://www.youtube.com/embed/F1b6EiOlU8w?si=wj7iPKBT_6l1x9HG",
   ];
   return (
-    <div className="mt-4 p-[30px]">
+    <div className="mt-4 p-0 md:p-[30px]">
       <h4 className="text-xl font-bold mb-[24px]">Resources</h4>
       
 
       <div className="relative mt-4">
-        <div className="bg-[#EFE6FD] p-8 rounded-lg overflow-hidden">
+        <div className="bg-[#EFE6FD] p-4 md:p-8 rounded-lg overflow-hidden">
            <div className="max-w-xl">
             <h3 className=" text-lg font-semibold sm:text-2xl">
               Empower your school with AI-driven teaching tools
@@ -37,7 +37,7 @@ const Training = () => {
               academic success. Join the AiTeacha program today!
             </p>
           </div>
-          <div className="flex gap-4 mt-4 md:mt-0">
+          <div className="flex flex-wrap gap-4 mt-4 md:mt-0">
             <button
               onClick={handleEnquireClick}
               className="inline-block px-6 py-2 font-medium bg-primary text-white duration-150 hover:border-[#6200EE] active:bg-gray-200 rounded-full  hover:shadow-none"

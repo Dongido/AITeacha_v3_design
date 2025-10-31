@@ -112,9 +112,9 @@ const TestStudentsPage: React.FC = () => {
   // }
 
   return (
-    <div className="p-4">
+    <div className="">
       <div>
-        <div className="flex items-center mb-4 justify-between flex-col sm:flex-row">
+        <div className="flex mb-4 justify-between flex-col sm:flex-row">
           
 
           <div className=" mt-4 sm:mt-0">

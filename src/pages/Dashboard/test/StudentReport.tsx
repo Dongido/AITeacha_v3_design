@@ -4,11 +4,13 @@ import {
   fetchTestDetails,
   selectTestDetails,
 } from "../../../store/slices/testSlice";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { fetchTestAnswerDetails } from "../../../api/test";
 import { CheckCircle, XCircle, Download } from "lucide-react"; // Import Download icon
 import { Button } from "../../../components/ui/Button";
 import { cn } from "../../../lib/utils";
+import { IoCheckbox, IoChevronBackOutline } from "react-icons/io5";
+import { LiaTimesCircleSolid } from "react-icons/lia";
 
 interface Question {
   examinationquestion_id: number;
@@ -24,6 +26,7 @@ interface Question {
 
 const StudentTestReport = () => {
   const dispatch = useAppDispatch();
+    const navigate = useNavigate();
   const { testId, studentId } = useParams();
   const [fetchFailed, setFetchFailed] = useState(false);
   const [fetchedTestDetails, setFetchedTestDetails] = useState<any>(null);
@@ -213,140 +216,191 @@ const StudentTestReport = () => {
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-10">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-2">
-          📘 {testDetails.subject}
-        </h1>
-        <p className="text-gray-600 italic mb-1">
-          ⏳ Duration: {testDetails.duration}minutes
-        </p>
-        <p className="text-gray-600 italic mb-3">
-          🏫 School: {testDetails.school_name}
-        </p>
-        <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg text-gray-800 shadow">
-          <strong>Instruction:</strong> {testDetails.instruction}
-        </div>
-      </div>
 
-      {fetchedTestDetails && (
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-green-50 border-l-4 border-green-500 p-4 mb-8 rounded-lg text-gray-800 shadow">
-          <div>
-            {fetchedObjectiveQuestions.length > 0 && (
-              <p className="text-lg font-semibold">
-                🧮 Objective Score: {studentObjectiveScore} /{" "}
-                {totalObjectiveMarks}
-              </p>
-            )}
-            {fetchedTheoryQuestions.length > 0 && totalTheoryMarks >= 0 && (
-              <p className="text-lg font-semibold">
-                ✍️ Theory Score: {studentTheoryScore} / {totalTheoryMarks}
-              </p>
-            )}
-            {(fetchedObjectiveQuestions.length > 0 ||
-              fetchedTheoryQuestions.length > 0) && (
-              <p className="text-xl font-bold mt-4">
-                Total Score: {studentObjectiveScore + studentTheoryScore} /{" "}
-                {totalObjectiveMarks + totalTheoryMarks}
-              </p>
+      <button
+                // onClick={() => window.history.back()}
+                onClick={() => navigate(-1)}
+                className="flex mb-[30px] items-center gap-2 text-sm text-gray-600 hover:text-gray-900 "
+              >
+                <IoChevronBackOutline className="w-5 h-5" />
+                Back
+              </button>
+
+
+      <div className="bg-[#EFE6FD] p-5 rounded-2xl my-6">
+          <p className="text-gray-700 text-sm w-fit p-1 px-4 rounded-full border border-purple-800 text-primary font-semibold">
+            {testDetails?.examination_description || "Test Details"}
+          </p>
+          <h3 className="text-2xl font-bold text-gray-800">
+            {testDetails?.subject || "Subject"}
+          </h3>
+          <div className="flex gap-4 flex-wrap">
+            <button className="flex items-center gap-2 border border-gray-400  rounded-full py-1 px-4 whitespace-nowrap">
+              School: {testDetails?.school_name || "N/A"}
+            </button>
+            <button className="flex items-center gap-2 border border-gray-400 rounded-full py-1 px-4 whitespace-nowrap">
+              Duration: {testDetails?.duration || "N/A"} mins
+            </button>
+            <button className="flex items-center gap-2 border border-gray-400  rounded-full py-1 px-4 whitespace-nowrap">
+              Grade: {testDetails?.grade}
+            </button>
+            <button className="flex items-center gap-2 border border-gray-400 rounded-full py-1 px-4 whitespace-nowrap">
+              No of Questions: {testDetails?.questions?.length ?? 0}
+            </button>
+
+            {testDetails?.academic_session && (
+              <button className="flex items-center gap-2 border border-gray-400  rounded-full py-1 px-4 whitespace-nowrap">
+                Session: {testDetails.academic_session}
+              </button>
             )}
           </div>
-          <Button
+        </div>
+
+
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div className="p-3 md:p-[25px] flex flex-col justify-center  bg-white rounded-2xl shadow-sm">
+            <h1 className="text-2xl font-bold text-gray-700">
+              {studentObjectiveScore} / {totalObjectiveMarks}
+            </h1>
+            <p className="text-gray-800 m-0 mt-3 font-semibold">
+              Objective Score
+            </p>
+          </div>
+          <div className="p-3 md:p-[25px] flex flex-col justify-center bg-white rounded-2xl shadow-sm">
+            <h1 className="text-2xl font-bold text-gray-700">
+              {studentTheoryScore} / {totalTheoryMarks}
+            </h1>
+            <p className="text-gray-800 m-0 mt-3 font-semibold">Theory Score</p>
+          </div>
+          <div className="p-3 md:p-[25px] flex flex-col justify-center  bg-white rounded-2xl shadow-sm">
+            <h1 className="text-2xl font-bold text-gray-700">
+              {studentObjectiveScore + studentTheoryScore} /{" "}
+              {totalObjectiveMarks + totalTheoryMarks}
+            </h1>
+            <p className="text-gray-800 m-0 mt-3 font-semibold">Total Score</p>
+          </div>
+        </div>
+
+        <Button
             variant="outline"
             onClick={downloadCSV}
             className={cn(
               "bg-green-500/20 text-green-600 hover:bg-green-500/30",
               "transition-colors duration-200",
-              "flex items-center gap-2" // Added for icon spacing
+              "flex items-center gap-2 mb-[30px]" // Added for icon spacing
             )}
           >
             <Download className="w-4 h-4" />
             Download as CSV
           </Button>
-        </div>
-      )}
+
+
+     
+
 
       <div className="bg-white shadow-md rounded-2xl p-6 border border-gray-200">
         <h2 className="text-2xl font-semibold text-gray-700 mb-6">
           📄 Student Submission Review
         </h2>
         <div className="space-y-6">
-          {testDetails.questions.map((q: any, idx: number) => {
-            const answerDetails = fetchedTestDetails?.questions?.find(
-              (ans: any) =>
-                ans.examinationquestion_id === q.examinationquestions_id
-            );
-
-            const studentAnswer =
-              answerDetails?.student_answer || "Not answered";
-            const correctAnswer =
-              answerDetails?.correct_answer || "Not available";
-            const isCorrect =
-              studentAnswer &&
-              correctAnswer &&
-              studentAnswer.trim().toLowerCase() ===
-                correctAnswer.trim().toLowerCase();
-
-            const options =
-              q.question_type === "objective"
-                ? JSON.parse(q.examinationquestions_options)
-                : [];
-
-            return (
-              <div
-                key={q.examinationquestions_id}
-                className={`border rounded-xl p-5 ${
-                  isCorrect
-                    ? "border-green-300 bg-green-50"
-                    : "border-red-300 bg-red-50"
-                }`}
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <p className="font-medium text-gray-800">
-                    {idx + 1}. {q.examinationquestions_question}
-                    {/* Show score if available */}
-                    {answerDetails?.score !== undefined &&
-                      answerDetails?.score !== null && (
-                        <span className="text-blue-600 font-semibold ml-2">
-                          ({answerDetails.score} / {answerDetails.mark ?? 1})
-                        </span>
-                      )}
-                  </p>
-                  {isCorrect ? (
-                    <CheckCircle className="text-green-600 w-6 h-6" />
-                  ) : (
-                    <XCircle className="text-red-600 w-6 h-6" />
-                  )}
-                </div>
-
-                {q.question_type === "objective" && (
-                  <div className="space-y-2 mb-3 text-gray-700">
-                    {options.map((opt: string, i: number) => (
-                      <div key={i} className="flex gap-2 items-start">
-                        <span className="font-semibold">
-                          {String.fromCharCode(65 + i)}.
-                        </span>
-                        <span>{opt}</span>
+          
+          {testDetails.questions.map((q: Question, idx: number) => {
+                    const answerDetails = fetchedTestDetails?.questions?.find(
+                      (ans: any) =>
+                        ans.examinationquestion_id === q.examinationquestions_id
+                    );
+          
+                    const studentAnswer = answerDetails?.student_answer?.trim() || "";
+                    const correctAnswer = answerDetails?.correct_answer?.trim() || "";
+                    const isCorrect =
+                      studentAnswer &&
+                      correctAnswer &&
+                      studentAnswer.toLowerCase() === correctAnswer.toLowerCase();
+          
+                    const options = q.examinationquestions_options
+                      ? JSON.parse(q.examinationquestions_options)
+                      : [];
+          
+                    return (
+                      <div
+                        key={q.examinationquestions_id}
+                        className="border rounded-xl p-5 mb-7 bg-gray-50"
+                      >
+                        <div className="flex items-center justify-between mb-3">
+                          <p className="font-medium text-gray-800">
+                            {idx + 1}. {q.examinationquestions_question}
+                            {answerDetails?.score !== undefined &&
+                              answerDetails?.score !== null && (
+                                <span className="text-blue-600 font-semibold ml-2">
+                                  ({answerDetails.score} / {answerDetails.mark ?? 1})
+                                </span>
+                              )}
+                          </p>
+                        </div>
+          
+                        <div className="space-y-2 mb-3">
+                          {options.map((opt: string, i: number) => {
+                            const optionLetter = String.fromCharCode(65 + i);
+                            let borderColor = "border-gray-300"; // default
+                            let icon = null; // to render check or cross
+          
+                            if (
+                              optionLetter === studentAnswer &&
+                              studentAnswer === correctAnswer
+                            ) {
+                              borderColor = "border-green-500";
+                              icon = <IoCheckbox className="text-green-600 w-5 h-5" />;
+                            } else if (
+                              optionLetter === studentAnswer &&
+                              studentAnswer !== correctAnswer
+                            ) {
+                              borderColor = "border-red-500";
+                              icon = (
+                                <LiaTimesCircleSolid className="text-red-600 w-5 h-5" />
+                              );
+                            } else if (
+                              optionLetter === correctAnswer &&
+                              studentAnswer !== correctAnswer
+                            ) {
+                              borderColor = "border-green-500";
+                              icon = <IoCheckbox className="text-green-600 w-5 h-5" />;
+                            }
+          
+                            return (
+                              <div
+                                key={i}
+                                className={`flex justify-between items-center p-3 rounded-lg border ${borderColor} transition-all duration-200`}
+                              >
+                                <div className="flex gap-2 items-start">
+                                  <span className="font-semibold">{optionLetter}.</span>
+                                  <span>{opt}</span>
+                                </div>
+                                {icon && <div className="flex-shrink-0">{icon}</div>}
+                              </div>
+                            );
+                          })}
+                        </div>
+          
+                        <div className="text-sm text-gray-700 mt-3 space-y-1">
+                          <p className="m-0 font-semibold text-base">
+                            <strong>Your Answer:</strong>{" "}
+                            <span
+                              className={isCorrect ? "text-green-700" : "text-red-700"}
+                            >
+                              {studentAnswer || "Not answered"}
+                            </span>
+                          </p>
+                          <p className="m-0 font-semibold text-base">
+                            <strong>Correct Answer:</strong>{" "}
+                            <span className="text-blue-700">
+                              {correctAnswer || "Not available"}
+                            </span>
+                          </p>
+                        </div>
                       </div>
-                    ))}
-                  </div>
-                )}
-
-                <p>
-                  <strong className="text-gray-700">Your Answer:</strong>{" "}
-                  <span
-                    className={isCorrect ? "text-green-700" : "text-red-700"}
-                  >
-                    {studentAnswer}
-                  </span>
-                </p>
-
-                <p>
-                  <strong className="text-gray-700">Correct Answer:</strong>{" "}
-                  <span className="text-blue-700">{correctAnswer}</span>
-                </p>
-              </div>
-            );
-          })}
+                    );
+                  })}
         </div>
       </div>
     </div>

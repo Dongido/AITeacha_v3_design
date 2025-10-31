@@ -71,7 +71,7 @@ export function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F1F1F1] flex transition-all duration-300 ease-in-out">
+    <div className="min-h-screen bg-[#f1f1f1] flex transition-all duration-300 ease-in-out">
       {/* --- SIDENAV --- */}
       <Sidenav
         routes={routes}
@@ -82,7 +82,7 @@ export function Dashboard() {
 
       {/* --- MAIN CONTENT --- */}
       <div
-        className={`flex-1 p-4 transition-all duration-300 ease-in-out
+        className={`flex-1 overflow-hidden p-4  transition-all duration-300 ease-in-out
           ${
             openSidenav
               ? collapsed
