@@ -306,7 +306,7 @@ export function TeacherSignupForm({ className, ...props }: SignupFormProps) {
                 {step === 1 && (
                   <motion.div
                     key={step}
-                    className="grid gap-4"
+                    className="grid gap-2"
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -20 }}
@@ -425,45 +425,49 @@ export function TeacherSignupForm({ className, ...props }: SignupFormProps) {
                       )}
                     />
 
-                    <FormField
-                      control={form.control}
-                      name="password"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="font-semibold">
-                            Password
-                          </FormLabel>
-                          <FormControl>
-                            <PasswordInput
-                              className="rounded-full"
-                              placeholder="********"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage className="text-red-700" />
-                        </FormItem>
-                      )}
-                    />
+                    <div className="flex space-x-4">
+                      <FormField
+                        control={form.control}
+                        name="password"
+                        render={({ field }) => (
+                          <FormItem className="w-full">
+                            <FormLabel className="font-semibold">
+                              Password
+                            </FormLabel>
+                            <FormControl>
+                              <PasswordInput
+                                className="rounded-full"
+                                placeholder="********"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage className="text-red-700" />
+                          </FormItem>
+                        )}
+                      />
 
-                    <FormField
-                      control={form.control}
-                      name="confirmPassword"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="font-semibold">
-                            Confirm Password
-                          </FormLabel>
-                          <FormControl>
-                            <PasswordInput
-                              className="rounded-full"
-                              placeholder="********"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage className="text-red-700" />
-                        </FormItem>
-                      )}
-                    />
+                      <FormField
+                        control={form.control}
+                        name="confirmPassword"
+                        render={({ field }) => (
+                          <FormItem className="w-full">
+                            <FormLabel className="font-semibold">
+                              Confirm Password
+                            </FormLabel>
+                            <FormControl>
+                              <PasswordInput
+                                className="rounded-full"
+                                placeholder="********"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage className="text-red-700" />
+                          </FormItem>
+                        )}
+                      />
+
+                    </div>
+
 
                     <div className="flex justify-between space-x-6">
                       <div className="flex items-center space-x-2">

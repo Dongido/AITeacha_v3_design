@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { IoCheckmark, IoChevronBackOutline, IoCloseOutline } from "react-icons/io5";
 import { IoIosArrowForward } from "react-icons/io";
 import { TbSparkles } from "react-icons/tb";
+import Avatar from "../../../assets/img/avatar.svg";
 
 import { RootState, AppDispatch } from "../../../store";
 import { Button } from "../../../components/ui/Button";
@@ -1025,12 +1026,29 @@ const CreateTest: React.FC<CreateOrEditClassroomProps> = ({ isEdit }) => {
                       <button
                         // variant={"outline"}
                         onClick={handleGenerateMoreQuestions}
-                        className="font-bold py-2 px-4 rounded-full md:ml-4 bg-black text-white"
+                        className={`font-bold  ${loadingSuggestion ? "py-0 px-0" : "py-2 px-4"} rounded-full md:ml-4 bg-black text-white`}
                       >
                         {loadingSuggestion ? (
                           <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Generating...
+                            {/* <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Generating... */}
+                            <div className="fixed top-0 left-0 w-full h-full inset-0 bg-white z-[9999] flex flex-col items-center justify-center backdrop-blur-sm">
+                              <div className="bg-white rounded-[32px] shadow-lg p-10 flex flex-col items-center justify-center">
+                                <div className="relative w-48 h-48 flex items-center justify-center mb-6">
+                                  {/* Animated Circular Loader */}
+                                  <div className="absolute inset-0 rounded-full border-[10px] border-[#F3EEFF] border-t-[#6B46FF] animate-spin-slow"></div>
+                  
+                                  {/* Avatar */}
+                                  <img
+                                    src={Avatar}
+                                    alt="Loading avatar"
+                                    className="w-28 h-28 object-contain relative z-10"
+                                  />
+                                </div>
+                  
+                                <p className="text-sm text-gray-500">Generating Questions...</p>
+                              </div>
+                            </div>
                           </>
                         ) : (
                           <span className="flex items-center gap-2">
@@ -1044,9 +1062,27 @@ const CreateTest: React.FC<CreateOrEditClassroomProps> = ({ isEdit }) => {
                   </div>
 
                   {loadingSuggestion && (
-                    <div className="mt-4 text-center">
-                      Generating new questions...
-                    </div>
+                    // <div className="mt-4 text-center">
+                    //   Generating new questions...
+                    // </div>
+
+                    <div className="fixed w-full h-full top-[-20px] left-0 inset-0 bg-white z-[9999] flex flex-col items-center justify-center backdrop-blur-sm">
+                              <div className="bg-white rounded-[32px] shadow-lg p-10 flex flex-col items-center justify-center">
+                                <div className="relative w-48 h-48 flex items-center justify-center mb-6">
+                                  {/* Animated Circular Loader */}
+                                  <div className="absolute inset-0 rounded-full border-[10px] border-[#F3EEFF] border-t-[#6B46FF] animate-spin-slow"></div>
+                  
+                                  {/* Avatar */}
+                                  <img
+                                    src={Avatar}
+                                    alt="Loading avatar"
+                                    className="w-28 h-28 object-contain relative z-10"
+                                  />
+                                </div>
+                  
+                                <p className="text-sm text-gray-500">Generating Questions...</p>
+                              </div>
+                            </div>
                   )}
                   <h3>
                     {" "}
@@ -1111,10 +1147,28 @@ const CreateTest: React.FC<CreateOrEditClassroomProps> = ({ isEdit }) => {
                       className="font-bold py-2 px-4 rounded-full ml-1 bg-black text-white"
                     >
                       {loadingSuggestion ? (
-                        <span className="flex items-center gap-1">
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Generating...
-                        </span>
+                        // <span className="flex items-center gap-1">
+                        //   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        //   Generating...
+                        // </span>
+
+                        <div className="fixed top-0 left-0 w-full h-full inset-0 bg-white z-[9999] flex flex-col items-center justify-center backdrop-blur-sm">
+                              <div className="bg-white rounded-[32px] shadow-lg p-10 flex flex-col items-center justify-center">
+                                <div className="relative w-48 h-48 flex items-center justify-center mb-6">
+                                  {/* Animated Circular Loader */}
+                                  <div className="absolute inset-0 rounded-full border-[10px] border-[#F3EEFF] border-t-[#6B46FF] animate-spin-slow"></div>
+                  
+                                  {/* Avatar */}
+                                  <img
+                                    src={Avatar}
+                                    alt="Loading avatar"
+                                    className="w-28 h-28 object-contain relative z-10"
+                                  />
+                                </div>
+                  
+                                <p className="text-sm text-gray-500">Generating Questions...</p>
+                              </div>
+                            </div>
                       ) : theoryQuestions.length > 0 ? (
                         <span className="flex items-center gap-2">
                           <TbSparkles size={20}/>
@@ -1303,10 +1357,28 @@ const CreateTest: React.FC<CreateOrEditClassroomProps> = ({ isEdit }) => {
                       className="font-bold py-2 px-4 rounded-full ml-1 bg-black text-white"
                     >
                       {loadingSuggestion ? (
-                        <span className="flex items-center gap-1">
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Generating...
-                        </span>
+                        // <span className="flex items-center gap-1">
+                        //   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        //   Generating...
+                        // </span>
+
+                        <div className="fixed top-0 left-0 w-full h-full inset-0 bg-white z-[9999] flex flex-col items-center justify-center backdrop-blur-sm">
+                              <div className="bg-white rounded-[32px] shadow-lg p-10 flex flex-col items-center justify-center">
+                                <div className="relative w-48 h-48 flex items-center justify-center mb-6">
+                                  {/* Animated Circular Loader */}
+                                  <div className="absolute inset-0 rounded-full border-[10px] border-[#F3EEFF] border-t-[#6B46FF] animate-spin-slow"></div>
+                  
+                                  {/* Avatar */}
+                                  <img
+                                    src={Avatar}
+                                    alt="Loading avatar"
+                                    className="w-28 h-28 object-contain relative z-10"
+                                  />
+                                </div>
+                  
+                                <p className="text-sm text-gray-500">Generating Questions...</p>
+                              </div>
+                            </div>
                       ) : theoryQuestions.length > 0 ? (
                         <span className="flex items-center gap-2">
                           <TbSparkles size={20}/>

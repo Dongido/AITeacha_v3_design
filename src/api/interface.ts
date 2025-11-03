@@ -11,6 +11,21 @@ export interface Tool {
   tool_description: string;
   tool_thumbnail: string | null;
 }
+
+
+export interface StudentAssignment {
+  id: number;
+  author: string;
+  assignment_id: number;
+  classroom_id: number;
+  classroom_name: string;
+  assignment_description?: string;
+  submitted_at?: string;
+  score?: number;
+  status?: string;
+}
+
+
 export interface ClassroomResource {
   resources_id: number;
   classroom_path: string;

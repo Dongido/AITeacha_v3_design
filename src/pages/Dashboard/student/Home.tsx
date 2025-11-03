@@ -305,11 +305,11 @@ const Home = () => {
         if (!isMounted) return;
 
         // ✅ Only redirect *after* we have real data
-        if (!profileComplete) {
-          console.log("🧭 Redirecting to /student/complete-profile");
-          navigate("/student/complete-profile");
-          return;
-        }
+        // if (!profileComplete) {
+        //   console.log("🧭 Redirecting to /student/complete-profile");
+        //   navigate("/student/complete-profile");
+        //   return;
+        // }
 
         const interestSkipped = sessionStorage.getItem("interestSkipped");
         if (!interestComplete && !interestSkipped) {

@@ -99,6 +99,18 @@ const TestPage: React.FC = () => {
       return values.some((v) => v.includes(term));
     });
   }, [tests, searchTerm]);
+  const filteredExam = React.useMemo(() => {
+    if (!examinations) return [];
+    if (!searchTerm.trim()) return examinations;
+
+    const term = searchTerm.toLowerCase();
+    return examinations.filter((item: any) => {
+      const values = Object.values(item)
+        .filter((v) => typeof v === "string")
+        .map((v) => v.toLowerCase());
+      return values.some((v) => v.includes(term));
+    });
+  }, [examinations, searchTerm]);
 
   const handleJoinClick = () => {
     joinTestDialogRef.current?.openDialog();
@@ -239,7 +251,7 @@ const TestPage: React.FC = () => {
     onClick={() => setActiveTab("created")}
     className={`flex items-center w-full sm:w-fit h-full gap-3  transition font-semibold ${
       activeTab === "created"
-        ? "border-b-2 border-purple-900 text-purple-900"
+        ? "border-b-4 border-purple-900 text-purple-900"
         : "text-gray-600"
     }`}
   >
@@ -251,7 +263,7 @@ const TestPage: React.FC = () => {
     onClick={() => setActiveTab("joined")}
     className={`flex items-center w-full sm:w-fit h-full gap-3  transition font-semibold ${
       activeTab === "joined"
-        ? "border-b-2 border-purple-900 text-purple-900"
+        ? "border-b-4 border-purple-900 text-purple-900"
         : "text-gray-600"
     }`}
   >
@@ -332,7 +344,7 @@ const TestPage: React.FC = () => {
               onRowClick={handleRowClick}
             />
           ) : (
-            <BaseTable data={examinations} columns={studentColumn} />
+            <BaseTable data={filteredExam} columns={studentColumn} />
           )}
         </div>
       )}
