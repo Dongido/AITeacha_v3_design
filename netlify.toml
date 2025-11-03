@@ -1,2 +1,10 @@
 [build.environment]
   NODE_OPTIONS = "--max_old_space_size=4096"
+
+  [build]
+  command = "CI= npm run build"
+  publish = "build"
+
+[build.environment]
+  DISABLE_ESLINT_PLUGIN = "true"
+
