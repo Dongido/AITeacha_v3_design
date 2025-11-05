@@ -7,7 +7,7 @@ import OpenAI from "../../../assets/img/openai.svg";
 import Resilience7 from "../../../assets/img/resilience.svg";
 import Lastimg from "../../../assets/img/Lastimg.svg";
 import Bg from "../../../assets/img/bglines3.png"
-import Avatar from "../../../assets/img/avatar.svg";
+import Avatar from "../../../assets/img/avatar.webp";
 import Lines from "../../../assets/img/lines.svg";
 import HLine from "../../../assets/img/h-line.svg"; 
 

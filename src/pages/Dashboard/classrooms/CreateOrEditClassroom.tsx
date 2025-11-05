@@ -1208,7 +1208,7 @@ import {
   OutlineInputs,
   AssessmentQuestion,
 } from "./parsedInputs";
-import Avatar from "../../../assets/img/avatar.svg";
+import Avatar from "../../../assets/img/avatar.webp";
 import {
   loadClassrooms,
   createClassroomThunk,

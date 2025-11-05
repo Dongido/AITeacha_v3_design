@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { IoCheckmark, IoChevronBackOutline, IoCloseOutline } from "react-icons/io5";
 import { IoIosArrowForward } from "react-icons/io";
 import { TbSparkles } from "react-icons/tb";
-import Avatar from "../../../assets/img/avatar.svg";
+import Avatar from "../../../assets/img/avatar.webp";
 
 import { RootState, AppDispatch } from "../../../store";
 import { Button } from "../../../components/ui/Button";
