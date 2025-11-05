@@ -129,7 +129,7 @@
 // export default WhatSetsUsApart;
 
 import GameChangerbg from "../../../assets/img/Gamechangerbg.svg";
-import Time from "../../../assets/img/Group 5.svg";
+import Time from "../../../assets/img/Group 5.webp";
 import Classroom from "../../../assets/img/Group 6 (2).svg";
 import Enhance from "../../../assets/img/Enhance.svg";
 const GameChanger = () => {

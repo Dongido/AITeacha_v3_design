@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import Toolbox from "../../../assets/img/Toolbox.svg";
-import DashboardPreview from "../../../assets/img/DashboardPreview.svg";
+import DashboardPreview from "../../../assets/img/DashboardPreview.webp";
 import Dashboard2 from "../../../assets/img/2.png"
 import Dashboard3 from "../../../assets/img/2.png"
 
