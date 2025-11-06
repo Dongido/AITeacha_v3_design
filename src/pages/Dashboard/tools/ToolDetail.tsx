@@ -1751,7 +1751,7 @@ const ToolDetail = () => {
                 </div>
                 
                 {formFields.find((f) => f.name === "description") && (
-                  <div className="lg:col-span-2 -mt-[70px]">
+                  <div className="lg:col-span-2 -mt-[10px]">
                     <Label>Description</Label>
                     <TextArea
                       name="description"

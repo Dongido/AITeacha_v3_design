@@ -207,7 +207,7 @@ export function LoginFormSchool({ className, ...props }: LoginFormProps) {
                 {isLoading ? "Verifying..." : "Log In"}
               </Button>
 
-              <div className="relative my-6">
+              <div className="relative md:my-4">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-gray-300"></div>
                 </div>
@@ -221,7 +221,7 @@ export function LoginFormSchool({ className, ...props }: LoginFormProps) {
           </form>
         </Form>
 
-        <div className="flex flex-col sm:flex-row justify-center mt-0 space-y-4 sm:space-y-0 sm:space-x-4">
+        <div className="flex flex-col sm:flex-row justify-center mt-0 ">
           <Button
             variant="outline"
             type="button"
@@ -229,7 +229,7 @@ export function LoginFormSchool({ className, ...props }: LoginFormProps) {
             onClick={(event) => {
               event.preventDefault();
               try {
-                const googleAuthUrl = `https://vd.aiteacha.com/api/auth/google/school`;
+                const googleAuthUrl = `auth/google/school`;
                 window.location.href = googleAuthUrl;
               } catch (error: any) {
                 console.log(error);

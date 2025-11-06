@@ -1,15 +1,19 @@
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import mission from "../../../assets/img/mission.jpg"
 const AITeachaMission = () => {
   return (
     <>
       <Navbar />
 
-      <section className="bg-gray-100 text-gray-800 py-24 ">
-        <section className="relative bg-blight w-full h-[60vh] pt-[5rem] flex justify-center bg-gradient-to-r from-[#07052D] to-[#171093] items-center overflow-hidden overlow-hidden">
+      <section className="text-gray-800 py-24 p-4 ">
+        <section className="relative rounded-2xl bg-blight w-full h-[60vh] flex justify-center bg-gradient-to-r from-[#07052D] to-[#171093] items-center overflow-hidden overlow-hidden">
+        
+                  <img src={mission} alt="" className="w-full h-full absolute object-cover max-w-full"/>
+                  <div className="absolute w-full h-full bg-[#2E096399] z-20" /> 
           <span className="absolute inse=t-0 z-0 p-5  justif-center top-[rem]"></span>
           <section>
-            <figcaption className="desc z-10 relative">
+            <figcaption className="desc z-20 relative">
               <h1 className="text-6xl font-bold text-center my-6 text-header text-white">
                 {" "}
                 AiTeacha Mission
@@ -22,7 +26,7 @@ const AITeachaMission = () => {
           </section>
         </section>
 
-        <div className="max-w-5xl mx-auto px-6">
+        <div className="max-w-5xl mx-auto mt-[30px]  md:mt-[100px] px-6">
           <h2 className="text-3xl md:text-4xl lg:text-4xl font-bold text-primary mt-6 text-center mb-6"></h2>
           <p className="text-lg leading-relaxed mb-8">
             <span className="text-lg font-bold"> Our Mission &nbsp;</span>

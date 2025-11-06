@@ -103,7 +103,7 @@ const Interest: React.FC = () => {
 
   return (
     <ToastProvider swipeDirection="left">
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 px-4">
+      <div className="min-h-screen overflow-hidden py-[30px] px-4 flex flex-col items-center justify-center bg-gray-100">
         <div className="min-h-[85vh] flex flex-col items-center justify-between w-full max-w-3xl">
           {/* Logo */}
           <div className="mb-6">
@@ -121,14 +121,14 @@ const Interest: React.FC = () => {
           </div>
 
           {/* Options */}
-          <div className="flex items-center justify-center max-w-xl gap-4 mb-10 w-full flex-wrap">
+          <div className="flex items-center justify-center max-w-xl gap-3 md:gap-4 mb-10 w-full flex-wrap">
             {optionsList.map((option) => {
               const isSelected = selectedOptions.includes(option);
               return (
                 <button
                   key={option}
                   onClick={() => handleToggle(option)}
-                  className={`py-3 text-base rounded-lg cursor-pointer px-7 font-semibold transition-all duration-300 ${
+                  className={`py-2 md:py-3 text-sm md:text-base rounded-lg cursor-pointer px-3 md:px-7 font-semibold transition-all duration-300 ${
                     isSelected
                       ? "bg-[#5C3CBB] text-white scale-105"
                       : "bg-gray-200 text-gray-800 hover:bg-gray-300"
@@ -141,10 +141,12 @@ const Interest: React.FC = () => {
           </div>
 
           {/* Action Buttons */}
+          <div className="flex w-full flex-col items-center justify-center">
+
           <Button
             type="button"
             onClick={handleContinue}
-            className="mt-2 bg-primary max-w-full w-[400px] text-white rounded-full"
+            className="mt-2 bg-primary w-full md:w-[400px] text-white rounded-full"
           >
             Continue
           </Button>
@@ -155,6 +157,7 @@ const Interest: React.FC = () => {
           >
             Skip
           </Button>
+          </div>
         </div>
 
         {/* Toast */}

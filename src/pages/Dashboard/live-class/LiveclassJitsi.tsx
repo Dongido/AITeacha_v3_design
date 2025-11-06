@@ -15,6 +15,7 @@ import {
 } from "./interface";
 import { motion } from "framer-motion";
 import { Button } from "../../../components/ui/Button";
+import { BACKEND_URL } from "../../../lib/utils";
 export interface Meeting {
   id: number;
   user_id: number;
@@ -35,9 +36,9 @@ export interface Meeting {
 
 const JITSI_DOMAIN = "meet.aiteacha.com:8443";
 const TRANSCRIPT_API_URL =
-  "https://vd.aiteacha.com/api/live/class/add/transcript";
+  `${BACKEND_URL}live/class/add/transcript`;
 const TRANSCRIBE_API_ENDPOINT =
-  "https://vd.aiteacha.com/api/live/class/meeting/transcriber";
+  `${BACKEND_URL}live/class/meeting/transcriber`;
 // "https://vd.aiteacha.com/api/live/class/meeting/transcriber";
 const JitsiMeetingPage = () => {
   const navigate = useNavigate();

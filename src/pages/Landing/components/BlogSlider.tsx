@@ -11,6 +11,7 @@ import Image1 from "../../../assets/img/course.png";
 import Image2 from "../../../assets/img/certification.jpg";
 import Image3 from "../../../assets/img/certification2.jpg";
 import Image4 from "../../../assets/img/certification3.jpg";
+import { IoIosArrowRoundForward } from "react-icons/io";
 
 SwiperCore.use([Navigation, Pagination, Autoplay, A11y]);
 
@@ -28,9 +29,9 @@ type BlogSliderProps = {
 
 const BlogSlider: React.FC<BlogSliderProps> = ({ blogs }) => {
   return (
-    <div className="w-full pb-6 relative">
-      <div className="mx-auto">
-        <section className="relative bg-blight w-full mb-6 h-[60vh] mt-24 pt-[5rem] flex justify-center bg-gradient-to-r from-[#07052D] to-[#171093] items-center overflow-hidden">
+    <div className="w-full p-4 pb-6 relative">
+      <div className="max-w-7xl mx-auto">
+        <section className="relative rounded-2xl  bg-blight w-full mb-6 h-[40vh] mt-24  flex justify-center bg-gradient-to-r from-[#07052D] to-[#171093] items-center overflow-hidden">
           <span className="absolute inset-0 z-0 p-5 justify-center"></span>
           <section>
             <figcaption className="desc z-10 relative px-2">
@@ -63,23 +64,23 @@ const BlogSlider: React.FC<BlogSliderProps> = ({ blogs }) => {
           >
             {blogs.map((blog, index) => (
               <SwiperSlide key={index}>
-                <div className="w-[350px] mt-6 h-[320px] sm:w-[400px] lg:w-[420px] h-[320px] bg-gray-50 text-gray-900 rounded-lg border border-gray-300 text-left p-2 px-4 relative">
+                <div className="w-[350px] mt-6 h-[400px]  lg:w-[380px] text-gray-900 text-left relative">
                   <img
                     src={blog.image}
                     alt={blog.title}
-                    className="w-full h-32 object-cover rounded-md mb-4"
+                    className="w-full h-52 object-cover rounded-md mb-4"
                   />
+                  <h4 className="text-sm font-semibold">{blog.date}</h4>
                   <h3 className="text-xl font-semibold mb-2">{blog.title}</h3>
                   <p className="text-sm lg:text-base mb-4">{blog.excerpt}</p>
 
-                  <div className="absolute bottom-2 left-2 flex items-center space-x-2">
+                  <div className=" bottom-2 left-0 flex items-center">
                     <Link
                       to={blog.href}
-                      className="text-primary underline py-1 rounded-full"
+                      className="flex items-center gap-2 text-primary  py-1 rounded-full"
                     >
-                      Read more
+                      Read more <IoIosArrowRoundForward size={20} />
                     </Link>
-                    <h4 className="text-sm font-semibold">{blog.date}</h4>
                   </div>
                 </div>
               </SwiperSlide>

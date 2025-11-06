@@ -136,6 +136,7 @@ import { JuniorTemplateDisplay } from "../pages/Dashboard/result/components/save
 import ViewEditedPrimaryTemplate from "../pages/Dashboard/result/components/savedTemplate/DisplayPrimaryResultTemplate";
 import TeachersResult from "../pages/Dashboard/TeachersResult";
 import ResultDetails from "../pages/Dashboard/result/ResultDetails";
+import StudentClassPage from "../pages/Dashboard/student/StudentClassroomPage";
 
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -832,7 +833,7 @@ export const Studentroutes = [
         icon: <AcademicCapIcon {...icon} />,
         name: "classes",
         path: "/class",
-        element: <Classes />,
+        element: <StudentClassPage />,
       },
       {
         icon: <AcademicCapIcon {...icon} />,

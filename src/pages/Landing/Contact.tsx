@@ -1,16 +1,319 @@
+// import Navbar from "./components/Navbar";
+// import Footer from "./components/Footer";
+// import { Input } from "../../components/ui/Input";
+// import { TextArea } from "../../components/ui/TextArea";
+// import { Button } from "../../components/ui/Button";
+// import { useState } from "react";
+// import { contactUs } from "../../api/auth";
+// import { contactSlice } from "../../store/slices/authSlice";
+// import { useAppDispatch, useAppSelector } from "../../store/hooks";
+// import { RootState } from "../../store";
+// const Contact = () => {
+//   const dispatch = useAppDispatch();
+//   const { loading, error } = useAppSelector((state: RootState) => state.auth);
+//   const contactMethods = [
+//     {
+//       icon: (
+//         <svg
+//           xmlns="http://www.w3.org/2000/svg"
+//           fill="none"
+//           viewBox="0 0 24 24"
+//           strokeWidth={1.5}
+//           stroke="currentColor"
+//           className="w-6 h-6"
+//         >
+//           <path
+//             strokeLinecap="round"
+//             strokeLinejoin="round"
+//             d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"
+//           />
+//           <path
+//             strokeLinecap="round"
+//             strokeLinejoin="round"
+//             d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"
+//           />
+//         </svg>
+//       ),
+//       contact: " 65, Gbasemo Street, Aga Ikorodu, Lagos Nigeria",
+//       title: "Our office",
+//       label:
+//         "Visit us at our local office. We would love to get to know in person.",
+//     },
+//     {
+//       icon: (
+//         <svg
+//           xmlns="http://www.w3.org/2000/svg"
+//           fill="none"
+//           viewBox="0 0 24 24"
+//           strokeWidth={1.5}
+//           stroke="currentColor"
+//           className="w-6 h-6"
+//         >
+//           <path
+//             strokeLinecap="round"
+//             strokeLinejoin="round"
+//             d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"
+//           />
+//         </svg>
+//       ),
+//       contact: "+234 708-9115-000",
+//       title: "Phone",
+//       label: "Give us a call. Our Experts are ready to talk to you.",
+//     },
+//     {
+//       icon: (
+//         <svg
+//           xmlns="http://www.w3.org/2000/svg"
+//           fill="none"
+//           viewBox="0 0 24 24"
+//           strokeWidth={1.5}
+//           stroke="currentColor"
+//           className="w-6 h-6"
+//         >
+//           <path
+//             strokeLinecap="round"
+//             strokeLinejoin="round"
+//             d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"
+//           />
+//         </svg>
+//       ),
+//       contact: "info@aiteacha.com",
+//       title: "Email",
+//       label:
+//         "Drop us an email and you will receive a reply within a short time.",
+//     },
+//   ];
+
+//   const [formData, setFormData] = useState({
+//     firstname: "",
+//     lastname: "",
+//     email: "",
+//     phone: "",
+//     message_content: "",
+//   });
+//   const [successMessage, setSuccessMessage] = useState("");
+
+//   const handleChange = (e: any) => {
+//     setFormData((prev) => ({
+//       ...prev,
+//       [e.target.name]: e.target.value,
+//     }));
+//   };
+
+//   const handleSubmit = async (e: React.FormEvent) => {
+//     e.preventDefault();
+
+//     const payload = {
+//       firstname: formData.firstname,
+//       lastname: formData.lastname,
+//       email: formData.email,
+//       phone: formData.phone,
+//       message_content: formData.message_content,
+//     };
+
+//     try {
+//       await dispatch(contactSlice(payload));
+//       setFormData({
+//         firstname: "",
+//         lastname: "",
+//         email: "",
+//         phone: "",
+//         message_content: "",
+//       });
+//       setSuccessMessage(
+//         "Your message has been sent. We'll get back to you shortly."
+//       );
+//       setTimeout(() => {
+//         setSuccessMessage("");
+//       }, 200000);
+//     } catch (error) {
+//       console.error("Error submitting contact form:", error);
+//     }
+//   };
+
+//   return (
+//     <div className="flex flex-col min-h-screen bg-white">
+//       <section>
+//         <Navbar />
+//       </section>
+//       <div className="mt-24">
+//         <section className="relative bg-blight w-full h-[60vh] pt-[5rem] flex justify-center bg-gradient-to-r from-[#07052D] to-[#171093] items-center overflow-hidden overlow-hidden">
+//           <span className="absolute inse=t-0 z-0 p-5  justif-center top-[rem]"></span>
+//           <section>
+//             <figcaption className="desc z-10 relative px-2">
+//               <h1 className="text-3xl md:text-4xl lg:text-6xl font-bold text-center my-2 text-header text-white">
+//                 {" "}
+//                 Get in Touch with Us
+//               </h1>
+//               <h2 className="text-xl text-gray-300 text-center">
+//                 We are always here right by your side
+//               </h2>
+//             </figcaption>
+//           </section>
+//         </section>
+
+//         <div className="mt-24">
+//           <div className="max-w-screen-xl shadow-md border  mx-auto my-12 px-4 py-8 rounded-t-3xl text-center md:px-8">
+//             <ul className=" flex flex-wrap gap-x-8 gap-y-6 items-center lg:gap-x-18">
+//               {contactMethods.map((item, idx) => (
+//                 <li key={idx}>
+//                   <h4 className="text-gray-900 text-lg font-bold">
+//                     {item.title}
+//                   </h4>
+//                   <h4 className="text-gray-800 text-sm max-w-xs">
+//                     {item.label}
+//                   </h4>
+//                   <div className="mt-3 flex justify-center items-center gap-x-3">
+//                     <div className="flex-none text-primary text-center">
+//                       {item.icon}
+//                     </div>
+//                     <p className="text-sm text-center">{item.contact}</p>
+//                   </div>
+//                 </li>
+//               ))}
+//             </ul>
+//           </div>
+//         </div>
+//         <section>
+//           <div className="gap-8 items-center py-8 px-4 mx-auto max-w-screen-xl xl:gap-16 md:grid md:grid-cols-2 sm:py-16 lg:px-6">
+//             <img
+//               className="w-full dark:hidden"
+//               src="https://images.template.net/78027/Free-Contact-Us-Illustration-JPEG-1.jpg"
+//               alt="Contact image"
+//             />
+//             <img
+//               className="w-full hidden dark:block"
+//               src="https://images.template.net/78027/Free-Contact-Us-Illustration-JPEG-1.jpg"
+//               alt="Contact image"
+//             />
+//             <div className=" md:mt-0">
+//               <h2 className="mb-4 text-2xl tracking-tight font-extrabold text-gray-900 dark:text-white">
+//                 We’d love to hear from you!
+//               </h2>
+//               <p className="mb-6 font-light text-gray-500 md:text-lg dark:text-gray-400">
+//                 Please fill out the form below, and we will get back to you as
+//                 soon as possible.
+//               </p>
+
+//               <form className="space-y-6" onSubmit={handleSubmit}>
+//                 <div className="flex space-x-4">
+//                   <div className="flex-1">
+//                     <Input
+//                       name="firstname"
+//                       type="text"
+//                       value={formData.firstname}
+//                       onChange={handleChange}
+//                       placeholder="First Name"
+//                       required
+//                     />
+//                   </div>
+//                   <div className="flex-1">
+//                     <Input
+//                       name="lastname"
+//                       value={formData.lastname}
+//                       onChange={handleChange}
+//                       type="text"
+//                       placeholder="Last Name"
+//                       required
+//                     />
+//                   </div>
+//                 </div>
+//                 <div className="flex space-x-4">
+//                   <div className="flex-1">
+//                     <Input
+//                       name="email"
+//                       value={formData.email}
+//                       onChange={handleChange}
+//                       type="email"
+//                       placeholder="Email Address"
+//                       required
+//                     />
+//                   </div>
+//                   <div className="flex-1">
+//                     <Input
+//                       name="phone"
+//                       value={formData.phone}
+//                       onChange={handleChange}
+//                       type="tel"
+//                       placeholder="Phone Number"
+//                       required
+//                     />
+//                   </div>
+//                 </div>
+
+//                 <div>
+//                   <TextArea
+//                     name="message_content"
+//                     value={formData.message_content}
+//                     onChange={handleChange}
+//                     placeholder="Your Message"
+//                     required
+//                   />
+//                 </div>
+//                 <div className="text-center">
+//                   <Button
+//                     type="submit"
+//                     disabled={loading}
+//                     variant={"gradient"}
+//                     className="inline-flex items-center text-white  focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center w-full dark:focus:ring-primary-900"
+//                   >
+//                     Send Message
+//                   </Button>
+//                   {successMessage && (
+//                     <p className="text-green-600 text-sm mt-2">
+//                       {successMessage}
+//                     </p>
+//                   )}
+//                 </div>
+//               </form>
+//             </div>
+//           </div>
+//         </section>
+//       </div>
+
+//       <Footer />
+//     </div>
+//   );
+// };
+
+// export default Contact;
+
+
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import { Input } from "../../components/ui/Input";
 import { TextArea } from "../../components/ui/TextArea";
 import { Button } from "../../components/ui/Button";
 import { useState } from "react";
-import { contactUs } from "../../api/auth";
 import { contactSlice } from "../../store/slices/authSlice";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { RootState } from "../../store";
+import ContactImage from "../../assets/img/image 6.png";
+import Hero from "../../assets/img/hero.png";
+import { motion } from "framer-motion";
+
+const fadeInUp = {
+  hidden: { opacity: 0, y: 40 },
+  visible: (delay = 0) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay, duration: 0.6, ease: "easeOut" },
+  }),
+};
+
+const fadeInScale = {
+  hidden: { opacity: 0, scale: 0.95 },
+  visible: (delay = 0) => ({
+    opacity: 1,
+    scale: 1,
+    transition: { delay, duration: 0.7, ease: "easeOut" },
+  }),
+};
+
 const Contact = () => {
   const dispatch = useAppDispatch();
-  const { loading, error } = useAppSelector((state: RootState) => state.auth);
+  const { loading } = useAppSelector((state: RootState) => state.auth);
+
   const contactMethods = [
     {
       icon: (
@@ -20,7 +323,7 @@ const Contact = () => {
           viewBox="0 0 24 24"
           strokeWidth={1.5}
           stroke="currentColor"
-          className="w-6 h-6"
+          className="w-6 h-6 text-[#6200EE]"
         >
           <path
             strokeLinecap="round"
@@ -34,10 +337,10 @@ const Contact = () => {
           />
         </svg>
       ),
-      contact: " 65, Gbasemo Street, Aga Ikorodu, Lagos Nigeria",
-      title: "Our office",
+      title: "Our Office",
+      contact: "65, Gbasemo Street, Aga Ikorodu, Lagos Nigeria",
       label:
-        "Visit us at our local office. We would love to get to know in person.",
+        "Visit us at our local office. We would love to get to know you in person.",
     },
     {
       icon: (
@@ -47,7 +350,7 @@ const Contact = () => {
           viewBox="0 0 24 24"
           strokeWidth={1.5}
           stroke="currentColor"
-          className="w-6 h-6"
+          className="w-6 h-6 text-[#6200EE]"
         >
           <path
             strokeLinecap="round"
@@ -56,8 +359,8 @@ const Contact = () => {
           />
         </svg>
       ),
-      contact: "+234 708-9115-000",
       title: "Phone",
+      contact: "+234 708-9115-000",
       label: "Give us a call. Our Experts are ready to talk to you.",
     },
     {
@@ -68,7 +371,7 @@ const Contact = () => {
           viewBox="0 0 24 24"
           strokeWidth={1.5}
           stroke="currentColor"
-          className="w-6 h-6"
+          className="w-6 h-6 text-[#6200EE]"
         >
           <path
             strokeLinecap="round"
@@ -77,8 +380,8 @@ const Contact = () => {
           />
         </svg>
       ),
-      contact: "info@aiteacha.com",
       title: "Email",
+      contact: "info@aiteacha.com",
       label:
         "Drop us an email and you will receive a reply within a short time.",
     },
@@ -102,17 +405,8 @@ const Contact = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const payload = {
-      firstname: formData.firstname,
-      lastname: formData.lastname,
-      email: formData.email,
-      phone: formData.phone,
-      message_content: formData.message_content,
-    };
-
     try {
-      await dispatch(contactSlice(payload));
+      await dispatch(contactSlice(formData));
       setFormData({
         firstname: "",
         lastname: "",
@@ -123,9 +417,7 @@ const Contact = () => {
       setSuccessMessage(
         "Your message has been sent. We'll get back to you shortly."
       );
-      setTimeout(() => {
-        setSuccessMessage("");
-      }, 200000);
+      setTimeout(() => setSuccessMessage(""), 20000);
     } catch (error) {
       console.error("Error submitting contact form:", error);
     }
@@ -133,143 +425,245 @@ const Contact = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
-      <section>
-        <Navbar />
-      </section>
-      <div className="mt-24">
-        <section className="relative bg-blight w-full h-[60vh] pt-[5rem] flex justify-center bg-gradient-to-r from-[#07052D] to-[#171093] items-center overflow-hidden overlow-hidden">
-          <span className="absolute inse=t-0 z-0 p-5  justif-center top-[rem]"></span>
-          <section>
-            <figcaption className="desc z-10 relative px-2">
-              <h1 className="text-3xl md:text-4xl lg:text-6xl font-bold text-center my-2 text-header text-white">
-                {" "}
-                Get in Touch with Us
-              </h1>
-              <h2 className="text-xl text-gray-300 text-center">
-                We are always here right by your side
-              </h2>
-            </figcaption>
-          </section>
-        </section>
+      <Navbar />
 
-        <div className="mt-24">
-          <div className="max-w-screen-xl shadow-md border  mx-auto my-12 px-4 py-8 rounded-t-3xl text-center md:px-8">
-            <ul className=" flex flex-wrap gap-x-8 gap-y-6 items-center lg:gap-x-18">
-              {contactMethods.map((item, idx) => (
-                <li key={idx}>
-                  <h4 className="text-gray-900 text-lg font-bold">
-                    {item.title}
-                  </h4>
-                  <h4 className="text-gray-800 text-sm max-w-xs">
-                    {item.label}
-                  </h4>
-                  <div className="mt-3 flex justify-center items-center gap-x-3">
-                    <div className="flex-none text-primary text-center">
-                      {item.icon}
-                    </div>
-                    <p className="text-sm text-center">{item.contact}</p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-        <section>
-          <div className="gap-8 items-center py-8 px-4 mx-auto max-w-screen-xl xl:gap-16 md:grid md:grid-cols-2 sm:py-16 lg:px-6">
-            <img
-              className="w-full dark:hidden"
-              src="https://images.template.net/78027/Free-Contact-Us-Illustration-JPEG-1.jpg"
-              alt="Contact image"
-            />
-            <img
-              className="w-full hidden dark:block"
-              src="https://images.template.net/78027/Free-Contact-Us-Illustration-JPEG-1.jpg"
-              alt="Contact image"
-            />
-            <div className=" md:mt-0">
-              <h2 className="mb-4 text-2xl tracking-tight font-extrabold text-gray-900 dark:text-white">
-                We’d love to hear from you!
-              </h2>
-              <p className="mb-6 font-light text-gray-500 md:text-lg dark:text-gray-400">
-                Please fill out the form below, and we will get back to you as
-                soon as possible.
+      {/* Hero Section */}
+      <motion.section
+        className="lg:mt-32 px-5 w-full h-[80vh] flex justify-center items-center bg-[#6200EE] relative overflow-hidden rounded-2xl"
+        initial="hidden"
+        animate="visible"
+        variants={fadeInUp}
+      >
+        <img
+          src={Hero}
+          alt="Contact banner"
+          className="absolute inset-0 w-full h-full object-cover opacity-80"
+        />
+        <motion.div
+          className="relative text-center text-white px-6 md:px-12"
+          variants={fadeInUp}
+          custom={0.3}
+        >
+          <h1 className="text-3xl md:text-4xl lg:text-6xl font-bold mb-3">
+            Get in Touch with Us
+          </h1>
+          <p className="text-lg md:text-xl text-gray-200">
+            We are always here right by your side
+          </p>
+        </motion.div>
+      </motion.section>
+
+      {/* Contact Info Cards */}
+      <motion.section
+        className="max-w-6xl mx-auto px-6 md:px-12 lg:px-20 mb-16 mt-20"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={fadeInUp}
+      >
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-white shadow-md rounded-3xl p-8 border"
+          variants={fadeInScale}
+          custom={0.2}
+        >
+          {contactMethods.map((item, idx) => (
+            <motion.div
+              key={idx}
+              className="flex flex-col text-left"
+              variants={fadeInUp}
+              custom={0.3 + idx * 0.2}
+            >
+              <div className="mb-4">{item.icon}</div>
+              <h4 className="text-lg font-bold text-gray-900 mb-1 text-left">
+                {item.title}
+              </h4>
+              <p className="text-gray-600 text-sm mb-2">{item.label}</p>
+              <p className="text-gray-800 font-medium text-sm">
+                {item.contact}
               </p>
+            </motion.div>
+          ))}
+        </motion.div>
+      </motion.section>
 
-              <form className="space-y-6" onSubmit={handleSubmit}>
-                <div className="flex space-x-4">
-                  <div className="flex-1">
-                    <Input
-                      name="firstname"
-                      type="text"
-                      value={formData.firstname}
-                      onChange={handleChange}
-                      placeholder="First Name"
-                      required
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <Input
-                      name="lastname"
-                      value={formData.lastname}
-                      onChange={handleChange}
-                      type="text"
-                      placeholder="Last Name"
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="flex space-x-4">
-                  <div className="flex-1">
-                    <Input
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      type="email"
-                      placeholder="Email Address"
-                      required
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <Input
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      type="tel"
-                      placeholder="Phone Number"
-                      required
-                    />
-                  </div>
-                </div>
+      {/* Contact Form Section */}
+      <motion.section
+        className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 items-center gap-12 px-6 md:px-12 lg:px-20 mb-20"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={fadeInUp}
+      >
+        <motion.div
+          className="flex justify-center"
+          variants={fadeInScale}
+          custom={0.2}
+        >
+          <img
+            src={ContactImage}
+            alt="Team collaboration"
+            className="rounded-full w-[420px] h-[600px] object-cover"
+          />
+        </motion.div>
 
-                <div>
-                  <TextArea
-                    name="message_content"
-                    value={formData.message_content}
+        <motion.div variants={fadeInUp} custom={0.4}>
+          <h2 className="text-2xl font-bold text-black mb-3">
+            We’d love to hear from you!
+          </h2>
+          <p className="text-black mb-6">
+            Please fill out the form below, and we will get back to you as soon
+            as possible.
+          </p>
+
+          <motion.div variants={fadeInUp} custom={1}>
+            <form className="space-y-5" onSubmit={handleSubmit}>
+              {/* First & Last Name */}
+              <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex-1">
+                  <label
+                    htmlFor="firstname"
+                    className="block mb-1 text-sm font-medium text-gray-700"
+                  >
+                    First Name
+                  </label>
+                  <Input
+                    id="firstname"
+                    name="firstname"
+                    value={formData.firstname}
                     onChange={handleChange}
-                    placeholder="Your Message"
+                    placeholder="Enter your first name"
                     required
+                    className="w-full bg-white border border-gray-300 rounded-full px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#6200EE] focus:border-transparent transition-all duration-200"
                   />
                 </div>
-                <div className="text-center">
-                  <Button
-                    type="submit"
-                    disabled={loading}
-                    variant={"gradient"}
-                    className="inline-flex items-center text-white  focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center w-full dark:focus:ring-primary-900"
+
+                <div className="flex-1">
+                  <label
+                    htmlFor="lastname"
+                    className="block mb-1 text-sm font-medium text-gray-700"
                   >
-                    Send Message
-                  </Button>
-                  {successMessage && (
-                    <p className="text-green-600 text-sm mt-2">
-                      {successMessage}
-                    </p>
-                  )}
+                    Last Name
+                  </label>
+                  <Input
+                    id="lastname"
+                    name="lastname"
+                    value={formData.lastname}
+                    onChange={handleChange}
+                    placeholder="Enter your last name"
+                    required
+                    className="w-full bg-white border border-gray-300 rounded-full px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#6200EE] focus:border-transparent transition-all duration-200"
+                  />
                 </div>
-              </form>
-            </div>
-          </div>
-        </section>
-      </div>
+              </div>
+
+              {/* Email & Phone */}
+              <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex-1">
+                  <label
+                    htmlFor="email"
+                    className="block mb-1 text-sm font-medium text-gray-700"
+                  >
+                    Email Address
+                  </label>
+                  <Input
+                    id="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    type="email"
+                    placeholder="example@email.com"
+                    required
+                    className="w-full bg-white border border-gray-300 rounded-full px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#6200EE] focus:border-transparent transition-all duration-200"
+                  />
+                </div>
+
+                <div className="flex-1">
+                  <label
+                    htmlFor="phone"
+                    className="block mb-1 text-sm font-medium text-gray-700"
+                  >
+                    Phone Number
+                  </label>
+                  <Input
+                    id="phone"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    type="tel"
+                    placeholder="+234 000 000 0000"
+                    required
+                    className="w-full bg-white border border-gray-300 rounded-full px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#6200EE] focus:border-transparent transition-all duration-200"
+                  />
+                </div>
+              </div>
+
+              {/* Message Field */}
+              <div>
+                <label
+                  htmlFor="message_content"
+                  className="block mb-1 text-sm font-medium text-gray-700"
+                >
+                  Describe Your Issue
+                </label>
+                <TextArea
+                  id="message_content"
+                  name="message_content"
+                  value={formData.message_content}
+                  onChange={handleChange}
+                  placeholder="Write your message here..."
+                  required
+                  className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#6200EE] focus:border-transparent transition-all duration-200"
+                />
+              </div>
+
+              {/* Submit Button */}
+              <div className="text-center">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className={`w-full py-3 rounded-full font-semibold text-white bg-[#6200EE] hover:opacity-90 transition-all duration-300 flex justify-center items-center gap-2 ${
+                    loading ? "opacity-80 cursor-not-allowed" : ""
+                  }`}
+                >
+                  {loading ? (
+                    <>
+                      <svg
+                        className="w-5 h-5 text-white animate-spin"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 100 16v-4l3 3-3 3v-4a8 8 0 01-8-8z"
+                        ></path>
+                      </svg>
+                      <span>Sending...</span>
+                    </>
+                  ) : (
+                    "Send Request"
+                  )}
+                </button>
+
+                {successMessage && (
+                  <p className="text-green-600 text-sm mt-2">
+                    {successMessage}
+                  </p>
+                )}
+              </div>
+            </form>
+          </motion.div>
+        </motion.div>
+      </motion.section>
 
       <Footer />
     </div>

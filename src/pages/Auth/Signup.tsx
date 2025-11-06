@@ -39,7 +39,7 @@ const SignUp = () => {
 
 
   return (
-    <div className="w-full h-screen flex">
+    <div className="w-full  min-h-screen md:h-screen flex">
       <div className="hidden flex-1 md:flex relative overflow-hidden ">
         <AnimatePresence mode="wait">
           <motion.div
@@ -122,7 +122,7 @@ const SignUp = () => {
           <AnimatePresence mode="wait">
             <SignupForm />
           </AnimatePresence>
-          <p className="text-center text-gray-800 mt-4">
+          <p className="text-center text-gray-800 md:mt-3">
             Already have an account?{" "}
             <Link to="/auth/login" className="text-primary hover:underline">
               Login

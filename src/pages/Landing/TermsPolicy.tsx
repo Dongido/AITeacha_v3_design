@@ -4,6 +4,10 @@ import Footer from "./components/Footer";
 import { BsArrowRightShort } from "react-icons/bs";
 import { Input } from "../../components/ui/Input";
 import { Link } from "react-router-dom";
+// import {legal}
+
+import Image1 from "../../../assets/img/course.png";
+import legalterms from "../../assets/img/legal-terms.jpg"
 
 const TermsPolicy = () => {
   const policies = [
@@ -17,12 +21,14 @@ const TermsPolicy = () => {
     <div>
       <Navbar />
 
-      <section className=" pb-[4rem] min-h-screen bg-gradient-to-b from-white to-blight  mt-24">
-        <section className="">
-          <section className="relative bg-blight w-full h-[60vh] pt-[5rem] flex justify-center bg-gradient-to-r from-[#07052D] to-[#171093] items-center overflow-hidden overlow-hidden">
+      <section className=" pb-[4rem] min-h-screen bg-gradient-to-b from-white to-blight p-4  mt-24">
+        <section className="relative rounded-2xl overflow-hidden">
+          <img src={legalterms} alt="" className="w-full h-full absolute object-cover max-w-full"/>
+          <div className="absolute w-full h-full bg-[#2E096399] z-20" /> 
+          <section className="relative bg-blight w-full h-[60vh] flex justify-center  items-center overflow-hidden overlow-hidden">
             <span className="absolute inse=t-0 z-0 p-5  justif-center top-[rem]"></span>
             <section>
-              <figcaption className="desc z-10 relative px-2">
+              <figcaption className="desc z-20 relative px-2">
                 <h1 className="text-3xl md:text-4xl lg:text-6xl font-bold text-center my-6 text-white">
                   {" "}
                   AiTeacha Privacy
@@ -39,12 +45,12 @@ const TermsPolicy = () => {
 
         <div className="max-w-4xl mx-auto mt-[5rem] p-4  b">
           <div className="mb-4 relative">
-            <div className="flex">
+            <div className="flex gap-2 flex-wrap">
               <div className="relative flex-grow">
                 <Input
                   type="text"
                   placeholder="What do you need to know"
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-l-lg "
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300"
                 />
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <svg
@@ -64,7 +70,7 @@ const TermsPolicy = () => {
               </div>
               <button
                 aria-label="search menu"
-                className="bg-primary text-white px-4 py-2 rounded-r-lg  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                className="bg-primary w-full md:w-[200px] text-white px-4 py-2 rounded-full  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               >
                 Search
               </button>
@@ -72,9 +78,9 @@ const TermsPolicy = () => {
           </div>
 
           <section className="bg-slate-100 rounded-lg">
-            <ul className="space-y-[1.5rem] p-5">
+            <ul className="space-y-[1.5rem] list-none p-5">
               {policies.map((policy, index) => (
-                <li key={index} className="bg-white p-3 rounded shadow">
+                <li key={index} className="bg-white border border-gray-300 p-3 rounded">
                   <div className="flex justify-between items-center">
                     <Link
                       to={policy.href}

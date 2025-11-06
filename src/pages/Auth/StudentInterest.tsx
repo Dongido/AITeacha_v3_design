@@ -120,41 +120,43 @@ const handleSkip = () => {
           </div>
 
           {/* Options */}
-          <div className="flex items-center justify-center max-w-xl gap-4 mb-10 w-full flex-wrap">
-            {optionsList.map((option) => {
-              const isSelected = selectedOptions.includes(option);
-              return (
-                <button
-                  key={option}
-                  onClick={() => handleToggle(option)}
-                  className={`py-3 text-base rounded-lg cursor-pointer px-7 font-semibold transition-all duration-300 ${
-                    isSelected
-                      ? "bg-[#5C3CBB] text-white scale-105"
-                      : "bg-gray-200 text-gray-800 hover:bg-gray-300"
-                  }`}
-                >
-                  {option}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Action Buttons */}
-          <Button
-            type="button"
-            onClick={handleContinue}
-            className="mt-2 bg-primary max-w-full w-[400px] text-white rounded-full"
-          >
-            Continue
-          </Button>
-          <Button
-            type="button"
-            onClick={handleSkip}
-            // disabled{isLoading}
-            className="max-w-full w-md cursor-pointer text-gray-800 py-2.5 rounded-md transition font-medium"
-          >
-            Skip
-          </Button>
+                    <div className="flex items-center justify-center max-w-xl gap-3 md:gap-4 mb-10 w-full flex-wrap">
+                      {optionsList.map((option) => {
+                        const isSelected = selectedOptions.includes(option);
+                        return (
+                          <button
+                            key={option}
+                            onClick={() => handleToggle(option)}
+                            className={`py-2 md:py-3 text-sm md:text-base rounded-lg cursor-pointer px-3 md:px-7 font-semibold transition-all duration-300 ${
+                              isSelected
+                                ? "bg-[#5C3CBB] text-white scale-105"
+                                : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                            }`}
+                          >
+                            {option}
+                          </button>
+                        );
+                      })}
+                    </div>
+          
+                    {/* Action Buttons */}
+                    <div className="flex w-full flex-col items-center justify-center">
+          
+                    <Button
+                      type="button"
+                      onClick={handleContinue}
+                      className="mt-2 bg-primary w-full md:w-[400px] text-white rounded-full"
+                    >
+                      Continue
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={handleSkip}
+                      className="max-w-full w-md cursor-pointer text-gray-800 py-2.5 rounded-md transition font-medium"
+                    >
+                      Skip
+                    </Button>
+                    </div>
         </div>
 
         {/* Toast */}

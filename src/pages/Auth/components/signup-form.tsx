@@ -9,7 +9,7 @@ import {
   FormMessage,
 } from "../../../components/ui/Form";
 import { Input } from "../../../components/ui/Input";
-import { cn } from "../../../lib/utils";
+import { BACKEND_URL, cn } from "../../../lib/utils";
 import { Button } from "../../../components/ui/Button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -481,7 +481,7 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
             onClick={(event) => {
               event.preventDefault();
               try {
-                const googleAuthUrl = `https://api.aiteacha.com/api/auth/google/${storedRole}?redirect_uri=${encodeURIComponent(
+                const googleAuthUrl = `${BACKEND_URL}auth/google/${storedRole}?redirect_uri=${encodeURIComponent(
                   window.location.origin +
                     `/api/auth/google/${storedRole}/callback`
                 )}`;
@@ -511,7 +511,7 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
                 <motion.div
                 // key="step2 "
                 key={currentStep}
-                className="grid gap-4"
+                className="grid gap-2"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}

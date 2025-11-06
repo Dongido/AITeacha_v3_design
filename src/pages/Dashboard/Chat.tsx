@@ -387,7 +387,7 @@ const Chat = () => {
         </div>
       )}
 
-      <div className="p-4 max-w-full md:w-[672px] mx-auto">
+      <div className="p-4 w-full md:w-[672px] mx-auto">
         {uploading && (
           <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
             <div

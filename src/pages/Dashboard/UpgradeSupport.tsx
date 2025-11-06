@@ -679,7 +679,7 @@ import { changeUserPlan, verifyCouponCode } from "../../api/subscription";
 import Cookies from "js-cookie";
 import axios from "axios";
 import Logo from "../../assets/img/logo.png";
-import { FLUTTERWAVE_PUBLIC } from "../../lib/utils";
+import { BACKEND_URL, FLUTTERWAVE_PUBLIC } from "../../lib/utils";
 import { useFlutterwave, closePaymentModal } from "flutterwave-react-v3";
 import { useNavigate } from "react-router-dom";
 import { verifyTransaction } from "../../api/subscription";
@@ -1020,7 +1020,7 @@ const UpgradeSupport = () => {
 
       try {
         const response = await axios.post(
-          "https://vd.aiteacha.com/api/payment/stripe/initiate",
+          `${BACKEND_URL}payment/stripe/initiate`,
           {
             user_id: parseInt(userDetails?.id || "0", 10),
             package_id: 4,

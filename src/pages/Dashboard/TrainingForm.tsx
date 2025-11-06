@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Input } from "../../components/ui/Input";
+import { BACKEND_URL } from "../../lib/utils";
 
 const TrainingForm = () => {
   const [formData, setFormData] = useState({
@@ -32,7 +33,7 @@ const TrainingForm = () => {
 
     try {
       const response = await fetch(
-        "https://vd.aiteacha.com/api/home/add/school/training",
+        `${BACKEND_URL}home/add/school/training`,
         {
           method: "POST",
           headers: {

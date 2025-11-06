@@ -59,24 +59,54 @@ const navigate = useNavigate();
   }, [selectedChat, userId, dispatch]);
 
   // ✅ Listen for new incoming messages via socket
-  useEffect(() => {
-    socket.on("receiveChat", (newMessage:any) => {
-      setMessages((prev) => {
-        const updated = [...prev, newMessage];
-        if (selectedChat) {
-          localStorage.setItem(
-            `chat_${selectedChat.user_id}`,
-            JSON.stringify(updated)
-          );
-        }
-        return updated;
-      });
-    });
+  // useEffect(() => {
+  //   socket.on("receiveChat", (newMessage:any) => {
+  //     setMessages((prev) => {
+  //       const updated = [...prev, newMessage];
+  //       if (selectedChat) {
+  //         localStorage.setItem(
+  //           `chat_${selectedChat.user_id}`,
+  //           JSON.stringify(updated)
+  //         );
+  //       }
+  //       return updated;
+  //     });
+  //   });
 
-    return () => {
-      socket.off("receiveChat");
-    };
-  }, [selectedChat]);
+  //   return () => {
+  //     socket.off("receiveChat");
+  //   };
+  // }, [selectedChat]);
+
+
+  useEffect(() => {
+  const handleReceiveChat = (newMessage: any) => {
+    // only update messages if it belongs to the current chat
+    setMessages((prev) => {
+      if (selectedChat && newMessage.sender_id === selectedChat.user_id) {
+        const updated = [...prev, newMessage];
+        localStorage.setItem(
+          `chat_${selectedChat.user_id}`,
+          JSON.stringify(updated)
+        );
+        return updated;
+      }
+      return prev;
+    });
+  };
+
+  // ✅ Attach listener once
+  if (!socket.hasListeners("receiveChat")) {
+    socket.on("receiveChat", handleReceiveChat);
+  }
+
+  return () => {
+    socket.off("receiveChat", handleReceiveChat);
+  };
+  // 👇 No dependencies (only once)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, []);
+
 
   // ✅ Filter out the current user’s own chat
   const filteredChats = userChat?.filter((chat) => chat.user_id !== userId);

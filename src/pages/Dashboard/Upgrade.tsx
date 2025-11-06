@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Button } from "../../components/ui/Button";
 import { useFlutterwave, closePaymentModal } from "flutterwave-react-v3";
 import { changeUserPlan } from "../../api/subscription";
-import { FLUTTERWAVE_PUBLIC } from "../../lib/utils";
+import { BACKEND_URL, FLUTTERWAVE_PUBLIC } from "../../lib/utils";
 import Logo from "../../assets/img/logo.png";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -130,6 +130,10 @@ const Upgrade: React.FC = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [couponCode, setCouponCode] = useState("");
   const [schoolCouponCode, setSchoolCouponCode] = useState("");
+
+  const [loadingTeacherCoupon, setLoadingTeacherCoupon] = useState(false);
+  const [loadingSchoolCoupon, setLoadingSchoolCoupon] = useState(false);
+
 
   const [allowedBillingCycles, setAllowedBillingCycles] = useState<
     BillingCycleType[]
@@ -404,7 +408,7 @@ const Upgrade: React.FC = () => {
 
       try {
         const response = await axios.post(
-          "https://api.aiteacha.com/api/payment/stripe/initiate",
+          `${BACKEND_URL}payment/stripe/initiate`,
           {
             user_id: parseInt(userDetails?.id || "0", 10),
             package_id: packageMap[plan],
@@ -485,77 +489,166 @@ const Upgrade: React.FC = () => {
     return isNaN(discount) ? 0 : discount;
   };
 
+  // const handleVerifyCoupon = async (userType: "teacher" | "school") => {
+  //   setLoading(true);
+  //   setCouponState(userType);
+  //   setVerificationMessage("");
+
+  //   setDiscountPercentage(0);
+  //   setSchoolCouponCode("");
+  //   setSchoolCouponApplied(false);
+  //   setSchoolVerificationMessage("");
+
+  //   // if (couponApplied) {
+  //   //   setVerificationMessage("Coupon code has already been applied.");
+  //   //   setLoading(false);
+  //   //   return;
+  //   // }
+
+  //   try {
+  //     const response = await verifyCouponCode({
+  //       couponCode,
+  //       userType,
+  //     });
+
+  //     if (
+  //       response.status === "success" &&
+  //       response.data &&
+  //       response.data.length > 0
+  //     ) {
+  //       const couponData = response.data[0];
+  //       const discount = extractDiscountPercentage(couponData.coupon_code);
+  //       const couponPeriod: string = couponData.subscription_period;
+
+  //       localStorage.setItem("couponApplied", "true");
+  //       setDiscountPercentage(discount);
+  //       setCouponApplied(true);
+  //       let newBillingCycle: BillingCycleType;
+  //       let newAllowedCycles: BillingCycleType[];
+
+  //       switch (couponPeriod) {
+  //         case "month":
+  //           newBillingCycle = "month";
+  //           newAllowedCycles = ["month"];
+  //           break;
+  //         case "year":
+  //           newBillingCycle = "year";
+  //           newAllowedCycles = ["year"];
+  //           break;
+  //         case "infinity":
+  //           newBillingCycle = "month";
+  //           newAllowedCycles = ["month", "quarter", "year", "term"];
+  //           break;
+  //         case "term":
+  //           newBillingCycle = "term";
+  //           newAllowedCycles = ["term"];
+  //           break;
+  //         default:
+  //           newBillingCycle = "month";
+  //           newAllowedCycles = ["month", "quarter", "year", "term"];
+  //       }
+
+  //       setBillingCycle(newBillingCycle);
+  //       setAllowedBillingCycles(newAllowedCycles);
+  //       setVerificationMessage("Coupon code applied successfully!");
+  //     } else {
+  //       setCouponApplied(false);
+  //       setDiscountPercentage(0);
+  //       setBillingCycle("month");
+  //       setVerificationMessage("Invalid coupon code");
+  //     }
+  //   } catch (error: any) {
+  //     setCouponApplied(false);
+  //     setDiscountPercentage(0);
+  //     setBillingCycle("month");
+  //     setVerificationMessage("Invalid or Expired coupon code.");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+
+
   const handleVerifyCoupon = async (userType: "teacher" | "school") => {
-    setLoading(true);
-    setCouponState(userType);
-    setVerificationMessage("");
+  setLoading(true);
+  setCouponState(userType);
+  setVerificationMessage("");
 
-    setDiscountPercentage(0);
-    setSchoolCouponCode("");
-    setSchoolCouponApplied(false);
-    setSchoolVerificationMessage("");
+  // reset previous coupon state
+  setDiscountPercentage(0);
+  setCouponApplied(false);
+  setSchoolCouponCode("");
+  setSchoolCouponApplied(false);
+  setSchoolVerificationMessage("");
 
-    if (couponApplied) {
-      setVerificationMessage("Coupon code has already been applied.");
-      setLoading(false);
-      return;
-    }
+  try {
+    const response = await verifyCouponCode({
+      couponCode,
+      userType,
+    });
 
-    try {
-      const response = await verifyCouponCode({
-        couponCode,
-        userType,
-      });
+    if (
+      response.status === "success" &&
+      response.data &&
+      response.data.length > 0
+    ) {
+      const couponData = response.data[0];
+      const discount = extractDiscountPercentage(couponData.coupon_code);
+      const couponPeriod: string = couponData.subscription_period;
 
-      if (
-        response.status === "success" &&
-        response.data &&
-        response.data.length > 0
-      ) {
-        const couponData = response.data[0];
-        const discount = extractDiscountPercentage(couponData.coupon_code);
-        const couponPeriod: string = couponData.subscription_period;
+      // localStorage.setItem("couponApplied", "true");
+      setDiscountPercentage(discount);
+      setCouponApplied(true);
 
-        localStorage.setItem("couponApplied", "true");
-        setDiscountPercentage(discount);
-        setCouponApplied(true);
-        let newBillingCycle: BillingCycleType;
-        let newAllowedCycles: BillingCycleType[];
+      let newBillingCycle: BillingCycleType;
+      let newAllowedCycles: BillingCycleType[];
 
-        switch (couponPeriod) {
-          case "month":
-            newBillingCycle = "month";
-            newAllowedCycles = ["month"];
-            break;
-          case "year":
-            newBillingCycle = "year";
-            newAllowedCycles = ["year"];
-            break;
-          case "infinity":
-            newBillingCycle = "month";
-            newAllowedCycles = ["month", "quarter", "year", "term"];
-            break;
-          case "term":
-            newBillingCycle = "term";
-            newAllowedCycles = ["term"];
-            break;
-          default:
-            newBillingCycle = "month";
-            newAllowedCycles = ["month", "quarter", "year", "term"];
-        }
-
-        setBillingCycle(newBillingCycle);
-        setAllowedBillingCycles(newAllowedCycles);
-        setVerificationMessage("Coupon code applied successfully!");
-      } else {
-        setVerificationMessage("Invalid coupon code");
+      switch (couponPeriod) {
+        case "month":
+          newBillingCycle = "month";
+          newAllowedCycles = ["month"];
+          break;
+        case "year":
+          newBillingCycle = "year";
+          newAllowedCycles = ["year"];
+          break;
+        case "infinity":
+          newBillingCycle = "month";
+          newAllowedCycles = ["month", "quarter", "year", "term"];
+          break;
+        case "term":
+          newBillingCycle = "term";
+          newAllowedCycles = ["term"];
+          break;
+        default:
+          newBillingCycle = "month";
+          newAllowedCycles = ["month", "quarter", "year", "term"];
       }
-    } catch (error: any) {
-      setVerificationMessage("Invalid or Expired coupon code.");
-    } finally {
-      setLoading(false);
+
+      setBillingCycle(newBillingCycle);
+      setAllowedBillingCycles(newAllowedCycles);
+      setVerificationMessage("✅ Coupon code applied successfully!");
+    } else {
+      // invalid or not found → reset price
+      setCouponApplied(false);
+      setDiscountPercentage(0);
+      setBillingCycle("month");
+      setAllowedBillingCycles(["month", "quarter", "year", "term"]);
+      setVerificationMessage("❌ Invalid coupon code.");
     }
-  };
+  } catch (error: any) {
+    // failed request → reset price
+    setCouponApplied(false);
+    setDiscountPercentage(0);
+    setBillingCycle("month");
+    setAllowedBillingCycles(["month", "quarter", "year", "term"]);
+    setVerificationMessage("❌ Invalid or expired coupon.");
+  } finally {
+    setLoading(false);
+  }
+};
+
+
 
   const handleVerifySchoolCoupon = async (userType: "teacher" | "school") => {
     setLoading(true);
@@ -567,11 +660,11 @@ const Upgrade: React.FC = () => {
     setCouponApplied(false);
     setVerificationMessage("");
 
-    if (schoolCouponApplied) {
-      setSchoolVerificationMessage("Coupon code has already been applied.");
-      setLoading(false);
-      return;
-    }
+    // if (schoolCouponApplied) {
+      // setSchoolVerificationMessage("Coupon code has already been applied.");
+      // setLoading(false);
+      // return;
+    // }
 
     try {
       const response = await verifyCouponCode({
@@ -589,7 +682,7 @@ const Upgrade: React.FC = () => {
         const discount = extractDiscountPercentage(couponData.coupon_code);
         const couponPeriod: string = couponData.subscription_period;
 
-        localStorage.setItem("schoolCouponApplied", "true");
+        // localStorage.setItem("schoolCouponApplied", "true");
         setDiscountPercentage(discount);
         console.log(discount, "discount");
         setSchoolCouponApplied(true);
@@ -622,12 +715,19 @@ const Upgrade: React.FC = () => {
 
         setBillingCycle(newBillingCycle);
         setAllowedBillingCycles(newAllowedCycles);
-        setSchoolVerificationMessage("Coupon code applied successfully!");
+        setSchoolVerificationMessage("✅Coupon code applied successfully!");
       } else {
-        setSchoolVerificationMessage("Invalid coupon code");
+        
+        setSchoolCouponApplied(false)
+        setDiscountPercentage(0);
+        setBillingCycle("month");
+        setSchoolVerificationMessage("❌Invalid coupon code");
       }
     } catch (error: any) {
-      setSchoolVerificationMessage("Invalid or Expired coupon code.");
+      setSchoolCouponApplied(false)
+      setDiscountPercentage(0);
+      setBillingCycle("month");
+      setSchoolVerificationMessage("❌Invalid or Expired coupon code.");
     } finally {
       setLoading(false);
       // setCouponState("")
@@ -725,8 +825,8 @@ const Upgrade: React.FC = () => {
 
   return (
     <div className="min-h-screen">
-      <div className="p-0 md:p-[30px]">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+      <div className="p-3 md:p-[30px]">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-[20px] mb-6">
           <div>
             <h2 className="text-2xl font-bold text-gray-900 mb-4 md:mb-0">
               Subscription
@@ -849,9 +949,14 @@ const Upgrade: React.FC = () => {
                 placeholder="Enter your coupon code"
               />
               <button
+                // onClick={() => {
+                //   handleVerifyCoupon("teacher");
+                // }}
                 onClick={() => {
                   handleVerifyCoupon("teacher");
+                  setCouponState("teacher");
                 }}
+
                 disabled={loading || !couponCode}
                 className="w-full sm:w-[300px] mt-2 sm:mt-0 bg-[#4b2aad] text-white rounded-full px-4 py-3 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#3a2588] transition duration-200 ease-in-out"
               >
@@ -876,7 +981,7 @@ const Upgrade: React.FC = () => {
       <div className="">
         {/*============== THE SUBSRCIPTION OPTIONS FOR INDIVIDUAL =========== */}
         <div className=" mx-auto px-4 py-8">
-          <div className="flex flex-col lg:flex-row justify-center items-stretch lg:space-x-8  lg:space-y-0">
+          <div className="flex flex-col gap-5 lg:flex-row justify-center items-stretch lg:space-x-3  lg:space-y-0">
             <div
               // className="border rounded-lg p-6 bg-gray-50 shadow-md flex flex-col flex-1"
               className={`rounded-3xl p-6 shadow flex flex-col flex-1 transition-all duration-300 ${
@@ -1050,7 +1155,7 @@ const Upgrade: React.FC = () => {
             <div
               // className="border rounded-lg p-6 bg-gray-50 shadow-md flex flex-col flex-1"
               className={`rounded-3xl p-6 shadow flex flex-col flex-1 transition-all duration-300 ${
-                userDetails?.package === "Ai Teacha Pro"
+                userDetails?.package === "AI Teacha Pro"
                   ? "border-2 border-green-500 bg-white"
                   : "border border-gray-200 bg-white hover:border-[#4b2aad]"
               }`}
@@ -1133,12 +1238,12 @@ const Upgrade: React.FC = () => {
         </div>
         {/*============== THE SUBSRCIPTION OPTIONS FOR INDIVIDUAL ENDS HERE =========== */}
 
-        <div className="container mx-auto px-4 py-16">
+        <div className="px-4 py-16">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-10 text-gray-800">
             For Schools
           </h2>
 
-          <div className="my-6 bg-white p-5 rounded-xl  flex flex-wrap gap-3 items-end">
+          <div className="my-6 bg-white p-5 rounded-xl  flex flex-wrap gap-5 items-end">
 
             <div className="w-full md:w-60 mx-auto flex flex-col">
               <label htmlFor="billing-cycle-select" className="sr-only">
@@ -1198,6 +1303,8 @@ const Upgrade: React.FC = () => {
                 onClick={() => {
                   handleVerifySchoolCoupon("school"), setCouponState("school");
                 }}
+
+                 
                 disabled={loading || !schoolCouponCode}
                 className="w-full sm:w-[300px] mt-2 sm:mt-0 bg-[#4b2aad] text-white rounded-full px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#3a2588] transition duration-200 ease-in-out"
               >

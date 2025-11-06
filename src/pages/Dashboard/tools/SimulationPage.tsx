@@ -130,7 +130,7 @@ export default function SimulationDashboardPage({
             <p className="text-sm">
               <span className="font-bold">Grade:</span> {grade}
             </p>
-            <p className="text-sm">
+            <p className="text-sm truncate w-[50%]">
               <span className="font-bold">Description:</span> {description}
             </p>
           </div>

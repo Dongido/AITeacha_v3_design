@@ -2,6 +2,7 @@ import React, { useState, ChangeEvent, FormEvent } from "react";
 import axios from "axios";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { BACKEND_URL } from "../../../lib/utils";
 const AITeachaOnboarding = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -44,7 +45,7 @@ const AITeachaOnboarding = () => {
     try {
       const { guidelines, ...dataToSubmit } = formData;
       const response = await axios.post(
-        "https://vd.aiteacha.com/api/home/add/educator",
+        `${BACKEND_URL}home/add/educator`,
         dataToSubmit
       );
       if (response.data.status == "success") {

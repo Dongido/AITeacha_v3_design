@@ -119,8 +119,8 @@ const FaqsSection: React.FC = () => {
   ];
 
   return (
-    <section className="leading-relaxed mt-24 ">
-      <section className="relative bg-blight w-full h-[60vh] pt-[5rem] flex justify-center bg-gradient-to-r from-[#07052D] to-[#171093] items-center overflow-hidden overlow-hidden">
+    <section className="leading-relaxed mt-24 p-4 ">
+      <section className="relative max-w-7xl mx-auto bg-blight w-full h-[40vh] rounded-2xl  flex justify-center bg-gradient-to-r from-[#07052D] to-[#171093] items-center overflow-hidden overlow-hidden">
         <span className="absolute inse=t-0 z-0 p-5  justif-center top-[rem]"></span>
         <section>
           <figcaption className="desc z-10 relative text-center px-2">

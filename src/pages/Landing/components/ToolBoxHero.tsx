@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { FaBook, FaRss, FaFileAlt, FaClipboard } from "react-icons/fa";
 import axios, { AxiosResponse } from "axios";
+import { BACKEND_URL } from "../../../lib/utils";
 
 interface Tool {
   id: number;
@@ -25,7 +26,7 @@ const HeroToolBox: React.FC = () => {
     const fetchTools = async () => {
       try {
         const response: AxiosResponse<ToolsApiResponse> = await axios.get(
-          "https://vd.aiteacha.com/api/tools/home/display"
+          `${BACKEND_URL}tools/home/display`
         );
 
         if (response.data.status === "success") {

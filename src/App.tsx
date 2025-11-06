@@ -139,7 +139,11 @@ function App() {
           />
           <Route path="/student/*" element={<StudentDashboard />} />
           <Route path="/class/*" element={<PaidLayout />} />
-          <Route path="/student/classrooms/outlines" element={<Outline />} />
+          {/* <Route path="/student/classrooms/outlines" element={<Outline />} /> */}
+          <Route
+            path="/student/classrooms/outlines/:outlineId"
+            element={<Outline />}
+          />
           <Route path="/dashboard/result/resultdetails" element={<ResultDetails />} />
         </Route>
 
