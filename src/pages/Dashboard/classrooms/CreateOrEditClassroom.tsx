@@ -1,6 +1,3 @@
-
-
-
 // import React, { useEffect, useState, useRef } from "react";
 // import { useNavigate } from "react-router-dom";
 // import { X } from "lucide-react";
@@ -128,7 +125,6 @@
 //     links: [],
 //     slides: [],
 //   });
-
 
 //   console.log(uploads)
 //   const [uploadModalOpen, setUploadModalOpen] = useState(false);
@@ -272,7 +268,6 @@
 //         .filter((f) => f instanceof File),
 //       end_date: endDate || null,
 //     };
-
 
 //     console.log("classroom Payload: ", payload)
 
@@ -545,24 +540,21 @@
 
 //   // SUBMIT
 //   const onSubmit = async (data: any) => {
-    
+
 //     // ✅ Step 1: Retrieve user from localStorage safely
 //     const storedUser = JSON.parse(
 //       localStorage.getItem("ai-teacha-user") || "{}"
 //     );
 //     const userId = storedUser?.id ?? null;
-    
+
 //     if (!userId) {
 //       console.error("No user_id found in localStorage");
 //       showToast("User session expired. Please log in again.", "destructive");
 //       return;
 //     }
-    
-    
+
 //     console.log("Submitting classroom data:", data);
 //     console.log(uploads.youtube)
-
-
 
 //     // ✅ Step 2: Build payload safely
 //     // const payload = {
@@ -593,8 +585,7 @@
 //     //   showToast("Failed to create classroom. Please try again.", "destructive");
 //     // }
 //   };
-//   // SUBMIT ENDS HERE 
-
+//   // SUBMIT ENDS HERE
 
 //   const extractYouTubeID = (url: string) => {
 //     try {
@@ -1340,7 +1331,6 @@
 //   })}
 // </div>
 
-                          
 //                           </div>
 //                         )}
 
@@ -1944,9 +1934,6 @@
 
 // export default CreateOrEditClassroom;
 
-
-
-
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { X } from "lucide-react";
@@ -1991,6 +1978,7 @@ import { PiSlideshow } from "react-icons/pi";
 import { PiLinkSimple } from "react-icons/pi";
 import { suggestClassroomOutlines } from "../../../api/classrooms";
 import { motion } from "framer-motion";
+import CustomizeDialog from "./components/CustomizeDialogue";
 import {
   parseOutlines,
   OutlineInputs,
@@ -2001,7 +1989,6 @@ import {
   loadClassrooms,
   createClassroomThunk,
 } from "../../../store/slices/classroomSlice";
-import CustomizeDialog from "./components/CustomizeDialogue";
 
 const stepOneSchema = z.object({
   name: z.string().min(1, "Classroom name is required"),
@@ -2225,9 +2212,15 @@ const CreateOrEditClassroom = ({ isEdit }: { isEdit?: boolean }) => {
     });
   };
 
-  const handleToolEdit = (toolId: string, field: string, value: string) => {
+  const handleToolEdit = (
+    toolId: string | number,
+    field: string,
+    value: string
+  ) => {
     setSelectedTools((prev) =>
-      prev.map((t) => (t.id === toolId ? { ...t, [field]: value } : t))
+      prev.map((t) =>
+        String(t.id) === String(toolId) ? { ...t, [field]: value } : t
+      )
     );
   };
 
@@ -2307,16 +2300,54 @@ const CreateOrEditClassroom = ({ isEdit }: { isEdit?: boolean }) => {
     setToastOpen(true);
   };
 
-  const handleCountryChange = async (value: string) => {
-    setSelectedCountry(value);
-    setValue("country", value);
-    try {
+  const handleCountryChange = async (countryName: any) => {
+    setSelectedCountry(countryName);
+    // update react-hook-form value for the country field
+    setValue("country", countryName);
+    const selectedCountry = countries.find((c) => c.name === countryName);
+    const countryCode = selectedCountry?.isoCode;
+
+    if (countryCode) {
       setIsCurriculumLoading(true);
-      const selected = countries.find((c) => c.name === value);
-      const fetched = await fetchCurriculumByCountry(selected?.isoCode || "");
-      setCurriculums(fetched);
-    } finally {
-      setIsCurriculumLoading(false);
+      setCurriculums([]);
+      try {
+        const fetchedCurriculums = await fetchCurriculumByCountry(countryCode);
+
+        if (countryName === "Nigeria") {
+          console.log("contryname niger", countryName);
+          const blendedCurriculums = [
+            "NERDC",
+            "American Nigeria Blended",
+            "British Nigeria Blended",
+            "Blended Curriculum",
+            "IGSCE Curriculum",
+            "Cambridge Curriculum",
+          ];
+          const fetchedCurriculum = [
+            ...blendedCurriculums,
+            ...fetchedCurriculums,
+          ];
+          setCurriculums(fetchedCurriculum);
+          //    console.log(
+          //   `Final Curriculums for ${countryName} (${countryCode}):`,
+          //   fetchedCurriculum
+          // );
+        } else {
+          setCurriculums(fetchedCurriculums);
+          //    console.log(
+          //   `Fetched Curriculums for ${countryName} (${countryCode}):`,
+          //   fetchedCurriculums
+          // );
+        }
+      } catch (error) {
+        console.error("Error fetching curriculum:", error);
+        setCurriculums([]);
+      } finally {
+        setIsCurriculumLoading(false);
+      }
+    } else {
+      console.warn(`No ISO code found for: ${countryName}`);
+      setCurriculums([]);
     }
   };
 
@@ -2608,7 +2639,7 @@ const CreateOrEditClassroom = ({ isEdit }: { isEdit?: boolean }) => {
         animate={{ x: 0, opacity: 1 }}
         exit={{ x: 300, opacity: 0 }}
         transition={{ duration: 0.3 }}
-        className="fixed inset-0 z-[9999] bg-[#F5F5F5] flex flex-col"
+        className="fixed inset-0 z-[1000] bg-[#F5F5F5] flex flex-col"
       >
         {/* Close Button */}
         <div className="fixed top-4 left-6 z-[10000]">
@@ -3802,17 +3833,33 @@ const CreateOrEditClassroom = ({ isEdit }: { isEdit?: boolean }) => {
                         </div>
 
                         {isSelected && (
-                          <div className="mt-3 space-y-2">
+                          <div className="mt-2 space-y-2">
                             <Button
                               onClick={(e) => {
                                 e.stopPropagation();
                                 handleToolSelect(tool);
                               }}
-                              className="absolute top-3 right-0 p-2 rounded-lg bg-white"
+                              className="absolute top-2 right-2 p-2 rounded-full bg-red-50 text-gray-500 hover:text-gray-700"
                               aria-label="Unselect Tool"
                             >
-                              <X className="h-6 w-6 text-[red]" />
+                              <X className="h-4 w-4 text-purple-700" />
                             </Button>
+
+                            <CustomizeDialog
+                              toolName={tool.name}
+                              customized_name={
+                                selectedTool?.customized_name || ""
+                              }
+                              customized_description={
+                                selectedTool?.customized_description || ""
+                              }
+                              additional_instruction={
+                                selectedTool?.additional_instruction || ""
+                              }
+                              onCustomizeChange={(field, value) =>
+                                handleToolEdit(tool.id, field, value)
+                              }
+                            />
                           </div>
                         )}
                       </div>
