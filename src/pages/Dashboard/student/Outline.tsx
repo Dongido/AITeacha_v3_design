@@ -2430,6 +2430,16 @@ const Outline = () => {
     location.state?.outline || null
   );
 
+  React.useEffect(() => {
+    if (location.pathname.includes("/intro")) {
+      // Reset everything when going to the Introduction page
+      setSelectedOutline(null);
+      setSelectedTool(null);
+      setSelectedOverview(true);
+      setPreviousCurrentMessages({ main: [] }); // Clear old message data
+    }
+  }, [location.pathname]);
+
   useEffect(() => {
     if (location.state?.outline) {
       setCurrentOutline(location.state.outline);
