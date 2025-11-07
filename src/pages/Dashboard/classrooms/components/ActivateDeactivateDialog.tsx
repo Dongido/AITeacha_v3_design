@@ -10,7 +10,10 @@ import { Button } from "../../../../components/ui/Button";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../../../store";
 import { toggleClassroomStatus } from "../../../../api/classrooms";
-import { loadClassrooms, fetchClassroomByIdThunk } from "../../../../store/slices/classroomSlice";
+import {
+  loadClassrooms,
+  fetchClassroomByIdThunk,
+} from "../../../../store/slices/classroomSlice";
 
 interface ActivateDeactivateDialogProps {
   classroomId: number;
@@ -41,18 +44,17 @@ const ActivateDeactivateDialog = forwardRef<
     try {
       setIsLoading(true);
 
-      // 🔁 Toggle status via API
+      // Wait for backend to update status first
       await toggleClassroomStatus(classroomId);
 
-      // 🔁 Refresh both the list and the current classroom detail immediately
-      await dispatch(loadClassrooms());
-      await dispatch(fetchClassroomByIdThunk(classroomId));
+      // Close dialog first so user sees immediate feedback
+      setOpen(false);
 
-      // 🔁 Trigger any parent onSuccess logic (optional)
+      // ✅ Trigger parent refresh after backend success
       onSuccess?.();
 
-      // Close the dialog
-      setOpen(false);
+      // Optional: refresh classroom list globally (not mandatory)
+      dispatch(loadClassrooms());
     } catch (error) {
       console.error("Error toggling classroom status:", error);
     } finally {
@@ -71,7 +73,11 @@ const ActivateDeactivateDialog = forwardRef<
         </DialogHeader>
 
         <div className="flex justify-end gap-2 mt-4">
-          <Button variant="outline" onClick={() => setOpen(false)} disabled={isLoading}>
+          <Button
+            variant="outline"
+            onClick={() => setOpen(false)}
+            disabled={isLoading}
+          >
             Cancel
           </Button>
           <button
