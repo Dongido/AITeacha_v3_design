@@ -2721,7 +2721,7 @@ const CreateOrEditClassroom = ({ isEdit }: { isEdit?: boolean }) => {
                   {/* name */}
                   <div>
                     <label className="block text-sm font-bold text-gray-700 mb-1">
-                      Classroom Name
+                      Classroom Topic / Title
                     </label>
                     <Input
                       {...register("name")}
@@ -2902,7 +2902,8 @@ const CreateOrEditClassroom = ({ isEdit }: { isEdit?: boolean }) => {
 
                     {/* Description Textarea */}
                     <label className="block text-base font-semibold text-gray-800 mb-2">
-                      Description
+                      Enter a detailed description on what this classroom is all
+                      about
                     </label>
                     <textarea
                       value={description}
@@ -2912,46 +2913,11 @@ const CreateOrEditClassroom = ({ isEdit }: { isEdit?: boolean }) => {
                       className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm text-gray-700 focus:ring-2 focus:ring-[#6B46FF] resize-none"
                     />
 
-                    {/* AI-Suggested Descriptions */}
                     <div className="mt-3">
-                      <p className="text-sm text-gray-600">
+                      {/* <p className="text-sm text-gray-600">
                         Enter a detailed description on what this classroom is
                         all about.
-                      </p>
-
-                      {isLoadingSuggestions ? (
-                        <p className="text-gray-500 mt-2">
-                          ✨ Generating AI recommendations...
-                        </p>
-                      ) : (
-                        <div>
-                          {suggestedDescriptions.length > 0 ? (
-                            <>
-                              <p className="text-sm text-gray-600 mb-2 font-medium mt-2">
-                                Suggestions:
-                              </p>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                {suggestedDescriptions.map(
-                                  (suggestion, index) => (
-                                    <button
-                                      key={index}
-                                      onClick={(e) => {
-                                        e.preventDefault(); // ✅ stop page refresh
-                                        setDescription(suggestion);
-                                      }}
-                                      className="text-left text-sm text-[#626161] bg-[#F5F5F5] rounded-lg p-2 flex hover:bg-[#F3EEFF] font-semibold transition-colors"
-                                    >
-                                      {suggestion}
-                                    </button>
-                                  )
-                                )}
-                              </div>
-                            </>
-                          ) : (
-                            <p className="text-gray-400 text-sm mt-2"></p>
-                          )}
-                        </div>
-                      )}
+                      </p> */}
                     </div>
                   </div>
 
@@ -3773,7 +3739,7 @@ const CreateOrEditClassroom = ({ isEdit }: { isEdit?: boolean }) => {
           {currentStep === 5 && (
             <section className="space-y-6 max-w-6xl mx-auto">
               <h2 className="text-xl lg:text-2xl font-bold text-gray-900">
-                Select Tools Needed
+                Select Student Tools Needed
               </h2>
 
               <div className="grid grid-cols-1 gap-5 sm:grid-cols-1 lg:grid-cols-4">

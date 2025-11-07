@@ -246,9 +246,6 @@
 
 // export default ClassroomDetail;
 
-
-
-
 import { useEffect, useState, useRef } from "react";
 import { ArrowRightIcon, Edit } from "lucide-react";
 import { Button } from "../../../components/ui/Button";
@@ -332,16 +329,16 @@ const ClassroomDetail = () => {
           </p>
 
           {/* ✅ Dynamic Activate / Deactivate button */}
-          <button
+          {/* <button
             className={`rounded-full px-5 py-2 text-sm font-medium ${
               status === "active"
-                ? "bg-[#DC2626] text-white hover:bg-[#b91c1c]" // deactivate
-                : "bg-[#6200EE] text-white hover:bg-[#4b00b8]" // activate
+                ? "bg-[#DC2626] text-white hover:bg-[#b91c1c]"
+                : "bg-[#6200EE] text-white hover:bg-[#4b00b8]"
             }`}
             onClick={openActivateDialog}
           >
             {status === "active" ? "Deactivate Classroom" : "Activate Classroom"}
-          </button>
+          </button> */}
         </div>
 
         <div>
