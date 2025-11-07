@@ -4381,7 +4381,7 @@ const Outline = () => {
 
           
 
-          <div className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 p-3 flex items-center z-50">
+          <div className="fixed bottom-0 left-28 w-full bg-white border-t border-gray-200 p-3 flex items-center z-50">
             <div className="relative w-full max-w-4xl mx-auto flex items-center">
               <TextArea
                 value={inputText}
