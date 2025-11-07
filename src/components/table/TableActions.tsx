@@ -179,16 +179,21 @@ export default function Actions<T>({
         )}
 
         {activateFunction && (
-          <DropdownMenuItem
-            onClick={() => activateFunction()}
-            className="flex gap-2 p-1 hover:bg-gray-100"
-          >
-            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-green-500/20">
-              <Play size={17} className="text-green-500" />
-            </div>
-            <p>Activate</p>
-          </DropdownMenuItem>
-        )}
+  <DropdownMenuItem
+    onClick={(e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      activateFunction();
+    }}
+    className="flex gap-2 p-1 hover:bg-gray-100"
+  >
+    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-green-500/20">
+      <Play size={17} className="text-green-500" />
+    </div>
+    <p>Activate</p>
+  </DropdownMenuItem>
+)}
+
 
         {deactivateFunction && (
           <DropdownMenuItem

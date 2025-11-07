@@ -156,21 +156,17 @@ export const classroomColumns = [
           <Actions
             viewLink={
               status === "inactive"
-                ? undefined
+                ? undefined // Prevent navigation for inactive classes
                 : `/dashboard/classrooms/details/${classroomId}`
             }
             deleteFunction={async () => {
               deleteDialogRef.current?.openDialog();
               return Promise.resolve();
             }}
-            activateFunction={
-              status === "inactive"
-                ? async () => {
-                    activateDeactivateDialogRef.current?.openDialog();
-                    return Promise.resolve();
-                  }
-                : undefined
-            }
+            activateFunction={async () => {
+              activateDeactivateDialogRef.current?.openDialog();
+              return Promise.resolve();
+            }}
           />
 
           <DeleteClassroomDialog
