@@ -213,8 +213,18 @@ const TestView = () => {
               ans.examinationquestion_id === q.examinationquestions_id
           );
 
+          console.log(objectiveQuestions)
+          console.log(answerDetails)
+
           const studentAnswer = answerDetails?.student_answer?.trim() || "";
           const correctAnswer = answerDetails?.correct_answer?.trim() || "";
+          // const mark = answerDetails?.mark?.trim() || "";
+          const mark = answerDetails?.mark !== undefined && answerDetails?.mark !== null
+            ? String(answerDetails.mark).trim()
+            : "";
+
+          console.log(mark)
+          // const mark = answerDetails?.mark?.trim() || "";
           const isCorrect =
             studentAnswer &&
             correctAnswer &&
@@ -297,6 +307,12 @@ const TestView = () => {
                   <strong>Correct Answer:</strong>{" "}
                   <span className="text-blue-700">
                     {correctAnswer || "Not available"}
+                  </span>
+                </p>
+                <p className="m-0 font-semibold text-base">
+                  <strong>Mark Allocated:</strong>{" "}
+                  <span className="text-blue-700">
+                    {mark || "Not available"}
                   </span>
                 </p>
               </div>
