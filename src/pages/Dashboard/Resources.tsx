@@ -338,7 +338,7 @@ const Resources = () => {
             placeholder="Search resources by title"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="py-3 max-w-full bg-gray-100 w-[300px]"
+            className="py-3 w-full bg-gray-100 md:w-[300px]"
           />
         </div>
 
