@@ -586,12 +586,12 @@ const JoinClassDialog = forwardRef(
               );
               setToastVariant("default");
               setToastOpen(true);
-            }, 1200);
+            }, 500);
 
             // 🚀 Fetch and display pretest after short delay
             setTimeout(async () => {
               await fetchPretest(response.id);
-            }, 2200);
+            }, 500);
 
             return;
           } else {

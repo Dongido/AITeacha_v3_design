@@ -2173,8 +2173,6 @@
 
 // export default Outline;
 
-
-
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { FiSend, FiCopy, FiMic, FiVolume2, FiPause } from "react-icons/fi";
@@ -2286,7 +2284,7 @@ const Outline = () => {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [toastOpen, setToastOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
-  
+
   const [showToolChat, setShowToolChat] = useState(false);
   const [toastVariant, setToastVariant] = useState<"default" | "destructive">(
     "default"
@@ -2431,6 +2429,16 @@ const Outline = () => {
   const [currentOutline, setCurrentOutline] = useState<any>(
     location.state?.outline || null
   );
+
+  React.useEffect(() => {
+    if (location.pathname.includes("/intro")) {
+      // Reset everything when going to the Introduction page
+      setSelectedOutline(null);
+      setSelectedTool(null);
+      setSelectedOverview(true);
+      setPreviousCurrentMessages({ main: [] }); // Clear old message data
+    }
+  }, [location.pathname]);
 
   useEffect(() => {
     if (location.state?.outline) {
@@ -3971,7 +3979,6 @@ const Outline = () => {
 
           <div className="pt-10 pl-8">
             <div className="text-left">
-             
               <h2 className="text-xl font-semibold text-black">
                 {classroom?.classroom_name}
                 {selectedTool && (
@@ -4335,70 +4342,86 @@ const Outline = () => {
             )}
           </div>
 
-
           {showTopicPopup && (
-                                <motion.div
-                                  initial={{ opacity: 0, translateY: -10 }}
-                                  animate={{ opacity: 1, translateY: 0 }}
-                                  transition={{ duration: 0.4 }}
-                                  className="fixed top-28 right-5 z-50"
-                                >
-                                  <div className="relative bg-gradient-to-br from-purple-500 to-pink-500 text-white p-5 px-6 rounded-2xl shadow-2xl max-w-sm">
-                                    <button
-                                      onClick={() => setShowTopicPopup(false)}
-                                      className="absolute top-2 right-2 text-white hover:text-gray-300 text-2xl font-bold  pr-4"
-                                      aria-label="Close"
-                                    >
-                                      ×
-                                    </button>
-                                    <div className="absolute right-0 bottom-2 w-3 h-3 bg-pink-500 rotate-45 mr-[-6px] rounded-sm shadow-sm"></div>
-                                    <div className="flex items-start gap-3">
-                                      <div className="text-2xl mt-0.5">✨</div>
-                                      <div>
-                                        <p className="font-bold text-lg mb-1 text-yellow-300">
-                                          Recommended Topic
-                                        </p>
-                                        <p className="text-sm leading-snug text-gray-200 mb-3">
-                                          Here's a suggested topic for you:
-                                        </p>
-                                        <p className="text-white font-semibold">
-                                          {classroomTopic}
-                                        </p>
-          
-                                        <button
-                                          onClick={() => {
-                                            handleSendTopic(), setShowTopicPopup(false);
-                                          }}
-                                          className="bg-white text-purple-600 text-sm font-medium px-4 py-2 rounded-lg hover:bg-yellow-100 transition-all mt-2"
-                                        >
-                                          Learn More
-                                        </button>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </motion.div>
-                              )}
+            <motion.div
+              initial={{ opacity: 0, translateY: -10 }}
+              animate={{ opacity: 1, translateY: 0 }}
+              transition={{ duration: 0.4 }}
+              className="fixed top-28 right-5 z-50"
+            >
+              <div className="relative bg-gradient-to-br from-purple-500 to-pink-500 text-white p-5 px-6 rounded-2xl shadow-2xl max-w-sm">
+                <button
+                  onClick={() => setShowTopicPopup(false)}
+                  className="absolute top-2 right-2 text-white hover:text-gray-300 text-2xl font-bold  pr-4"
+                  aria-label="Close"
+                >
+                  ×
+                </button>
+                <div className="absolute right-0 bottom-2 w-3 h-3 bg-pink-500 rotate-45 mr-[-6px] rounded-sm shadow-sm"></div>
+                <div className="flex items-start gap-3">
+                  <div className="text-2xl mt-0.5">✨</div>
+                  <div>
+                    <p className="font-bold text-lg mb-1 text-yellow-300">
+                      Recommended Topic
+                    </p>
+                    <p className="text-sm leading-snug text-gray-200 mb-3">
+                      Here's a suggested topic for you:
+                    </p>
+                    <p className="text-white font-semibold">{classroomTopic}</p>
 
-          
+                    <button
+                      onClick={() => {
+                        handleSendTopic(), setShowTopicPopup(false);
+                      }}
+                      className="bg-white text-purple-600 text-sm font-medium px-4 py-2 rounded-lg hover:bg-yellow-100 transition-all mt-2"
+                    >
+                      Learn More
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
 
-          <div className="fixed bottom-0 left-28 w-full bg-white border-t border-gray-200 p-3 flex items-center z-50">
-            <div className="relative w-full max-w-4xl mx-auto flex items-center">
+          <div
+            className="
+        fixed bottom-0 
+        left-0 right-0 
+        lg:left-[18%]      /* adjusts to sidebar width on desktop */
+        bg-white 
+        border-t border-gray-200 
+        p-3 
+        flex items-center 
+        z-50 
+        transition-all duration-300
+      "
+          >
+            <div className="relative flex-1 flex items-center">
               <TextArea
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Type your message..."
-                className="flex-grow pr-20 px-3 py-2 border rounded-lg text-md focus:outline-none focus:ring-2 focus:ring-[#6200EE]"
+                className="
+            w-full 
+            px-3 py-2 
+            border rounded-lg text-md 
+            focus:outline-none focus:ring-2 focus:ring-[#6200EE] 
+            pr-28
+          "
               />
 
               {/* Mic Button */}
               <button
                 onClick={toggleRecording}
-                className={`absolute right-14 top-1/2 transform -translate-y-1/2 p-2 rounded-full cursor-pointer ${
-                  isRecording
-                    ? "bg-red-500 text-white"
-                    : "bg-gray-100 text-gray-700"
-                }`}
+                className={`
+            absolute right-14 top-1/2 transform -translate-y-1/2 p-2 rounded-full cursor-pointer 
+            ${
+              isRecording
+                ? "bg-[#6200EE] text-white"
+                : "bg-gray-100 text-gray-700"
+            }
+          `}
               >
                 <FiMic className="w-5 h-5" />
               </button>
@@ -4407,7 +4430,11 @@ const Outline = () => {
               <button
                 onClick={handleSend}
                 disabled={inputText.trim().length === 0}
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 p-2 bg-[#6200EE] text-white rounded-full hover:bg-[#5300d6] cursor-pointer"
+                className="
+            absolute right-2 top-1/2 transform -translate-y-1/2 p-2 
+            bg-[#6200EE] text-white rounded-full hover:bg-[#5300d6] 
+            cursor-pointer
+          "
               >
                 <FiSend className="w-5 h-5" />
               </button>
