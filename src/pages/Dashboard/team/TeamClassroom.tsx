@@ -379,7 +379,7 @@ const TeamClassroomPage: React.FC = () => {
                       placeholder="Search team by name"
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="py-3 max-w-full w-[300px] bg-gray-100"
+                      className="py-3 w-full md:w-[300px] bg-gray-100"
                     />
                   </div>
                   {/* sample and upload csv */}
