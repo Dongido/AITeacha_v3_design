@@ -112,7 +112,7 @@ export function VerifyAuthEmail() {
         <Button
           onClick={handleVerify}
           disabled={isLoading}
-          className="mt-4 bg-primary text-white w-full rounded-md"
+          className="mt-4 bg-primary text-white w-full rounded-full"
         >
           {isLoading ? "Verifying..." : "Verify Email"}
         </Button>
@@ -133,11 +133,11 @@ export function VerifyAuthEmail() {
             )}
           </p>
 
-          <p className="text-xl font-bold">
+          {/* <p className="text-xl font-bold">
             <Link to={"/auth/login"} className="text-primary">
               Continue without verification
             </Link>
-          </p>
+          </p> */}
         </div>
 
         <Toast

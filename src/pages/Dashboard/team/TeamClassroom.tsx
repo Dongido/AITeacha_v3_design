@@ -218,7 +218,7 @@ const TeamClassroomPage: React.FC = () => {
   }
 
   return (
-    <div className="p-0 md:p-[30px] lg:w-[80vw] w-[90vw] ">
+    <div className="p-0 md:p-[30px]  ">
       <div>
         <h2 className="text-lg font-semibold m-0">Class Management</h2>
         <p className="text-sm">Manage classroom</p>

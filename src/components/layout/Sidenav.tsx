@@ -188,7 +188,7 @@ export function Sidenav({
             <NavLink
               to="/dashboard/chats"
               onClick={() => isMobile && setOpenSidenav(dispatch, false)}
-              className={`flex items-center gap-3 px-3 py-2 rounded-md font-semibold transition-all bg-[#EFE6FD] text-sm ${
+              className={`flex items-center   rounded-md font-semibold transition-all bg-[#EFE6FD] text-sm ${showFullSidebar ? "px-3 py-2 gap-3" : "p-2"}    ${
                 location.pathname.includes("/zyra-edubot")
                   ? "bg-[#EFE6FD] text-[#6200EE] border-r-4 border-[#6200EE]"
                   : "text-gray-800 hover:bg-[#efe6fd] hover:text-[#6200EE]"

@@ -6,7 +6,7 @@ import { Skeleton } from "../../components/ui/Skeleton";
 import { ArrowRightIcon } from "@heroicons/react/24/solid";
 import { IoSparklesSharp } from "react-icons/io5";
 import dashImg from "../../assets/img/0e846ab4-992d-48b3-a818-d62a7803bd8e 1.png";
-import { FaDraftingCompass, FaMagic, FaHeart } from "react-icons/fa";
+import { FaDraftingCompass, FaMagic, FaHeart, FaLongArrowAltRight } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { BiImageAdd } from "react-icons/bi";
 import {
@@ -289,8 +289,8 @@ const Home = () => {
         <div>
           <div className="relative mt-4">
             <div className="bg-[#EFE6FD] text-white p-8 rounded-lg overflow-hidden">
-              <div className="bg-white inline-block pl-[16px] pr-[16px] rounded-full">
-                <p className="text-sm sm:text-base bg-gradient-to-r from-[#F133E1] to-[#6200EE] bg-clip-text text-transparent font-[600] flex items-center pt-2 -pb-1">
+              <div className="bg-white inline-flex items-center justify-center pl-[16px] pr-[16px] rounded-full">
+                <p className="text-sm m-0 py-1 sm:text-base bg-gradient-to-r from-[#F133E1] to-[#6200EE] bg-clip-text text-transparent font-[600] flex items-center ">
                   Teachers are heroes
                 </p>
               </div>
@@ -302,9 +302,14 @@ const Home = () => {
                 today.
               </p>
               <div className="mt-4 flex items-center gap-2">
-                <Link to={"/dashboard/tools"}>
-                  <button className="flex items-center bg-[#6200EE] text-white py-2 px-4 rounded-full text-sm">
-                    View All tools
+                <Link to={"/dashboard/classrooms"}>
+                  <button className="flex font-semibold items-center bg-[#6200EE] text-white py-2 px-4 rounded-full hover:bg-purple-300 transition  text-sm">
+                    View Classrooms
+                  </button>
+                </Link>
+                <Link to={"/dashboard/test"}>
+                  <button className="flex font-semibold items-center bg-[#ffffff] text-primary py-2 px-4 rounded-full hover:bg-purple-300 transition hover:text-white text-sm">
+                    View Test & Exams
                   </button>
                 </Link>
               </div>
@@ -325,7 +330,7 @@ const Home = () => {
 
           <section className="relative text-center mt-10 mb-10">
             {/* Decorative background glow */}
-            <motion.h2 className="relative text-3xl md:text-4xl font-semibold text-[#6200EE] mb-4 inline-block bg-clip-text text-transparent bg-gradient-to-r from-[#6200EE] to-[#6200EE]">
+            <motion.h2 className="relative text-xl sm:text-3xl md:text-4xl font-semibold text-[#6200EE] mb-4 inline-block bg-clip-text text-transparent bg-gradient-to-r from-[#6200EE] to-[#6200EE]">
               <motion.span
                 className="absolute inset-0 bg-gradient-to-r from-transparent via-[#EFE6FD] to-transparent"
                 animate={{ x: ["-100%", "100%"] }}
@@ -351,7 +356,7 @@ const Home = () => {
 
             {/* CTA Button with Subtle Pulse */}
             <motion.button
-              className="relative bg-[#6200EE] hover:bg-[#5200cc] text-white px-8 py-4 rounded-full flex items-center justify-center gap-2 mx-auto shadow-lg hover:shadow-xl transition-all"
+              className="relative bg-[#6200EE] hover:bg-[#5200cc] text-sm md:text-base text-white px-3 py-2 md:px-8 md:py-4 rounded-full flex items-center justify-center gap-2 mx-auto shadow-lg hover:shadow-xl transition-all"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.97 }}
               onClick={() => navigate("/dashboard/chats")}
@@ -370,19 +375,19 @@ const Home = () => {
           </section>
 
           <div className="mt-8 overflow-x-auto">
-            <div className="flex justify-between items-center">
-              <h2 className="text-xl font-bold text-gray-900 mb-4 px-2">
+            <div className="flex justify-between items-center mb-3">
+              <h2 className="text-xl m-0 font-bold text-gray-900 px-2">
                 Popular Tools
               </h2>
 
-              <div>
-                <Link
-                  to="/dashboard/tools"
-                  className="text-[#6200EE] font-semibold"
-                >
-                  View all tools
-                </Link>
-              </div>
+              
+              <Link
+                to="/dashboard/tools"
+                className=" flex items-center gap-1 px-4 py-2 font-semibold transition "
+              >
+                View all tools <FaLongArrowAltRight />
+              </Link>
+              
             </div>
             {popularTools.length > 0 && (
               <div className="mb-8 bg-white p-6 rounded-xl">

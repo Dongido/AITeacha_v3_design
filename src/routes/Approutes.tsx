@@ -364,13 +364,13 @@ export const routes = [
       //   ],
       // },
 
-      {
-        icon: <WrenchScrewdriverIcon {...icon} />,
-        name: "Heroes Wall",
-        path: "/heroes-wall",
-        element: <HeroesWallAdmin />,
-        adminOnly: true,
-      },
+      // {
+      //   icon: <WrenchScrewdriverIcon {...icon} />,
+      //   name: "Heroes Wall",
+      //   path: "/heroes-wall",
+      //   element: <HeroesWallAdmin />,
+      //   adminOnly: true,
+      // },
       // {
       //   icon: <FaRocketchat {...icon} />,
       //   name: "Messages",

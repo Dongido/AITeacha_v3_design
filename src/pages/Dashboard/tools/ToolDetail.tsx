@@ -647,7 +647,7 @@ const ToolDetail = () => {
           </div>
 
           {/* Tool Dropdown */}
-          <div className="flex justify-center pt-6 pb-4">
+          {/* <div className="flex justify-center pt-6 pb-4">
             <div className="bg-gray-100 px-10 py-1 rounded-full shadow-sm border-2 border-white flex items-center gap-2">
               <span className="font-semibold text-black">Tool:</span>
               <Select
@@ -673,7 +673,7 @@ const ToolDetail = () => {
                 </SelectContent>
               </Select>
             </div>
-          </div>
+          </div> */}
 
           <p className="text-black text-center text-sm">
             {tool.description.charAt(0).toUpperCase() +

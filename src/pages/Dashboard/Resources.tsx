@@ -315,7 +315,7 @@ const Resources = () => {
   // MAIN RETURN
   // ------------------------
   return (
-    <div className="mt-4 p-0 md:p-[30px] lg:w-[80vw] w-[90vw]">
+    <div className="mt-4 p-0 md:p-[30px] ">
       <div className="flex justify-between mb-4">
         <div>
           <h1 className="text-xl font-semibold m-0">Resources</h1>

@@ -500,7 +500,7 @@ const Team = () => {
 
   return (
     <ToastProvider>
-      <div className="p-2 md:p-[30px]  lg:w-[80vw] w-[90vw]">
+      <div className="p-2 md:p-[30px] ">
         {/* {userDetails && isEmailVerified === 1 && (
           <div
             className="bg-[#e5dbff] mt-3 mb-4 text-black p-4 rounded-md flex justify-center items-center"
@@ -528,7 +528,7 @@ const Team = () => {
             placeholder="Enter email to invite"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full py-3"
+            className="w-full flex-1 md:w-auto py-3"
             />
           <Button
             onClick={handleInvite}

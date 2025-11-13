@@ -21,27 +21,37 @@ const getRedirectPath = (role: number, classroomId: number) => {
 };
 
 export const classroomColumns = [
+  // 🖼 Thumbnail (hidden on mobile)
   classroomColumnHelper.accessor("classroom_id", {
-    header: ({ column }) => <Header title="" column={column} />,
+    header: ({ column }) => (
+      <div className="hidden md:table-cell">
+        <Header title="" column={column} />
+      </div>
+    ),
     sortingFn: "text",
     cell: (info) => {
       const classroom = info.row.original;
       const classroomThumbnail = classroom.classroom_thumbnail;
-      const classroomName = classroom.classroom_name;
 
-      return classroomThumbnail ? (
-        <img
-          src={classroomThumbnail}
-          alt="Classroom Thumbnail"
-          className="w-8 h-8 rounded-full object-cover"
-        />
-      ) : (
-        <div className="flex capitalize items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-[#7a5ef8] to-[#5c3cbb] text-white font-semibold">
-          {"C"}
+      return (
+        <div className="hidden md:table-cell text-center">
+          {classroomThumbnail ? (
+            <img
+              src={classroomThumbnail}
+              alt="Classroom Thumbnail"
+              className="w-8 h-8 rounded-full object-cover mx-auto"
+            />
+          ) : (
+            <div className="w-8 h-8 flex items-center justify-center rounded-full bg-gradient-to-r from-[#7a5ef8] to-[#5c3cbb] text-white font-semibold">
+              C
+            </div>
+          )}
         </div>
       );
     },
   }),
+
+  // 🏫 Classroom name (always visible)
   classroomColumnHelper.accessor("classroom_name", {
     header: ({ column }) => <Header title="Classroom Name" column={column} />,
     sortingFn: "text",
@@ -49,13 +59,17 @@ export const classroomColumns = [
       const classroom = info.row.original;
       const classroomId = classroom.classroom_id;
       const status = classroom.status;
+      const classroomName = info.getValue();
+      const truncatedCN =
+        classroomName.length > 25
+          ? `${classroomName.slice(0, 25)}...`
+          : classroomName;
 
       const userDetails = JSON.parse(
         localStorage.getItem("ai-teacha-user") || "{}"
       );
       const role = userDetails.role;
       const redirectPath = getRedirectPath(role, classroomId);
-
       const activateDeactivateDialogRef = useRef<{ openDialog: () => void }>(
         null
       );
@@ -64,10 +78,10 @@ export const classroomColumns = [
         return (
           <>
             <div
-              className="capitalize text-primary whitespace-nowrap cursor-pointer"
+              className="capitalize text-primary cursor-pointer w-[140px] md:w-auto truncate"
               onClick={() => activateDeactivateDialogRef.current?.openDialog()}
             >
-              {info.getValue()}
+              {truncatedCN}
             </div>
             <ActivateDeactivateDialog
               ref={activateDeactivateDialogRef}
@@ -82,68 +96,87 @@ export const classroomColumns = [
       return (
         <Link
           to={redirectPath}
-          className="capitalize text-primary whitespace-nowrap"
+          className="capitalize text-primary w-[140px] md:w-auto truncate"
         >
-          {info.getValue()}
+          {truncatedCN}
         </Link>
       );
     },
   }),
-  classroomColumnHelper.accessor("classroom_description", {
-    header: ({ column }) => <Header title="Description" column={column} />,
-    sortingFn: "text",
-    cell: (info) => {
-      const description = info.getValue();
-      const truncatedDescription =
-        description && description.length > 50
-          ? `${description.slice(0, 50)}...`
-          : description;
 
-      return <span className="whitespace-nowrap">{truncatedDescription}</span>;
-    },
-  }),
+  // 🏷 Grade (hidden on mobile)
   classroomColumnHelper.accessor("grade", {
-    header: ({ column }) => <Header title="Grade" column={column} />,
+    header: ({ column }) => (
+      <div className="hidden md:table-cell">
+        <Header title="Grade" column={column} />
+      </div>
+    ),
     sortingFn: "text",
     cell: (info) => (
-      <span className="capitalize whitespace-nowrap">{info.getValue()}</span>
+      <div className="hidden md:table-cell">
+        <span className="capitalize">{info.getValue()}</span>
+      </div>
     ),
   }),
+
+  // 🧾 Type (hidden on mobile)
   classroomColumnHelper.accessor("class_type", {
-    header: ({ column }) => <Header title="Type" column={column} />,
+    header: ({ column }) => (
+      <div className="hidden md:table-cell">
+        <Header title="Type" column={column} />
+      </div>
+    ),
     sortingFn: "text",
     cell: (info) => (
-      <span className="capitalize whitespace-nowrap">{info.getValue()}</span>
+      <div className="hidden md:table-cell">
+        <span className="capitalize">{info.getValue()}</span>
+      </div>
     ),
   }),
+
+  // ✅ Status (hidden on mobile)
   classroomColumnHelper.accessor("status", {
-    header: ({ column }) => <Header title="Status" column={column} />,
+    header: ({ column }) => (
+      <div className="hidden md:table-cell">
+        <Header title="Status" column={column} />
+      </div>
+    ),
     sortingFn: "text",
     cell: (info) => {
       const val = info.getValue()?.toString() as StatusType;
-      return <Status value={val} />;
-    },
-  }),
-  classroomColumnHelper.accessor("number_of_students_joined", {
-    header: ({ column }) => <Header title="Students Joined" column={column} />,
-    sortingFn: "text",
-    cell: (info) => {
-      const studentsJoined = info.getValue();
       return (
-        <span className="whitespace-nowrap">
-          {studentsJoined !== null ? studentsJoined : "No students joined"}
-        </span>
+        <div className="hidden md:table-cell">
+          <Status value={val} />
+        </div>
       );
     },
   }),
 
+  // 👥 Students Joined (hidden on mobile)
+  classroomColumnHelper.accessor("number_of_students_joined", {
+    header: ({ column }) => (
+      <div className="hidden md:table-cell">
+        <Header title="Students Joined" column={column} />
+      </div>
+    ),
+    sortingFn: "text",
+    cell: (info) => (
+      <div className="hidden md:table-cell text-center">
+        <span>
+          {info.getValue() !== null ? info.getValue() : "No students joined"}
+        </span>
+      </div>
+    ),
+  }),
+
+  // ⚙️ Actions (always visible)
   classroomColumnHelper.accessor("join_url", {
     header: ({ column }) => <Header title="Actions" column={column} />,
     sortingFn: "text",
     cell: (info) => {
       const navigate = useNavigate();
       const classroom = info.row.original;
-      const classroomId = info.row.original.classroom_id;
+      const classroomId = classroom.classroom_id;
       const status = classroom.status;
 
       const deleteDialogRef = useRef<{ openDialog: () => void }>(null);
@@ -152,7 +185,7 @@ export const classroomColumns = [
       );
 
       return (
-        <div className="flex items-center gap-2">
+        <div className="flex  gap-2 ">
           <Actions
             viewLink={
               status === "inactive"
@@ -190,3 +223,5 @@ export const classroomColumns = [
     },
   }),
 ];
+
+

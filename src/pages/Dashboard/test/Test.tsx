@@ -309,17 +309,17 @@ const TestPage: React.FC = () => {
               type="text"
               placeholder={
                 selectedType === "exam"
-                  ? "Search by exam title"
-                  : "Search by test title"
+                  ? "Search by exam Subject"
+                  : "Search by test Subject"
               }
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="py-3 max-w-full w-[300px] bg-gray-100"
+              className="py-3 w-full md:w-[300px] bg-gray-100"
             />
 
             {activeTab === "created" ? (
               <button
-                className="flex rounded-full items-center justify-center w-fit h-full gap-3  text-purple-900 px-4 p-2 bg-white border-2 border-purple-900 hover:scale-105 transition-transform"
+                className="flex rounded-full items-center justify-center w-full md:w-fit h-full gap-3  text-purple-900 px-4 p-2 bg-white border-2 border-purple-900 hover:scale-105 transition-transform"
                 onClick={handleLaunchNew}
               >
                 <Plus size={"1.1rem"} />
@@ -328,7 +328,7 @@ const TestPage: React.FC = () => {
             ) : (
               <button
                 onClick={handleJoinClick}
-                className="flex rounded-full items-center justify-center w-fit h-full gap-3  text-purple-900 px-4 p-2 bg-white border-2 border-purple-900 hover:scale-105 transition-transform"
+                className="flex rounded-full items-center justify-center w-full md:w-fit h-full gap-3  text-purple-900 px-4 p-2 bg-white border-2 border-purple-900 hover:scale-105 transition-transform"
               >
                 <Plus size={"1.1rem"} />
                 Join {selectedType === "test" ? "Test" : "Exam"}
@@ -349,6 +349,7 @@ const TestPage: React.FC = () => {
         </div>
       )}
 
+      
       <JoinTestDialog ref={joinTestDialogRef} />
     </div>
   );

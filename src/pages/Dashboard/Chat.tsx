@@ -32,6 +32,14 @@ import * as pdfjsLib from "pdfjs-dist";
 pdfjsLib.GlobalWorkerOptions.workerSrc = `${window.location.origin}/pdf.worker.min.js`;
 import mammoth from "mammoth";
 import Cookies from "js-cookie";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../components/ui/Select";
+import { useNavigate } from "react-router-dom";
 
 const randomPrompts = [
   "Generate lesson plans for teachers",
@@ -42,6 +50,8 @@ const randomPrompts = [
 
 const Chat = () => {
   const [inputText, setInputText] = useState("");
+  const [selectedTool, setSelectedTool] = useState<string>("");
+  const navigate = useNavigate();
   const prevPathRef = useRef<string | null>(null);
   const [messages, setMessages] = useState<
     { text: string; fromUser: boolean; isLoading?: boolean }[]
@@ -49,6 +59,7 @@ const Chat = () => {
   const responseMessage = useSelector(
     (state: RootState) => state.response.message
   );
+  const { tools, loading } = useSelector((state: RootState) => state.tools);
 
   const [isRecording, setIsRecording] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
@@ -301,6 +312,44 @@ const Chat = () => {
   };
   return (
     <div className="min-h-screen border-2  py-[30px]   bg-[linear-gradient(to_right,#6200EE1A_10%,#F133E11A_90%)] overflow-y-auto flex flex-col">
+      <div className="flex justify-center pt-6 pb-4">
+        <div className="bg-gray-100 px-5 py-1 rounded-full shadow-sm border-2 border-white flex items-center gap-2">
+          <span className="font-semibold text-black">
+            Tool:{" "}
+            {/* {selectedTool && (
+              <span className="text-blue-600 font-medium ml-1">
+                {selectedTool}
+              </span>
+            )} */}
+          </span>
+
+          <Select
+            value={selectedTool}
+            onValueChange={(value) => setSelectedTool(value)}
+          >
+            <SelectTrigger className="border-none outline-none w-full bg-transparent text-sm font-medium">
+              <SelectValue
+                placeholder={loading ? "Loading tools..." : "Select Tool"}
+              />
+            </SelectTrigger>
+
+            <SelectContent>
+              {!loading && tools.length > 0 ? (
+                tools.map((t) => (
+                  <SelectItem key={t.service_id} value={t.name}>
+                    {t.name}
+                  </SelectItem>
+                ))
+              ) : (
+                <div className="p-2 text-gray-500 text-sm">
+                  {loading ? "Loading..." : "No tools available"}
+                </div>
+              )}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
       <div className="flex-grow overflow-y-auto  rounded-lg   p-4">
         {messages.length === 0 ? (
           <div className="text-center text-gray-800 italic">
