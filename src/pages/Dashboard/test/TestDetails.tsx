@@ -117,6 +117,8 @@ const TestDetailsPage: React.FC = () => {
 
   const firstTest = testDetails[0];
 
+  console.log(firstTest)
+
   return (
     <div className="p-0 md:p-4 lg:w-[80vw] w-[90vw]">
       <div className="flex w-full mt-1 mb-6 items-center justify-between">

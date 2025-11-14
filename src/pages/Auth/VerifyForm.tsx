@@ -56,10 +56,10 @@ const VerifyForm = () => {
         <div className="absolute inset-0 bg-gradient-to-br from-[#000000]/30 to-[#290064]" />
 
         {/* Logo */}
-        <div className="absolute flex items-center gap-3  top-12 left-[88px] text-white text-2xl font-bold">
+        <Link to="/" className="absolute flex items-center gap-3  top-12 left-[88px] text-white text-2xl font-bold">
           <img src={Logo} className="w-12" alt="" />
           AiTeacha
-        </div>
+        </Link>
 
         {/* Bottom Slide Text */}
         <div className="absolute bottom-40 left-[88px]  max-w-[433px]  text-white">

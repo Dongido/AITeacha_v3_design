@@ -220,10 +220,10 @@ const LayoutTextFlipDemo = () => {
       </p>
 
       {/* CTA Buttons */}
-      <div className="flex justify-center mt-6 mb-10 gap-6">
+      <div className="flex justify-center mt-6 mb-10 gap-4">
         <a
           href="/auth/onboarding"
-          className="shadow-lg shadow-[#6200EE]/40 bg-[#6200EE] hover:bg-[#4d00c9] text-white py-3 px-8 sm:py-4 sm:px-10 font-medium text-base sm:text-lg rounded-full transition-all duration-200"
+          className="shadow-lg shadow-[#6200EE]/40 bg-[#6200EE] hover:bg-[#4d00c9] text-white py-3 px-5 sm:py-4 sm:px-10 font-medium text-base sm:text-lg rounded-full transition-all duration-200"
         >
           Get Started For Free
         </a>
@@ -231,7 +231,7 @@ const LayoutTextFlipDemo = () => {
         {!isLoggedIn && (
           <a
             href="/auth/login"
-            className="shadow-lg shadow-[#6200EE]/10 bg-white border border-[#6200EE] text-[#6200EE] hover:bg-[#f4edff] py-3 px-8 sm:py-4 sm:px-9 font-medium text-base sm:text-lg rounded-full transition-all duration-200"
+            className="shadow-lg shadow-[#6200EE]/10 bg-white border border-[#6200EE] text-[#6200EE] hover:bg-[#f4edff] py-3 px-5 sm:py-4 sm:px-9 font-medium text-base sm:text-lg rounded-full transition-all duration-200"
           >
             Login
           </a>

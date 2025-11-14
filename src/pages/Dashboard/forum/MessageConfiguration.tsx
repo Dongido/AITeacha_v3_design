@@ -224,7 +224,7 @@ const MessageConfiguration = () => {
   const isUpdate = messageSettingsId && messageSettingsId.user_id === userId;
 
   return (
-    <div className="min-h-screen max-w-5xl mx-auto px-6 py-10">
+    <div className="min-h-screen max-w-5xl mx-auto px-2 md:px-6 py-10">
       <h1 className="md:text-3xl text-2xl text-center mb-0 font-bold text-gray-800">
         Message Configuration
       </h1>

@@ -183,12 +183,12 @@ export const routes = [
         path: "/chats",
         element: <Chat />,
       },
-      {
-        icon: <DocumentTextIcon {...icon} />,
-        name: "assignment",
-        path: "/assignment",
-        element: <Assignment />,
-      },
+      // {
+      //   icon: <DocumentTextIcon {...icon} />,
+      //   name: "assignment",
+      //   path: "/assignment",
+      //   element: <Assignment />,
+      // },
 
       {
         icon: <DocumentTextIcon {...icon} />,
@@ -364,13 +364,13 @@ export const routes = [
       //   ],
       // },
 
-      {
-        icon: <WrenchScrewdriverIcon {...icon} />,
-        name: "Heroes Wall",
-        path: "/heroes-wall",
-        element: <HeroesWallAdmin />,
-        adminOnly: true,
-      },
+      // {
+      //   icon: <WrenchScrewdriverIcon {...icon} />,
+      //   name: "Heroes Wall",
+      //   path: "/heroes-wall",
+      //   element: <HeroesWallAdmin />,
+      //   adminOnly: true,
+      // },
       // {
       //   icon: <FaRocketchat {...icon} />,
       //   name: "Messages",

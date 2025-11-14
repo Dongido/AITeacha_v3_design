@@ -130,7 +130,7 @@ const Tools = () => {
   };
 
   return (
-    <div className="mt-4">
+    <div className="mt-4 p-4 md:p-[30px]">
       <div>
         <h1 className="text-xl text-black font-semibold">AI Tools</h1>
         <p className="text-sm text-gray-600">
@@ -227,7 +227,7 @@ const Tools = () => {
                     onClick={() => handleToolClick(tool.id, tool.slug)}
                     className="flex items-center border border-gray-300 px-4 py-3 rounded-3xl bg-[#EFE6FD] hover:bg-gray-50 cursor-pointer transition duration-500 ease-in-out transform hover:scale-105"
                   >
-                    <div className="text-primary text-2xl mr-4">
+                    <div className="text-primary  shrink-0 text-2xl mr-4">
                       {tool.thumbnail ? (
                         <img
                           src={
@@ -269,7 +269,7 @@ const Tools = () => {
                   onClick={() => handleExternalNavigation(tool)}
                   className="relative flex items-center border border-gray-300 px-4 py-3 rounded-3xl bg-white hover:bg-gray-50 cursor-pointer transition duration-500 ease-in-out transform hover:scale-105"
                 >
-                  <div className="text-primary text-2xl mr-4">
+                  <div className="text-primary shrink-0 text-2xl mr-4">
                     {tool.thumbnail ? (
                       <img
                         src={

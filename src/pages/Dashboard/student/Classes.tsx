@@ -145,11 +145,11 @@ const Classes = () => {
   // });
 
   return (
-    <div className="mt-4 routes-scroll-area">
+    <div className="mt-4 p-2 md:p-[30px] routes-scroll-area">
       {/* Header */}
-      <div>
-        <h1 className="text-black text-xl">My Classrooms</h1>
-        <p className="text-[#3B3A3A] text-sm">Manage all your classrooms</p>
+      <div className="mb-5">
+        <h1 className="text-black font-semibold m-0 text-xl">My Classrooms</h1>
+        <p className="text-[#3B3A3A] m-0 text-sm">Manage all your classrooms</p>
       </div>
 
       {/* Hero Section */}
@@ -253,7 +253,7 @@ const Classes = () => {
       </div>
 
       {/* Filters */}
-      <p className="text-sm text-[#3B3A3A] mt-2">
+      <p className="text-sm text-[#3B3A3A] mt-5">
         These are classrooms you’ve joined as a student.
       </p>
 

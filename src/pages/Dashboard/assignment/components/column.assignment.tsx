@@ -32,13 +32,13 @@ export const assignmentColumns = [
       );
     },
   }),
-  assignmentColumnHelper.accessor("classroom_name", {
-    header: ({ column }) => <Header title="Classroom Name" column={column} />,
-    sortingFn: "text",
-    cell: (info) => (
-      <span className="capitalize whitespace-nowrap">{info.getValue()}</span>
-    ),
-  }),
+  // assignmentColumnHelper.accessor("classroom_name", {
+  //   header: ({ column }) => <Header title="Classroom Name" column={column} />,
+  //   sortingFn: "text",
+  //   cell: (info) => (
+  //     <span className="capitalize whitespace-nowrap">{info.getValue()}</span>
+  //   ),
+  // }),
   assignmentColumnHelper.accessor("assignment_description", {
     header: ({ column }) => (
       <Header title="Assignment Description" column={column} />
@@ -69,14 +69,14 @@ export const assignmentColumns = [
       <span className="capitalize whitespace-nowrap">{info.getValue()}</span>
     ),
   }),
-  assignmentColumnHelper.accessor("status", {
-    header: ({ column }) => <Header title="Status" column={column} />,
-    sortingFn: "text",
-    cell: (info) => {
-      const val = info.getValue()?.toString() as StatusType;
-      return <Status value={val} />;
-    },
-  }),
+  // assignmentColumnHelper.accessor("status", {
+  //   header: ({ column }) => <Header title="Status" column={column} />,
+  //   sortingFn: "text",
+  //   cell: (info) => {
+  //     const val = info.getValue()?.toString() as StatusType;
+  //     return <Status value={val} />;
+  //   },
+  // }),
   assignmentColumnHelper.accessor("number_of_students_completed", {
     header: ({ column }) => (
       <Header title="Students Completed" column={column} />

@@ -97,7 +97,7 @@ const Report = () => {
     classroomType === "my" ? classrooms : teamClassrooms;
 
   return (
-    <div className="lg:mt-20 mt-10">
+    <div className="p-4 md:p-[30px] lg:mt-20 mt-10">
       <div className="flex flex-col items-center justify-center space-y-6">
         <div className="flex flex-col md:flex-row items-center w-full gap-6">
           <div

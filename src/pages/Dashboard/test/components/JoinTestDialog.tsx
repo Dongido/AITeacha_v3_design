@@ -123,8 +123,8 @@
     };
 
     return (
-      <ToastProvider swipeDirection="right">
-        <Dialog open={open} onOpenChange={setOpen}>
+      <ToastProvider swipeDirection="right" >
+        <Dialog open={open} onOpenChange={setOpen} >
           <DialogContent className="max-w-[450px] text-gray-800">
             <DialogHeader>
               <DialogTitle>Join a Test</DialogTitle>

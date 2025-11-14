@@ -1,3 +1,107 @@
+// import React, { useRef } from "react";
+// import { createColumnHelper } from "@tanstack/react-table";
+// import Header from "../../../components/table/TableHeaderItem";
+// import Actions from "../../../components/table/TableActions";
+// import DeleteTeamMemberDialog from "./DeleteTeamMemberDialog";
+// import { Link } from "react-router-dom";
+// import EditTeacherRoleDialog, {
+//   EditTeacherRoleDialogRef,
+// } from "./EditTeacherRoleDialog";
+
+// export interface TeamMember {
+//   user_id: string;
+//   email: string;
+//   firstname: string;
+//   lastname: string;
+//   team_id: number;
+//   member_role: string;
+// }
+
+// const teamColumnHelper = createColumnHelper<TeamMember>();
+
+// export const teamColumns = [
+//   teamColumnHelper.accessor("user_id", {
+//     header: ({ column }) => <Header title="ID" column={column} />,
+//     sortingFn: "text",
+//     cell: (info) => <span>{info.getValue()}</span>,
+//   }),
+
+//   teamColumnHelper.accessor((row) => `${row.firstname} ${row.lastname}`, {
+//     id: "full_name",
+//     header: ({ column }) => <Header title="Full Name" column={column} />,
+//     sortingFn: "text",
+//     cell: (info) => {
+//       const userId = info.row.original.user_id;
+//       return (
+//         <Link
+//           to={`/dashboard/user-profile/${userId}`}
+//           className="text-primary hover:underline capitalize whitespace-nowrap"
+//         >
+//           {info.getValue()}
+//         </Link>
+//       );
+//     },
+//   }),
+//   teamColumnHelper.accessor("email", {
+//     header: ({ column }) => <Header title="Email" column={column} />,
+//     sortingFn: "text",
+//     cell: (info) => (
+//       <span className="whitespace-nowrap">{info.getValue()}</span>
+//     ),
+//   }),
+//   teamColumnHelper.accessor("member_role", {
+//     header: ({ column }) => <Header title="Role" column={column} />,
+//     sortingFn: "text",
+//     cell: (info) => <span className="capitalize">{info.getValue()}</span>,
+//   }),
+//   teamColumnHelper.accessor("email", {
+//     header: ({ column }) => <Header title="Actions" column={column} />,
+//     cell: (info) => {
+//       const teamMember = info.row.original;
+//       const deleteDialogRef = useRef<{ openDialog: () => void }>(null);
+//       const editRoleDialogRef = useRef<EditTeacherRoleDialogRef>(null);
+
+//       return (
+//         <div className="flex items-center gap-2">
+//           <Actions
+//             editRoleFunction={() => {
+//               editRoleDialogRef.current?.openDialog(
+//                 teamMember.user_id,
+//                 String(teamMember.team_id),
+//                 teamMember.firstname,
+//                 teamMember.lastname,
+//                 teamMember.member_role as "admin" | "member"
+//               );
+//               return Promise.resolve();
+//             }}
+//             deleteFunction={() => {
+//               deleteDialogRef.current?.openDialog();
+//               return Promise.resolve();
+//             }}
+
+//           />
+//           <DeleteTeamMemberDialog
+//             ref={deleteDialogRef}
+//             email={teamMember.email}
+//             onSuccess={() => { }}
+//           />
+//           <EditTeacherRoleDialog
+//             ref={editRoleDialogRef}
+//             userId={teamMember.user_id}
+//             teamId={String(teamMember.team_id)}
+//             firstname={teamMember.firstname}
+//             lastname={teamMember.lastname}
+//             currentTeamRole={teamMember.member_role as "admin" | "member"}
+//             onSuccess={() => { }}
+//           />
+//         </div>
+//       );
+//     },
+//   }),
+// ];
+
+
+
 import React, { useRef } from "react";
 import { createColumnHelper } from "@tanstack/react-table";
 import Header from "../../../components/table/TableHeaderItem";
@@ -21,11 +125,20 @@ const teamColumnHelper = createColumnHelper<TeamMember>();
 
 export const teamColumns = [
   teamColumnHelper.accessor("user_id", {
-    header: ({ column }) => <Header title="ID" column={column} />,
+    header: ({ column }) =>(
+      <div className="hidden md:table-cell">
+       <Header title="ID" column={column} />
+      </div>
+      ),
     sortingFn: "text",
-    cell: (info) => <span>{info.getValue()}</span>,
+    cell: (info) => (
+      <span className="font-medium hidden md:table-cell text-gray-800 whitespace-nowrap">
+        {info.getValue()}
+      </span>
+    ),
   }),
 
+  // ✅ Full Name — Always Visible
   teamColumnHelper.accessor((row) => `${row.firstname} ${row.lastname}`, {
     id: "full_name",
     header: ({ column }) => <Header title="Full Name" column={column} />,
@@ -35,25 +148,45 @@ export const teamColumns = [
       return (
         <Link
           to={`/dashboard/user-profile/${userId}`}
-          className="text-primary hover:underline capitalize whitespace-nowrap"
+          className="text-primary font-medium hover:underline capitalize whitespace-nowrap"
         >
           {info.getValue()}
         </Link>
       );
     },
   }),
+
+  // ✅ Email — Hidden on Mobile
   teamColumnHelper.accessor("email", {
-    header: ({ column }) => <Header title="Email" column={column} />,
+    header: ({ column }) => (
+      <div className="hidden md:table-cell">
+        <Header title="Email" column={column} />
+      </div>
+    ),
     sortingFn: "text",
     cell: (info) => (
-      <span className="whitespace-nowrap">{info.getValue()}</span>
+      <span className="hidden md:table-cell text-gray-700 whitespace-nowrap">
+        {info.getValue()}
+      </span>
     ),
   }),
+
+  // ✅ Role — Hidden on Mobile
   teamColumnHelper.accessor("member_role", {
-    header: ({ column }) => <Header title="Role" column={column} />,
+    header: ({ column }) => (
+      <div className="">
+        <Header title="Role" column={column} />
+      </div>
+    ),
     sortingFn: "text",
-    cell: (info) => <span className="capitalize">{info.getValue()}</span>,
+    cell: (info) => (
+      <span className="capitalize text-gray-800">
+        {info.getValue()}
+      </span>
+    ),
   }),
+
+  // ✅ Actions — Always Visible
   teamColumnHelper.accessor("email", {
     header: ({ column }) => <Header title="Actions" column={column} />,
     cell: (info) => {
@@ -62,7 +195,7 @@ export const teamColumns = [
       const editRoleDialogRef = useRef<EditTeacherRoleDialogRef>(null);
 
       return (
-        <div className="flex items-center gap-2">
+        <div className="flex  gap-2">
           <Actions
             editRoleFunction={() => {
               editRoleDialogRef.current?.openDialog(
@@ -78,12 +211,13 @@ export const teamColumns = [
               deleteDialogRef.current?.openDialog();
               return Promise.resolve();
             }}
-
           />
+
+          {/* Delete & Edit Dialogs */}
           <DeleteTeamMemberDialog
             ref={deleteDialogRef}
             email={teamMember.email}
-            onSuccess={() => { }}
+            onSuccess={() => {}}
           />
           <EditTeacherRoleDialog
             ref={editRoleDialogRef}
@@ -92,7 +226,7 @@ export const teamColumns = [
             firstname={teamMember.firstname}
             lastname={teamMember.lastname}
             currentTeamRole={teamMember.member_role as "admin" | "member"}
-            onSuccess={() => { }}
+            onSuccess={() => {}}
           />
         </div>
       );

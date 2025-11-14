@@ -230,7 +230,7 @@ export default function BaseTable({
                 <TableHead
                   key={header.id}
                   colSpan={header.colSpan}
-                  className="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-left"
+                  className="md:px-5 md:py-3 text-xs font-semibold uppercase tracking-wide text-left"
                 >
                   {header.isPlaceholder
                     ? null
@@ -259,7 +259,7 @@ export default function BaseTable({
                 {row.getVisibleCells().map((cell, idx) => (
                   <TableCell
                     key={cell.id}
-                    className={`px-5 py-3 text-sm text-gray-700 ${
+                    className={`md:px-5 md:py-3 text-sm text-gray-700 ${
                       idx === 0
                         ? "text-[#6200EE] font-medium hover:underline"
                         : ""

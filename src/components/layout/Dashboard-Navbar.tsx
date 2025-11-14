@@ -98,15 +98,16 @@ export function DashboardNavbar() {
       //     ? "sticky top-4 z-40 py-3 bg-white shadow-blue-gray-500/5"
       //     : "px-0 py-1"
       // }`}
+      className="px-4 md:px-[30px]"
       >
         <div className="flex flex-col-reverse justify-between gap-6 md:flex-row md:items-center">
           <div className="hidden lg:flex text-black">
-            <Button
+            <button
               onClick={() => setCollapsed(uiDispatch, !controller.collapsed)}
               className="hidden lg:flex text-black"
             >
-              <HiMenuAlt2 />
-            </Button>
+              <HiMenuAlt2 className="h-6 w-6"/>
+            </button>
           </div>
 
           <div className="flex items-center gap-2">
@@ -147,13 +148,13 @@ export function DashboardNavbar() {
               />
             </Button> */}
 
-            <Button
+            <button
               onClick={() => setOpenSidenav(uiDispatch, !openSidenav)}
               className="flex xl:hidden md:hidden text-black"
               aria-label="Toggle sidenav"
             >
               <HiMenuAlt2 className="h-6 w-6" />
-            </Button>
+            </button>
 
             {/* <div className="flex items-center gap-x-6  ml-auto lg:mr-3">
               <Tooltip>
@@ -324,7 +325,7 @@ export function DashboardNavbar() {
                         </Link>
 
                         <Link
-                          to="/dashboard/participant/chat"
+                          to="/dashboard/configuration"
                           className="flex items-center gap-3 px-4 py-2 hover:bg-[#EFE6FD] rounded-lg text-sm text-gray-700"
                         >
                           <FiMessageCircle className="h-5 w-5 text-gray-600" />
