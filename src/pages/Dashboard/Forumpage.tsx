@@ -136,7 +136,7 @@ const Forumpage = () => {
   }
 
   return (
-    <div className="min-h-screenp p-0 md:p-[30px] ">
+    <div className="min-h-screenp p-4 md:p-[30px] ">
       <h2 className="text-lg m-0 font-bold  text-left ">Discussion Forums</h2>
       <p className="text-sm m-0">Manage all forums</p>
       {loading && (

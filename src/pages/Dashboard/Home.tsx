@@ -245,7 +245,7 @@ const Home = () => {
     }
   };
   return (
-    <div className="mt-4 ">
+    <div className="mt-4 p-4 md:p-[30px]">
       {latestNotification && !isNotificationDismissed && (
         <div
           className="text-black border px-4 py-3 rounded mb-4 overflow-hidden w-[80%] mx-auto"

@@ -26,7 +26,7 @@ const WorkHistory = () => {
     }
   }, []);
   return (
-    <div className="mt-4">
+    <div className="mt-4 p-4 md:p-[30px]">
       {userDetails && isEmailVerified === 1 && (
         <div
           className="bg-[#e5dbff] mt-3 mb-4 text-black p-4 rounded-md flex justify-center items-center"

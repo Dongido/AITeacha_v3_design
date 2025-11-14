@@ -130,7 +130,7 @@ const Tools = () => {
   };
 
   return (
-    <div className="mt-4">
+    <div className="mt-4 p-4 md:p-[30px]">
       <div>
         <h1 className="text-xl text-black font-semibold">AI Tools</h1>
         <p className="text-sm text-gray-600">

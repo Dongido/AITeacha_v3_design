@@ -136,34 +136,34 @@ const TeamClassroomPage: React.FC = () => {
     selectionType === "teamClassroom" ? teamClassrooms : classrooms;
 
   // Render Skeleton for loading state
-  if (loading) {
-    return (
-      <div className="overflow-x-auto">
-        <table className="min-w-full border-collapse">
-          <thead>
-            <tr>
-              {[...Array(5)].map((_, index) => (
-                <th key={index} className="p-4 border-b">
-                  <Skeleton className="h-4 w-16 rounded" />
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {[...Array(6)].map((_, rowIndex) => (
-              <tr key={rowIndex} className="border-b">
-                {[...Array(5)].map((_, colIndex) => (
-                  <td key={colIndex} className="p-4">
-                    <Skeleton className="h-4 w-full rounded" />
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div className="overflow-x-auto">
+  //       <table className="min-w-full border-collapse">
+  //         <thead>
+  //           <tr>
+  //             {[...Array(5)].map((_, index) => (
+  //               <th key={index} className="p-4 border-b">
+  //                 <Skeleton className="h-4 w-16 rounded" />
+  //               </th>
+  //             ))}
+  //           </tr>
+  //         </thead>
+  //         <tbody>
+  //           {[...Array(6)].map((_, rowIndex) => (
+  //             <tr key={rowIndex} className="border-b">
+  //               {[...Array(5)].map((_, colIndex) => (
+  //                 <td key={colIndex} className="p-4">
+  //                   <Skeleton className="h-4 w-full rounded" />
+  //                 </td>
+  //               ))}
+  //             </tr>
+  //           ))}
+  //         </tbody>
+  //       </table>
+  //     </div>
+  //   );
+  // }
 
   // Render RestrictedPage for specific errors
   if (
@@ -218,7 +218,7 @@ const TeamClassroomPage: React.FC = () => {
   }
 
   return (
-    <div className="p-0 md:p-[30px]  ">
+    <div className="p-4 md:p-[30px]  ">
       <div>
         <h2 className="text-lg font-semibold m-0">Class Management</h2>
         <p className="text-sm">Manage classroom</p>
@@ -365,8 +365,31 @@ const TeamClassroomPage: React.FC = () => {
               : "Below are classrooms Assigned by me"}
           </h3>
           {loading ? (
-            <p>Loading...</p>
-          ) : error ? (
+      <div className="overflow-x-auto">
+        <table className="min-w-full border-collapse">
+          <thead>
+            <tr>
+              {[...Array(5)].map((_, index) => (
+                <th key={index} className="p-4 border-b">
+                  <Skeleton className="h-4 w-16 rounded" />
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {[...Array(6)].map((_, rowIndex) => (
+              <tr key={rowIndex} className="border-b">
+                {[...Array(5)].map((_, colIndex) => (
+                  <td key={colIndex} className="p-4">
+                    <Skeleton className="h-4 w-full rounded" />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    ) : error ? (
             <p className="text-red-500">{error}</p>
           ) : showTeacherAssigned ? (
             teacherAssignedClassroomsList.length > 0 ? (

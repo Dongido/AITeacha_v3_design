@@ -78,7 +78,7 @@ const SchoolStudents = () => {
 
 
   return (
-    <div className="p-0 md:p-[30px]">
+    <div className="p-4 md:p-[30px]">
      
       <div className="mb-[30px] flex flex-col sm:flex-row sm:justify-between gap-2 md:items-center">
         <div>

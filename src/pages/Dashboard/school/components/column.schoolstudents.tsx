@@ -154,27 +154,27 @@ export const schoolStudentColumns = () => [
     ),
   }),
 
-  // Email (hidden on mobile)
+
   studentColumnHelper.accessor("email", {
     header: ({ column }) => (
-      <Header title="Email" column={column} className="hidden sm:table-cell" />
+      <Header title="Email" column={column}  />
     ),
     sortingFn: "text",
     cell: (info) => (
-      <div className="hidden sm:table-cell w-1/2 text-black">{info.getValue()}</div>
+      <div className="w-1/2 text-black">{info.getValue()}</div>
     ),
   }),
 
-  // Phone (always visible)
+
   studentColumnHelper.accessor("phone", {
-    header: ({ column }) => <Header title="Phone" column={column} />,
+    header: ({ column }) => <Header title="Phone" column={column} className="hidden sm:table-cell" />,
     sortingFn: "text",
     cell: (info) => (
-      <div className="text-black whitespace-nowrap">{info.getValue()}</div>
+      <div className="hidden sm:table-cell text-black whitespace-nowrap">{info.getValue()}</div>
     ),
   }),
 
-  
+
   studentColumnHelper.accessor("assigned_number", {
     header: ({ column }) => (
       <Header title="Student Number" column={column} className="hidden sm:table-cell" />

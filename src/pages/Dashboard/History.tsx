@@ -35,7 +35,7 @@ const HistoryDetail: React.FC = () => {
     );
 
   return (
-    <div className="min-h-screen bg-gray-100  items-center justify-center py-6">
+    <div className="min-h-screen bg-gray-100 p-4 md:p-[30px]  items-center justify-center py-6">
       {selectedResource ? (
         <>
           <h1 className="text-3xl capitalize font-bold text-primary mb-2">

@@ -244,7 +244,7 @@ const Classrooms = () => {
   }
 
   return (
-    <div className="mt-4 p-2 md:p-[30px] routes-scroll-area ">
+    <div className="mt-4 p-4 md:p-[30px] routes-scroll-area ">
       <div className="mb-5">
         <h1 className="text-black font-semibold m-0 text-xl">My Classrooms</h1>
         <p className="text-[#3B3A3A] text-sm m-0">Manage all your classrooms</p>

@@ -177,7 +177,7 @@ export function Sidenav({
 
         {/* SCROLLABLE CONTENT */}
         <div
-          className={`flex-1 overflow-y-auto px-3 ${
+          className={`flex-1 overflow-y-auto px-3 pb-5 ${
             showFullSidebar
               ? "max-h-[calc(100vh-220px)]"
               : "max-h-[calc(100vh-160px)]"
@@ -313,7 +313,7 @@ export function Sidenav({
         </div>
 
         {/* FOOTER */}
-        <div className="p-3 bg-[#EFE6FD] rounded-2xl mx-2 bottom-1 lg:-mt-[10%] -mt-[5%] relative z-100">
+        <div className="p-3 bg-[#EFE6FD] rounded-2xl mx-2 bottom-1 w-auto relative z-100">
           {showFullSidebar ? (
             <>
               <p className="text-sm font-semibold text-[#6200EE] mb-1">

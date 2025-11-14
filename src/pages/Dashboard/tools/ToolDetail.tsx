@@ -11,6 +11,16 @@ import { Undo2 } from "lucide-react";
 import parse from "html-react-parser";
 
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "../../../components/ui/Dialogue";
+
+
+import {
   submitToolData,
   saveResource,
   SubmitToolData,
@@ -64,6 +74,7 @@ import TypingEffectRenderer from "./TypingEffectRenderer";
 import { sampleToolData } from "../../../Data/ToolData";
 import { MdChevronLeft } from "react-icons/md";
 import { FaHeart } from "react-icons/fa";
+
 
 const gradeOptions = [
   "Pre School",
@@ -175,6 +186,71 @@ const ToolDetail = () => {
       return () => clearInterval(timer);
     }
   }, [responseMessage]);
+
+
+
+  
+
+
+
+  const [allowBack, setAllowBack] = useState(false);
+
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
+
+
+  // const navigate = useNavigate();
+
+const handleBackNavigation = () => {
+  if (showResponse || responseMessage) {
+    setShowSaveDialog(true);
+  } else {
+    navigate(-1);
+  }
+};
+
+
+// useEffect(() => {
+//   const handlePopState = (event: PopStateEvent) => {
+//     event.preventDefault();
+//     if (showResponse || responseMessage) {
+//       setShowSaveDialog(true);
+//       window.history.pushState(null, "", window.location.href);
+//     }
+//   };
+//   window.addEventListener("popstate", handlePopState);
+//   return () => {
+//     window.removeEventListener("popstate", handlePopState);
+//   };
+// }, [showResponse, responseMessage]);
+
+
+useEffect(() => {
+  window.history.pushState(null, "", window.location.href);
+
+  const handlePopState = (event: PopStateEvent) => {
+    // If we're allowing back navigation (after Save/Don't Save), skip modal
+    if (allowBack) {
+      navigate(-1);
+      return;
+    }
+
+    event.preventDefault();
+
+    if (showResponse || responseMessage) {
+      setShowSaveDialog(true);
+      // Re-push dummy state to keep user on page
+      window.history.pushState(null, "", window.location.href);
+    } else {
+      navigate(-1);
+    }
+  };
+
+  window.addEventListener("popstate", handlePopState);
+  return () => window.removeEventListener("popstate", handlePopState);
+}, [allowBack, showResponse, responseMessage, navigate]);
+
+
+
 
   useEffect(() => {
     try {
@@ -612,10 +688,92 @@ const ToolDetail = () => {
     );
   }
 
+
+
   return (
     <div className="bg-gradient-to-b from-[#EFE6FD] to-[#ebdcea] w-full overflow-hidden">
+
+    {/* {showSaveModal && (
+  <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40">
+    <div className="bg-white rounded-2xl p-6 shadow-xl max-w-sm text-center">
+      <h2 className="text-xl font-semibold text-[#4b2aad] mb-4">
+        Save Chat to History?
+      </h2>
+      <p className="text-gray-700 mb-6">
+        Would you like to save this generated chat before leaving?
+      </p>
+      <div className="flex justify-between gap-3">
+        <button
+          onClick={() => {
+            // Save logic here (e.g. call API or localStorage)
+            console.log("Chat saved!");
+            setShowSaveModal(false);
+            navigate(-1);
+          }}
+          className="bg-[#6200EE] text-white px-4 py-2 rounded-md w-full"
+        >
+          Save & Go Back
+        </button>
+        <button
+          onClick={() => {
+            setShowSaveModal(false);
+            navigate(-1);
+          }}
+          className="bg-gray-200 text-gray-700 px-4 py-2 rounded-md w-full"
+        >
+          Don’t Save
+        </button>
+      </div>
+    </div>
+  </div>
+)} */}
+
+
+
+<Dialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
+  <DialogContent>
+    <DialogHeader>
+      <DialogTitle>Save Chat to History?</DialogTitle>
+      <DialogDescription>
+        You’ve generated content on this page. Would you like to save it to your
+        chat history before leaving?
+      </DialogDescription>
+    </DialogHeader>
+
+    <DialogFooter className="flex justify-end mt-6 gap-2">
+      <Button
+        variant="outline"
+        onClick={() => {
+          setShowSaveDialog(false);
+          setAllowBack(true); 
+          navigate(-1); 
+        }}
+      >
+        Don’t Save
+      </Button>
+
+      <button
+        className="bg-[#6200EE] py-2 px-3 text-sm text-white hover:bg-[#4b00b8]"
+        onClick={async () => {
+            setAllowBack(true); 
+            await handleSave();  
+            setShowSaveDialog(false);
+            navigate(-1); 
+          }}
+      >
+        Save & Go Back
+      </button>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>
+
+
+
+
+
+
       <ToastProvider>
-        <div>
+        <div className="p-4 md:p-[20px]">
           <div className="flex justify-center gap-2 pt-10 pb-5">
             <div>
               {tool.thumbnail ? (
@@ -683,7 +841,9 @@ const ToolDetail = () => {
             {/* Go Back to Previous Page Button */}
             <button
               className="flex items-center bg-[#6200EE] rounded-full px-6 py-2 text-white w-fit h-full gap-3 mb-4"
-              onClick={() => navigate(-1)}
+              // onClick={() => navigate(-1)}
+              onClick={handleBackNavigation}
+
             >
               Go Back
             </button>

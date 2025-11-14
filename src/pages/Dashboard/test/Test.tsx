@@ -210,7 +210,7 @@ const TestPage: React.FC = () => {
   }
 
   return (
-    <div className="p-0 md:p-[30px]  animate-fade-in">
+    <div className="p-4 md:p-[30px]  animate-fade-in">
       <div>
         <h2 className="text-lg font-bold m-0">Test & Exams</h2>
         <p className="text-sm text-gray-800 m-0">

@@ -98,6 +98,7 @@ export function DashboardNavbar() {
       //     ? "sticky top-4 z-40 py-3 bg-white shadow-blue-gray-500/5"
       //     : "px-0 py-1"
       // }`}
+      className="px-4 md:px-[30px]"
       >
         <div className="flex flex-col-reverse justify-between gap-6 md:flex-row md:items-center">
           <div className="hidden lg:flex text-black">

@@ -183,12 +183,12 @@ export const routes = [
         path: "/chats",
         element: <Chat />,
       },
-      {
-        icon: <DocumentTextIcon {...icon} />,
-        name: "assignment",
-        path: "/assignment",
-        element: <Assignment />,
-      },
+      // {
+      //   icon: <DocumentTextIcon {...icon} />,
+      //   name: "assignment",
+      //   path: "/assignment",
+      //   element: <Assignment />,
+      // },
 
       {
         icon: <DocumentTextIcon {...icon} />,
