@@ -187,24 +187,29 @@ export const classroomColumns = [
       return (
         <div className="flex  gap-2 ">
           <Actions
-            viewLink={
-              status === "inactive"
-                ? undefined
-                : `/dashboard/classrooms/details/${classroomId}`
-            }
-            deleteFunction={async () => {
-              deleteDialogRef.current?.openDialog();
-              return Promise.resolve();
-            }}
-            activateFunction={
-              status === "inactive"
-                ? async () => {
-                    activateDeactivateDialogRef.current?.openDialog();
-                    return Promise.resolve();
-                  }
-                : undefined
-            }
-          />
+  viewLink={
+    status === "inactive"
+      ? undefined // Prevent navigation for inactive classes
+      : `/dashboard/classrooms/details/${classroomId}`
+  }
+  deleteFunction={async (e?: React.MouseEvent) => {
+  e?.preventDefault();
+  e?.stopPropagation(); // ✅ extra safety in case table row has a link
+  deleteDialogRef.current?.openDialog();
+  return Promise.resolve();
+}}
+
+  activateFunction={
+    status !== "active"
+      ? async () => {
+          activateDeactivateDialogRef.current?.openDialog();
+          return Promise.resolve();
+        }
+      : undefined
+  }
+  deactivateFunction={undefined}
+/>
+
 
           <DeleteClassroomDialog
             ref={deleteDialogRef}

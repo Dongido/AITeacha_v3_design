@@ -315,7 +315,7 @@
 //                     <div
 //                       key={index}
 //                       onClick={() => handleSelectOutlineInternal(outline)}
-//                       className={`flex flex-col gap-1 cursor-pointer rounded-lg px-3 py-2 mb-2 transition-all duration-200 
+//                       className={`flex flex-col gap-1 cursor-pointer rounded-lg px-3 py-2 mb-2 transition-all duration-200
 //         ${
 //           selectedOutline?.name === outline.name
 //             ? "bg-[#EFE6FD] text-[#6200EE] font-semibold"
@@ -496,8 +496,6 @@
 //   );
 // }
 
-
-
 import * as React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { XMarkIcon } from "@heroicons/react/24/outline";
@@ -521,6 +519,7 @@ import { NavLink } from "react-router-dom";
 import { getOutlineAssessmentReport } from "../../../../api/studentassignment";
 import { Skeleton } from "../../../../components/ui/Skeleton";
 import { useParams } from "react-router-dom";
+import { Binoculars } from "lucide-react";
 
 interface SidenavProps {
   brandName?: string;
@@ -751,14 +750,14 @@ export function Sidenav({
                 to={`/class/classrooms/class-details/${classroomId}
 `}
                 className={({ isActive }) =>
-                  `px-3 py-2 font-semibold flex items-center gap-1 rounded-lg text-md capitalize transition-all duration-200 ${
+                  `px-3 py-2 flex items-center gap-1 rounded-lg text-md capitalize transition-all duration-200 ${
                     isActive
-                      ? "bg-[#EFE6FD] text-[#6200EE] font-semibold"
+                      ? "bg-[#EFE6FD] text-[#6200EE]"
                       : "text-black hover:bg-gray-100 hover:text-[#6200EE]"
                   }`
                 }
               >
-                <CiSearch />
+                <IoBookOutline />
                 Overview
               </NavLink>
             </div>
@@ -771,15 +770,15 @@ export function Sidenav({
                 </Text>
               </div>
 
-              <div className="mt-4">
+              <div className="mt-2">
                 {/* Introduction Button */}
                 <div className="flex">
                   <button
-                    className={`text-sm w-full text-left rounded-lg px-3 py-2 transition-all duration-200 ${
+                    className={`w-full text-left rounded-lg px-3 py-2 transition-all duration-200 ${
                       location.pathname.includes(
                         "/student/classrooms/outlines/intro"
                       )
-                        ? "bg-[#EFE6FD] text-[#6200EE] font-semibold"
+                        ? "bg-[#EFE6FD] text-[#6200EE]"
                         : "text-black hover:bg-gray-100 hover:text-[#6200EE]"
                     }`}
                     onClick={() => {
@@ -804,7 +803,7 @@ export function Sidenav({
                             `/student/classrooms/outlines/${outline.classroomoutline_id}`
                           );
                         }}
-                        className={`cursor-pointer rounded-lg px-3 py-2 mb-2 transition-all duration-200 ${
+                        className={`cursor-pointer rounded-lg px-3 mb-2 transition-all duration-200 ${
                           selectedOutline?.classroomoutline_id ===
                           outline.classroomoutline_id
                             ? "bg-[#EFE6FD] text-[#6200EE] font-semibold"
